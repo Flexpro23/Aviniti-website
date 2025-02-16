@@ -203,7 +203,7 @@ export default function Home() {
                   <div className="absolute -bottom-8 left-20 w-72 h-72 bg-secondary-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
                   <div className="relative">
                     <Image
-                      src="/hero-illustration-new.svg"
+                      src="/hero-illustration.svg"
                       alt="AI and Mobile App Development"
                       width={600}
                       height={600}

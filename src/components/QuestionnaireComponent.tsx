@@ -23,6 +23,11 @@ interface QuestionnaireAnswers {
   integrationRequirements: string[];
   customization: string;
   maintenanceSupport: string[];
+  projectScale: string;
+  userBase: string;
+  technicalRequirements: string[];
+  priorities: string[];
+  additionalRequirements: string;
 }
 
 const INITIAL_ANSWERS: QuestionnaireAnswers = {
@@ -37,7 +42,12 @@ const INITIAL_ANSWERS: QuestionnaireAnswers = {
   scalabilityNeeds: '',
   integrationRequirements: [],
   customization: '',
-  maintenanceSupport: []
+  maintenanceSupport: [],
+  projectScale: '',
+  userBase: '',
+  technicalRequirements: [],
+  priorities: [],
+  additionalRequirements: ''
 };
 
 export default function QuestionnaireComponent({ 
@@ -47,7 +57,23 @@ export default function QuestionnaireComponent({
   onContinue,
   initialData 
 }: QuestionnaireComponentProps) {
-  const [answers, setAnswers] = useState<QuestionnaireAnswers>(initialData || INITIAL_ANSWERS);
+  const [answers, setAnswers] = useState<QuestionnaireAnswers>(() => {
+    // Try to load from localStorage first
+    const savedData = localStorage.getItem('questionnaireAnswers');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        return {
+          ...INITIAL_ANSWERS,
+          ...parsed
+        };
+      } catch (e) {
+        console.error('Error parsing saved questionnaire data:', e);
+      }
+    }
+    // Fall back to initialData or INITIAL_ANSWERS
+    return initialData || INITIAL_ANSWERS;
+  });
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 4;
 
@@ -178,54 +204,54 @@ export default function QuestionnaireComponent({
 
             {currentStep === 2 && (
               <div className="space-y-8">
-                {/* Development Timeline */}
+                {/* Project Scale */}
                 <div>
                   <label className="block text-lg font-medium text-neutral-700 mb-4">
-                    What is your expected development timeline?
+                    What is the scale of your project?
                   </label>
                   {[
-                    '1-3 months',
-                    '3-6 months',
-                    '6-12 months',
-                    'More than 12 months',
-                    'Flexible/Not Sure'
-                  ].map((timeline) => (
-                    <label key={timeline} className="flex items-center space-x-3 mb-3">
+                    'MVP (Minimum Viable Product)',
+                    'Small Scale Application',
+                    'Medium Scale Application',
+                    'Large Scale Enterprise Solution',
+                    'Complex System Integration'
+                  ].map((scale) => (
+                    <label key={scale} className="flex items-center space-x-3 mb-3">
                       <input
                         type="radio"
-                        name="developmentTimeline"
-                        value={timeline}
-                        checked={answers.developmentTimeline === timeline}
-                        onChange={(e) => handleInputChange('developmentTimeline', e.target.value)}
+                        name="projectScale"
+                        value={scale}
+                        checked={answers.projectScale === scale}
+                        onChange={(e) => handleInputChange('projectScale', e.target.value)}
                         className="form-radio h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                       />
-                      <span className="text-neutral-700">{timeline}</span>
+                      <span className="text-neutral-700">{scale}</span>
                     </label>
                   ))}
                 </div>
 
-                {/* Budget Range */}
+                {/* User Base */}
                 <div>
                   <label className="block text-lg font-medium text-neutral-700 mb-4">
-                    What is your budget range?
+                    Expected number of users in the first year?
                   </label>
                   {[
-                    'Less than $10,000',
-                    '$10,000 - $25,000',
-                    '$25,000 - $50,000',
-                    '$50,000 - $100,000',
-                    '$100,000+'
-                  ].map((budget) => (
-                    <label key={budget} className="flex items-center space-x-3 mb-3">
+                    'Less than 1,000 users',
+                    '1,000 - 10,000 users',
+                    '10,000 - 100,000 users',
+                    'More than 100,000 users',
+                    'Enterprise (Internal Users)'
+                  ].map((users) => (
+                    <label key={users} className="flex items-center space-x-3 mb-3">
                       <input
                         type="radio"
-                        name="budget"
-                        value={budget}
-                        checked={answers.budget === budget}
-                        onChange={(e) => handleInputChange('budget', e.target.value)}
+                        name="userBase"
+                        value={users}
+                        checked={answers.userBase === users}
+                        onChange={(e) => handleInputChange('userBase', e.target.value)}
                         className="form-radio h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                       />
-                      <span className="text-neutral-700">{budget}</span>
+                      <span className="text-neutral-700">{users}</span>
                     </label>
                   ))}
                 </div>
@@ -234,67 +260,37 @@ export default function QuestionnaireComponent({
 
             {currentStep === 3 && (
               <div className="space-y-8">
-                {/* Key Features */}
+                {/* Technical Requirements */}
                 <div>
                   <label className="block text-lg font-medium text-neutral-700 mb-4">
-                    What key features do you need? (Select all that apply)
+                    What are your technical requirements? (Select all that apply)
                   </label>
                   {[
-                    'User Authentication',
-                    'Payment Processing',
-                    'Real-time Updates',
-                    'Data Analytics',
-                    'AI/ML Integration',
-                    'Social Features',
-                    'File Upload/Storage',
+                    'Mobile App Development',
+                    'Web Application',
+                    'Database Management',
+                    'API Integration',
+                    'AI/ML Features',
+                    'Real-time Processing',
+                    'High Security Requirements',
                     'Third-party Integrations',
-                    'Offline Functionality',
-                    'Push Notifications'
-                  ].map((feature) => (
-                    <label key={feature} className="flex items-center space-x-3 mb-3">
+                    'Custom Backend Development',
+                    'Cloud Infrastructure'
+                  ].map((requirement) => (
+                    <label key={requirement} className="flex items-center space-x-3 mb-3">
                       <input
                         type="checkbox"
-                        checked={answers.keyFeatures.includes(feature)}
+                        checked={answers?.technicalRequirements?.includes(requirement) || false}
                         onChange={(e) => {
+                          const currentTechnicalRequirements = answers?.technicalRequirements || [];
                           const newValue = e.target.checked
-                            ? [...answers.keyFeatures, feature]
-                            : answers.keyFeatures.filter(f => f !== feature);
-                          handleInputChange('keyFeatures', newValue);
+                            ? [...currentTechnicalRequirements, requirement]
+                            : currentTechnicalRequirements.filter(r => r !== requirement);
+                          handleInputChange('technicalRequirements', newValue);
                         }}
                         className="form-checkbox h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
                       />
-                      <span className="text-neutral-700">{feature}</span>
-                    </label>
-                  ))}
-                </div>
-
-                {/* Monetization Strategy */}
-                <div>
-                  <label className="block text-lg font-medium text-neutral-700 mb-4">
-                    How do you plan to monetize? (Select all that apply)
-                  </label>
-                  {[
-                    'Free with Ads',
-                    'Freemium Model',
-                    'Subscription Based',
-                    'One-time Purchase',
-                    'In-app Purchases',
-                    'Enterprise Licensing',
-                    'Not Sure Yet'
-                  ].map((strategy) => (
-                    <label key={strategy} className="flex items-center space-x-3 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={answers.monetizationStrategy.includes(strategy)}
-                        onChange={(e) => {
-                          const newValue = e.target.checked
-                            ? [...answers.monetizationStrategy, strategy]
-                            : answers.monetizationStrategy.filter(s => s !== strategy);
-                          handleInputChange('monetizationStrategy', newValue);
-                        }}
-                        className="form-checkbox h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      />
-                      <span className="text-neutral-700">{strategy}</span>
+                      <span className="text-neutral-700">{requirement}</span>
                     </label>
                   ))}
                 </div>
@@ -303,49 +299,70 @@ export default function QuestionnaireComponent({
 
             {currentStep === 4 && (
               <div className="space-y-8">
-                {/* Competitors */}
-                <div>
-                  <label className="block text-lg font-medium text-neutral-700 mb-2">
-                    Who are your main competitors? (Optional)
-                  </label>
-                  <textarea
-                    value={answers.competitorNames}
-                    onChange={(e) => handleInputChange('competitorNames', e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
-                    rows={3}
-                    placeholder="List your main competitors and similar products..."
-                  ></textarea>
-                </div>
-
-                {/* Security Requirements */}
+                {/* Priority Factors */}
                 <div>
                   <label className="block text-lg font-medium text-neutral-700 mb-4">
-                    What are your security requirements? (Select all that apply)
+                    What are your top priorities? (Select up to 3)
                   </label>
                   {[
-                    'User Data Encryption',
-                    'Two-Factor Authentication',
-                    'GDPR Compliance',
-                    'HIPAA Compliance',
-                    'SOC 2 Compliance',
-                    'Regular Security Audits',
-                    'Custom Security Requirements'
-                  ].map((requirement) => (
-                    <label key={requirement} className="flex items-center space-x-3 mb-3">
+                    'Fast Time to Market',
+                    'Cost Efficiency',
+                    'High Performance',
+                    'Scalability',
+                    'Security',
+                    'User Experience',
+                    'Feature Rich',
+                    'Easy Maintenance'
+                  ].map((priority) => (
+                    <label key={priority} className="flex items-center space-x-3 mb-3">
                       <input
                         type="checkbox"
-                        checked={answers.securityRequirements.includes(requirement)}
+                        checked={answers?.priorities?.includes(priority) || false}
                         onChange={(e) => {
-                          const newValue = e.target.checked
-                            ? [...answers.securityRequirements, requirement]
-                            : answers.securityRequirements.filter(r => r !== requirement);
-                          handleInputChange('securityRequirements', newValue);
+                          const currentPriorities = answers?.priorities || [];
+                          let newPriorities;
+                          if (e.target.checked) {
+                            if (currentPriorities.length < 3) {
+                              newPriorities = [...currentPriorities, priority];
+                            } else {
+                              return; // Don't allow more than 3 selections
+                            }
+                          } else {
+                            newPriorities = currentPriorities.filter(p => p !== priority);
+                          }
+                          handleInputChange('priorities', newPriorities);
                         }}
+                        disabled={!answers?.priorities?.includes(priority) && (answers?.priorities?.length || 0) >= 3}
                         className="form-checkbox h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
                       />
-                      <span className="text-neutral-700">{requirement}</span>
+                      <span className={`text-neutral-700 ${
+                        !answers?.priorities?.includes(priority) && (answers?.priorities?.length || 0) >= 3 
+                          ? 'opacity-50' 
+                          : ''
+                      }`}>
+                        {priority}
+                      </span>
                     </label>
                   ))}
+                  {(answers?.priorities?.length || 0) >= 3 && (
+                    <p className="text-sm text-primary-600 mt-2">
+                      Maximum 3 priorities can be selected
+                    </p>
+                  )}
+                </div>
+
+                {/* Additional Requirements */}
+                <div>
+                  <label className="block text-lg font-medium text-neutral-700 mb-2">
+                    Any specific requirements or constraints? (Optional)
+                  </label>
+                  <textarea
+                    value={answers.additionalRequirements}
+                    onChange={(e) => handleInputChange('additionalRequirements', e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    rows={3}
+                    placeholder="E.g., specific technologies, compliance requirements, or integration needs..."
+                  ></textarea>
                 </div>
               </div>
             )}

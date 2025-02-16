@@ -252,8 +252,21 @@ export default function ProcessingComponent({
                 await new Promise(resolve => setTimeout(resolve, retryDelay));
                 return analyzeData();
               }
-              throw new Error('Received incomplete analysis results after multiple attempts.');
+              throw new Error('Invalid analysis results structure.');
             }
+
+            // Save initial analysis data to localStorage
+            localStorage.setItem('initialAnalysis', JSON.stringify({
+              userDetails,
+              ideaDetails: {
+                ...ideaDetails,
+                transcribedText
+              },
+              questionnaireAnswers
+            }));
+
+            // Save analysis results to localStorage
+            localStorage.setItem('analysisResults', JSON.stringify(responseData));
 
             return responseData;
           } catch (error) {
@@ -267,23 +280,20 @@ export default function ProcessingComponent({
         };
 
         try {
-          const analysisData = await analyzeData();
+          const analysisResults = await analyzeData();
 
-          // Step 3: Complete
+          // Update status to complete
           setStatus({
             step: 'complete',
-            message: 'Analysis complete!',
-            progress: 100,
-            timeRemaining: 0
+            message: 'Analysis complete! Redirecting to results...',
+            progress: 100
           });
 
-          // Store analysis results and navigate
-          localStorage.setItem('analysisResults', JSON.stringify(analysisData));
-          
-          // Add a small delay before navigation to show the completion state
-          setTimeout(() => {
-            router.push('/feature-selection');
-          }, 1000);
+          // Short delay before redirect
+          await new Promise(resolve => setTimeout(resolve, 1500));
+
+          // Navigate to feature selection page
+          router.push('/feature-selection');
 
         } catch (analysisError) {
           console.error('Analysis error:', analysisError);
