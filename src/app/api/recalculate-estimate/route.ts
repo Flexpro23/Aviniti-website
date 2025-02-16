@@ -1,15 +1,22 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
-// Validate API key
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error('GEMINI_API_KEY is not configured in environment variables');
-}
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(request: Request) {
   try {
+    // Validate API key
+    if (!process.env.GEMINI_API_KEY) {
+      console.warn('GEMINI_API_KEY is not configured in environment variables');
+      return NextResponse.json(
+        { 
+          error: 'API configuration error',
+          details: 'Gemini API key is not configured. Please check your environment variables.'
+        },
+        { status: 500 }
+      );
+    }
+
     // Validate request body
     if (!request.body) {
       return NextResponse.json(

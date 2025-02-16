@@ -11,11 +11,10 @@ try {
 
   if (!credentials) {
     console.warn('Google Cloud credentials not found. Speech-to-text functionality will be limited.');
+    speechClient = new SpeechClient();
+  } else {
+    speechClient = new SpeechClient({ credentials });
   }
-
-  speechClient = new SpeechClient({
-    credentials: credentials || undefined,
-  });
 } catch (error) {
   console.error('Error initializing Speech client:', error);
   speechClient = new SpeechClient();
@@ -23,6 +22,17 @@ try {
 
 export async function POST(request: Request) {
   try {
+    // Validate credentials first
+    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      return NextResponse.json(
+        { 
+          error: 'API configuration error',
+          details: 'Google Cloud credentials are not configured. Please check your environment variables.'
+        },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const audioFile = formData.get('audio') as Blob;
 
