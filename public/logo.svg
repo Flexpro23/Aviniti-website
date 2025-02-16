@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Infinity symbol -->
+  <path d="M120 50 C120 30, 140 20, 160 20 C180 20, 200 30, 200 50 C200 70, 180 80, 160 80 C140 80, 120 70, 120 50" 
+        fill="none" 
+        stroke="#1E88E5" 
+        stroke-width="8"/>
+  
+  <!-- Text -->
+  <text x="50" y="65" 
+        font-family="Arial, sans-serif" 
+        font-size="48" 
+        font-weight="bold" 
+        fill="#1E88E5">
+    AVINITI
+  </text>
+  
+  <!-- Tagline -->
+  <text x="50" y="90" 
+        font-family="Arial, sans-serif" 
+        font-size="14" 
+        fill="#4B5563">
+    YOUR IDEAS, OUR REALITY
+  </text>
+</svg> 
