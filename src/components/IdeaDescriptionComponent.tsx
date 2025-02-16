@@ -40,8 +40,20 @@ export default function IdeaDescriptionComponent({
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          channelCount: 1,
+          sampleRate: 48000,
+          echoCancellation: true,
+          noiseSuppression: true,
+        } 
+      });
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 128000
+      });
+      
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -52,7 +64,9 @@ export default function IdeaDescriptionComponent({
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunksRef.current, { 
+          type: 'audio/webm;codecs=opus' 
+        });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
         
@@ -64,11 +78,17 @@ export default function IdeaDescriptionComponent({
         localStorage.setItem('ideaDescription', JSON.stringify(savedData));
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(100); // Start recording with 100ms timeslices
       setIsRecording(true);
+      
+      console.log('Started recording with config:', {
+        mimeType: mediaRecorder.mimeType,
+        state: mediaRecorder.state,
+        audioBitsPerSecond: mediaRecorder.audioBitsPerSecond
+      });
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      alert('Unable to access microphone. Please check your browser permissions.');
+      alert('Unable to access microphone. Please check your browser permissions and ensure your microphone is working properly.');
     }
   };
 

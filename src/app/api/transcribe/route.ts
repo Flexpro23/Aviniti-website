@@ -33,20 +33,28 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log('Received audio file:', {
+      type: audioFile.type,
+      size: audioFile.size,
+    });
+
     // Convert blob to buffer
     const buffer = Buffer.from(await audioFile.arrayBuffer());
 
-    // Configure the request
+    // Configure the request with more flexible audio settings
     const audio = {
       content: buffer.toString('base64'),
     };
     
     const config = {
-      encoding: 'LINEAR16' as const,
-      sampleRateHertz: 16000,
+      encoding: 'WEBM_OPUS' as const, // Changed to match web audio format
+      sampleRateHertz: 48000, // Standard web audio sample rate
       languageCode: 'en-US',
       model: 'default',
       enableAutomaticPunctuation: true,
+      useEnhanced: true, // Enable enhanced model
+      audioChannelCount: 1, // Mono audio
+      enableWordTimeOffsets: false,
     };
 
     const recognizeRequest = {
@@ -55,15 +63,32 @@ export async function POST(request: Request) {
     };
 
     try {
+      console.log('Sending transcription request with config:', {
+        encoding: config.encoding,
+        sampleRate: config.sampleRateHertz,
+        languageCode: config.languageCode,
+      });
+
       // Perform the transcription
       const [response] = await speechClient.recognize(recognizeRequest);
+      
+      console.log('Received response:', {
+        hasResults: !!response.results,
+        resultCount: response.results?.length || 0,
+      });
+
       const transcription = response.results
         ?.map(result => result.alternatives?.[0]?.transcript)
         .join('\n');
 
       if (!transcription) {
+        console.error('No transcription generated from valid response:', response);
         return NextResponse.json(
-          { error: 'Failed to transcribe audio: No transcription generated' },
+          { 
+            error: 'Failed to transcribe audio: No transcription generated',
+            details: 'The audio was processed but no text could be extracted',
+            timestamp: new Date().toISOString()
+          },
           { status: 500 }
         );
       }
@@ -77,10 +102,19 @@ export async function POST(request: Request) {
         ? transcribeError.message 
         : 'Unknown transcription error';
 
+      // Log additional error details if available
+      if (transcribeError instanceof Error && 'details' in transcribeError) {
+        console.error('Error details:', (transcribeError as any).details);
+      }
+
       return NextResponse.json(
         { 
           error: 'Failed to process audio',
           details: errorMessage,
+          audioInfo: {
+            type: audioFile.type,
+            size: audioFile.size,
+          },
           timestamp: new Date().toISOString()
         },
         { status: 500 }
