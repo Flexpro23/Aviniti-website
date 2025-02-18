@@ -170,7 +170,7 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
 export async function GET(
   request: NextRequest,
   { params }: { params: { userId: string } }
-) {
+): Promise<NextResponse> {
   try {
     const userDoc = await adminDb.collection('users').doc(params.userId).get();
     
@@ -198,7 +198,7 @@ export async function GET(
 export async function POST(
   request: NextRequest,
   { params }: { params: { userId: string } }
-) {
+): Promise<NextResponse> {
   try {
     console.log('Starting report generation for userId:', params.userId);
     
