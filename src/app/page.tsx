@@ -2,21 +2,22 @@
 import Image from 'next/image';
 import Navbar from '../components/Navbar';
 import ContactSection from '../components/ContactSection';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ContactPopup from '../components/ContactPopup';
 import UserInfoForm from '../components/UserInfoForm';
 import AppDescriptionForm from '../components/AppDescriptionForm';
-
-interface UserInfo {
-  fullName: string;
-  emailAddress: string;
-  phoneNumber: string;
-  companyName: string;
-}
+import { PersonalDetails } from '../lib/firebase-utils';
 
 interface AppDetails {
   description: string;
-  answers: string[];
+  answers: {
+    problem: string[];
+    targetAudience: string[];
+    keyFeatures: string[];
+    competitors: string;
+    platforms: string[];
+    integrations: string[];
+  };
 }
 
 export default function Home() {
@@ -24,18 +25,28 @@ export default function Home() {
   const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
   const [isAppDescriptionOpen, setIsAppDescriptionOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const handleUserInfoSubmit = (userInfo: UserInfo, newUserId: string) => {
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleUserInfoSubmit = (userInfo: PersonalDetails, newUserId: string) => {
     setUserId(newUserId);
     setIsUserInfoOpen(false);
     setIsAppDescriptionOpen(true);
   };
 
-  const handleAppDescriptionSubmit = (appDetails: AppDetails) => {
+  const handleAppDescriptionSubmit = (details: AppDetails) => {
     setIsAppDescriptionOpen(false);
     // Here we'll handle the AI analysis later
-    console.log('App details submitted:', appDetails);
+    console.log('App details submitted:', details);
   };
+
+  // Only render the full content after mounting on the client
+  if (!isMounted) {
+    return null; // or a loading spinner
+  }
 
   return (
     <main className="min-h-screen">
