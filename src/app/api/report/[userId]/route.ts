@@ -168,7 +168,7 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
 }
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   context: { params: { userId: string } }
 ) {
   try {
@@ -196,7 +196,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: NextRequest,
+  request: Request,
   context: { params: { userId: string } }
 ) {
   try {
