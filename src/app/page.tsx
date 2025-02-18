@@ -4,79 +4,37 @@ import Navbar from '../components/Navbar';
 import ContactSection from '../components/ContactSection';
 import { useState } from 'react';
 import ContactPopup from '../components/ContactPopup';
-import EstimateComponent from '../components/EstimateComponent';
-import IdeaDescriptionComponent from '../components/IdeaDescriptionComponent';
-import QuestionnaireComponent from '../components/QuestionnaireComponent';
-import ProcessingComponent from '../components/ProcessingComponent';
+import UserInfoForm from '../components/UserInfoForm';
+import AppDescriptionForm from '../components/AppDescriptionForm';
 
-interface UserDetails {
+interface UserInfo {
   fullName: string;
+  emailAddress: string;
   phoneNumber: string;
   companyName: string;
-  emailAddress: string;
 }
 
-interface IdeaDetails {
+interface AppDetails {
   description: string;
-  audioUrl: string | null;
-}
-
-interface QuestionnaireAnswers {
-  targetAudience: string[];
-  platformType: string;
-  developmentTimeline: string;
-  budget: string;
-  keyFeatures: string[];
-  monetizationStrategy: string[];
-  competitorNames: string;
-  securityRequirements: string[];
-  scalabilityNeeds: string;
-  integrationRequirements: string[];
-  customization: string;
-  maintenanceSupport: string[];
+  answers: string[];
 }
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isEstimateOpen, setIsEstimateOpen] = useState(false);
-  const [isIdeaDescriptionOpen, setIsIdeaDescriptionOpen] = useState(false);
-  const [isQuestionnaireOpen, setIsQuestionnaireOpen] = useState(false);
-  const [isProcessingOpen, setIsProcessingOpen] = useState(false);
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [ideaDetails, setIdeaDetails] = useState<IdeaDetails | null>(null);
-  const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswers | null>(null);
+  const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
+  const [isAppDescriptionOpen, setIsAppDescriptionOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const handleEstimateContinue = (details: UserDetails) => {
-    setUserDetails(details);
-    setIsEstimateOpen(false);
-    setIsIdeaDescriptionOpen(true);
+  const handleUserInfoSubmit = (userInfo: UserInfo, newUserId: string) => {
+    setUserId(newUserId);
+    setIsUserInfoOpen(false);
+    setIsAppDescriptionOpen(true);
   };
 
-  const handleIdeaDescriptionBack = () => {
-    setIsIdeaDescriptionOpen(false);
-    setIsEstimateOpen(true);
-  };
-
-  const handleIdeaDescriptionContinue = (details: IdeaDetails) => {
-    setIdeaDetails(details);
-    setIsIdeaDescriptionOpen(false);
-    setIsQuestionnaireOpen(true);
-  };
-
-  const handleQuestionnaireBack = () => {
-    setIsQuestionnaireOpen(false);
-    setIsIdeaDescriptionOpen(true);
-  };
-
-  const handleQuestionnaireContinue = (answers: QuestionnaireAnswers) => {
-    setQuestionnaireAnswers(answers);
-    setIsQuestionnaireOpen(false);
-    setIsProcessingOpen(true);
-  };
-
-  const handleProcessingBack = () => {
-    setIsProcessingOpen(false);
-    setIsQuestionnaireOpen(true);
+  const handleAppDescriptionSubmit = (appDetails: AppDetails) => {
+    setIsAppDescriptionOpen(false);
+    // Here we'll handle the AI analysis later
+    console.log('App details submitted:', appDetails);
   };
 
   return (
@@ -84,29 +42,21 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20">
-        {/* Enhanced Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
-          {/* Improved Network Background */}
-          <div className="absolute inset-0 opacity-10" style={{ 
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px'
-          }}></div>
-          {/* Added subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-primary-900/50 to-transparent"></div>
-        </div>
-
-        <div className="relative container mx-auto px-4 py-16 md:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <div className="text-center lg:text-left">
-              <h1 className="text-4xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 leading-tight">
+      <section className="relative bg-primary-900 text-white pt-32 pb-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            <div className="lg:col-span-7">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
                 Transform Your Vision
-                <span className="text-secondary-400 block mt-2">With AI-Powered Apps</span>
-                <span className="text-2xl lg:text-3xl text-gray-300 block mt-4">From Innovative Concept to Enterprise Scale</span>
+                <span className="block text-secondary-400 mt-2">With AI-Powered Apps</span>
               </h1>
-              <p className="text-xl text-gray-200 mb-10 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl text-gray-300 mb-8">
+                From Innovative Concept to Enterprise Scale
+              </p>
+              <p className="text-gray-300 mb-12">
                 Leverage our expertise in AI, mobile development, and cloud solutions to build innovative applications that drive real business growth and user engagement.
               </p>
+              
               <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
                 <div className="flex flex-col items-center sm:items-start">
                   <a href="#contact" className="btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
@@ -128,95 +78,132 @@ export default function Home() {
                 </div>
               </div>
               
-              {/* New AI Estimate Button */}
-              <div className="mt-8 flex justify-center lg:justify-start">
-                <div className="flex flex-col items-center sm:items-start">
-                  <button
-                    onClick={() => setIsEstimateOpen(true)}
-                    className="btn-primary text-xl px-10 py-5 bg-gradient-to-r from-secondary-400 to-secondary-500 hover:from-secondary-500 hover:to-secondary-600 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
-                  >
-                    Get Instant AI Estimate
-                    <svg className="ml-3 w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </button>
-                  <span className="text-gray-300 text-sm mt-2">Get an instant project estimate powered by AI</span>
-                </div>
-              </div>
-
-              <div className="trusted-by-section mt-20">
-                <p className="text-gray-300 mb-8 text-xl font-medium">Trusted by Industry Leaders</p>
-                <div className="company-logos grid grid-cols-2 md:grid-cols-4 gap-10">
-                  {[
-                    { 
-                      name: 'TechFlow Solutions',
-                      logo: '/company-logos/techflow.svg',
-                      testimonial: "Transformed our workflow efficiency by 200%",
-                      industry: 'Enterprise Software'
-                    },
-                    {
-                      name: 'HealthTech Innovations',
-                      logo: '/company-logos/healthtech.svg',
-                      testimonial: "Revolutionary AI-powered patient care system",
-                      industry: 'Healthcare Technology'
-                    },
-                    {
-                      name: 'SmartFinance AI',
-                      logo: '/company-logos/smartfinance.svg',
-                      testimonial: "Reduced processing time by 80%",
-                      industry: 'FinTech'
-                    },
-                    {
-                      name: 'EduTech Global',
-                      logo: '/company-logos/edutech.svg',
-                      testimonial: "Seamless integration of AI learning tools",
-                      industry: 'Education Technology'
-                    }
-                  ].map((company, i) => (
-                    <div key={i} className="glass rounded-xl p-6 flex flex-col items-center justify-center group hover:bg-white/20 transition-all duration-300">
-                      <div className="w-20 h-20 mb-4 bg-white/10 rounded-lg flex items-center justify-center">
-                        <svg className="w-12 h-12 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                        </svg>
-                      </div>
-                      <span className="text-white font-medium text-base group-hover:scale-105 transition-transform">
-                        {company.name}
-                      </span>
-                      <span className="text-white/80 text-sm mt-2 text-center">
-                        {company.testimonial}
-                      </span>
-                      <span className="text-white/60 text-xs mt-1">
-                        {company.industry}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+              {/* AI Estimate Button */}
+              <div className="flex flex-col items-center sm:items-start mt-6">
+                <button
+                  onClick={() => setIsUserInfoOpen(true)}
+                  className="btn-primary text-xl px-10 py-5 bg-gradient-to-r from-secondary-400 to-secondary-500 hover:from-secondary-500 hover:to-secondary-600 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
+                >
+                  Get Instant AI Estimate
+                  <svg className="ml-3 w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </button>
+                <span className="text-gray-300 text-sm mt-2">Get an instant project estimate powered by AI</span>
               </div>
             </div>
 
-            <div className="relative lg:ml-12">
-              <div className="relative z-10 animate-float">
-                <div className="relative w-full max-w-lg mx-auto">
-                  {/* Enhanced blob animations */}
+            <div className="relative lg:ml-12 -mt-20">
+              {/* Enhanced blob animations - moved to match red circle area */}
+              <div className="absolute top-1/2 right-0 transform translate-x-1/4 -translate-y-1/2">
+                <div className="relative w-[400px] h-[400px]">
                   <div className="absolute top-0 -left-4 w-72 h-72 bg-secondary-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
                   <div className="absolute top-0 -right-4 w-72 h-72 bg-primary-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
                   <div className="absolute -bottom-8 left-20 w-72 h-72 bg-secondary-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-                  <div className="relative">
-                    <Image
-                      src="/hero-illustration.svg"
-                      alt="AI and Mobile App Development"
-                      width={600}
-                      height={600}
-                      className="w-full h-auto filter drop-shadow-2xl"
-                      priority
-                    />
-                  </div>
+                </div>
+              </div>
+              <div className="relative z-10">
+                <div className="relative w-full max-w-lg mx-auto">
+                  <Image
+                    src="/hero-illustration.svg"
+                    alt="AI and Mobile App Development"
+                    width={600}
+                    height={600}
+                    className="w-full h-auto filter drop-shadow-2xl"
+                    priority
+                  />
                 </div>
               </div>
               {/* Enhanced decorative elements */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full border border-white/20 animate-spin-slow"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] rounded-full border border-white/10 animate-spin-slow-reverse"></div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted Apps Section */}
+      <section className="bg-primary-900 py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">Trusted By</h2>
+            <p className="text-xl text-white/70">Innovative solutions powering modern businesses</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {[
+              { 
+                name: 'Flex Pro',
+                logo: '/company-logos/flex-pro.png',
+                description: "A comprehensive package delivery system streamlining operations for sellers, drivers, and administrators.",
+                industry: 'Logistics & Delivery'
+              },
+              {
+                name: 'Secrtary',
+                logo: '/company-logos/secrtary.png',
+                description: "An office management system simplifying appointment booking and client management for various businesses.",
+                industry: 'Business Management & Productivity'
+              },
+              {
+                name: 'Farm House',
+                logo: '/company-logos/farm-house.png',
+                description: "An Airbnb-style platform connecting users with unique farm stays and experiences.",
+                industry: 'Travel & Hospitality'
+              },
+              {
+                name: 'Let\'s Play',
+                logo: '/company-logos/lets-play.png',
+                description: "An app connecting sports enthusiasts to book courts, create games, and find players.",
+                industry: 'Sports & Recreation'
+              },
+              {
+                name: 'Nay Nursery',
+                logo: '/company-logos/nay-nursery.png',
+                description: "A nursery management system empowering parents to stay connected with their child's daily activities and progress.",
+                industry: 'Education & Childcare'
+              },
+              {
+                name: 'Wear & Share',
+                logo: '/company-logos/wear-share.png',
+                description: "A clothing marketplace connecting users to buy and sell pre-owned fashion items, promoting sustainable style.",
+                industry: 'Fashion & Retail'
+              },
+              {
+                name: 'Skinverse',
+                logo: '/company-logos/skinverse.png',
+                description: "An AI-powered skincare app delivering personalized skin reports and product recommendations based on facial analysis.",
+                industry: 'Beauty & Wellness'
+              }
+            ].map((app, index) => (
+              <div key={index} className="group relative bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300">
+                <div className="flex flex-col h-full">
+                  <div className="mb-6">
+                    <div className="w-24 h-24 bg-white/10 rounded-xl p-4 mb-4">
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={app.logo}
+                          alt={app.name}
+                          fill
+                          className="object-cover rounded-xl"
+                          sizes="(max-width: 768px) 96px, 96px"
+                          priority={index < 4}
+                        />
+                      </div>
+                    </div>
+                    <h3 className="text-white text-xl font-semibold mb-2">
+                      {app.name}
+                    </h3>
+                    <p className="text-white/60 text-sm font-medium">
+                      {app.industry}
+                    </p>
+                  </div>
+                  <p className="text-white/80 text-base leading-relaxed">
+                    {app.description}
+                  </p>
+                </div>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -402,34 +389,20 @@ export default function Home() {
         onClose={() => setIsContactOpen(false)}
       />
 
-      <EstimateComponent
-        isOpen={isEstimateOpen}
-        onClose={() => setIsEstimateOpen(false)}
-        onContinue={handleEstimateContinue}
+      <UserInfoForm
+        isOpen={isUserInfoOpen}
+        onClose={() => setIsUserInfoOpen(false)}
+        onContinue={handleUserInfoSubmit}
       />
 
-      <IdeaDescriptionComponent
-        isOpen={isIdeaDescriptionOpen}
-        onClose={() => setIsIdeaDescriptionOpen(false)}
-        onBack={handleIdeaDescriptionBack}
-        onContinue={handleIdeaDescriptionContinue}
-      />
-
-      <QuestionnaireComponent
-        isOpen={isQuestionnaireOpen}
-        onClose={() => setIsQuestionnaireOpen(false)}
-        onBack={handleQuestionnaireBack}
-        onContinue={handleQuestionnaireContinue}
-      />
-
-      <ProcessingComponent
-        isOpen={isProcessingOpen}
-        onClose={() => setIsProcessingOpen(false)}
-        onBack={handleProcessingBack}
-        userDetails={userDetails!}
-        ideaDetails={ideaDetails!}
-        questionnaireAnswers={questionnaireAnswers!}
-      />
+      {userId && (
+        <AppDescriptionForm
+          isOpen={isAppDescriptionOpen}
+          onClose={() => setIsAppDescriptionOpen(false)}
+          userId={userId}
+          onAnalyze={handleAppDescriptionSubmit}
+        />
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">

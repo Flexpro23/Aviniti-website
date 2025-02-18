@@ -142,11 +142,11 @@
     opacity: 0.7;
   }
   33% {
-    transform: translate(30px, -50px) scale(1.1);
-    opacity: 0.8;
+    transform: translate(30px, -50px) scale(1.2);
+    opacity: 0.9;
   }
   66% {
-    transform: translate(-20px, 20px) scale(0.9);
+    transform: translate(-20px, 20px) scale(0.8);
     opacity: 0.6;
   }
   100% {
@@ -171,7 +171,7 @@
 }
 
 .animate-blob {
-  animation: blob 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  animation: blob 7s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animation-delay-2000 {
@@ -221,6 +221,52 @@
   @apply bg-white/10 backdrop-blur-md border border-white/20
          shadow-lg hover:shadow-xl transition-all duration-300
          hover:bg-white/15;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Image Container Styles */
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.image-container img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Card Content */
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Text Truncation */
+.truncate-2-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Hover Effects */
@@ -250,4 +296,53 @@
 /* Selection Color */
 ::selection {
   @apply bg-primary-200 text-primary-900;
+}
+
+/* Aspect Ratio */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* Logo Container */
+.logo-container {
+  @apply relative w-full h-full flex items-center justify-center;
+  min-height: 64px;
+}
+
+.logo-container img {
+  @apply object-contain max-w-full max-h-full;
+}
+
+/* App Card Styles */
+.app-card {
+  @apply transition-all duration-300;
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.app-card:hover {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.app-card .line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Trusted Apps Section */
+.trusted-apps-section {
+  position: relative;
+  z-index: 1;
+}
+
+.trusted-apps-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(30, 58, 138, 0.3), rgba(30, 58, 138, 0.1));
+  backdrop-filter: blur(20px);
+  z-index: -1;
 } 
