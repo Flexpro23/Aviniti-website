@@ -169,17 +169,17 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: { userId: string } }
 ) {
   try {
-    const userDoc = await adminDb.collection('users').doc(params.userId).get();
+    const userDoc = await adminDb.collection('users').doc(context.params.userId).get();
     
     if (!userDoc.exists) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const userData = userDoc.data();
-    const reportDoc = await adminDb.collection('reports').doc(params.userId).get();
+    const reportDoc = await adminDb.collection('reports').doc(context.params.userId).get();
     
     if (!reportDoc.exists) {
       return NextResponse.json({ error: 'Report not found' }, { status: 404 });
@@ -197,10 +197,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: { userId: string } }
 ) {
   try {
-    console.log('Starting report generation for userId:', params.userId);
+    console.log('Starting report generation for userId:', context.params.userId);
     
     // Parse the request body
     const body = await request.json();
@@ -213,7 +213,7 @@ export async function POST(
     }
 
     console.log('Fetching user document...');
-    const userDoc = await adminDb.collection('users').doc(params.userId).get();
+    const userDoc = await adminDb.collection('users').doc(context.params.userId).get();
     
     if (!userDoc.exists) {
       console.error('User document not found');
@@ -302,7 +302,7 @@ export async function POST(
         throw new Error('Storage bucket not configured');
       }
 
-      const fileName = `reports/${params.userId}/${new Date().getTime()}.pdf`;
+      const fileName = `reports/${context.params.userId}/${new Date().getTime()}.pdf`;
       const file = bucket.file(fileName);
       
       await file.save(pdfBuffer, {
@@ -327,11 +327,11 @@ export async function POST(
 
     console.log('Saving report to Firestore...');
     // Save report data to Firestore
-    await adminDb.collection('reports').doc(params.userId).set(reportData);
+    await adminDb.collection('reports').doc(context.params.userId).set(reportData);
 
     console.log('Updating user document...');
     // Update user document with report URL
-    await adminDb.collection('users').doc(params.userId).update({
+    await adminDb.collection('users').doc(context.params.userId).update({
       reportURL: reportUrl,
       status: 'report_generated',
       updatedAt: new Date().toISOString(),
