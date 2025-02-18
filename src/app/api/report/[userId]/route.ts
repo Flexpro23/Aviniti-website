@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminStorage } from '../../../../lib/firebase-admin';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
@@ -168,7 +168,7 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { userId: string } }
 ) {
   try {
@@ -196,7 +196,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { userId: string } }
 ) {
   try {
