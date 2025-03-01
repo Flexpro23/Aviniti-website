@@ -7,6 +7,14 @@ import ContactPopup from '../components/ContactPopup';
 import UserInfoForm from '../components/UserInfoForm';
 import AppDescriptionForm from '../components/AppDescriptionForm';
 import { PersonalDetails } from '../lib/firebase-utils';
+import { useLanguage } from '@/lib/context/LanguageContext';
+import Hero from '@/components/Hero';
+import Projects from '@/components/Projects';
+import Services from '@/components/Services';
+import Expertise from '@/components/Expertise';
+import About from '@/components/About';
+import Contact from '@/components/Contact';
+import Footer from '@/components/Footer';
 
 interface AppDetails {
   description: string;
@@ -26,6 +34,7 @@ export default function Home() {
   const [isAppDescriptionOpen, setIsAppDescriptionOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const { dir } = useLanguage();
 
   useEffect(() => {
     setIsMounted(true);
@@ -49,8 +58,15 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main dir={dir} className="min-h-screen">
       <Navbar />
+      <Hero />
+      <Projects />
+      <Services />
+      <Expertise />
+      <About />
+      <Contact />
+      <Footer />
       
       {/* Hero Section */}
       <section className="relative bg-primary-900 text-white pt-20 md:pt-32 pb-16 md:pb-20 overflow-hidden">

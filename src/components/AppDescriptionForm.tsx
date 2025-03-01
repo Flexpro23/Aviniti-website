@@ -550,45 +550,34 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="btn-secondary px-6 py-3 flex items-center text-neutral-700 hover:text-neutral-900 transition-colors duration-300"
+                    className="btn-secondary btn-wizard flex items-center text-neutral-700 hover:text-neutral-900 transition-colors duration-300"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                     Back
                   </button>
                   <button
                     type="submit"
-                    className={`btn-primary px-8 py-3 flex items-center ${
+                    className={`btn-primary btn-wizard flex items-center ${
                       isSubmitting ? 'opacity-50 cursor-not-allowed' : 'transform hover:scale-105 transition-transform duration-300'
                     }`}
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
                       <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        {isAnalyzing ? 'Analyzing...' : 'Processing...'}
+                        Generating...
                       </span>
                     ) : (
                       <>
-                        {currentStep === totalSteps ? (
-                          <>
-                            Analyze with AI
-                            <svg className="ml-2 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                          </>
-                        ) : (
-                          <>
-                            Continue
-                            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                          </>
-                        )}
+                        Generate Report
+                        <svg className="ml-2 w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
                       </>
                     )}
                   </button>

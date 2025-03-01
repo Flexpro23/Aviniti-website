@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '@/lib/context/LanguageContext';
 
 interface NavLinksProps {
   isScrolled: boolean;
@@ -6,47 +7,34 @@ interface NavLinksProps {
 }
 
 export default function NavLinks({ isScrolled, onContactClick }: NavLinksProps) {
+  const { t, dir } = useLanguage();
+
+  const linkClasses = `font-medium text-base transition-colors ${
+    isScrolled 
+      ? 'text-primary-900 hover:text-primary-600' 
+      : 'text-white hover:text-blue-200'
+  }`;
+
   return (
-    <div className="hidden md:flex items-center space-x-8">
-      <a 
-        href="/"
-        className={`font-medium text-base transition-colors ${
-          isScrolled 
-            ? 'text-gray-700 hover:text-blue-600' 
-            : 'text-white hover:text-blue-200'
-        }`}
-      >
-        Home
+    <div className={`hidden md:flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-8`}>
+      <a href="/" className={linkClasses}>
+        {t.navigation.home}
       </a>
-      <a 
-        href="#services"
-        className={`font-medium text-base transition-colors ${
-          isScrolled 
-            ? 'text-gray-700 hover:text-blue-600' 
-            : 'text-white hover:text-blue-200'
-        }`}
-      >
-        Services
+      <a href="#services" className={linkClasses}>
+        {t.navigation.services}
       </a>
-      <a 
-        href="#about"
-        className={`font-medium text-base transition-colors ${
-          isScrolled 
-            ? 'text-gray-700 hover:text-blue-600' 
-            : 'text-white hover:text-blue-200'
-        }`}
-      >
-        About
+      <a href="#about" className={linkClasses}>
+        {t.navigation.about}
       </a>
       <button 
         onClick={onContactClick}
         className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 ${
           isScrolled
-            ? 'text-gray-700 hover:text-blue-600'
+            ? 'text-primary-900 hover:text-primary-600'
             : 'text-white hover:text-blue-200'
         }`}
       >
-        Contact Us
+        {t.navigation.contact}
       </button>
     </div>
   );

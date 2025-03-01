@@ -121,22 +121,22 @@ export default function AIAnalysisResults({
             <button
               type="button"
               onClick={onClose}
-              className="btn-secondary px-6 py-3 flex items-center text-neutral-700 hover:text-neutral-900 transition-colors duration-300"
+              className="btn-secondary btn-wizard flex items-center text-neutral-700 hover:text-neutral-900 transition-colors duration-300"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Back
             </button>
             <button
               onClick={onContinue}
-              className={`btn-primary px-8 py-3 flex items-center ${
+              className={`btn-primary btn-wizard flex items-center ${
                 isLoading ? 'opacity-50 cursor-not-allowed' : 'transform hover:scale-105 transition-transform duration-300'
               }`}
               disabled={isLoading}
             >
-              Continue to Feature Selection
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Continue
+              <svg className="ml-2 w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>

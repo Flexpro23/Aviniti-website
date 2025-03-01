@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* RTL Support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .space-x-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Language Switcher */
+.language-switcher {
+  position: relative;
+  z-index: 50;
+}
+
+/* Ensure consistent font sizes in both languages */
+html[lang="ar"] {
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Adjust spacing for Arabic text */
+html[lang="ar"] .text-base {
+  letter-spacing: 0;
+}
+
+/* Fix button padding for RTL */
+[dir="rtl"] button {
+  unicode-bidi: plaintext;
+}
+
+/* Ensure SVG icons maintain correct orientation */
+[dir="rtl"] svg {
+  transform: scaleX(-1);
+}
+
+/* Keep certain elements LTR even in RTL mode */
+.keep-ltr {
+  direction: ltr !important;
+}
+
+/* Adjust mobile menu for RTL */
+[dir="rtl"] .md\:hidden {
+  right: auto;
+  left: 0;
+}
+
 :root {
   /* Primary Colors - Blue */
   --primary-50: #EFF6FF;
@@ -80,6 +134,10 @@
            shadow-xl hover:shadow-2xl hover:scale-105
            bg-gradient-to-r from-secondary-400 to-secondary-500 
            hover:from-secondary-500 hover:to-secondary-600;
+  }
+
+  .btn-wizard {
+    @apply px-4 py-2 text-sm sm:px-6 sm:py-3 sm:text-base;
   }
 
   .btn-secondary {

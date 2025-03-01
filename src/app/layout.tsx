@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { LanguageProvider } from '@/lib/context/LanguageContext'
 
 export const metadata: Metadata = {
   title: 'Aviniti - Your Ideas, Our Reality',
@@ -12,8 +13,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html suppressHydrationWarning>
+      <body className="antialiased">
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   )
 } 
