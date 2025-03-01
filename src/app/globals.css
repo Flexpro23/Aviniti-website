@@ -56,6 +56,23 @@ html[lang="ar"] .text-base {
   left: 0;
 }
 
+/* Section transitions - add smooth color transitions between sections */
+.section-transition {
+  position: relative;
+  z-index: 10;
+}
+
+.section-transition::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, rgba(30, 64, 175, 0), rgba(249, 250, 251, 1));
+  z-index: 5;
+}
+
 :root {
   /* Primary Colors - Blue */
   --primary-50: #EFF6FF;
