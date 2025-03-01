@@ -199,14 +199,19 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
                       <div className="relative w-full h-full flex items-center justify-center">
                         {/* App Logo */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="relative w-32 h-32">
-                            <Image
-                              src={screen.src}
-                              alt={screen.alt}
-                              fill
-                              className="object-contain"
-                              sizes="128px"
-                            />
+                          <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white/20 p-2 shadow-inner">
+                            <div className="absolute inset-0 rounded-full overflow-hidden bg-white flex items-center justify-center">
+                              <Image
+                                src={screen.src}
+                                alt={screen.alt}
+                                fill
+                                className="object-contain p-2 rounded-full"
+                                sizes="128px"
+                              />
+                            </div>
+                            
+                            {/* Subtle glow effect */}
+                            <div className="absolute -inset-0.5 rounded-full opacity-30 blur-sm"></div>
                           </div>
                         </div>
                         

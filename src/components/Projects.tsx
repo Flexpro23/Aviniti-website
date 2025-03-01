@@ -15,7 +15,7 @@ export default function Projects() {
     {
       key: 'flexPro',
       image: '/company-logos/flex-pro.png',
-      category: 'web' as ProjectCategory,
+      categories: ['mobile', 'web'] as ProjectCategory[],
       data: t.projects.flexPro,
       iosUrl: 'https://apps.apple.com/jo/app/flex-pro-drive/id6471506551',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.flexdrive&hl=en'
@@ -23,7 +23,7 @@ export default function Projects() {
     {
       key: 'secretary',
       image: '/company-logos/secrtary.png',
-      category: 'ai' as ProjectCategory,
+      categories: ['mobile'] as ProjectCategory[],
       data: t.projects.secretary,
       iosUrl: 'https://apps.apple.com/jo/app/secrtary/id6481658380',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.secrtary&hl=en'
@@ -31,7 +31,7 @@ export default function Projects() {
     {
       key: 'farmHouse',
       image: '/company-logos/farm-house.png',
-      category: 'mobile' as ProjectCategory,
+      categories: ['mobile', 'web'] as ProjectCategory[],
       data: t.projects.farmHouse,
       iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.restyle&hl=en'
@@ -39,7 +39,7 @@ export default function Projects() {
     {
       key: 'letsPlay',
       image: '/company-logos/lets-play.png',
-      category: 'web' as ProjectCategory,
+      categories: ['mobile'] as ProjectCategory[],
       data: t.projects.letsPlay,
       iosUrl: 'https://apps.apple.com/app/id6670760296',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.letsplaytogetherr&pcampaignid=web_share'
@@ -47,7 +47,7 @@ export default function Projects() {
     {
       key: 'nayNursery',
       image: '/company-logos/nay-nursery.png',
-      category: 'web' as ProjectCategory,
+      categories: ['mobile', 'web', 'ai'] as ProjectCategory[],
       data: t.projects.nayNursery,
       iosUrl: 'https://apps.apple.com/jo/app/nay-nursery/id6670321985',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.naynursery&hl=en'
@@ -55,7 +55,7 @@ export default function Projects() {
     {
       key: 'wearShare',
       image: '/company-logos/wear-share.png',
-      category: 'mobile' as ProjectCategory,
+      categories: ['mobile', 'ai'] as ProjectCategory[],
       data: t.projects.wearShare,
       iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.restyle&hl=en'
@@ -63,7 +63,7 @@ export default function Projects() {
     {
       key: 'skinverse',
       image: '/company-logos/skinverse.png',
-      category: 'ai' as ProjectCategory,
+      categories: ['mobile', 'web', 'ai'] as ProjectCategory[],
       data: t.projects.skinverse,
       iosUrl: 'https://apps.apple.com/jo/app/skinverse/id6502641700',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.singlevendorapp&hl=en'
@@ -79,7 +79,7 @@ export default function Projects() {
 
   const filteredProjects = activeCategory === 'all' 
     ? projects 
-    : projects.filter(project => project.category === activeCategory);
+    : projects.filter(project => project.categories.includes(activeCategory));
 
   return (
     <section className="py-16 sm:py-20 bg-gray-50 section-transition">
@@ -138,17 +138,19 @@ export default function Projects() {
                     {project.data.title}
                   </h3>
                   
-                  {/* Category Badge - Positioned at top for more prominence */}
-                  <div className="flex justify-center mb-4">
-                    <span className={`text-xs sm:text-sm px-4 py-1.5 ${
-                      project.category === 'web' ? 'bg-blue-100 text-blue-700' :
-                      project.category === 'mobile' ? 'bg-green-100 text-green-700' :
-                      'bg-purple-100 text-purple-700'
-                    } rounded-full font-medium`}>
-                      {project.category === 'web' ? t.projects.categories.web :
-                      project.category === 'mobile' ? t.projects.categories.mobile :
-                      project.category === 'ai' ? t.projects.categories.ai : ''}
-                    </span>
+                  {/* Category Badges - Multiple categories displayed as badges */}
+                  <div className="flex flex-wrap justify-center gap-2 mb-4">
+                    {project.categories.map((category, index) => (
+                      <span key={index} className={`text-xs sm:text-sm px-3 py-1 ${
+                        category === 'web' ? 'bg-blue-100 text-blue-700' :
+                        category === 'mobile' ? 'bg-green-100 text-green-700' :
+                        'bg-purple-100 text-purple-700'
+                      } rounded-full font-medium`}>
+                        {category === 'web' ? t.projects.categories.web :
+                        category === 'mobile' ? t.projects.categories.mobile :
+                        category === 'ai' ? t.projects.categories.ai : ''}
+                      </span>
+                    ))}
                   </div>
                   
                   <p className="text-sm sm:text-base text-gray-600 mb-6 line-clamp-3">
