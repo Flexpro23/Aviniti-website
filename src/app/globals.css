@@ -83,6 +83,41 @@ html[lang="ar"] .text-base {
   }
 }
 
+@keyframes float-delayed {
+  0%, 100% { 
+    transform: translateY(0px) rotate(6deg); 
+  }
+  50% { 
+    transform: translateY(-10px) rotate(8deg); 
+  }
+}
+
+@keyframes float-delayed-2 {
+  0%, 100% { 
+    transform: translateY(0px) rotate(-6deg); 
+  }
+  50% { 
+    transform: translateY(-12px) rotate(-8deg); 
+  }
+}
+
+@keyframes float-particle {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.4;
+  }
+  25% {
+    opacity: 0.1;
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.6;
+  }
+  75% {
+    opacity: 0.3;
+  }
+}
+
 @keyframes screen-fade {
   0%, 20% {
     opacity: 1;
@@ -106,12 +141,39 @@ html[lang="ar"] .text-base {
   }
 }
 
+@keyframes pulse-soft {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
 .animate-float {
   animation: float-phone 6s ease-in-out infinite;
 }
 
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite;
+}
+
+.animate-float-delayed-2 {
+  animation: float-delayed-2 8s ease-in-out infinite;
+}
+
+.animate-float-particle {
+  animation: float-particle 10s ease-in-out infinite;
+}
+
 .animate-pulse {
   animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 6s ease-in-out infinite;
 }
 
 /* Phone Frame Hover Effect */

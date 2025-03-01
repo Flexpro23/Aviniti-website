@@ -3,6 +3,7 @@
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useState } from 'react';
+import AppStoreLinks from './AppStoreLinks';
 
 type ProjectCategory = 'all' | 'web' | 'mobile' | 'ai';
 
@@ -15,43 +16,57 @@ export default function Projects() {
       key: 'flexPro',
       image: '/company-logos/flex-pro.png',
       category: 'web' as ProjectCategory,
-      data: t.projects.flexPro
+      data: t.projects.flexPro,
+      iosUrl: 'https://apps.apple.com/jo/app/flex-pro-drive/id6471506551',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.flexdrive&hl=en'
     },
     {
       key: 'secretary',
       image: '/company-logos/secrtary.png',
       category: 'ai' as ProjectCategory,
-      data: t.projects.secretary
+      data: t.projects.secretary,
+      iosUrl: 'https://apps.apple.com/jo/app/secrtary/id6481658380',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.secrtary&hl=en'
     },
     {
       key: 'farmHouse',
       image: '/company-logos/farm-house.png',
       category: 'mobile' as ProjectCategory,
-      data: t.projects.farmHouse
+      data: t.projects.farmHouse,
+      iosUrl: '',
+      androidUrl: ''
     },
     {
       key: 'letsPlay',
       image: '/company-logos/lets-play.png',
       category: 'web' as ProjectCategory,
-      data: t.projects.letsPlay
+      data: t.projects.letsPlay,
+      iosUrl: 'https://apps.apple.com/app/id6670760296',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.letsplaytogetherr&pcampaignid=web_share'
     },
     {
       key: 'nayNursery',
       image: '/company-logos/nay-nursery.png',
       category: 'web' as ProjectCategory,
-      data: t.projects.nayNursery
+      data: t.projects.nayNursery,
+      iosUrl: 'https://apps.apple.com/jo/app/nay-nursery/id6670321985',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.naynursery&hl=en'
     },
     {
       key: 'wearShare',
       image: '/company-logos/wear-share.png',
       category: 'mobile' as ProjectCategory,
-      data: t.projects.wearShare
+      data: t.projects.wearShare,
+      iosUrl: '',
+      androidUrl: ''
     },
     {
       key: 'skinverse',
       image: '/company-logos/skinverse.png',
       category: 'ai' as ProjectCategory,
-      data: t.projects.skinverse
+      data: t.projects.skinverse,
+      iosUrl: 'https://apps.apple.com/jo/app/skinverse/id6502641700',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.singlevendorapp&hl=en'
     }
   ];
 
@@ -116,12 +131,21 @@ export default function Projects() {
                 <p className="text-sm sm:text-base text-gray-600 mb-4">
                   {project.data.description}
                 </p>
-                <div className={`flex items-center ${dir === 'rtl' ? 'justify-start' : 'justify-end'}`}>
-                  <span className="text-xs sm:text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
-                    {project.category === 'web' ? t.projects.categories.web :
-                     project.category === 'mobile' ? t.projects.categories.mobile :
-                     project.category === 'ai' ? t.projects.categories.ai : ''}
-                  </span>
+                <div className="flex flex-col gap-4">
+                  <div className={`flex items-center ${dir === 'rtl' ? 'justify-start' : 'justify-end'}`}>
+                    <span className="text-xs sm:text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
+                      {project.category === 'web' ? t.projects.categories.web :
+                      project.category === 'mobile' ? t.projects.categories.mobile :
+                      project.category === 'ai' ? t.projects.categories.ai : ''}
+                    </span>
+                  </div>
+                  
+                  {/* App Store Links */}
+                  <AppStoreLinks 
+                    iosUrl={project.iosUrl} 
+                    androidUrl={project.androidUrl}
+                    className="mt-4" 
+                  />
                 </div>
               </div>
             </div>
