@@ -13,43 +13,43 @@ export default function Projects() {
   const projects = [
     {
       key: 'flexPro',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Flex+Pro',
+      image: '/company-logos/flex-pro.png',
       category: 'web' as ProjectCategory,
       data: t.projects.flexPro
     },
     {
       key: 'secretary',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Secretary',
+      image: '/company-logos/secrtary.png',
       category: 'ai' as ProjectCategory,
       data: t.projects.secretary
     },
     {
       key: 'farmHouse',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Farm+House',
+      image: '/company-logos/farm-house.png',
       category: 'mobile' as ProjectCategory,
       data: t.projects.farmHouse
     },
     {
       key: 'letsPlay',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Lets+Play',
+      image: '/company-logos/lets-play.png',
       category: 'web' as ProjectCategory,
       data: t.projects.letsPlay
     },
     {
       key: 'nayNursery',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Nay+Nursery',
+      image: '/company-logos/nay-nursery.png',
       category: 'web' as ProjectCategory,
       data: t.projects.nayNursery
     },
     {
       key: 'wearShare',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Wear+Share',
+      image: '/company-logos/wear-share.png',
       category: 'mobile' as ProjectCategory,
       data: t.projects.wearShare
     },
     {
       key: 'skinverse',
-      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Skinverse',
+      image: '/company-logos/skinverse.png',
       category: 'ai' as ProjectCategory,
       data: t.projects.skinverse
     }
