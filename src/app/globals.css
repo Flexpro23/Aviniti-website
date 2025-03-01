@@ -73,6 +73,57 @@ html[lang="ar"] .text-base {
   z-index: 5;
 }
 
+/* Phone Animation Styles */
+@keyframes float-phone {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(-15px) rotate(1deg); 
+  }
+}
+
+@keyframes screen-fade {
+  0%, 20% {
+    opacity: 1;
+  }
+  25%, 95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { 
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.25;
+    transform: scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: float-phone 6s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Phone Frame Hover Effect */
+.phone-frame {
+  transition: transform 0.5s ease-in-out;
+}
+
+.phone-frame:hover {
+  transform: rotateY(10deg) scale(1.02);
+  transform-style: preserve-3d;
+}
+
 :root {
   /* Primary Colors - Blue */
   --primary-50: #EFF6FF;
@@ -245,11 +296,6 @@ html[lang="ar"] .text-base {
   to { transform: translate(-50%, -50%) rotate(0deg); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px -10px rgba(59, 130, 246, 0.5); }
-  50% { box-shadow: 0 0 30px -10px rgba(59, 130, 246, 0.8); }
-}
-
 .animate-blob {
   animation: blob 10s infinite cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
@@ -261,11 +307,6 @@ html[lang="ar"] .text-base {
 
 .animation-delay-4000 {
   animation-delay: 4s;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-  will-change: transform;
 }
 
 .animate-spin-slow {
