@@ -4,60 +4,62 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useState } from 'react';
 
+type ProjectCategory = 'all' | 'web' | 'mobile' | 'ai';
+
 export default function Projects() {
   const { t, dir } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState<ProjectCategory>('all');
 
   const projects = [
     {
       key: 'flexPro',
-      image: '/projects/flexpro.png',
-      category: 'web',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Flex+Pro',
+      category: 'web' as ProjectCategory,
       data: t.projects.flexPro
     },
     {
       key: 'secretary',
-      image: '/projects/secretary.png',
-      category: 'ai',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Secretary',
+      category: 'ai' as ProjectCategory,
       data: t.projects.secretary
     },
     {
       key: 'farmHouse',
-      image: '/projects/farmhouse.png',
-      category: 'mobile',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Farm+House',
+      category: 'mobile' as ProjectCategory,
       data: t.projects.farmHouse
     },
     {
       key: 'letsPlay',
-      image: '/projects/letsplay.png',
-      category: 'web',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Lets+Play',
+      category: 'web' as ProjectCategory,
       data: t.projects.letsPlay
     },
     {
       key: 'nayNursery',
-      image: '/projects/naynursery.png',
-      category: 'web',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Nay+Nursery',
+      category: 'web' as ProjectCategory,
       data: t.projects.nayNursery
     },
     {
       key: 'wearShare',
-      image: '/projects/wearshare.png',
-      category: 'mobile',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Wear+Share',
+      category: 'mobile' as ProjectCategory,
       data: t.projects.wearShare
     },
     {
       key: 'skinverse',
-      image: '/projects/skinverse.png',
-      category: 'ai',
+      image: 'https://placehold.co/600x400/e2e8f0/1e40af?text=Skinverse',
+      category: 'ai' as ProjectCategory,
       data: t.projects.skinverse
     }
   ];
 
   const categories = [
-    { id: 'all', label: t.projects.categories.all },
-    { id: 'web', label: t.projects.categories.web },
-    { id: 'mobile', label: t.projects.categories.mobile },
-    { id: 'ai', label: t.projects.categories.ai }
+    { id: 'all' as ProjectCategory, label: t.projects.categories.all },
+    { id: 'web' as ProjectCategory, label: t.projects.categories.web },
+    { id: 'mobile' as ProjectCategory, label: t.projects.categories.mobile },
+    { id: 'ai' as ProjectCategory, label: t.projects.categories.ai }
   ];
 
   const filteredProjects = activeCategory === 'all' 
@@ -116,7 +118,9 @@ export default function Projects() {
                 </p>
                 <div className={`flex items-center ${dir === 'rtl' ? 'justify-start' : 'justify-end'}`}>
                   <span className="text-xs sm:text-sm px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
-                    {t.projects.categories[project.category]}
+                    {project.category === 'web' ? t.projects.categories.web :
+                     project.category === 'mobile' ? t.projects.categories.mobile :
+                     project.category === 'ai' ? t.projects.categories.ai : ''}
                   </span>
                 </div>
               </div>
