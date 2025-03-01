@@ -28,7 +28,11 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
     {
       src: '/company-logos/farm-house.png',
       alt: 'Farm House App',
-      color: 'bg-green-500'
+      color: 'bg-green-500',
+      customStyle: {
+        backgroundColor: '#22c55e', // Vibrant green to match the Farm House app screen
+        backgroundImage: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+      }
     },
     {
       src: '/company-logos/skinverse.png',
@@ -188,7 +192,8 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
                         transform: currentScreen === index 
                           ? 'translateZ(0px) rotateY(0deg)' 
                           : `translateZ(-50px) rotateY(${(index - currentScreen) * 90}deg)`,
-                        zIndex: currentScreen === index ? 10 : 0
+                        zIndex: currentScreen === index ? 10 : 0,
+                        ...(screen.customStyle || {})
                       }}
                     >
                       <div className="relative w-full h-full flex items-center justify-center">
@@ -205,19 +210,41 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
                           </div>
                         </div>
                         
-                        {/* Abstract UI Elements */}
-                        <div className="absolute inset-x-0 top-16 flex justify-center">
-                          <div className="w-4/5 h-8 bg-white/20 rounded-full"></div>
-                        </div>
-                        
-                        <div className="absolute inset-x-6 bottom-20 grid grid-cols-2 gap-4">
-                          <div className="h-20 bg-white/20 rounded-xl"></div>
-                          <div className="h-20 bg-white/20 rounded-xl"></div>
-                        </div>
-                        
-                        <div className="absolute inset-x-6 bottom-48 w-full">
-                          <div className="h-12 bg-white/20 rounded-xl"></div>
-                        </div>
+                        {/* Abstract UI Elements - Custom for Farm House */}
+                        {index === 2 ? (
+                          // Farm House specific UI elements
+                          <>
+                            <div className="absolute inset-x-0 top-20 flex justify-center">
+                              <div className="w-3/5 h-8 bg-white/30 rounded-full"></div>
+                            </div>
+                            
+                            <div className="absolute inset-x-6 bottom-32 grid grid-cols-2 gap-4">
+                              <div className="h-16 bg-white/30 rounded-xl"></div>
+                              <div className="h-16 bg-white/30 rounded-xl"></div>
+                            </div>
+                            
+                            <div className="absolute inset-x-6 bottom-56 grid grid-cols-2 gap-4">
+                              <div className="h-16 bg-white/30 rounded-xl"></div>
+                              <div className="h-16 bg-white/30 rounded-xl"></div>
+                            </div>
+                          </>
+                        ) : (
+                          // Default UI elements for other apps
+                          <>
+                            <div className="absolute inset-x-0 top-16 flex justify-center">
+                              <div className="w-4/5 h-8 bg-white/20 rounded-full"></div>
+                            </div>
+                            
+                            <div className="absolute inset-x-6 bottom-20 grid grid-cols-2 gap-4">
+                              <div className="h-20 bg-white/20 rounded-xl"></div>
+                              <div className="h-20 bg-white/20 rounded-xl"></div>
+                            </div>
+                            
+                            <div className="absolute inset-x-6 bottom-48 w-full">
+                              <div className="h-12 bg-white/20 rounded-xl"></div>
+                            </div>
+                          </>
+                        )}
                         
                         {/* Particle Effects */}
                         <div className="absolute inset-0 overflow-hidden">
