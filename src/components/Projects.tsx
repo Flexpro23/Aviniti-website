@@ -33,8 +33,8 @@ export default function Projects() {
       image: '/company-logos/farm-house.png',
       category: 'mobile' as ProjectCategory,
       data: t.projects.farmHouse,
-      iosUrl: '',
-      androidUrl: ''
+      iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.restyle&hl=en'
     },
     {
       key: 'letsPlay',
@@ -57,8 +57,8 @@ export default function Projects() {
       image: '/company-logos/wear-share.png',
       category: 'mobile' as ProjectCategory,
       data: t.projects.wearShare,
-      iosUrl: '',
-      androidUrl: ''
+      iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
+      androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.restyle&hl=en'
     },
     {
       key: 'skinverse',
