@@ -27,6 +27,12 @@ export const ar = {
   projects: {
     title: 'موثوق به من قبل',
     subtitle: 'حلول مبتكرة تدعم الأعمال الحديثة',
+    categories: {
+      all: 'الكل',
+      web: 'تطوير الويب',
+      mobile: 'تطبيقات الجوال',
+      ai: 'حلول الذكاء الاصطناعي'
+    },
     flexPro: {
       title: 'Flex Pro',
       category: 'الخدمات اللوجستية والتوصيل',

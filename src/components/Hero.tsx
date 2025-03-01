@@ -3,7 +3,11 @@
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 
-export default function Hero() {
+interface HeroProps {
+  onEstimateClick?: () => void;
+}
+
+export default function Hero({ onEstimateClick }: HeroProps = {}) {
   const { t, dir } = useLanguage();
 
   return (
@@ -32,6 +36,7 @@ export default function Hero() {
             {/* CTA Buttons */}
             <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''}`}>
               <button
+                onClick={onEstimateClick}
                 className="px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-colors duration-300"
                 title={t.hero.estimateDescription}
               >
