@@ -10,7 +10,8 @@ export const en = {
     home: 'Home',
     about: 'About',
     services: 'Services',
-    contact: 'Contact'
+    readyMadeSolutions: 'Ready-Made Solutions',
+    contact: 'Contact Us'
   },
   hero: {
     title: 'Transform Your Vision',

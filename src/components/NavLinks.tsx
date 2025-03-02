@@ -20,8 +20,11 @@ export default function NavLinks({ isScrolled, onContactClick }: NavLinksProps) 
       <a href="/" className={linkClasses}>
         {t.navigation.home}
       </a>
-      <a href="#services" className={linkClasses}>
+      <a href="#services-section" className={linkClasses}>
         {t.navigation.services}
+      </a>
+      <a href="#ready-made-solutions" className={linkClasses}>
+        {t.navigation.readyMadeSolutions}
       </a>
       <a href="#about" className={linkClasses}>
         {t.navigation.about}

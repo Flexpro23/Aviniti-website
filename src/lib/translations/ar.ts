@@ -10,6 +10,7 @@ export const ar = {
     home: 'الرئيسية',
     about: 'حول',
     services: 'خدمات',
+    readyMadeSolutions: 'حلول جاهزة',
     contact: 'اتصل بنا'
   },
   hero: {
