@@ -121,7 +121,7 @@ export default function Projects() {
                                 shadow-lg border-4 border-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-600 p-[3px]">
                   <div className="absolute inset-0 rounded-full overflow-hidden bg-white">
                     <Image
-                      src={project.image}
+                      src={project.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
                       alt={project.data.title}
                       fill
                       className="object-cover rounded-full p-1"

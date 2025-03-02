@@ -39,7 +39,7 @@ export default function Expertise() {
             <div key={area.key} className="card">
               <div className="mb-6">
                 <Image
-                  src={area.icon}
+                  src={area.icon.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
                   alt={area.data.title}
                   width={64}
                   height={64}

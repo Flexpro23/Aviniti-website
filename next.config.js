@@ -5,7 +5,16 @@ const nextConfig = {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   },
   images: {
-    domains: ['placehold.co'],
+    formats: ['image/webp'],
+    // Use these if your images are from an external source
+    // domains: ['example.com'],
+    // remotePatterns: [
+    //   {
+    //     protocol: 'https',
+    //     hostname: 'example.com',
+    //     pathname: '/images/**',
+    //   },
+    // ],
   },
 }
 

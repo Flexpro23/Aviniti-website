@@ -226,7 +226,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
                           <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white/20 p-2 shadow-inner">
                             <div className="absolute inset-0 rounded-full overflow-hidden bg-white flex items-center justify-center">
                               <Image
-                                src={screen.src}
+                                src={screen.src.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
                                 alt={screen.alt}
                                 fill
                                 className="object-contain p-2 rounded-full"

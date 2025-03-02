@@ -81,7 +81,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
             >
               <div className="relative h-52 w-full bg-white">
                 <Image
-                  src={solution.image}
+                  src={solution.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
                   alt={solution.title}
                   fill
                   className="object-contain p-2"
