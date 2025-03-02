@@ -139,5 +139,73 @@ export const en = {
   },
   footer: {
     rights: 'All rights reserved'
+  },
+  aiEstimate: {
+    steps: {
+      userInfo: {
+        title: 'Get Your AI Estimate',
+        subtitle: 'Please provide your details to receive an instant AI-powered estimate for your project.',
+        fullName: 'Full Name:',
+        emailAddress: 'Email Address:',
+        phoneNumber: 'Phone Number:',
+        companyName: 'Company Name:',
+        optional: '(Optional)',
+        cancel: 'Cancel',
+        continue: 'Continue',
+        processing: 'Processing...',
+        errors: {
+          fullName: 'Full name is required',
+          emailInvalid: 'Please enter a valid email address',
+          emailRequired: 'Email address is required'
+        }
+      },
+      appDescription: {
+        title: 'Describe Your App Idea',
+        subtitle: "Let's create something amazing together. Tell us about your vision in detail.",
+        description: 'App Description:',
+        placeholder: 'Describe your app idea in detail. What is the main purpose? Who is it for? What problem does it solve?',
+        charactersCount: 'characters (minimum 20)',
+        back: 'Back',
+        generate: 'Generate AI Analysis',
+        analyzing: 'Analyzing...',
+        errors: {
+          required: 'Please provide a description of your app idea',
+          tooShort: 'Please provide a more detailed description (at least 20 characters)'
+        }
+      },
+      featureSelection: {
+        title: 'Review Your AI App Estimate',
+        subtitle: 'Our AI has analyzed your app idea and generated a preliminary estimate. Review the overview and features below.',
+        appOverview: 'App Overview',
+        essentialFeatures: 'Essential Features for Your App',
+        enhancementFeatures: 'Enhance Your App with These Features (Optional)',
+        purpose: 'Purpose:',
+        currentEstimate: 'Current Estimate',
+        featuresSelected: 'Features Selected:',
+        estimatedCost: 'Estimated Cost:',
+        estimatedTime: 'Estimated Time:',
+        back: 'Back',
+        generate: 'Generate Detailed Report',
+        generating: 'Generating Report...'
+      },
+      detailedReport: {
+        title: 'Detailed App Development Report',
+        subtitle: "Here's a detailed breakdown of your app development estimate based on your selected features.",
+        appOverview: 'App Overview',
+        featureDetails: 'Feature Details and Estimates',
+        featureNameDesc: 'Feature Name & Description',
+        purposeInApp: 'Purpose in App',
+        costEstimate: 'Cost Estimate',
+        timeEstimate: 'Time Estimate',
+        projectSummary: 'Project Summary',
+        totalCost: 'Total Estimated Cost:',
+        totalTime: 'Total Estimated Time:',
+        numberOfFeatures: 'Number of Features:',
+        callToAction: 'Ready to get started? Contact us to discuss your project further!',
+        contactUs: 'Contact Us Now',
+        downloadReport: 'Download Report',
+        backToFeatures: 'Back to Feature Selection'
+      }
+    }
   }
 }; 

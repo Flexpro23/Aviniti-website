@@ -139,5 +139,73 @@ export const ar = {
   },
   footer: {
     rights: 'جميع الحقوق محفوظة'
+  },
+  aiEstimate: {
+    steps: {
+      userInfo: {
+        title: 'احصل على تقدير الذكاء الاصطناعي',
+        subtitle: 'يرجى تقديم التفاصيل الخاصة بك لتلقي تقدير فوري بالذكاء الاصطناعي لمشروعك.',
+        fullName: 'الاسم الكامل:',
+        emailAddress: 'عنوان البريد الإلكتروني:',
+        phoneNumber: 'رقم الهاتف:',
+        companyName: 'اسم الشركة:',
+        optional: '(اختياري)',
+        cancel: 'إلغاء',
+        continue: 'استمرار',
+        processing: 'جاري المعالجة...',
+        errors: {
+          fullName: 'الاسم الكامل مطلوب',
+          emailInvalid: 'يرجى إدخال عنوان بريد إلكتروني صالح',
+          emailRequired: 'البريد الإلكتروني مطلوب'
+        }
+      },
+      appDescription: {
+        title: 'صف فكرة تطبيقك',
+        subtitle: 'لنصنع شيئًا رائعًا معًا. أخبرنا عن رؤيتك بالتفصيل.',
+        description: 'وصف التطبيق:',
+        placeholder: 'صف فكرة تطبيقك بالتفصيل. ما هو الغرض الرئيسي؟ لمن هو موجه؟ ما المشكلة التي يحلها؟',
+        charactersCount: 'حرف (الحد الأدنى 20)',
+        back: 'رجوع',
+        generate: 'إنشاء تحليل الذكاء الاصطناعي',
+        analyzing: 'جاري التحليل...',
+        errors: {
+          required: 'يرجى تقديم وصف لفكرة تطبيقك',
+          tooShort: 'يرجى تقديم وصف أكثر تفصيلا (20 حرفًا على الأقل)'
+        }
+      },
+      featureSelection: {
+        title: 'راجع تقدير تطبيقك بالذكاء الاصطناعي',
+        subtitle: 'قام الذكاء الاصطناعي لدينا بتحليل فكرة تطبيقك وأنشأ تقديرًا أوليًا. راجع النظرة العامة والميزات أدناه.',
+        appOverview: 'نظرة عامة على التطبيق',
+        essentialFeatures: 'الميزات الأساسية لتطبيقك',
+        enhancementFeatures: 'حسّن تطبيقك بهذه الميزات (اختياري)',
+        purpose: 'الغرض:',
+        currentEstimate: 'التقدير الحالي',
+        featuresSelected: 'الميزات المحددة:',
+        estimatedCost: 'التكلفة المقدرة:',
+        estimatedTime: 'الوقت المقدر:',
+        back: 'رجوع',
+        generate: 'إنشاء تقرير مفصل',
+        generating: 'جاري إنشاء التقرير...'
+      },
+      detailedReport: {
+        title: 'تقرير مفصل عن تطوير التطبيق',
+        subtitle: 'إليك تفصيل مفصل لتقدير تطوير تطبيقك بناءً على الميزات التي اخترتها.',
+        appOverview: 'نظرة عامة على التطبيق',
+        featureDetails: 'تفاصيل الميزات والتقديرات',
+        featureNameDesc: 'اسم الميزة والوصف',
+        purposeInApp: 'الغرض في التطبيق',
+        costEstimate: 'تقدير التكلفة',
+        timeEstimate: 'تقدير الوقت',
+        projectSummary: 'ملخص المشروع',
+        totalCost: 'التكلفة الإجمالية المقدرة:',
+        totalTime: 'الوقت الإجمالي المقدر:',
+        numberOfFeatures: 'عدد الميزات:',
+        callToAction: 'هل أنت مستعد للبدء؟ اتصل بنا لمناقشة مشروعك بالتفصيل!',
+        contactUs: 'اتصل بنا الآن',
+        downloadReport: 'تنزيل التقرير',
+        backToFeatures: 'العودة إلى اختيار الميزات'
+      }
+    }
   }
 }; 
