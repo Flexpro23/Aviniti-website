@@ -18,25 +18,38 @@ export default function ImageWithFallback({
   ...props
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState<string>(src);
+  const [error, setError] = useState<boolean>(false);
   
   // If src changes, reset to the new source
   useEffect(() => {
     setImgSrc(src);
+    setError(false);
   }, [src]);
+
+  // Handle the error silently to prevent console errors
+  const handleImageError = () => {
+    // If already using the fallback, don't try again
+    if (error) return;
+    
+    setError(true);
+    
+    // If WebP fails, try fallback or revert to original format
+    if (fallbackSrc) {
+      console.log(`Falling back to: ${fallbackSrc}`);
+      setImgSrc(fallbackSrc);
+    } else if (imgSrc.endsWith('.webp')) {
+      // Try to revert to original format
+      const originalSrc = imgSrc.replace(/\.webp$/, '');
+      console.log(`Falling back to original format: ${originalSrc}`);
+      setImgSrc(originalSrc);
+    }
+  };
 
   return (
     <Image
       {...props}
       src={imgSrc}
-      onError={() => {
-        // If WebP fails, try fallback or revert to original format
-        if (fallbackSrc) {
-          setImgSrc(fallbackSrc);
-        } else if (imgSrc.endsWith('.webp')) {
-          // Try to revert to original format
-          setImgSrc(imgSrc.replace(/\.webp$/, ''));
-        }
-      }}
+      onError={handleImageError}
     />
   );
 } 

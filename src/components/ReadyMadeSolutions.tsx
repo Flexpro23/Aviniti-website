@@ -7,11 +7,29 @@ interface ReadyMadeSolutionsProps {
   onContactClick: () => void;
 }
 
+// Define a type for the solution objects
+interface Solution {
+  title: string;
+  price: string;
+  days: number;
+  description: string;
+  image: string;
+  features: string[];
+}
+
+// List of solutions that have webp versions available
+const hasWebpVersion = [
+  'Kindergarten Management App Solution',
+  'Hypermarket Management App Solution',
+  'Office Management App Solutions',
+  'Airbnb-Style Marketplace App Solutions'
+];
+
 export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolutionsProps) {
   const { t } = useLanguage();
   
   // Pre-made app solutions data
-  const solutions = [
+  const solutions: Solution[] = [
     {
       title: 'Delivery App Solution',
       price: '$10,000',
@@ -62,6 +80,16 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
     },
   ];
 
+  // Function to determine if we should try webp or use original format
+  const getImageSrc = (solution: Solution): string => {
+    // Check if this solution has a webp version available
+    if (hasWebpVersion.includes(solution.title)) {
+      return solution.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp');
+    }
+    // Otherwise use the original format
+    return solution.image;
+  };
+
   return (
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +109,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
             >
               <div className="relative h-52 w-full bg-white">
                 <ImageWithFallback
-                  src={solution.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                  src={getImageSrc(solution)}
                   fallbackSrc={solution.image}
                   alt={solution.title}
                   fill
