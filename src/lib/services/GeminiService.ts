@@ -8,8 +8,8 @@ import { AIAnalysisResult, Feature } from '@/components/AIEstimate';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
 // Update API key handling to be more flexible and secure
-// Get the API key from environment variables if available or fallback to hardcoded key
-export const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || 'AIzaSyAtMAS__jTFCAqYy_Q-KV9uEstA5e3WDmU';
+// Get the API key from environment variables if available
+export const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
 // Update the model options for more flexibility
 export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-1.5-flash';
