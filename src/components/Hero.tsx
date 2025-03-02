@@ -6,9 +6,10 @@ import { useEffect, useState, useRef } from 'react';
 
 interface HeroProps {
   onEstimateClick?: () => void;
+  onConsultationClick?: () => void;
 }
 
-export default function Hero({ onEstimateClick }: HeroProps = {}) {
+export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps = {}) {
   const { t, dir } = useLanguage();
   const [currentScreen, setCurrentScreen] = useState(0);
   const phoneRef = useRef<HTMLDivElement>(null);
@@ -90,6 +91,27 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
     };
   }, []);
 
+  // Scroll to Solutions section
+  const scrollToSolutions = () => {
+    const solutionsSection = document.getElementById('services-section');
+    if (solutionsSection) {
+      solutionsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Handle Free Consultation button click
+  const handleConsultationClick = () => {
+    if (onConsultationClick) {
+      onConsultationClick();
+    } else {
+      // Fallback - scroll to contact section
+      const contactSection = document.getElementById('contact-section');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center py-16 sm:py-20 overflow-hidden">
       {/* Background Pattern */}
@@ -123,6 +145,7 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
                 {t.hero.getEstimate}
               </button>
               <button
+                onClick={scrollToSolutions}
                 className="px-8 py-4 bg-blue-800 text-white border border-blue-400 rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-colors duration-300"
                 title={t.hero.solutionsDescription}
               >
@@ -132,6 +155,7 @@ export default function Hero({ onEstimateClick }: HeroProps = {}) {
 
             {/* Consultation Button */}
             <button
+              onClick={handleConsultationClick}
               className="mt-6 text-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start mx-auto lg:mx-0 group"
               title={t.hero.consultationDescription}
             >

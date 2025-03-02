@@ -11,6 +11,8 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
 import AIEstimateModal from '@/components/AIEstimate/AIEstimateModal';
+import FloatingContact from '@/components/FloatingContact';
+import ReadyMadeSolutions from '@/components/ReadyMadeSolutions';
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -30,13 +32,25 @@ export default function Home() {
   return (
     <main dir={dir} className="min-h-screen">
       <Navbar />
-      <Hero onEstimateClick={() => setIsAIEstimateOpen(true)} />
+      <Hero 
+        onEstimateClick={() => setIsAIEstimateOpen(true)} 
+        onConsultationClick={() => setIsContactOpen(true)} 
+      />
       <Projects />
-      <Services />
+      <div id="services-section">
+        <Services />
+      </div>
+      <div id="ready-made-solutions">
+        <ReadyMadeSolutions onContactClick={() => setIsContactOpen(true)} />
+      </div>
       <Expertise />
       <About />
-      <Contact onContactClick={() => setIsContactOpen(true)} />
+      <div id="contact-section">
+        <Contact onContactClick={() => setIsContactOpen(true)} />
+      </div>
       <Footer />
+      
+      <FloatingContact onContactClick={() => setIsContactOpen(true)} />
       
       <ContactPopup 
         isOpen={isContactOpen}
