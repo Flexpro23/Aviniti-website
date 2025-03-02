@@ -3,6 +3,7 @@
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
+import ImageWithFallback from './utils/ImageWithFallback';
 
 interface HeroProps {
   onEstimateClick?: () => void;
@@ -225,8 +226,9 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white/20 p-2 shadow-inner">
                             <div className="absolute inset-0 rounded-full overflow-hidden bg-white flex items-center justify-center">
-                              <Image
+                              <ImageWithFallback
                                 src={screen.src.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                                fallbackSrc={screen.src}
                                 alt={screen.alt}
                                 fill
                                 className="object-contain p-2 rounded-full"

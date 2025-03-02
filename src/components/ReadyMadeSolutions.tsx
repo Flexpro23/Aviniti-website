@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/lib/context/LanguageContext';
-import Image from 'next/image';
+import ImageWithFallback from './utils/ImageWithFallback';
 
 interface ReadyMadeSolutionsProps {
   onContactClick: () => void;
@@ -48,18 +48,18 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
       title: 'Gym Management App Solutions',
       price: '$25,000',
       days: 60,
-      description: 'Complete gym management solution for membership, class scheduling, trainer management, and fitness tracking. Enhance member experience with a modern digital solution.',
+      description: 'Complete gym management solution for membership, class scheduling, trainer management, payment processing, and fitness tracking. Create exceptional member experience with a modern digital platform.',
       image: '/Ready-made-solutions/Gym Management App Solutions.svg',
-      features: ['Membership Management', 'Class Scheduling', 'Trainer Allocation', 'Fitness Tracking', 'Payment Processing']
+      features: ['Membership Management', 'Class Scheduling', 'Trainer Management', 'Payment Processing', 'Workout Tracking']
     },
     {
       title: 'Airbnb-Style Marketplace App Solutions',
       price: '$15,000',
       days: 35,
-      description: 'Property rental marketplace platform similar to Airbnb with property listings, booking management, reviews, and secure payment processing.',
+      description: 'Property rental marketplace platform similar to Airbnb. Connects hosts with travelers, includes booking system, payment processing, review, and secure payment processing.',
       image: '/Ready-made-solutions/Airbnb-Style Marketplace App Solutions.svg',
-      features: ['Property Listings', 'Booking System', 'Review & Rating', 'Secure Payments', 'Host & Guest Apps']
-    }
+      features: ['User & Host Portals', 'Booking System', 'Search & Filters', 'Review System', 'Secure Payment']
+    },
   ];
 
   return (
@@ -80,8 +80,9 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
               className="bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col h-full"
             >
               <div className="relative h-52 w-full bg-white">
-                <Image
+                <ImageWithFallback
                   src={solution.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                  fallbackSrc={solution.image}
                   alt={solution.title}
                   fill
                   className="object-contain p-2"
@@ -93,28 +94,26 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-2xl font-bold text-blue-600">{solution.price}</span>
                   <span className="text-gray-600 text-sm">
-                    <span className="font-medium">{solution.days}</span> days
+                    {solution.days} days
                   </span>
                 </div>
                 <p className="text-gray-600 mb-4">{solution.description}</p>
-                <div className="border-t pt-4 mb-auto">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Key Features:</h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1">
-                    {solution.features.map((feature, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-start">
-                        <svg className="w-4 h-4 text-green-500 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"></path>
+                <div className="mt-auto">
+                  <h4 className="font-medium text-gray-900 mb-2">Key Features:</h4>
+                  <ul className="space-y-1">
+                    {solution.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start">
+                        <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        {feature}
+                        <span className="text-gray-600">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </div>
-              <div className="p-6 pt-0">
-                <button 
+                <button
                   onClick={onContactClick}
-                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-300"
+                  className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
                 >
                   Get Started
                 </button>

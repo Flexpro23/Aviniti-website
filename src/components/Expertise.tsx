@@ -1,7 +1,7 @@
 'use client';
 
 import { useLanguage } from '@/lib/context/LanguageContext';
-import Image from 'next/image';
+import ImageWithFallback from './utils/ImageWithFallback';
 
 export default function Expertise() {
   const { t, dir } = useLanguage();
@@ -38,8 +38,9 @@ export default function Expertise() {
           {expertiseAreas.map((area) => (
             <div key={area.key} className="card">
               <div className="mb-6">
-                <Image
+                <ImageWithFallback
                   src={area.icon.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                  fallbackSrc={area.icon}
                   alt={area.data.title}
                   width={64}
                   height={64}

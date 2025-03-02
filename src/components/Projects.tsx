@@ -4,6 +4,7 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useState } from 'react';
 import AppStoreLinks from './AppStoreLinks';
+import ImageWithFallback from './utils/ImageWithFallback';
 
 type ProjectCategory = 'all' | 'web' | 'mobile' | 'ai';
 
@@ -120,8 +121,9 @@ export default function Projects() {
                 <div className="relative w-40 h-40 mb-6 rounded-full overflow-hidden group-hover:scale-105 transition-transform duration-500 
                                 shadow-lg border-4 border-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-600 p-[3px]">
                   <div className="absolute inset-0 rounded-full overflow-hidden bg-white">
-                    <Image
+                    <ImageWithFallback
                       src={project.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                      fallbackSrc={project.image}
                       alt={project.data.title}
                       fill
                       className="object-cover rounded-full p-1"
