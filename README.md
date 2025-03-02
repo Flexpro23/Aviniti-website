@@ -103,4 +103,70 @@ Make sure to configure your environment variables in your hosting platform's das
 
 ## License
 
-[Your chosen license] 
+[Your chosen license]
+
+## AI Estimation Feature
+
+The application includes an AI estimation feature that analyzes app descriptions and generates detailed estimates for development time and costs.
+
+### Gemini AI Integration
+
+The app uses Google's Generative AI SDK with the Gemini 1.5 model for analyzing app descriptions and generating estimates.
+
+#### API Key Configuration
+
+For security and flexibility, the Gemini API key can be configured in two ways:
+
+1. **Environment Variables (Recommended):**
+   Create a `.env.local` file in the root directory and add:
+   ```
+   NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+   NEXT_PUBLIC_GEMINI_MODEL=gemini-1.5-flash
+   ```
+
+2. **Fallback Hardcoded Key:**
+   If no environment variable is found, the application will use a fallback API key.
+
+#### Available Models
+
+You can specify which Gemini model to use by setting the `NEXT_PUBLIC_GEMINI_MODEL` environment variable. Options include:
+
+- `gemini-1.5-flash` (default, faster response)
+- `gemini-1.5-pro` (more accurate but slower)
+
+### Development Mode Features
+
+When running in development mode, the app includes:
+
+- API status indicator showing if the Gemini API is accessible
+- Mock data notifications when fallback data is being used
+- Detailed console logs for debugging API interactions
+
+### Error Handling
+
+The app includes robust error handling for API interactions:
+
+- Graceful fallback to mock data when the API fails
+- Detailed error logging in the console
+- User-friendly notifications in development mode
+
+## Running Locally
+
+```bash
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Troubleshooting
+
+If you encounter issues with the Gemini AI integration:
+
+1. Check your API key configuration
+2. Ensure your API key has access to the specified model
+3. Check browser console logs for detailed error messages
+4. Verify that you're using a supported model name 

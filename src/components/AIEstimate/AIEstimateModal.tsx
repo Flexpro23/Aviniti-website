@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import UserInfoStep from './UserInfoStep';
-import AppDescriptionStep from './AppDescriptionStep';
-import FeatureSelectionStep from './FeatureSelectionStep';
-import DetailedReportStep from './DetailedReportStep';
+import UserInfoStep from '@/components/AIEstimate/UserInfoStep';
+import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
+import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
+import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
+import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL } from '@/lib/services/GeminiService';
 
 export type PersonalDetails = {
   fullName: string;
@@ -86,63 +87,41 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   };
 
   const handleAppDescriptionSubmit = async (description: AppDescription) => {
+    if (!description || !description.description || description.description.trim() === '') {
+      console.error('No app description provided or empty description');
+      return;
+    }
+
     setAppDescription(description);
     setIsProcessing(true);
     
     try {
-      // Simulate API call to analyze app description
-      // This would be replaced with a real API call to your backend
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
       
-      // Mock AI analysis result
-      const mockAiAnalysis: AIAnalysisResult = {
-        appOverview: "Based on your description, you're building a mobile application for package delivery with logistics management features.",
-        essentialFeatures: [
-          {
-            id: '1',
-            name: 'User Authentication',
-            description: 'Secure login system with multiple user roles',
-            purpose: 'Ensure secure access for different user types',
-            costEstimate: '$2,000-$3,000',
-            timeEstimate: '2-3 weeks',
-            selected: true
-          },
-          {
-            id: '2',
-            name: 'Package Tracking',
-            description: 'Real-time package location tracking',
-            purpose: 'Allow customers to track their deliveries',
-            costEstimate: '$3,000-$4,000',
-            timeEstimate: '3-4 weeks',
-            selected: true
-          }
-        ],
-        enhancementFeatures: [
-          {
-            id: '3',
-            name: 'Payment Gateway',
-            description: 'Integration with popular payment providers',
-            purpose: 'Enable in-app payments and transactions',
-            costEstimate: '$2,500-$3,500',
-            timeEstimate: '2-3 weeks',
-            selected: false
-          },
-          {
-            id: '4',
-            name: 'Analytics Dashboard',
-            description: 'Comprehensive analytics and reporting',
-            purpose: 'Provide insights into delivery performance',
-            costEstimate: '$4,000-$5,000',
-            timeEstimate: '3-4 weeks',
-            selected: false
-          }
-        ]
-      };
+      // Try to get analysis from the Gemini API
+      const analysis = await analyzeAppWithGemini(description.description);
+      console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
       
-      setAiAnalysisResult(mockAiAnalysis);
+      setAiAnalysisResult(analysis);
       setStep(3);
     } catch (error) {
-      console.error('Error analyzing app description:', error);
+      // Log the specific error for debugging
+      console.error(`Error submitting app description to ${GEMINI_MODEL}:`, error);
+      
+      // Enhanced error message
+      let errorMessage = 'API connection failed: ';
+      if (error instanceof Error) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += 'Unknown error occurred';
+      }
+      console.error(errorMessage);
+      
+      // Fallback to mock analysis when API fails
+      console.warn(`Using mock analysis due to ${GEMINI_MODEL} API failure`);
+      const mockAnalysis = generateMockAnalysis(description.description);
+      setAiAnalysisResult(mockAnalysis);
+      setStep(3);
     } finally {
       setIsProcessing(false);
     }
@@ -152,33 +131,79 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     setIsProcessing(true);
     
     try {
-      // Simulate API call to generate detailed report
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
       // Calculate totals
       const selectedFeatures = features.filter(f => f.selected);
-      const totalCostMin = selectedFeatures.reduce((sum, feature) => {
-        const costRange = feature.costEstimate.replace(/[^0-9,-]/g, '');
-        const minCost = parseInt(costRange.split('-')[0].replace(',', ''));
-        return sum + minCost;
-      }, 0);
       
-      const totalCostMax = selectedFeatures.reduce((sum, feature) => {
-        const costRange = feature.costEstimate.replace(/[^0-9,-]/g, '');
-        const parts = costRange.split('-');
-        const maxCost = parseInt(parts[1] ? parts[1].replace(',', '') : parts[0].replace(',', ''));
-        return sum + maxCost;
-      }, 0);
-      
-      // Mock detailed report
-      const mockDetailedReport: DetailedReport = {
-        appOverview: aiAnalysisResult?.appOverview || '',
-        selectedFeatures,
-        totalCost: `$${totalCostMin.toLocaleString()}-$${totalCostMax.toLocaleString()}`,
-        totalTime: '2-4 months'
+      // Helper function to extract numeric values from cost estimates
+      const extractCostRange = (costEstimate: string) => {
+        const costString = costEstimate.replace(/[^0-9,-]/g, '');
+        const parts = costString.split('-');
+        
+        // For single price calculation, we'll use the maximum value or the single value
+        const costValue = parseInt(parts[0].replace(/,/g, ''));
+        
+        return costValue;
       };
       
-      setDetailedReport(mockDetailedReport);
+      // Calculate total cost as a single sum
+      const totalCost = selectedFeatures.reduce(
+        (acc, feature) => {
+          const cost = extractCostRange(feature.costEstimate);
+          return acc + cost;
+        },
+        0
+      );
+      
+      // Helper function to extract time estimates in days
+      const extractTimeRange = (timeEstimate: string) => {
+        // Extract numbers from strings like "2-3 days" or "1 day"
+        const matches = timeEstimate.match(/(\d+)(?:-(\d+))?/);
+        if (!matches) return { minTime: 1, maxTime: 2 }; // Fallback
+        
+        const minTime = parseInt(matches[1]);
+        const maxTime = matches[2] ? parseInt(matches[2]) : minTime;
+        
+        return { minTime, maxTime };
+      };
+      
+      // Calculate total time range with some parallelization factor
+      // Not all tasks are sequential, some can be done in parallel
+      const timeEstimates = selectedFeatures.map(feature => extractTimeRange(feature.timeEstimate));
+      const parallelizationFactor = 0.7; // Assume 30% efficiency from parallelization
+      
+      const totalMinTime = Math.ceil(
+        timeEstimates.reduce((sum, time) => sum + time.minTime, 0) * parallelizationFactor
+      );
+      
+      const totalMaxTime = Math.ceil(
+        timeEstimates.reduce((sum, time) => sum + time.maxTime, 0) * parallelizationFactor
+      );
+      
+      // Format time display (always keeping in days unless it's over 60 days)
+      let timeDisplay = '';
+      if (totalMaxTime >= 60) {
+        // Convert to months for longer estimates
+        const minMonths = Math.ceil(totalMinTime / 30);
+        const maxMonths = Math.ceil(totalMaxTime / 30);
+        timeDisplay = minMonths === maxMonths
+          ? `${minMonths} months`
+          : `${minMonths}-${maxMonths} months`;
+      } else {
+        // Keep in days for shorter estimates
+        timeDisplay = totalMinTime === totalMaxTime
+          ? `${totalMinTime} days`
+          : `${totalMinTime}-${totalMaxTime} days`;
+      }
+      
+      // Generate detailed report
+      const detailedReport: DetailedReport = {
+        appOverview: aiAnalysisResult?.appOverview || '',
+        selectedFeatures,
+        totalCost: `$${totalCost.toLocaleString()}`,
+        totalTime: timeDisplay
+      };
+      
+      setDetailedReport(detailedReport);
       setStep(4);
     } catch (error) {
       console.error('Error generating detailed report:', error);

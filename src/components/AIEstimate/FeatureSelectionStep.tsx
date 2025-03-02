@@ -25,6 +25,9 @@ export default function FeatureSelectionStep({
     aiAnalysis.enhancementFeatures.map(feature => ({ ...feature }))
   );
 
+  // Check if we're using mock data
+  const isMockData = aiAnalysis.appOverview.includes("[MOCK DATA]");
+
   const toggleFeatureSelection = (id: string, isEssential: boolean) => {
     if (isEssential) {
       setEssentialFeatures(prevFeatures =>
@@ -52,7 +55,7 @@ export default function FeatureSelectionStep({
   // Calculate estimated costs and time
   const calculateEstimates = () => {
     if (selectedFeatures.length === 0) {
-      return { cost: language === 'en' ? '$0' : '0 دولار', time: language === 'en' ? '0 weeks' : '0 أسابيع' };
+      return { cost: language === 'en' ? '$0' : '0 دولار', time: language === 'en' ? '0 days' : '0 يوم' };
     }
     
     const costSum = selectedFeatures.reduce((total, feature) => {
@@ -64,13 +67,26 @@ export default function FeatureSelectionStep({
       return total;
     }, 0);
     
-    // Simple time estimation logic
-    const minWeeks = Math.ceil(selectedFeatures.length * 1.5);
-    const maxWeeks = Math.ceil(selectedFeatures.length * 2.5);
+    // Extract actual time estimates from feature data rather than using a formula
+    const timeEstimates = selectedFeatures.map(feature => {
+      const timeString = feature.timeEstimate;
+      const match = timeString.match(/(\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    });
+    
+    // Calculate time range with parallelization factor
+    const parallelizationFactor = 0.7;
+    const totalDays = Math.ceil(
+      timeEstimates.reduce((sum, time) => sum + time, 0) * parallelizationFactor
+    );
+    
+    // Create a range around the calculated days
+    const minDays = Math.max(Math.floor(totalDays * 0.9), 1);
+    const maxDays = Math.ceil(totalDays * 1.1);
     
     return {
       cost: language === 'en' ? `$${costSum.toLocaleString()}` : `${costSum.toLocaleString()} دولار`,
-      time: language === 'en' ? `${minWeeks}-${maxWeeks} weeks` : `${minWeeks}-${maxWeeks} أسابيع`
+      time: language === 'en' ? `${minDays}-${maxDays} days` : `${minDays}-${maxDays} يوم`
     };
   };
   
@@ -87,12 +103,29 @@ export default function FeatureSelectionStep({
           : 'قام الذكاء الاصطناعي لدينا بتحليل فكرة تطبيقك وأنشأ تقديرًا أوليًا. راجع النظرة العامة والميزات أدناه.'}
       </p>
 
+      {/* Dev-only notification for mock data */}
+      {process.env.NODE_ENV === 'development' && isMockData && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-md mb-6 text-sm">
+          <strong>⚠️ Development Notice:</strong> Using sample data because the API request failed. Check the console for details.
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-          <h3 className="font-semibold text-lg text-gray-800 mb-2">
+        <div className="bg-gray-50 p-6 border border-gray-200 rounded-lg shadow-sm">
+          <h3 className="font-semibold text-lg text-gray-800 mb-3">
             {language === 'en' ? 'App Overview' : 'نظرة عامة على التطبيق'}
           </h3>
-          <p className="text-gray-700">{aiAnalysis.appOverview}</p>
+          <div className="prose prose-gray max-w-none">
+            {aiAnalysis.appOverview
+              // Remove any mock data indicators before displaying
+              .replace(/\[MOCK DATA\]\s*/, '')
+              .split('. ')
+              .map((sentence, index, array) => (
+                <p key={index} className={index < array.length - 1 ? "mb-2" : ""}>
+                  {sentence.trim() + (index < array.length - 1 ? '.' : '')}
+                </p>
+              ))}
+          </div>
         </div>
 
         <div>
@@ -187,7 +220,7 @@ export default function FeatureSelectionStep({
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600" data-testid="estimated-time">
                 {language === 'en' ? 'Estimated Time:' : 'الوقت المقدر:'} <span className="font-medium">{estimates.time}</span>
               </p>
             </div>

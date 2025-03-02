@@ -160,17 +160,24 @@ export const en = {
         }
       },
       appDescription: {
-        title: 'Describe Your App Idea',
-        subtitle: "Let's create something amazing together. Tell us about your vision in detail.",
-        description: 'App Description:',
-        placeholder: 'Describe your app idea in detail. What is the main purpose? Who is it for? What problem does it solve?',
-        charactersCount: 'characters (minimum 20)',
+        title: 'Tell us about your app idea',
+        subtitle: 'Describe your app idea in detail so our AI can analyze it and estimate development time and cost',
+        description: 'App Description',
+        placeholder: 'Describe your app idea in detail. What problem does it solve? What are the main features you want? Who is your target audience? The more details you provide, the more accurate our estimate will be.',
+        charactersCount: 'characters',
         back: 'Back',
-        generate: 'Generate AI Analysis',
-        analyzing: 'Analyzing...',
+        generate: 'Generate Estimate',
+        analyzing: 'Analyzing your app idea...',
+        thinking: {
+          title: 'AI is analyzing your app idea',
+          analyzing: 'Analyzing your app description and identifying potential features...',
+          identifying: 'Determining the core functionality and technical requirements...',
+          calculating: 'Calculating development costs and time estimates...',
+          finalizing: 'Finalizing your personalized app estimate report...'
+        },
         errors: {
-          required: 'Please provide a description of your app idea',
-          tooShort: 'Please provide a more detailed description (at least 20 characters)'
+          required: 'Please describe your app idea',
+          tooShort: 'Please provide at least 20 characters'
         }
       },
       featureSelection: {
