@@ -167,6 +167,35 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
   doc.text(`Total Estimated Hours: ${reportData.totalHours}`, margin, yPos);
   yPos += lineHeight;
   doc.text(`Total Estimated Cost: $${reportData.totalCost}`, margin, yPos);
+  
+  // Add contact information at the bottom
+  yPos += lineHeight * 3;
+  doc.setFontSize(14);
+  doc.setTextColor(44, 62, 80); // Dark blue color
+  doc.text('Contact Information', margin, yPos);
+  yPos += lineHeight;
+  
+  doc.setFontSize(12);
+  doc.text('For any inquiries about your estimate or to get started with your project:', margin, yPos);
+  yPos += lineHeight * 1.5;
+  
+  // Contact details with icons (simulated with special characters)
+  doc.setFontSize(11);
+  doc.setTextColor(52, 73, 94);
+  doc.text('✉ Email: Aliodat@aviniti.app', margin, yPos);
+  yPos += lineHeight;
+  doc.text('☎ Phone: +962 790 685 302', margin, yPos);
+  
+  // Add a footer line
+  yPos += lineHeight * 1.5;
+  doc.setDrawColor(52, 152, 219); // Blue line
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+  
+  // Small text below the line
+  yPos += lineHeight;
+  doc.setFontSize(9);
+  doc.setTextColor(127, 140, 141); // Light gray color
+  doc.text('Thank you for choosing Aviniti for your software development needs.', pageWidth / 2, yPos, { align: 'center' });
 
   // Convert to Buffer
   return Buffer.from(doc.output('arraybuffer'));
