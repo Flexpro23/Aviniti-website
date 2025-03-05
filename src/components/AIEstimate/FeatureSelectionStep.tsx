@@ -58,24 +58,40 @@ export default function FeatureSelectionStep({
       return { cost: language === 'en' ? '$0' : '0 دولار', time: language === 'en' ? '0 days' : '0 يوم' };
     }
     
+    // For debugging - log all cost strings and their extracted values
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Cost calculation debugging:');
+      selectedFeatures.forEach(feature => {
+        const costString = feature.costEstimate;
+        const match = costString.match(/\$([0-9,]+)/);
+        const extractedValue = match && match[1] ? parseInt(match[1].replace(/,/g, '')) : 'No match';
+        console.log(`Feature: ${feature.name}, Cost string: ${costString}, Extracted: ${extractedValue}`);
+      });
+    }
+    
     const costSum = selectedFeatures.reduce((total, feature) => {
+      // Extract numeric value from cost strings like "$3,000" or "$500"
       const costString = feature.costEstimate;
-      const match = costString.match(/\$(\d{1,3}(,\d{3})*)/);
+      // Match any number after the $ symbol, with optional commas
+      const match = costString.match(/\$([0-9,]+)/);
       if (match && match[1]) {
+        // Remove commas and convert to integer
         return total + parseInt(match[1].replace(/,/g, ''));
       }
       return total;
     }, 0);
     
-    // Extract actual time estimates from feature data rather than using a formula
+    // Extract actual time estimates from feature data
     const timeEstimates = selectedFeatures.map(feature => {
       const timeString = feature.timeEstimate;
+      // Match the first number in strings like "10 days" or "2-3 days"
       const match = timeString.match(/(\d+)/);
       return match ? parseInt(match[1]) : 0;
     });
     
     // Calculate time range with parallelization factor
-    const parallelizationFactor = 0.7;
+    // Not all tasks need to be done sequentially - some can be done in parallel
+    const parallelizationFactor = 0.7; // Assume 30% efficiency from parallelization
     const totalDays = Math.ceil(
       timeEstimates.reduce((sum, time) => sum + time, 0) * parallelizationFactor
     );
