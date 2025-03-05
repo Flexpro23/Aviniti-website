@@ -35,10 +35,9 @@ const BASE_COSTS = {
   "Messaging": { hours: 40, multiplier: 1.2 },
   "Location Services": { hours: 30, multiplier: 1.1 },
   "Offline Support": { hours: 35, multiplier: 1.2 },
-  "Deployment (iOS)": { hours: 0, cost: 200 },
-  "Deployment (Android)": { hours: 0, cost: 200 },
-  "Deployment (Web)": { hours: 0, cost: 200 },
-  "Deployment (Desktop)": { hours: 0, cost: 200 },
+  "Deployment (iOS)": { hours: 0, cost: 450 },
+  "Deployment (Android)": { hours: 0, cost: 350 },
+  "Deployment (Web)": { hours: 0, cost: 300 },
 };
 
 interface ReportData {

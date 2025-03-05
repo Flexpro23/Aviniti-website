@@ -32,8 +32,7 @@ export default function AppDescriptionStep({
   const platformOptions = [
     { id: 'ios', name: 'iOS', cost: '$450', days: '14 days' },
     { id: 'android', name: 'Android', cost: '$350', days: '14 days' },
-    { id: 'web', name: 'Web Application', cost: '$300', days: '14 days' },
-    { id: 'desktop', name: 'Desktop Application', cost: '$200', days: '14 days' }
+    { id: 'web', name: 'Web Application', cost: '$300', days: '14 days' }
   ];
 
   // Random thinking messages to display during AI analysis
@@ -67,9 +66,7 @@ export default function AppDescriptionStep({
       }
     };
 
-    if (process.env.NODE_ENV === 'development') {
-      checkApiStatus();
-    }
+    checkApiStatus();
   }, []);
   
   // Update the thinking message every few seconds during processing
@@ -119,8 +116,8 @@ export default function AppDescriptionStep({
         {t.aiEstimate.steps.appDescription.subtitle}
       </p>
 
-      {/* API Status Indicator (development only) */}
-      {process.env.NODE_ENV === 'development' && apiStatus.checked && (
+      {/* API Status Indicator */}
+      {apiStatus.checked && (
         <div className="flex items-center justify-end mb-2">
           {apiStatus.working ? 
             <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">

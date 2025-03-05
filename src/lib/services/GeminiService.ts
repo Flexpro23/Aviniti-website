@@ -133,7 +133,6 @@ Platform-Specific Features > iOS > Haptic Feedback - $250 (3 days)
 Deployment > Deployment (iOS) - $450 (14 days)
 Deployment > Deployment (Android) - $350 (14 days)
 Deployment > Deployment (Web) - $300 (14 days)
-Deployment > Deployment (Desktop) - $200 (14 days)
 
 Ready-Made App Solutions > Delivery App Solution - $10,000 (35 days)
 Ready-Made App Solutions > Kindergarten Management App Solution - $8,000 (35 days)
@@ -210,7 +209,7 @@ Your task is to analyze the user's app description VERY SPECIFICALLY and provide
 
 2. Exactly 4-6 essential features necessary for THIS app based on the user's description.
    - ALWAYS include "UI/UX Design" as an essential feature, as all apps require design (use $500 for 10 days)
-   - ALWAYS include the deployment platforms selected by the user (${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web, Desktop'})
+   - ALWAYS include the deployment platforms selected by the user (${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web'})
    - Include appropriate authentication options (Email, Phone, Social Media) based on the app requirements, each at $200
    - Select remaining features that directly address the core functionality described
    - DO NOT use generic features unless they're truly essential
@@ -225,10 +224,9 @@ EXTREMELY IMPORTANT: You MUST use the EXACT prices and timeframes from the prici
 - Authentication (Social Media) should be $200 (1 day)
 - Search & Filtering (Advanced) should be $700 (7 days)
 - UI/UX Design should use the appropriate pricing from the UI/UX Design section
-- Deployment (iOS) should be $200 (14 days)
-- Deployment (Android) should be $200 (14 days)
-- Deployment (Web) should be $200 (14 days)
-- Deployment (Desktop) should be $200 (14 days)
+- Deployment (iOS) should be $450 (14 days)
+- Deployment (Android) should be $350 (14 days)
+- Deployment (Web) should be $300 (14 days)
 
 The app description is:
 ${appDescription}
@@ -350,8 +348,7 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
   const platformMap: Record<string, {name: string, description: string, cost: number}> = {
     'ios': { name: "Deployment (iOS)", description: "App store submission and deployment process for iOS", cost: 450 },
     'android': { name: "Deployment (Android)", description: "Google Play store submission and deployment process", cost: 350 },
-    'web': { name: "Deployment (Web)", description: "Web hosting and deployment process", cost: 300 },
-    'desktop': { name: "Deployment (Desktop)", description: "Desktop app packaging and distribution", cost: 200 }
+    'web': { name: "Deployment (Web)", description: "Web hosting and deployment process", cost: 300 }
   };
   
   // Create deployment features based on selected platforms or default to iOS and Android
