@@ -40,7 +40,9 @@ interface RawAnalysisResult {
 const PRICING_SYSTEM_INSTRUCTION = `
 Use the following pricing schedule to provide accurate app development estimates:
 
-User Authentication & Authorization > Secure Login/Registration > Email, Phone, Social Media - $200 (1 day)
+User Authentication & Authorization > Authentication (Email) - $200 (1 day)
+User Authentication & Authorization > Authentication (Phone) - $200 (1 day)
+User Authentication & Authorization > Authentication (Social Media) - $200 (1 day)
 User Authentication & Authorization > Multi-Factor Authentication (2FA/MFA) - $200 (1 day)
 User Authentication & Authorization > Biometric Authentication > Fingerprint, Face ID - $300 (2 days)
 User Authentication & Authorization > Password Reset/Recovery Flows - $100 (1 day)
@@ -128,7 +130,10 @@ Advanced Features > AI-Powered Features > AI Powered image editing - $3,500 (16 
 Advanced Features > AI-Powered Features > Natural Language Processing (NLP) - $4,000 (20 days)
 
 Platform-Specific Features > iOS > Haptic Feedback - $250 (3 days)
-Deployment > Deployment to Platform - $500 (14 days)
+Deployment > Deployment (iOS) - $200 (14 days)
+Deployment > Deployment (Android) - $200 (14 days)
+Deployment > Deployment (Web) - $200 (14 days)
+Deployment > Deployment (Desktop) - $200 (14 days)
 
 Ready-Made App Solutions > Delivery App Solution - $10,000 (35 days)
 Ready-Made App Solutions > Kindergarten Management App Solution - $8,000 (35 days)
@@ -201,8 +206,8 @@ Your task is to analyze the user's app description VERY SPECIFICALLY and provide
 
 2. Exactly 4-6 essential features necessary for THIS app based on the user's description.
    - ALWAYS include "UI/UX Design" as an essential feature, as all apps require design (use $500 for 10 days)
-   - ALWAYS include "Deployment to Platform" as an essential feature
-   - Include core authentication or user management features if appropriate
+   - For each platform selected by the user (iOS, Android, Web, Desktop), include the corresponding "Deployment (Platform)" feature at $200 each
+   - Include appropriate authentication options (Email, Phone, Social Media) based on the app requirements, each at $200
    - Select remaining features that directly address the core functionality described
    - DO NOT use generic features unless they're truly essential
 
@@ -211,10 +216,15 @@ Your task is to analyze the user's app description VERY SPECIFICALLY and provide
    - Consider features that would enhance user engagement or monetization
 
 EXTREMELY IMPORTANT: You MUST use the EXACT prices and timeframes from the pricing schedule I provided in the system instructions. For example:
-- User Authentication should be $200 (1 day)
+- Authentication (Email) should be $200 (1 day)
+- Authentication (Phone) should be $200 (1 day)
+- Authentication (Social Media) should be $200 (1 day)
 - Search & Filtering (Advanced) should be $700 (7 days)
 - UI/UX Design should use the appropriate pricing from the UI/UX Design section
-- Deployment to Platform should be $500 (14 days)
+- Deployment (iOS) should be $200 (14 days)
+- Deployment (Android) should be $200 (14 days)
+- Deployment (Web) should be $200 (14 days)
+- Deployment (Desktop) should be $200 (14 days)
 
 The app description is:
 ${appDescription}
@@ -323,90 +333,114 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
 
 // Fallback function in case the API fails
 export function generateMockAnalysis(appDescription: string): AIAnalysisResult {
+  // This is a mock implementation that returns hardcoded data for testing or when the API is unavailable
   console.log('Using mock analysis as fallback');
   
-  // Create a clear mock data indicator that will display in the UI
-  const mockDataIndicator = "[MOCK DATA] ";
-  
-  // Return a mock analysis with placeholder data
+  const mockFeatures: Array<Feature> = [
+    {
+      id: "essential-1",
+      name: "UI/UX Design",
+      description: "Comprehensive application design with user research and wireframes",
+      purpose: "Design",
+      costEstimate: "$500",
+      timeEstimate: "10 days",
+      selected: true
+    },
+    {
+      id: "essential-2",
+      name: "Authentication (Email)",
+      description: "Secure user authentication using email and password",
+      purpose: "Security",
+      costEstimate: "$200",
+      timeEstimate: "1 day",
+      selected: true
+    },
+    {
+      id: "essential-3",
+      name: "Authentication (Social Media)",
+      description: "Login using social media accounts",
+      purpose: "User Experience",
+      costEstimate: "$200",
+      timeEstimate: "1 day",
+      selected: true
+    },
+    {
+      id: "essential-4",
+      name: "Deployment (iOS)",
+      description: "App store submission and deployment process for iOS",
+      purpose: "Launch",
+      costEstimate: "$200",
+      timeEstimate: "14 days",
+      selected: true
+    },
+    {
+      id: "essential-5",
+      name: "Deployment (Android)",
+      description: "Google Play store submission and deployment process",
+      purpose: "Launch",
+      costEstimate: "$200",
+      timeEstimate: "14 days",
+      selected: true
+    },
+    {
+      id: "essential-6",
+      name: "User Profiles & Personalization",
+      description: "Customizable user profiles with preferences",
+      purpose: "User Experience",
+      costEstimate: "$250",
+      timeEstimate: "2 days",
+      selected: true
+    },
+  ];
+
+  const mockEnhancementFeatures: Array<Feature> = [
+    {
+      id: "enhancement-1",
+      name: "Push Notifications",
+      description: "Real-time alerts and notifications for users",
+      purpose: "Engagement",
+      costEstimate: "$550",
+      timeEstimate: "4 days",
+      selected: false
+    },
+    {
+      id: "enhancement-2",
+      name: "Analytics Integration",
+      description: "Track user behavior and app performance",
+      purpose: "Insights",
+      costEstimate: "$800",
+      timeEstimate: "7 days",
+      selected: false
+    },
+    {
+      id: "enhancement-3",
+      name: "Offline Mode",
+      description: "Basic functionality when offline",
+      purpose: "User Experience",
+      costEstimate: "$850",
+      timeEstimate: "7 days",
+      selected: false
+    },
+    {
+      id: "enhancement-4",
+      name: "In-App Purchases",
+      description: "Monetization through premium features",
+      purpose: "Revenue",
+      costEstimate: "$1,000",
+      timeEstimate: "10 days",
+      selected: false
+    }
+  ];
+
+  // Create a mock overview based on the app description or use a fallback message
+  const mockOverview = appDescription 
+    ? `[MOCK DATA] Your app idea appears to be about ${appDescription.substring(0, 40)}... This is a mock analysis that would normally be generated using AI based on your complete description. The mock includes updated pricing for authentication methods ($200 each) and platform deployment options ($200 each).` 
+    : "[MOCK DATA] This is a placeholder analysis. In a real scenario, our AI would analyze your app description and provide detailed insights.";
+
   return {
-    appOverview: mockDataIndicator + "Your mobile marketplace application aims to bridge the gap between local service providers and consumers who need reliable services in their area. By creating a trusted platform for discovery, booking, and reviews, you're solving the significant problem of finding dependable local services that many consumers face. The app targets urban professionals seeking services and small local businesses looking to expand their customer base, operating on a commission-based revenue model where you take a percentage of each successful transaction. Implementation challenges include building a robust review system that establishes trust, integrating secure payment processing, and developing an intuitive matching algorithm that connects users with the most relevant service providers.",
-    essentialFeatures: [
-      {
-        id: "essential-1",
-        name: "User Authentication",
-        description: "Secure login and registration system with email and social media options",
-        purpose: "Authentication",
-        costEstimate: "$200",
-        timeEstimate: "1 day",
-        selected: true
-      },
-      {
-        id: "essential-2",
-        name: "Search & Filtering (Advanced)",
-        description: "Advanced search with multiple filter options and sorting capabilities",
-        purpose: "Core Functionality",
-        costEstimate: "$700",
-        timeEstimate: "7 days",
-        selected: true
-      },
-      {
-        id: "essential-3",
-        name: "UI/UX Design",
-        description: "Complete user interface design with usability testing",
-        purpose: "User Experience",
-        costEstimate: "$500",
-        timeEstimate: "10 days",
-        selected: true
-      },
-      {
-        id: "essential-4",
-        name: "Deployment to Platform",
-        description: "App store submission and deployment process",
-        purpose: "Launch",
-        costEstimate: "$500",
-        timeEstimate: "14 days",
-        selected: true
-      },
-      {
-        id: "essential-5",
-        name: "Activity Feeds & Notifications",
-        description: "Real-time updates and notifications for user activities",
-        purpose: "User Engagement",
-        costEstimate: "$600",
-        timeEstimate: "5 days",
-        selected: true
-      }
-    ],
-    enhancementFeatures: [
-      {
-        id: "enhancement-1",
-        name: "Data Analytics",
-        description: "Tracking user behavior and app performance",
-        purpose: "Business Intelligence",
-        costEstimate: "$800",
-        timeEstimate: "7 days",
-        selected: false
-      },
-      {
-        id: "enhancement-2",
-        name: "Social Media Integration",
-        description: "Integration with social media platforms for content sharing",
-        purpose: "Marketing",
-        costEstimate: "$350",
-        timeEstimate: "4 days",
-        selected: false
-      },
-      {
-        id: "enhancement-3",
-        name: "Multi-language Support",
-        description: "Interface translation to multiple languages",
-        purpose: "Accessibility",
-        costEstimate: "$350",
-        timeEstimate: "3 days",
-        selected: false
-      }
-    ]
+    appOverview: mockOverview,
+    essentialFeatures: mockFeatures,
+    enhancementFeatures: mockEnhancementFeatures
   };
 }
 
