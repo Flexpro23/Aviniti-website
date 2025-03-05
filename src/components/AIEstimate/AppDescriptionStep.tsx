@@ -30,9 +30,9 @@ export default function AppDescriptionStep({
 
   // Platform options
   const platformOptions = [
-    { id: 'ios', name: 'iOS', cost: '$450', days: '14 days' },
-    { id: 'android', name: 'Android', cost: '$350', days: '14 days' },
-    { id: 'web', name: 'Web Application', cost: '$300', days: '14 days' }
+    { id: 'ios', name: 'iOS' },
+    { id: 'android', name: 'Android' },
+    { id: 'web', name: 'Web Application' }
   ];
 
   // Random thinking messages to display during AI analysis
@@ -221,9 +221,7 @@ export default function AppDescriptionStep({
                   <div className="ml-3 flex-grow">
                     <div className="flex justify-between">
                       <p className="text-sm font-medium text-gray-900">{platform.name}</p>
-                      <p className="text-sm font-medium text-blue-600">{platform.cost}</p>
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">Deployment time: {platform.days}</p>
                   </div>
                 </label>
               ))}
