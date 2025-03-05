@@ -130,9 +130,9 @@ Advanced Features > AI-Powered Features > AI Powered image editing - $3,500 (16 
 Advanced Features > AI-Powered Features > Natural Language Processing (NLP) - $4,000 (20 days)
 
 Platform-Specific Features > iOS > Haptic Feedback - $250 (3 days)
-Deployment > Deployment (iOS) - $200 (14 days)
-Deployment > Deployment (Android) - $200 (14 days)
-Deployment > Deployment (Web) - $200 (14 days)
+Deployment > Deployment (iOS) - $450 (14 days)
+Deployment > Deployment (Android) - $350 (14 days)
+Deployment > Deployment (Web) - $300 (14 days)
 Deployment > Deployment (Desktop) - $200 (14 days)
 
 Ready-Made App Solutions > Delivery App Solution - $10,000 (35 days)
@@ -336,9 +336,9 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
 }
 
 /**
- * Generates a mock analysis when the Gemini API is not available
- * @param appDescription The user's app description
- * @param selectedPlatforms Optional array of platform IDs selected by the user
+ * Generates a mock analysis result when the API is unavailable
+ * @param appDescription The app description text
+ * @param selectedPlatforms Optional array of selected platform IDs
  * @returns A mock analysis result
  */
 export function generateMockAnalysis(appDescription: string, selectedPlatforms?: string[]): AIAnalysisResult {
@@ -346,12 +346,12 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
   console.log('Using mock analysis as fallback');
   console.log('Mock selected platforms:', selectedPlatforms || []);
   
-  // Map platform IDs to their corresponding deployment feature names
-  const platformMap: Record<string, {name: string, description: string}> = {
-    'ios': { name: "Deployment (iOS)", description: "App store submission and deployment process for iOS" },
-    'android': { name: "Deployment (Android)", description: "Google Play store submission and deployment process" },
-    'web': { name: "Deployment (Web)", description: "Web hosting and deployment process" },
-    'desktop': { name: "Deployment (Desktop)", description: "Desktop app packaging and distribution" }
+  // Map platform IDs to their corresponding deployment feature names and costs
+  const platformMap: Record<string, {name: string, description: string, cost: number}> = {
+    'ios': { name: "Deployment (iOS)", description: "App store submission and deployment process for iOS", cost: 450 },
+    'android': { name: "Deployment (Android)", description: "Google Play store submission and deployment process", cost: 350 },
+    'web': { name: "Deployment (Web)", description: "Web hosting and deployment process", cost: 300 },
+    'desktop': { name: "Deployment (Desktop)", description: "Desktop app packaging and distribution", cost: 200 }
   };
   
   // Create deployment features based on selected platforms or default to iOS and Android
@@ -362,11 +362,11 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       name: platformMap[platform]?.name || `Deployment (${platform})`,
       description: platformMap[platform]?.description || `Deployment for ${platform} platform`,
       purpose: "Launch",
-      costEstimate: "$200",
+      costEstimate: `$${platformMap[platform]?.cost || 200}`,
       timeEstimate: "14 days",
       selected: true
   }));
-  
+
   const mockFeatures: Array<Feature> = [
     {
       id: "essential-1",

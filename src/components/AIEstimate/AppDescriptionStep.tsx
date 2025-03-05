@@ -30,9 +30,9 @@ export default function AppDescriptionStep({
 
   // Platform options
   const platformOptions = [
-    { id: 'ios', name: 'iOS', cost: '$200', days: '14 days' },
-    { id: 'android', name: 'Android', cost: '$200', days: '14 days' },
-    { id: 'web', name: 'Web Application', cost: '$200', days: '14 days' },
+    { id: 'ios', name: 'iOS', cost: '$450', days: '14 days' },
+    { id: 'android', name: 'Android', cost: '$350', days: '14 days' },
+    { id: 'web', name: 'Web Application', cost: '$300', days: '14 days' },
     { id: 'desktop', name: 'Desktop Application', cost: '$200', days: '14 days' }
   ];
 
