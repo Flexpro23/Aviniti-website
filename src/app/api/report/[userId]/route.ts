@@ -80,6 +80,7 @@ interface ReportData {
 async function generatePDF(reportData: ReportData): Promise<Buffer> {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
   
   // Title
   doc.setFontSize(24);
@@ -167,21 +168,43 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
   doc.text(`Total Estimated Hours: ${reportData.totalHours}`, margin, yPos);
   yPos += lineHeight;
   doc.text(`Total Estimated Cost: $${reportData.totalCost}`, margin, yPos);
+  yPos += lineHeight;
+  // Add total number of features
+  const totalFeatures = reportData.features.core.length + reportData.features.suggested.length;
+  doc.text(`Number of Features: ${totalFeatures}`, margin, yPos);
   
-  // Add contact information at the bottom
+  // Check if we need a new page for contact information
+  // If we're more than 80% down the page, start a new page
+  if (yPos > pageHeight * 0.8) {
+    doc.addPage();
+    yPos = margin;
+  }
+  
+  // Add contact information at the bottom - ensuring it's visible
   yPos += lineHeight * 3;
+  
+  // Add a colored background box for contact info
+  doc.setFillColor(240, 248, 255); // Light blue background
+  doc.rect(margin - 3, yPos - 5, pageWidth - (margin * 2) + 6, lineHeight * 6, 'F');
+  
+  // Add a border
+  doc.setDrawColor(52, 152, 219); // Blue border
+  doc.rect(margin - 3, yPos - 5, pageWidth - (margin * 2) + 6, lineHeight * 6, 'S');
+  
   doc.setFontSize(14);
   doc.setTextColor(44, 62, 80); // Dark blue color
   doc.text('Contact Information', margin, yPos);
   yPos += lineHeight;
   
+  // Add a note about getting started
   doc.setFontSize(12);
-  doc.text('For any inquiries about your estimate or to get started with your project:', margin, yPos);
+  doc.setTextColor(0, 0, 0); // Black for better visibility
+  doc.text('Ready to get started? Contact us to discuss your project further:', margin, yPos);
   yPos += lineHeight * 1.5;
   
   // Contact details with icons (simulated with special characters)
-  doc.setFontSize(11);
-  doc.setTextColor(52, 73, 94);
+  doc.setFontSize(12); // Slightly larger for better visibility
+  doc.setTextColor(0, 0, 0); // Black for better visibility
   doc.text('✉ Email: Aliodat@aviniti.app', margin, yPos);
   yPos += lineHeight;
   doc.text('☎ Phone: +962 790 685 302', margin, yPos);
