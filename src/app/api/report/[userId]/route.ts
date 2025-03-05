@@ -18,7 +18,9 @@ declare module 'jspdf' {
 const HOURLY_RATE = 150;
 const BASE_COSTS = {
   "User Profile": { hours: 40, multiplier: 1 },
-  "Authentication": { hours: 30, multiplier: 1 },
+  "Authentication (Email)": { hours: 0, cost: 200 },
+  "Authentication (Phone)": { hours: 0, cost: 200 },
+  "Authentication (Social Media)": { hours: 0, cost: 200 },
   "Marketplace": { hours: 60, multiplier: 1.2 },
   "Payment Processing": { hours: 40, multiplier: 1.3 },
   "Search and Filtering": { hours: 35, multiplier: 1 },
@@ -33,6 +35,10 @@ const BASE_COSTS = {
   "Messaging": { hours: 40, multiplier: 1.2 },
   "Location Services": { hours: 30, multiplier: 1.1 },
   "Offline Support": { hours: 35, multiplier: 1.2 },
+  "Deployment (iOS)": { hours: 0, cost: 200 },
+  "Deployment (Android)": { hours: 0, cost: 200 },
+  "Deployment (Web)": { hours: 0, cost: 200 },
+  "Deployment (Desktop)": { hours: 0, cost: 200 },
 };
 
 interface ReportData {
@@ -230,6 +236,13 @@ export async function POST(
     // Calculate costs and hours for features
     const calculateFeatureCost = (featureName: string) => {
       const base = BASE_COSTS[featureName as keyof typeof BASE_COSTS] || { hours: 30, multiplier: 1 };
+      
+      // For fixed-price features like Authentication and Deployment
+      if ('cost' in base) {
+        return { hours: base.hours || 0, cost: base.cost || 0 };
+      }
+      
+      // For traditional hourly-based features
       const hours = base.hours;
       const cost = Math.round(hours * HOURLY_RATE * base.multiplier);
       return { hours, cost };
@@ -257,12 +270,25 @@ export async function POST(
       };
     });
 
+    // Add deployment platforms as features
+    const platforms = userData.projectDetails?.answers?.platforms || [];
+    const deploymentFeatures = platforms.map((platform: string) => {
+      const featureName = `Deployment (${platform === 'Web Application' ? 'Web' : platform === 'Progressive Web App (PWA)' ? 'Web' : platform === 'Cross-platform Mobile' ? 'Android' : platform})`;
+      const { hours, cost } = calculateFeatureCost(featureName);
+      return {
+        name: `Deployment to ${platform}`,
+        description: `Deployment and configuration for ${platform} platform`,
+        estimatedHours: hours,
+        cost: cost
+      };
+    });
+
     // Calculate totals
-    const totalHours = [...coreFeatures, ...suggestedFeatures].reduce(
+    const totalHours = [...coreFeatures, ...suggestedFeatures, ...deploymentFeatures].reduce(
       (sum, feature) => sum + feature.estimatedHours,
       0
     );
-    const totalCost = [...coreFeatures, ...suggestedFeatures].reduce(
+    const totalCost = [...coreFeatures, ...suggestedFeatures, ...deploymentFeatures].reduce(
       (sum, feature) => sum + feature.cost,
       0
     );
@@ -280,7 +306,7 @@ export async function POST(
         integrations: userData.projectDetails?.answers?.integrations || [],
       },
       features: {
-        core: coreFeatures,
+        core: [...coreFeatures, ...deploymentFeatures],
         suggested: suggestedFeatures,
       },
       clientInfo: userData.personalDetails || {},

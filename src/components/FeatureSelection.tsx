@@ -22,8 +22,16 @@ export default function FeatureSelection({
 }: FeatureSelectionProps) {
   const [selectedCoreFeatures, setSelectedCoreFeatures] = useState<string[]>(coreFeatures);
   const [selectedSuggestedFeatures, setSelectedSuggestedFeatures] = useState<string[]>(suggestedFeatures.map(f => f.name));
+  const [selectedAuthMethods, setSelectedAuthMethods] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Authentication methods
+  const authenticationMethods = [
+    { id: "auth-email", name: "Authentication (Email)", description: "Secure user authentication via email and password", cost: 200 },
+    { id: "auth-phone", name: "Authentication (Phone)", description: "Secure user authentication via phone number", cost: 200 },
+    { id: "auth-social", name: "Authentication (Social Media)", description: "Login options via social media platforms", cost: 200 }
+  ];
 
   // Core features descriptions (example - you can customize these)
   const coreFeatureDescriptions: Record<string, string> = {
@@ -47,8 +55,14 @@ export default function FeatureSelection({
     }
 
     try {
+      // Create a combined list of core features that includes selected authentication methods
+      const combinedCoreFeatures = [
+        ...selectedCoreFeatures,
+        ...selectedAuthMethods
+      ];
+
       const selectedFeatures: SelectedFeatures = {
-        core: selectedCoreFeatures,
+        core: combinedCoreFeatures,
         suggested: suggestedFeatures.filter(f => selectedSuggestedFeatures.includes(f.name))
       };
 
@@ -89,6 +103,55 @@ export default function FeatureSelection({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Authentication Methods Section */}
+            <div className="bg-neutral-50 rounded-lg p-4">
+              <div className="flex items-center mb-2">
+                <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+                  <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-primary-900">Authentication Methods</h3>
+              </div>
+              <p className="text-neutral-600 text-xs mb-3">
+                Select authentication methods for your users. Each method costs $200.
+              </p>
+              <div className="space-y-2">
+                {authenticationMethods.map((method) => (
+                  <label 
+                    key={method.id}
+                    className={`flex items-start p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                      selectedAuthMethods.includes(method.name)
+                        ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                        : 'border-neutral-200 hover:border-primary-300 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex-shrink-0 mt-0.5">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-4 w-4 text-primary-600 rounded border-neutral-300 focus:ring-primary-500"
+                        checked={selectedAuthMethods.includes(method.name)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedAuthMethods([...selectedAuthMethods, method.name]);
+                          } else {
+                            setSelectedAuthMethods(selectedAuthMethods.filter(m => m !== method.name));
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="ml-3 flex-grow">
+                      <div className="flex justify-between">
+                        <p className="text-sm font-medium text-neutral-800">{method.name}</p>
+                        <p className="text-sm font-semibold text-primary-600">${method.cost}</p>
+                      </div>
+                      <p className="text-xs text-neutral-600 mt-0.5">{method.description}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Core Features Section */}
             <div className="bg-neutral-50 rounded-lg p-4">
               <div className="flex items-center mb-2">

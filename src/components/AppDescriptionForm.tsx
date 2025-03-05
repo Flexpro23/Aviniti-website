@@ -406,6 +406,60 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
             </div>
 
             <div>
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-neutral-800">
+                  Deployment Platforms *
+                </label>
+                <p className="text-neutral-500 text-sm mt-1">
+                  Select the platforms where you want to deploy your app. Each platform costs $200.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {options.platforms.map((platform) => (
+                  <label
+                    key={platform}
+                    className={`flex items-start p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                      appDetails.answers.platforms.includes(platform)
+                        ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                        : 'border-neutral-200 hover:border-primary-300 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex-shrink-0 mt-0.5">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-4 w-4 text-primary-600 rounded border-neutral-300 focus:ring-primary-500"
+                        checked={appDetails.answers.platforms.includes(platform)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAppDetails({
+                              ...appDetails,
+                              answers: {
+                                ...appDetails.answers,
+                                platforms: [...appDetails.answers.platforms, platform]
+                              }
+                            });
+                          } else {
+                            setAppDetails({
+                              ...appDetails,
+                              answers: {
+                                ...appDetails.answers,
+                                platforms: appDetails.answers.platforms.filter(p => p !== platform)
+                              }
+                            });
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="ml-3 flex-grow">
+                      <p className="text-sm font-medium text-neutral-800">{platform}</p>
+                      <p className="text-xs text-neutral-600 mt-0.5">Deploy your app to {platform} ($200)</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <div className="mb-6">
                 <label htmlFor="competitors" className="block text-lg font-medium text-neutral-800">
                   Market Research *
