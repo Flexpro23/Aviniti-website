@@ -163,38 +163,20 @@ export const analyzeAppWithGemini = async (
   selectedPlatforms?: string[]
 ): Promise<AIAnalysisResult> => {
   try {
-    console.log(`Using Gemini model: ${GEMINI_MODEL}`);
+    console.log('Analyzing app with Gemini...');
     console.log('Selected platforms:', selectedPlatforms || []);
     
-    // Use the provided API key if given, otherwise use the default from environment or hardcoded
-    const genAI = new GoogleGenerativeAI(apiKey || GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ 
-      model: GEMINI_MODEL,
-      generationConfig: {
-        temperature: 0.4,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 2048,
-      },
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ],
-    });
+    // Use provided API key or fallback to environment variable
+    const key = apiKey || GEMINI_API_KEY;
+    
+    if (!key || key.trim() === '') {
+      console.error('No Gemini API key provided');
+      throw new Error('API key is required. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment variables.');
+    }
+    
+    // Initialize with the key
+    const tempGenAI = new GoogleGenerativeAI(key);
+    const tempModel = tempGenAI.getGenerativeModel({ model: GEMINI_MODEL });
 
     const prompt = `
 You are an expert in mobile and web app development cost estimation.
@@ -262,7 +244,7 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
     console.log('Using model:', GEMINI_MODEL);
 
     // Create a chat session
-    const chat = model.startChat({
+    const chat = tempModel.startChat({
       history: [
         {
           role: "user",
@@ -462,6 +444,15 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
  */
 export const testGeminiApiConnection = async (): Promise<{ success: boolean; message: string }> => {
   try {
+    // Check if API key is available
+    if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === '') {
+      console.error('No Gemini API key provided');
+      return {
+        success: false,
+        message: 'API key is missing. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment variables.',
+      };
+    }
+    
     console.log(`Testing connection to Gemini API with model: ${GEMINI_MODEL}`);
     
     // Create a minimal prompt to test the API
