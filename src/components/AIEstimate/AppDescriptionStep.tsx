@@ -20,12 +20,21 @@ export default function AppDescriptionStep({
 }: AppDescriptionStepProps) {
   const { t, language } = useLanguage();
   const [description, setDescription] = useState(initialData.description);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(initialData.selectedPlatforms || []);
   const [error, setError] = useState('');
   const [apiStatus, setApiStatus] = useState<{checked: boolean, working: boolean, message: string}>({
     checked: false,
     working: false,
     message: ''
   });
+
+  // Platform options
+  const platformOptions = [
+    { id: 'ios', name: 'iOS', cost: '$200', days: '14 days' },
+    { id: 'android', name: 'Android', cost: '$200', days: '14 days' },
+    { id: 'web', name: 'Web Application', cost: '$200', days: '14 days' },
+    { id: 'desktop', name: 'Desktop Application', cost: '$200', days: '14 days' }
+  ];
 
   // Random thinking messages to display during AI analysis
   const thinkingMessages = [
@@ -91,9 +100,14 @@ export default function AppDescriptionStep({
       return;
     }
 
+    if (selectedPlatforms.length === 0) {
+      setError("Please select at least one platform for deployment");
+      return;
+    }
+
     setError('');
     setThinkingIndex(0); // Reset thinking index before processing
-    onSubmit({ description });
+    onSubmit({ description, selectedPlatforms });
   };
 
   return (
@@ -175,6 +189,48 @@ export default function AppDescriptionStep({
             <p className="mt-2 text-sm text-gray-500">
               {`${description.length} ${t.aiEstimate.steps.appDescription.charactersCount}`}
             </p>
+          </div>
+
+          {/* Platform Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Deployment Platforms <span className="text-red-500">*</span>
+            </label>
+            <p className="text-sm text-gray-500 mb-3">
+              Select the platforms where you want to deploy your app:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {platformOptions.map((platform) => (
+                <label
+                  key={platform.id}
+                  className={`flex items-start p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
+                    selectedPlatforms.includes(platform.id)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    checked={selectedPlatforms.includes(platform.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedPlatforms([...selectedPlatforms, platform.id]);
+                      } else {
+                        setSelectedPlatforms(selectedPlatforms.filter(id => id !== platform.id));
+                      }
+                    }}
+                  />
+                  <div className="ml-3 flex-grow">
+                    <div className="flex justify-between">
+                      <p className="text-sm font-medium text-gray-900">{platform.name}</p>
+                      <p className="text-sm font-medium text-blue-600">{platform.cost}</p>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">Deployment time: {platform.days}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200">

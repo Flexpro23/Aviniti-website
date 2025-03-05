@@ -30,7 +30,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
       newErrors.emailAddress = t.aiEstimate.steps.userInfo.errors.emailInvalid;
     }
 
-    // Phone is optional in the new flow
+    // Phone is completely optional (no validation)
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

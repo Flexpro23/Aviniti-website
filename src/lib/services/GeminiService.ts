@@ -154,14 +154,18 @@ When providing estimates, format costs as strings with dollar signs (e.g., "$1,0
 /**
  * Analyzes an app description using Gemini's generative AI
  * @param description The user's app description
+ * @param apiKey Optional API key to use instead of the default
+ * @param selectedPlatforms Optional array of platform IDs selected by the user
  * @returns A promise that resolves to the analysis result
  */
 export const analyzeAppWithGemini = async (
   appDescription: string,
-  apiKey?: string
+  apiKey?: string,
+  selectedPlatforms?: string[]
 ): Promise<AIAnalysisResult> => {
   try {
     console.log(`Using Gemini model: ${GEMINI_MODEL}`);
+    console.log('Selected platforms:', selectedPlatforms || []);
     
     // Use the provided API key if given, otherwise use the default from environment or hardcoded
     const genAI = new GoogleGenerativeAI(apiKey || GEMINI_API_KEY);
@@ -206,7 +210,7 @@ Your task is to analyze the user's app description VERY SPECIFICALLY and provide
 
 2. Exactly 4-6 essential features necessary for THIS app based on the user's description.
    - ALWAYS include "UI/UX Design" as an essential feature, as all apps require design (use $500 for 10 days)
-   - For each platform selected by the user (iOS, Android, Web, Desktop), include the corresponding "Deployment (Platform)" feature at $200 each
+   - ALWAYS include the deployment platforms selected by the user (${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web, Desktop'})
    - Include appropriate authentication options (Email, Phone, Social Media) based on the app requirements, each at $200
    - Select remaining features that directly address the core functionality described
    - DO NOT use generic features unless they're truly essential
@@ -331,10 +335,37 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
   }
 }
 
-// Fallback function in case the API fails
-export function generateMockAnalysis(appDescription: string): AIAnalysisResult {
+/**
+ * Generates a mock analysis when the Gemini API is not available
+ * @param appDescription The user's app description
+ * @param selectedPlatforms Optional array of platform IDs selected by the user
+ * @returns A mock analysis result
+ */
+export function generateMockAnalysis(appDescription: string, selectedPlatforms?: string[]): AIAnalysisResult {
   // This is a mock implementation that returns hardcoded data for testing or when the API is unavailable
   console.log('Using mock analysis as fallback');
+  console.log('Mock selected platforms:', selectedPlatforms || []);
+  
+  // Map platform IDs to their corresponding deployment feature names
+  const platformMap: Record<string, {name: string, description: string}> = {
+    'ios': { name: "Deployment (iOS)", description: "App store submission and deployment process for iOS" },
+    'android': { name: "Deployment (Android)", description: "Google Play store submission and deployment process" },
+    'web': { name: "Deployment (Web)", description: "Web hosting and deployment process" },
+    'desktop': { name: "Deployment (Desktop)", description: "Desktop app packaging and distribution" }
+  };
+  
+  // Create deployment features based on selected platforms or default to iOS and Android
+  const deploymentFeatures = (selectedPlatforms && selectedPlatforms.length > 0 
+    ? selectedPlatforms 
+    : ['ios', 'android']).map((platform, index) => ({
+      id: `essential-${4 + index}`,
+      name: platformMap[platform]?.name || `Deployment (${platform})`,
+      description: platformMap[platform]?.description || `Deployment for ${platform} platform`,
+      purpose: "Launch",
+      costEstimate: "$200",
+      timeEstimate: "14 days",
+      selected: true
+  }));
   
   const mockFeatures: Array<Feature> = [
     {
@@ -364,26 +395,10 @@ export function generateMockAnalysis(appDescription: string): AIAnalysisResult {
       timeEstimate: "1 day",
       selected: true
     },
+    // Replace the static deployment features with the dynamic ones from selected platforms
+    ...deploymentFeatures,
     {
-      id: "essential-4",
-      name: "Deployment (iOS)",
-      description: "App store submission and deployment process for iOS",
-      purpose: "Launch",
-      costEstimate: "$200",
-      timeEstimate: "14 days",
-      selected: true
-    },
-    {
-      id: "essential-5",
-      name: "Deployment (Android)",
-      description: "Google Play store submission and deployment process",
-      purpose: "Launch",
-      costEstimate: "$200",
-      timeEstimate: "14 days",
-      selected: true
-    },
-    {
-      id: "essential-6",
+      id: `essential-${deploymentFeatures.length + 4}`,
       name: "User Profiles & Personalization",
       description: "Customizable user profiles with preferences",
       purpose: "User Experience",

@@ -17,6 +17,7 @@ export type PersonalDetails = {
 
 export type AppDescription = {
   description: string;
+  selectedPlatforms: string[];
 };
 
 export type Feature = {
@@ -58,7 +59,8 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     companyName: ''
   });
   const [appDescription, setAppDescription] = useState<AppDescription>({
-    description: ''
+    description: '',
+    selectedPlatforms: []
   });
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -92,14 +94,20 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       return;
     }
 
+    if (!description.selectedPlatforms || description.selectedPlatforms.length === 0) {
+      console.error('No platforms selected for deployment');
+      return;
+    }
+
     setAppDescription(description);
     setIsProcessing(true);
     
     try {
       console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
+      console.log('Selected platforms:', description.selectedPlatforms);
       
       // Try to get analysis from the Gemini API
-      const analysis = await analyzeAppWithGemini(description.description);
+      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms);
       console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
       
       setAiAnalysisResult(analysis);
@@ -119,7 +127,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       
       // Fallback to mock analysis when API fails
       console.warn(`Using mock analysis due to ${GEMINI_MODEL} API failure`);
-      const mockAnalysis = generateMockAnalysis(description.description);
+      const mockAnalysis = generateMockAnalysis(description.description, description.selectedPlatforms);
       setAiAnalysisResult(mockAnalysis);
       setStep(3);
     } finally {
