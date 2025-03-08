@@ -69,6 +69,8 @@ export default function Navbar() {
                 className={`inline-flex items-center justify-center p-2 rounded-md transition-colors ${
                   isScrolled ? 'text-primary-900 hover:text-primary-600' : 'text-white hover:text-blue-200'
                 }`}
+                aria-label={isMenuOpen ? "Close main menu" : "Open main menu"}
+                aria-expanded={isMenuOpen}
               >
                 <svg
                   className="h-6 w-6"

@@ -158,7 +158,7 @@ export default function FAQClient() {
         <div className="max-w-4xl mx-auto">
           {faqCategories.map((category, categoryIndex) => (
             <div key={categoryIndex} className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 text-blue-700">{category.title}</h2>
+              <h2 className="text-2xl font-bold mb-6 text-blue-800">{category.title}</h2>
               {category.faqs.map((faq, faqIndex) => (
                 <div key={faqIndex} className="mb-6 bg-white rounded-lg shadow-md p-6">
                   <h3 className="text-xl font-semibold mb-3 text-gray-800">{faq.question}</h3>

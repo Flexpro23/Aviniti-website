@@ -13,13 +13,14 @@ export default function FloatingContact({ onContactClick }: FloatingContactProps
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-blue-600 py-2 px-4 sm:py-3 shadow-lg flex flex-wrap sm:flex-nowrap justify-center gap-3">
       <button
         onClick={onContactClick}
-        className="flex items-center justify-center px-6 py-3 bg-cyan-400 hover:bg-cyan-300 text-white rounded-lg transition-colors duration-300 w-full sm:w-auto font-medium"
+        className="flex items-center justify-center px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-colors duration-300 w-full sm:w-auto font-medium"
       >
         <svg 
           className="w-5 h-5 mr-2" 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path 
             strokeLinecap="round" 
@@ -40,6 +41,7 @@ export default function FloatingContact({ onContactClick }: FloatingContactProps
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path 
             strokeLinecap="round" 

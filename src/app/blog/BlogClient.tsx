@@ -61,14 +61,14 @@ export default function BlogClient() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
                 <div className="p-6">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm font-medium text-blue-600">{post.category}</span>
+                    <span className="text-sm font-medium text-blue-700">{post.category}</span>
                     <span className="text-sm text-gray-500">{post.readTime}</span>
                   </div>
                   <h2 className="text-xl font-semibold mb-3">{post.title}</h2>
                   <p className="text-gray-600 mb-4">{post.excerpt}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">{post.date}</span>
-                    <span className="text-blue-600 font-medium">Read more →</span>
+                    <span className="text-blue-700 font-medium">Read more →</span>
                   </div>
                 </div>
               </div>

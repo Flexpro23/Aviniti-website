@@ -7,7 +7,6 @@ import Projects from '@/components/Projects';
 import Services from '@/components/Services';
 import Expertise from '@/components/Expertise';
 import About from '@/components/About';
-import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
 import AIEstimateModal from '@/components/AIEstimate/AIEstimateModal';
@@ -57,9 +56,6 @@ export default function Home() {
         </div>
         <Expertise />
         <About />
-        <div id="contact-section">
-          <Contact onContactClick={() => openContactWithSubject('General Inquiry')} />
-        </div>
       </div>
       <Footer />
       
