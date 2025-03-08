@@ -126,6 +126,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
           {/* Text Content */}
           <div className={`text-center lg:text-left ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+              <span className="block">Aviniti - AI & App Development Services</span>
               {t.hero.title} <br />
               <span className="text-blue-200">{t.hero.subtitle}</span>
             </h1>
