@@ -1,5 +1,6 @@
 'use client';
 import { useLanguage } from '@/lib/context/LanguageContext';
+import Link from 'next/link';
 
 interface NavLinksProps {
   isScrolled: boolean;
@@ -17,15 +18,21 @@ export default function NavLinks({ isScrolled, onContactClick }: NavLinksProps) 
 
   return (
     <div className={`hidden md:flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-8`}>
-      <a href="/" className={linkClasses}>
+      <Link href="/" className={linkClasses}>
         {t.navigation.home}
-      </a>
+      </Link>
       <a href="#services-section" className={linkClasses}>
         {t.navigation.services}
       </a>
       <a href="#ready-made-solutions" className={linkClasses}>
         {t.navigation.readyMadeSolutions}
       </a>
+      <Link href="/blog" className={linkClasses}>
+        Blog
+      </Link>
+      <Link href="/faq" className={linkClasses}>
+        FAQ
+      </Link>
       <a href="#about" className={linkClasses}>
         {t.navigation.about}
       </a>
