@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Aviniti - AI & App Development Services | Your Ideas, Our Reality',
     description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
-    url: 'https://aviniti.com',
+    url: 'https://aviniti.app',
     siteName: 'Aviniti',
     locale: 'en_US',
     type: 'website',
@@ -47,8 +47,8 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Organization',
               name: 'Aviniti',
-              url: 'https://aviniti.com',
-              logo: 'https://aviniti.com/logo.svg',
+              url: 'https://aviniti.app',
+              logo: 'https://aviniti.app/logo.svg',
               description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
               address: {
                 '@type': 'PostalAddress',
@@ -59,7 +59,7 @@ export default function RootLayout({
               contactPoint: {
                 '@type': 'ContactPoint',
                 contactType: 'customer service',
-                email: 'info@aviniti.com'
+                email: 'info@aviniti.app'
               },
               sameAs: [
                 'https://www.linkedin.com/company/aviniti',
