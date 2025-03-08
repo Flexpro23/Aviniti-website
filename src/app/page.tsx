@@ -39,21 +39,27 @@ export default function Home() {
   return (
     <main dir={dir} className="min-h-screen">
       <Navbar />
-      <Hero 
-        onEstimateClick={() => setIsAIEstimateOpen(true)} 
-        onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
-      />
-      <Projects />
-      <div id="services-section">
-        <Services />
-      </div>
-      <div id="ready-made-solutions">
-        <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
-      </div>
-      <Expertise />
-      <About />
-      <div id="contact-section">
-        <Contact onContactClick={() => openContactWithSubject('General Inquiry')} />
+      {/* Hero section with primary heading */}
+      <header role="banner" id="hero-section">
+        <Hero 
+          onEstimateClick={() => setIsAIEstimateOpen(true)} 
+          onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
+        />
+      </header>
+      {/* Main content sections */}
+      <div role="main">
+        <Projects />
+        <div id="services-section">
+          <Services />
+        </div>
+        <div id="ready-made-solutions">
+          <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
+        </div>
+        <Expertise />
+        <About />
+        <div id="contact-section">
+          <Contact onContactClick={() => openContactWithSubject('General Inquiry')} />
+        </div>
       </div>
       <Footer />
       

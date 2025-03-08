@@ -4,6 +4,7 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 import ImageWithFallback from './utils/ImageWithFallback';
+import Script from 'next/script';
 
 interface HeroProps {
   onEstimateClick?: () => void;
@@ -115,6 +116,28 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
 
   return (
     <section className="relative min-h-screen flex items-center py-16 sm:py-20 overflow-hidden">
+      {/* Structured Data for SEO */}
+      <Script
+        id="structured-data-organization"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            'name': 'Aviniti',
+            'description': 'Aviniti is a dynamic AI and app development company specializing in custom software solutions, mobile apps, and AI integration.',
+            'url': 'https://aviniti.app',
+            'logo': 'https://aviniti.app/logo.svg',
+            'serviceType': ['AI Development', 'App Development', 'Software Solutions'],
+            'areaServed': 'Worldwide',
+            'sameAs': [
+              'https://linkedin.com/company/aviniti',
+              'https://twitter.com/aviniti'
+            ]
+          })
+        }}
+      />
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-20"></div>
@@ -126,9 +149,9 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
           {/* Text Content */}
           <div className={`text-center lg:text-left ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
-              <span className="block">Aviniti - AI & App Development Services</span>
-              {t.hero.title} <br />
-              <span className="text-blue-200">{t.hero.subtitle}</span>
+              <span className="block mb-2">Aviniti - AI & App Development Services</span>
+              <span className="block">{t.hero.title}</span>
+              <span className="block text-blue-200">{t.hero.subtitle}</span>
             </h1>
             <p className="text-xl sm:text-2xl font-medium text-blue-100 mb-2">
               {t.hero.description}
