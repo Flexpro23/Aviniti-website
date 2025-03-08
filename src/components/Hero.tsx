@@ -19,17 +19,17 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
   // App screens to showcase in the phone frame - using actual app screenshots
   const appScreens = [
     {
-      src: '/company-logos/flex-pro.png',
+      src: '/company-logos/flex-pro.webp',
       alt: 'Flex Pro App',
       color: 'bg-blue-500'
     },
     {
-      src: '/company-logos/secrtary.png',
+      src: '/company-logos/secrtary.webp',
       alt: 'Secretary App',
       color: 'bg-purple-500'
     },
     {
-      src: '/company-logos/farm-house.png',
+      src: '/company-logos/farm-house.webp',
       alt: 'Farm House App',
       color: 'bg-green-500',
       customStyle: {
@@ -38,7 +38,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
       }
     },
     {
-      src: '/company-logos/skinverse.png',
+      src: '/company-logos/skinverse.webp',
       alt: 'Skinverse App',
       color: 'bg-pink-500'
     }
@@ -48,69 +48,65 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentScreen((prevScreen) => (prevScreen + 1) % appScreens.length);
-    }, 3000); // Change screen every 3 seconds
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [appScreens.length]);
 
-  // 3D parallax effect on mouse move
+  // Create a separate effect for mouse interactions to reduce unnecessary re-renders
   useEffect(() => {
-    const phone = phoneRef.current;
-    if (!phone) return;
+    const phoneElement = phoneRef.current;
+    if (!phoneElement) return;
 
+    // Handle phone element mouse interactions
     const handleMouseMove = (e: MouseEvent) => {
-      const { left, top, width, height } = phone.getBoundingClientRect();
-      const centerX = left + width / 2;
-      const centerY = top + height / 2;
+      if (!phoneElement) return;
       
-      // Calculate distance from center as percentage
-      const percentX = (e.clientX - centerX) / (window.innerWidth / 2) * 10;
-      const percentY = (e.clientY - centerY) / (window.innerHeight / 2) * 10;
+      // Calculate relative position
+      const rect = phoneElement.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
       
-      // Apply smooth transformation
-      phone.style.transform = `perspective(1000px) rotateY(${percentX}deg) rotateX(${-percentY}deg) translateZ(50px)`;
+      // Apply subtle 3D transform
+      phoneElement.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
     };
-
+    
     const handleMouseLeave = () => {
-      phone.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateZ(0px)';
-      phone.style.transition = 'all 0.5s ease-out';
+      if (!phoneElement) return;
+      // Reset transform on mouse leave - with smoother transition
+      phoneElement.style.transition = 'transform 0.5s ease-out';
+      phoneElement.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
     };
-
+    
     const handleMouseEnter = () => {
-      phone.style.transition = 'all 0.2s ease-out';
+      if (!phoneElement) return;
+      // Remove transition on mouse enter for responsive movement
+      phoneElement.style.transition = 'none';
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    phone.addEventListener('mouseleave', handleMouseLeave);
-    phone.addEventListener('mouseenter', handleMouseEnter);
-
+    // Add event listeners
+    phoneElement.addEventListener('mousemove', handleMouseMove);
+    phoneElement.addEventListener('mouseleave', handleMouseLeave);
+    phoneElement.addEventListener('mouseenter', handleMouseEnter);
+    
+    // Cleanup
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      if (phone) {
-        phone.removeEventListener('mouseleave', handleMouseLeave);
-        phone.removeEventListener('mouseenter', handleMouseEnter);
-      }
+      phoneElement.removeEventListener('mousemove', handleMouseMove);
+      phoneElement.removeEventListener('mouseleave', handleMouseLeave);
+      phoneElement.removeEventListener('mouseenter', handleMouseEnter);
     };
   }, []);
 
-  // Scroll to Solutions section
+  // Memoize these functions to prevent unnecessary rerenders
   const scrollToSolutions = () => {
-    const solutionsSection = document.getElementById('services-section');
-    if (solutionsSection) {
-      solutionsSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    document.getElementById('services-section')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
   };
-
-  // Handle Free Consultation button click
+  
   const handleConsultationClick = () => {
     if (onConsultationClick) {
       onConsultationClick();
-    } else {
-      // Fallback - scroll to contact section
-      const contactSection = document.getElementById('contact-section');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
-      }
     }
   };
 

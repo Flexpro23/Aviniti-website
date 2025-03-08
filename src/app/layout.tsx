@@ -88,6 +88,12 @@ export default function RootLayout({
             })
           }}
         />
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/company-logos/flex-pro.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero/hero-image.webp" as="image" type="image/webp" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="antialiased">
         <LanguageProvider>

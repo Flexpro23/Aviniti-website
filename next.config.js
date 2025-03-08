@@ -16,6 +16,15 @@ const nextConfig = {
     //   },
     // ],
   },
+  // Performance optimizations
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizeServerReact: true,
+  },
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig 

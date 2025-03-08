@@ -1,17 +1,23 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
 import Services from '@/components/Services';
-import Expertise from '@/components/Expertise';
-import About from '@/components/About';
-import Footer from '@/components/Footer';
+// Use lazy loading for components that aren't immediately visible
+const Expertise = lazy(() => import('@/components/Expertise'));
+const About = lazy(() => import('@/components/About'));
+const Footer = lazy(() => import('@/components/Footer'));
 import ContactPopup from '@/components/ContactPopup';
-import AIEstimateModal from '@/components/AIEstimate/AIEstimateModal';
+const AIEstimateModal = lazy(() => import('@/components/AIEstimate/AIEstimateModal'));
 import FloatingContact from '@/components/FloatingContact';
-import ReadyMadeSolutions from '@/components/ReadyMadeSolutions';
+const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
+
+// Loading fallback component
+const LoadingFallback = () => <div className="min-h-[200px] flex items-center justify-center">
+  <div className="animate-pulse w-full h-48 bg-gray-100 rounded-lg"></div>
+</div>;
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -52,12 +58,20 @@ export default function Home() {
           <Services />
         </div>
         <div id="ready-made-solutions">
-          <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
+          <Suspense fallback={<LoadingFallback />}>
+            <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
+          </Suspense>
         </div>
-        <Expertise />
-        <About />
+        <Suspense fallback={<LoadingFallback />}>
+          <Expertise />
+        </Suspense>
+        <Suspense fallback={<LoadingFallback />}>
+          <About />
+        </Suspense>
       </div>
-      <Footer />
+      <Suspense fallback={<LoadingFallback />}>
+        <Footer />
+      </Suspense>
       
       <FloatingContact onContactClick={() => openContactWithSubject('Website Inquiry')} />
       
@@ -67,10 +81,14 @@ export default function Home() {
         initialSubject={contactSubject}
       />
 
-      <AIEstimateModal
-        isOpen={isAIEstimateOpen}
-        onClose={() => setIsAIEstimateOpen(false)}
-      />
+      {isAIEstimateOpen && (
+        <Suspense fallback={<LoadingFallback />}>
+          <AIEstimateModal
+            isOpen={isAIEstimateOpen}
+            onClose={() => setIsAIEstimateOpen(false)}
+          />
+        </Suspense>
+      )}
     </main>
   );
 } 

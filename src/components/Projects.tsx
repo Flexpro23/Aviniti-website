@@ -5,17 +5,16 @@ import Image from 'next/image';
 import { useState } from 'react';
 import AppStoreLinks from './AppStoreLinks';
 import ImageWithFallback from './utils/ImageWithFallback';
+import React from 'react';
 
 type ProjectCategory = 'all' | 'web' | 'mobile' | 'ai';
 
-export default function Projects() {
-  const { t, dir } = useLanguage();
-  const [activeCategory, setActiveCategory] = useState<ProjectCategory>('all');
-
-  const projects = [
+// Memoize the projects array to prevent unnecessary re-renders
+const useProjects = (t: any) => {
+  return React.useMemo(() => [
     {
       key: 'flexPro',
-      image: '/company-logos/flex-pro.png',
+      image: '/company-logos/flex-pro.webp',
       categories: ['mobile', 'web'] as ProjectCategory[],
       data: t.projects.flexPro,
       iosUrl: 'https://apps.apple.com/jo/app/flex-pro-drive/id6471506551',
@@ -23,7 +22,7 @@ export default function Projects() {
     },
     {
       key: 'secretary',
-      image: '/company-logos/secrtary.png',
+      image: '/company-logos/secrtary.webp',
       categories: ['mobile'] as ProjectCategory[],
       data: t.projects.secretary,
       iosUrl: 'https://apps.apple.com/jo/app/secrtary/id6481658380',
@@ -31,7 +30,7 @@ export default function Projects() {
     },
     {
       key: 'farmHouse',
-      image: '/company-logos/farm-house.png',
+      image: '/company-logos/farm-house.webp',
       categories: ['mobile', 'web'] as ProjectCategory[],
       data: t.projects.farmHouse,
       iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
@@ -39,7 +38,7 @@ export default function Projects() {
     },
     {
       key: 'letsPlay',
-      image: '/company-logos/lets-play.png',
+      image: '/company-logos/lets-play.webp',
       categories: ['mobile'] as ProjectCategory[],
       data: t.projects.letsPlay,
       iosUrl: 'https://apps.apple.com/app/id6670760296',
@@ -47,7 +46,7 @@ export default function Projects() {
     },
     {
       key: 'nayNursery',
-      image: '/company-logos/nay-nursery.png',
+      image: '/company-logos/nay-nursery.webp',
       categories: ['mobile', 'web', 'ai'] as ProjectCategory[],
       data: t.projects.nayNursery,
       iosUrl: 'https://apps.apple.com/jo/app/nay-nursery/id6670321985',
@@ -55,7 +54,7 @@ export default function Projects() {
     },
     {
       key: 'wearShare',
-      image: '/company-logos/wear-share.png',
+      image: '/company-logos/wear-share.webp',
       categories: ['mobile', 'ai'] as ProjectCategory[],
       data: t.projects.wearShare,
       iosUrl: 'https://apps.apple.com/jo/app/wear-and-share/id6740463663',
@@ -63,13 +62,26 @@ export default function Projects() {
     },
     {
       key: 'skinverse',
-      image: '/company-logos/skinverse.png',
+      image: '/company-logos/skinverse.webp',
       categories: ['mobile', 'web', 'ai'] as ProjectCategory[],
       data: t.projects.skinverse,
       iosUrl: 'https://apps.apple.com/jo/app/skinverse/id6502641700',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.singlevendorapp&hl=en'
     }
-  ];
+  ], [t.projects]);
+};
+
+export default function Projects() {
+  const { t, dir } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState<ProjectCategory>('all');
+  const projects = useProjects(t);
+  
+  // Memoize the filtered projects
+  const filteredProjects = React.useMemo(() => {
+    return activeCategory === 'all' 
+      ? projects 
+      : projects.filter(project => project.categories.includes(activeCategory));
+  }, [projects, activeCategory]);
 
   const categories = [
     { id: 'all' as ProjectCategory, label: t.projects.categories.all },
@@ -77,10 +89,6 @@ export default function Projects() {
     { id: 'mobile' as ProjectCategory, label: t.projects.categories.mobile },
     { id: 'ai' as ProjectCategory, label: t.projects.categories.ai }
   ];
-
-  const filteredProjects = activeCategory === 'all' 
-    ? projects 
-    : projects.filter(project => project.categories.includes(activeCategory));
 
   return (
     <section className="py-16 sm:py-20 bg-gray-50 section-transition">
