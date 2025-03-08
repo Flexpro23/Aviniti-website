@@ -10,7 +10,14 @@ import Script from 'next/script';
 
 export default function BlogPostClient() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
   const { dir } = useLanguage();
+
+  // Function to open contact popup with specific subject
+  const openContactWithSubject = (subject: string) => {
+    setContactSubject(subject);
+    setIsContactOpen(true);
+  };
 
   return (
     <main dir={dir} className="min-h-screen bg-gray-50">
@@ -194,7 +201,7 @@ export default function BlogPostClient() {
           <h3 className="text-xl font-bold mb-4">Ready to discuss your AI app project?</h3>
           <p className="mb-6">Our team can provide a detailed cost estimate based on your specific requirements.</p>
           <button 
-            onClick={() => setIsContactOpen(true)}
+            onClick={() => openContactWithSubject('AI App Development Cost Estimate Request')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300"
           >
             Get a Free Consultation
@@ -210,11 +217,12 @@ export default function BlogPostClient() {
       
       <Footer />
       
-      <FloatingContact onContactClick={() => setIsContactOpen(true)} />
+      <FloatingContact onContactClick={() => openContactWithSubject('Blog Post Inquiry - AI App Development Costs')} />
       
       <ContactPopup 
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
       />
     </main>
   );

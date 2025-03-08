@@ -4,7 +4,7 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import ImageWithFallback from './utils/ImageWithFallback';
 
 interface ReadyMadeSolutionsProps {
-  onContactClick: () => void;
+  onContactClick: (solutionTitle: string) => void;
 }
 
 // Define a type for the solution objects
@@ -40,12 +40,59 @@ const hasWebpVersion = [
   'Airbnb-Style Marketplace App Solutions'
 ];
 
+// Fallback translations in case the translations are not available
+const fallbackTranslations: ReadyMadeSolutionsTranslation = {
+  title: 'Ready-Made App Solutions',
+  subtitle: 'Launch your digital product faster with our pre-built, customizable app solutions. Save time and money while still getting a high-quality product tailored to your needs.',
+  days: 'days',
+  getStarted: 'Get Started',
+  keyFeatures: 'Key Features',
+  solutions: {
+    delivery: {
+      title: 'Delivery App Solution',
+      price: '$10,000',
+      description: 'A complete delivery application solution with user, driver, and restaurant/store admin panels. Includes real-time tracking, payment processing, and order management.',
+      features: ['User & Driver Apps', 'Admin Dashboard', 'Real-time Tracking', 'Multiple Payment Methods', 'Rating System']
+    },
+    kindergarten: {
+      title: 'Kindergarten Management App Solution',
+      price: '$8,000',
+      description: 'Comprehensive kindergarten management system for administrators, teachers, and parents. Track attendance, activities, progress reports and facilitate seamless communication.',
+      features: ['Parent & Teacher Portals', 'Attendance Tracking', 'Activity Management', 'Progress Reports', 'Communication Tools']
+    },
+    hypermarket: {
+      title: 'Hypermarket Management App Solution',
+      price: '$15,000',
+      description: 'Advanced hypermarket management solution for inventory tracking, POS integration, customer management, and analytics. Streamline operations and improve customer experience.',
+      features: ['Inventory Management', 'POS Integration', 'Customer Management', 'Analytics Dashboard', 'Multi-branch Support']
+    },
+    office: {
+      title: 'Office Management App Solutions',
+      price: '$8,000',
+      description: 'Office management solution that handles task management, attendance, document sharing, and collaboration. Increase productivity and streamline office operations.',
+      features: ['Task Management', 'Attendance System', 'Document Sharing', 'Team Collaboration', 'Meeting Scheduler']
+    },
+    gym: {
+      title: 'Gym Management App Solutions',
+      price: '$25,000',
+      description: 'Complete gym management solution for membership, class scheduling, trainer management, payment processing, and fitness tracking. Create exceptional member experience with a modern digital platform.',
+      features: ['Membership Management', 'Class Scheduling', 'Trainer Management', 'Payment Processing', 'Workout Tracking']
+    },
+    airbnb: {
+      title: 'Airbnb-Style Marketplace App Solutions',
+      price: '$15,000',
+      description: 'Property rental marketplace platform similar to Airbnb. Connects hosts with travelers, includes booking system, payment processing, review, and secure payment processing.',
+      features: ['User & Host Portals', 'Booking System', 'Search & Filters', 'Review System', 'Secure Payment']
+    }
+  }
+};
+
 export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolutionsProps) {
   const { t } = useLanguage();
   
-  // Access translations with type assertion
+  // Access translations with type assertion and fallback
   const translations = t as any;
-  const readyMadeSolutionsT = translations.readyMadeSolutions as ReadyMadeSolutionsTranslation;
+  const readyMadeSolutionsT = translations.readyMadeSolutions as ReadyMadeSolutionsTranslation || fallbackTranslations;
   
   // Pre-made app solutions data
   const solutions: Solution[] = [
@@ -78,7 +125,8 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
   // Function to determine if we should try webp or use original format
   const getImageSrc = (solution: Solution): string => {
     // Check if this solution has a webp version available
-    const title = readyMadeSolutionsT.solutions[solution.id].title;
+    const solutionData = readyMadeSolutionsT.solutions[solution.id] || fallbackTranslations.solutions[solution.id];
+    const title = solutionData.title;
     if (hasWebpVersion.includes(title)) {
       return solution.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp');
     }
@@ -98,7 +146,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {solutions.map((solution) => {
-            const solutionData = readyMadeSolutionsT.solutions[solution.id];
+            const solutionData = readyMadeSolutionsT.solutions[solution.id] || fallbackTranslations.solutions[solution.id];
             return (
               <div key={solution.id} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
                 <div className="relative h-48">
@@ -133,7 +181,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                     </ul>
                   </div>
                   <button 
-                    onClick={onContactClick}
+                    onClick={() => onContactClick(solutionData.title)}
                     className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-300"
                   >
                     {readyMadeSolutionsT.getStarted}

@@ -1,18 +1,28 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ContactPopupProps {
   isOpen: boolean;
   onClose: () => void;
+  initialSubject?: string;
 }
 
-export default function ContactPopup({ isOpen, onClose }: ContactPopupProps) {
+export default function ContactPopup({ isOpen, onClose, initialSubject = '' }: ContactPopupProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
+    subject: initialSubject,
     message: ''
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        subject: initialSubject
+      }));
+    }
+  }, [isOpen, initialSubject]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -9,7 +9,14 @@ import Link from 'next/link';
 
 export default function BlogClient() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
   const { dir } = useLanguage();
+  
+  // Function to open contact popup with specific subject
+  const openContactWithSubject = (subject: string) => {
+    setContactSubject(subject);
+    setIsContactOpen(true);
+  };
   
   const blogPosts = [
     {
@@ -73,7 +80,7 @@ export default function BlogClient() {
           <h2 className="text-2xl font-bold mb-4">Want to discuss your project?</h2>
           <p className="mb-6">Our team of experts is ready to help you transform your ideas into reality.</p>
           <button 
-            onClick={() => setIsContactOpen(true)}
+            onClick={() => openContactWithSubject('Project Discussion from Blog')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300"
           >
             Contact Us
@@ -83,11 +90,12 @@ export default function BlogClient() {
       
       <Footer />
       
-      <FloatingContact onContactClick={() => setIsContactOpen(true)} />
+      <FloatingContact onContactClick={() => openContactWithSubject('Blog Page Inquiry')} />
       
       <ContactPopup 
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
       />
     </main>
   );

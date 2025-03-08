@@ -18,11 +18,18 @@ export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isAIEstimateOpen, setIsAIEstimateOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
   const { dir } = useLanguage();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Function to open contact popup with specific subject
+  const openContactWithSubject = (subject: string) => {
+    setContactSubject(subject);
+    setIsContactOpen(true);
+  };
 
   // Only render the full content after mounting on the client
   if (!isMounted) {
@@ -34,27 +41,28 @@ export default function Home() {
       <Navbar />
       <Hero 
         onEstimateClick={() => setIsAIEstimateOpen(true)} 
-        onConsultationClick={() => setIsContactOpen(true)} 
+        onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
       />
       <Projects />
       <div id="services-section">
         <Services />
       </div>
       <div id="ready-made-solutions">
-        <ReadyMadeSolutions onContactClick={() => setIsContactOpen(true)} />
+        <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
       </div>
       <Expertise />
       <About />
       <div id="contact-section">
-        <Contact onContactClick={() => setIsContactOpen(true)} />
+        <Contact onContactClick={() => openContactWithSubject('General Inquiry')} />
       </div>
       <Footer />
       
-      <FloatingContact onContactClick={() => setIsContactOpen(true)} />
+      <FloatingContact onContactClick={() => openContactWithSubject('Website Inquiry')} />
       
       <ContactPopup 
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
       />
 
       <AIEstimateModal

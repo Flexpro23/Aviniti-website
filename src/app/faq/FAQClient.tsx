@@ -9,7 +9,14 @@ import Script from 'next/script';
 
 export default function FAQClient() {
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
   const { dir } = useLanguage();
+  
+  // Function to open contact popup with specific subject
+  const openContactWithSubject = (subject: string) => {
+    setContactSubject(subject);
+    setIsContactOpen(true);
+  };
   
   const faqCategories = [
     {
@@ -166,7 +173,7 @@ export default function FAQClient() {
           <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
           <p className="mb-6">Our team is ready to help you with any specific questions about your project.</p>
           <button 
-            onClick={() => setIsContactOpen(true)}
+            onClick={() => openContactWithSubject('Question from FAQ Page')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300"
           >
             Contact Us
@@ -176,11 +183,12 @@ export default function FAQClient() {
       
       <Footer />
       
-      <FloatingContact onContactClick={() => setIsContactOpen(true)} />
+      <FloatingContact onContactClick={() => openContactWithSubject('FAQ Page Inquiry')} />
       
       <ContactPopup 
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
       />
     </main>
   );

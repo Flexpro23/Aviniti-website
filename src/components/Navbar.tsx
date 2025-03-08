@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState('');
   const { t, dir } = useLanguage();
 
   useEffect(() => {
@@ -20,6 +21,12 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Function to open contact popup with specific subject
+  const openContactWithSubject = (subject: string) => {
+    setContactSubject(subject);
+    setIsContactOpen(true);
+  };
 
   return (
     <>
@@ -51,7 +58,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-4">
               <NavLinks 
                 isScrolled={isScrolled}
-                onContactClick={() => setIsContactOpen(true)}
+                onContactClick={() => openContactWithSubject('Navigation Menu Inquiry')}
               />
               <LanguageSwitcher isScrolled={isScrolled} />
             </div>
@@ -91,6 +98,13 @@ export default function Navbar() {
               >
                 {t.navigation.services}
               </a>
+              <a 
+                href="#about" 
+                className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t.navigation.about}
+              </a>
               <Link 
                 href="/blog" 
                 className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
@@ -115,7 +129,7 @@ export default function Navbar() {
               <button 
                 onClick={() => {
                   setIsMenuOpen(false);
-                  setIsContactOpen(true);
+                  openContactWithSubject('Mobile Menu Inquiry');
                 }}
                 className="block w-full text-left px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
               >
@@ -132,6 +146,7 @@ export default function Navbar() {
       <ContactPopup 
         isOpen={isContactOpen}
         onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
       />
     </>
   );
