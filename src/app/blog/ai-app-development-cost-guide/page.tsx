@@ -1,3 +1,11 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'The Complete Guide to AI App Development Costs in 2025 | Aviniti',
+  description: 'Discover the key factors that influence AI app development costs in 2025, from complexity and features to maintenance and scalability considerations.',
+  keywords: 'AI app development cost, custom AI application pricing, mobile app budget, software development expenses, AI integration cost',
+};
+
 'use client';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
@@ -6,14 +14,7 @@ import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
 import FloatingContact from '@/components/FloatingContact';
 import Link from 'next/link';
-import { Metadata } from 'next';
 import Script from 'next/script';
-
-export const metadata: Metadata = {
-  title: 'The Complete Guide to AI App Development Costs in 2025 | Aviniti',
-  description: 'Discover the key factors that influence AI app development costs in 2025, from complexity and features to maintenance and scalability considerations.',
-  keywords: 'AI app development cost, custom AI application pricing, mobile app budget, software development expenses, AI integration cost',
-};
 
 export default function BlogPostPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);

@@ -1,3 +1,11 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'AI & App Development Insights | Aviniti Blog',
+  description: 'Explore the latest trends, insights, and best practices in AI app development, custom software solutions, and digital transformation.',
+  keywords: 'AI app development blog, software development insights, mobile app trends, AI technology, digital transformation',
+};
+
 'use client';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
@@ -6,13 +14,6 @@ import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
 import FloatingContact from '@/components/FloatingContact';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'AI & App Development Insights | Aviniti Blog',
-  description: 'Explore the latest trends, insights, and best practices in AI app development, custom software solutions, and digital transformation.',
-  keywords: 'AI app development blog, software development insights, mobile app trends, AI technology, digital transformation',
-};
 
 export default function BlogPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);

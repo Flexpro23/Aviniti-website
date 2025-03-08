@@ -1,3 +1,11 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions About AI & App Development | Aviniti',
+  description: 'Get answers to common questions about AI app development, custom software solutions, and mobile app development services provided by Aviniti.',
+  keywords: 'AI app development FAQ, software development questions, mobile app cost, AI integration, custom software FAQ',
+};
+
 'use client';
 import { useState } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
@@ -5,14 +13,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
 import FloatingContact from '@/components/FloatingContact';
-import { Metadata } from 'next';
 import Script from 'next/script';
-
-export const metadata: Metadata = {
-  title: 'Frequently Asked Questions About AI & App Development | Aviniti',
-  description: 'Get answers to common questions about AI app development, custom software solutions, and mobile app development services provided by Aviniti.',
-  keywords: 'AI app development FAQ, software development questions, mobile app cost, AI integration, custom software FAQ',
-};
 
 export default function FAQPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
