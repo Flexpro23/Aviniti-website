@@ -39,6 +39,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="lJLyXN8_uDjPPnfHtb9J8tyt5ktEpkeIjFpuQcv2xvA" />
         <Script
           id="schema-org"
           type="application/ld+json"
