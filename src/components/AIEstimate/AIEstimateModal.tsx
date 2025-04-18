@@ -7,6 +7,9 @@ import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL } from '@/lib/services/GeminiService';
+import { collection, addDoc } from 'firebase/firestore';
+import { createUserDocument } from '@/lib/firebase-utils';
+import { db } from '@/lib/firebase';
 
 export type PersonalDetails = {
   fullName: string;
@@ -65,6 +68,9 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detailedReport, setDetailedReport] = useState<DetailedReport | null>(null);
+  const [reportGenerated, setReportGenerated] = useState(false);
+  const [reportUrl, setReportUrl] = useState<string | null>(null);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -80,12 +86,52 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   }, [isOpen]);
 
+  // Add a new useEffect to generate the report when reaching step 4
+  useEffect(() => {
+    if (step === 4 && detailedReport && userId && !reportGenerated) {
+      generateServerReport();
+    }
+  }, [step, detailedReport, userId, reportGenerated]);
+
   const handleUserInfoSubmit = async (details: PersonalDetails) => {
     setPersonalDetails(details);
-    // Here we would typically save the user info to Firestore
-    // and get back a userId to associate with this session
-    setUserId('sample-user-id-' + Date.now());
-    setStep(2);
+    // Save the user info to Firestore and get back a userId
+    setIsProcessing(true);
+    try {
+      console.log('Creating user document with data:', details);
+      
+      // Check if Firebase is initialized
+      if (!db) {
+        throw new Error('Firebase database is not initialized');
+      }
+      
+      // Create a user document in Firestore
+      const usersRef = collection(db, 'users');
+      const userDocRef = await addDoc(usersRef, {
+        personalDetails: details,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      
+      console.log('User document created with ID:', userDocRef.id);
+      setUserId(userDocRef.id);
+      setStep(2);
+    } catch (error) {
+      console.error('Error saving user data to Firebase:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+        alert(`Failed to save your information: ${error.message}. Please try again.`);
+      } else {
+        alert('Failed to save your information. Please try again.');
+      }
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleAppDescriptionSubmit = async (description: AppDescription) => {
@@ -220,6 +266,105 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   };
 
+  // New function to call the report API
+  const generateServerReport = async () => {
+    if (!userId || !detailedReport || reportGenerated) return;
+    
+    setIsProcessing(true);
+    setReportError(null);
+    
+    try {
+      console.log('Generating server-side report for user:', userId);
+      
+      // Calculate feature data for the API
+      const selectedFeatures = {
+        core: detailedReport.selectedFeatures
+          .filter(f => f.purpose.includes('core') || f.purpose.includes('essential'))
+          .map(f => ({ name: f.name, description: f.description })),
+        suggested: detailedReport.selectedFeatures
+          .filter(f => !f.purpose.includes('core') && !f.purpose.includes('essential'))
+          .map(f => ({ name: f.name, description: f.description }))
+      };
+      
+      // Extract all necessary values from the UI display
+      const uiValues = {
+        // Get app description from the analysis result
+        appDescription: aiAnalysisResult?.appOverview || '',
+        
+        // Extract exact cost values as shown in the UI
+        totalCost: parseInt(detailedReport.totalCost.replace(/[^0-9]/g, '')),
+        
+        // Extract exact time values as shown in the UI
+        totalHours: detailedReport.totalTime.includes('days') 
+          ? parseInt(detailedReport.totalTime.replace(/[^0-9]/g, '')) * 8 // Convert days to hours
+          : parseInt(detailedReport.totalTime.replace(/[^0-9]/g, '')) * 8 * 30, // Convert months to hours
+        
+        // Include all features with their full details
+        features: detailedReport.selectedFeatures.map(feature => ({
+          name: feature.name,
+          description: feature.description,
+          purpose: feature.purpose,
+          costValue: parseInt(feature.costEstimate.replace(/[^0-9]/g, '')),
+          costEstimate: feature.costEstimate,
+          timeValue: parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')),
+          timeHours: feature.timeEstimate.includes('day') 
+            ? parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')) * 8 
+            : parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')),
+          timeEstimate: feature.timeEstimate,
+          isCore: feature.purpose.includes('core') || feature.purpose.includes('essential')
+        })),
+        
+        // Include client information
+        fullName: personalDetails?.fullName || '',
+        emailAddress: personalDetails?.emailAddress || '',
+        phoneNumber: personalDetails?.phoneNumber || '',
+        companyName: personalDetails?.companyName || '',
+        clientName: personalDetails?.fullName || ''
+      };
+      
+      console.log('Sending UI values to API:', {
+        featureCount: uiValues.features.length,
+        totalCost: uiValues.totalCost,
+        totalHours: uiValues.totalHours
+      });
+      
+      // Call the report API with both selectedFeatures and UI values
+      const response = await fetch(`/api/report/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedFeatures,
+          uiValues
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate report');
+      }
+      
+      const reportData = await response.json();
+      console.log('Report generated successfully:', reportData);
+      
+      if (reportData.url) {
+        setReportUrl(reportData.url);
+        setReportGenerated(true);
+      } else if (reportData.reportURL) {
+        setReportUrl(reportData.reportURL);
+        setReportGenerated(true);
+      } else {
+        throw new Error('No report URL returned');
+      }
+    } catch (error) {
+      console.error('Error generating server report:', error);
+      setReportError(error instanceof Error ? error.message : 'Unknown error');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
@@ -262,6 +407,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
               onSubmit={handleUserInfoSubmit} 
               onCancel={onClose} 
               initialData={personalDetails}
+              isProcessing={isProcessing}
             />
           )}
           
@@ -288,6 +434,10 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
               report={detailedReport}
               onBack={handleBack}
               onClose={onClose}
+              isGeneratingServerReport={isProcessing}
+              reportUrl={reportUrl}
+              reportError={reportError}
+              onRegenerateReport={generateServerReport}
             />
           )}
         </div>

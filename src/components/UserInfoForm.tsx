@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { collection, addDoc, getDoc, doc, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { createUserDocument, type PersonalDetails } from '../lib/firebase-utils';
 
@@ -21,6 +21,34 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
 
   const [errors, setErrors] = useState<Partial<PersonalDetails>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [firebaseStatus, setFirebaseStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+
+  // Test Firebase connection on component mount
+  useEffect(() => {
+    async function checkFirebaseConnection() {
+      try {
+        console.log('Testing Firebase connection...');
+        if (!db) {
+          console.error('Firebase DB is not initialized');
+          setFirebaseStatus('error');
+          return;
+        }
+
+        // Attempt to query Firestore
+        const testQuery = query(collection(db, 'users'), limit(1));
+        await getDocs(testQuery);
+        console.log('Firebase connection successful');
+        setFirebaseStatus('connected');
+      } catch (error) {
+        console.error('Firebase connection test failed:', error);
+        setFirebaseStatus('error');
+      }
+    }
+
+    if (isOpen) {
+      checkFirebaseConnection();
+    }
+  }, [isOpen]);
 
   const validateForm = () => {
     const newErrors: Partial<PersonalDetails> = {};
@@ -50,24 +78,69 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
       return;
     }
 
+    if (firebaseStatus !== 'connected') {
+      setErrors({
+        fullName: 'Firebase connection error. Please try again later.'
+      });
+      alert('Cannot connect to the database. Please check your internet connection and try again.');
+      return;
+    }
+
     setIsSubmitting(true);
+    console.log('Starting form submission...', formData);
 
     try {
+      // Check if Firebase is initialized
+      if (!db) {
+        throw new Error('Firebase database is not initialized');
+      }
+
+      console.log('Creating user document in Firestore...');
       // Create user document in Firestore
       const usersRef = collection(db, 'users');
-      const docRef = await addDoc(usersRef, {
+      console.log('Collection reference created');
+
+      const docData = {
         personalDetails: formData,
         status: 'pending',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+
+      console.log('Document data prepared:', docData);
+      const docRef = await addDoc(usersRef, docData);
+      console.log('Document created with ID:', docRef.id);
+
+      // Verify the document was created by trying to read it back
+      try {
+        const docSnap = await getDoc(doc(db, 'users', docRef.id));
+        if (docSnap.exists()) {
+          console.log('Verified document was created successfully');
+        } else {
+          console.error('Document creation verification failed - document not found');
+        }
+      } catch (verifyError) {
+        console.error('Error verifying document creation:', verifyError);
+      }
 
       onContinue(formData, docRef.id);
     } catch (error) {
       console.error('Error saving user info:', error);
+      // Log more details about the error
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+      }
       setErrors({
-        fullName: 'Failed to save information. Please try again.'
+        fullName: 'Failed to save information. Please try again. Error: ' + 
+                  (error instanceof Error ? error.message : 'Unknown error')
       });
+      
+      // Show an alert with the error to make it more visible
+      alert('Error saving data: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -97,6 +170,12 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
           <p className="text-neutral-600 text-center text-sm sm:text-base mb-8">
             Please provide your details to receive an instant AI-powered estimate for your project.
           </p>
+
+          {firebaseStatus === 'error' && (
+            <div className="mb-6 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              Warning: There seems to be an issue connecting to our database. Your data might not be saved properly.
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">

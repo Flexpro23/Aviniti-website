@@ -8,17 +8,21 @@ interface UserInfoStepProps {
   onSubmit: (data: PersonalDetails) => void;
   onCancel: () => void;
   initialData: PersonalDetails;
+  isProcessing?: boolean;
 }
 
-export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserInfoStepProps) {
+export default function UserInfoStep({ onSubmit, onCancel, initialData, isProcessing = false }: UserInfoStepProps) {
   const { t, language } = useLanguage();
   const [formData, setFormData] = useState<PersonalDetails>(initialData);
   const [errors, setErrors] = useState<Partial<Record<keyof PersonalDetails, string>>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localSubmitting, setLocalSubmitting] = useState(false);
+  
+  const isSubmitting = localSubmitting || isProcessing;
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PersonalDetails, string>> = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[\d\s-]{10,}$/;
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = t.aiEstimate.steps.userInfo.errors.fullName;
@@ -30,7 +34,11 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
       newErrors.emailAddress = t.aiEstimate.steps.userInfo.errors.emailInvalid;
     }
 
-    // Phone is completely optional (no validation)
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (!phoneRegex.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = 'Please enter a valid phone number';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -43,13 +51,9 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
       return;
     }
 
-    setIsSubmitting(true);
+    setLocalSubmitting(true);
     
-    // Simulate a slight delay for better UX
-    setTimeout(() => {
-      onSubmit(formData);
-      setIsSubmitting(false);
-    }, 500);
+    onSubmit(formData);
   };
 
   return (
@@ -77,6 +81,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
               placeholder={language === 'en' ? "John Doe" : "محمد أحمد"}
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              disabled={isSubmitting}
             />
             {errors.fullName && (
               <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
@@ -97,6 +102,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
               placeholder={language === 'en' ? "john@example.com" : "محمد@مثال.com"}
               value={formData.emailAddress}
               onChange={(e) => setFormData({ ...formData, emailAddress: e.target.value })}
+              disabled={isSubmitting}
             />
             {errors.emailAddress && (
               <p className="mt-1 text-sm text-red-500">{errors.emailAddress}</p>
@@ -105,16 +111,23 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
 
           <div>
             <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-              {t.aiEstimate.steps.userInfo.phoneNumber} <span className="text-gray-400 text-xs font-normal">{t.aiEstimate.steps.userInfo.optional}</span>
+              {t.aiEstimate.steps.userInfo.phoneNumber} <span className="text-red-500">*</span>
             </label>
             <input
               type="tel"
               id="phoneNumber"
-              className="w-full px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              required
+              className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+                errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
+              } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
               placeholder={language === 'en' ? "+1 (234) 567-8900" : "+٩٦٢ ٧٩ ١٢٣ ٤٥٦٧"}
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+              disabled={isSubmitting}
             />
+            {errors.phoneNumber && (
+              <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>
+            )}
           </div>
 
           <div>
@@ -128,6 +141,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
               placeholder={language === 'en' ? "Your Company" : "شركتك"}
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              disabled={isSubmitting}
             />
           </div>
         </div>
@@ -137,6 +151,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData }: UserIn
             type="button"
             onClick={onCancel}
             className="w-full sm:w-auto px-6 py-2 text-sm sm:text-base border border-gray-300 hover:border-gray-400 bg-white text-gray-700 hover:text-gray-900 rounded-lg transition-all duration-200 flex items-center justify-center"
+            disabled={isSubmitting}
           >
             {t.aiEstimate.steps.userInfo.cancel}
           </button>
