@@ -5,19 +5,24 @@ import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { getAnalytics, Analytics, isSupported } from 'firebase/analytics';
 
-// Your web app's Firebase configuration
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyBGSNtARRddytr_ktUSqVOdgzkmqR0OwuE",
-  authDomain: "aviniti-website.firebaseapp.com",
-  databaseURL: "https://aviniti-website-default-rtdb.firebaseio.com",
-  projectId: "aviniti-website",
-  storageBucket: "aviniti-website.firebasestorage.app",
-  messagingSenderId: "402215685347",
-  appId: "1:402215685347:web:25b0591b34fde886cb89d6",
-  measurementId: "G-ZYXBPXPJDN"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || "https://aviniti-website-default-rtdb.firebaseio.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-console.log('Initializing Firebase with configuration', { ...firebaseConfig, apiKey: '[REDACTED]' });
+console.log('Initializing Firebase with configuration', { 
+  ...Object.fromEntries(
+    Object.entries(firebaseConfig).filter(([key]) => key !== 'apiKey')
+  ), 
+  apiKey: '[REDACTED]' 
+});
 
 // Initialize Firebase services
 let db: Firestore | null = null;
