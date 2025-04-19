@@ -1,14 +1,20 @@
-import { Metadata } from 'next';
-// Import the dynamic client (adjust path if necessary, assuming it's in the cost guide dir for now)
-import BlogPostClient from '../ai-app-development-cost-guide/BlogPostClient'; 
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'How to Successfully Integrate AI into Legacy Business Systems | Aviniti',
-  description: 'Learn practical strategies for incorporating AI capabilities into existing business systems without disrupting operations.',
-  keywords: 'AI integration, legacy systems, business automation, digital transformation, AI strategy',
-};
+export default function BlogPostRedirect() {
+  const router = useRouter();
 
-export default function AiIntegrationPage() {
-  // Pass the postId to the dynamic client component
-  return <BlogPostClient postId="integration" />;
+  useEffect(() => {
+    router.push('/');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
+        <p>The blog section is no longer available. You will be redirected to the homepage.</p>
+      </div>
+    </div>
+  );
 } 

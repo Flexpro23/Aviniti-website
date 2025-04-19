@@ -1,14 +1,20 @@
-import { Metadata } from 'next';
-// Import the dynamic client (adjust path if necessary)
-import BlogPostClient from '../ai-app-development-cost-guide/BlogPostClient';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Mobile App Development Trends Reshaping User Experience in 2025 | Aviniti',
-  description: 'Discover the latest trends in mobile app development that are creating more engaging and personalized user experiences.',
-  keywords: 'mobile app trends, user experience, app development 2025, personalized apps, mobile technology',
-};
+export default function BlogPostRedirect() {
+  const router = useRouter();
 
-export default function MobileTrendsPage() {
-  // Pass the postId to the dynamic client component
-  return <BlogPostClient postId="trends" />;
+  useEffect(() => {
+    router.push('/');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
+        <p>The blog section is no longer available. You will be redirected to the homepage.</p>
+      </div>
+    </div>
+  );
 } 

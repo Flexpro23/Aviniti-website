@@ -1,12 +1,20 @@
-import { Metadata } from 'next';
-import BlogClient from './BlogClient';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'AI & App Development Insights | Aviniti Blog',
-  description: 'Explore the latest trends, insights, and best practices in AI app development, custom software solutions, and digital transformation.',
-  keywords: 'AI app development blog, software development insights, mobile app trends, AI technology, digital transformation',
-};
+export default function BlogRedirect() {
+  const router = useRouter();
 
-export default function BlogPage() {
-  return <BlogClient />;
+  useEffect(() => {
+    router.push('/');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
+        <p>The blog section is no longer available. You will be redirected to the homepage.</p>
+      </div>
+    </div>
+  );
 } 

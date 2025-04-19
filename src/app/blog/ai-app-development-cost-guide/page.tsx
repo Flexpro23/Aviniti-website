@@ -1,12 +1,20 @@
-import { Metadata } from 'next';
-import BlogPostClient from './BlogPostClient';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'The Complete Guide to AI App Development Costs in 2025 | Aviniti',
-  description: 'Discover the key factors that influence AI app development costs in 2025, from complexity and features to maintenance and scalability considerations.',
-  keywords: 'AI app development cost, custom AI application pricing, mobile app budget, software development expenses, AI integration cost',
-};
+export default function BlogPostRedirect() {
+  const router = useRouter();
 
-export default function BlogPostPage() {
-  return <BlogPostClient postId="costGuide" />;
+  useEffect(() => {
+    router.push('/');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Redirecting...</h1>
+        <p>The blog section is no longer available. You will be redirected to the homepage.</p>
+      </div>
+    </div>
+  );
 } 
