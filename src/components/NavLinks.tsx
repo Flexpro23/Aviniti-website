@@ -28,10 +28,10 @@ export default function NavLinks({ isScrolled, onContactClick }: NavLinksProps) 
         {t.navigation.readyMadeSolutions}
       </a>
       <Link href="/blog" className={linkClasses}>
-        Blog
+        {t.navigation.blog || 'Blog'}
       </Link>
       <Link href="/faq" className={linkClasses}>
-        FAQ
+        {t.navigation.faq || 'FAQ'}
       </Link>
       <a href="#about" className={linkClasses}>
         {t.navigation.about}

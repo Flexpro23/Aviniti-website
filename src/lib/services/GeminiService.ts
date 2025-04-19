@@ -36,6 +36,12 @@ interface RawAnalysisResult {
   enhancementFeatures: RawFeature[];
 }
 
+// Helper function to detect if text is Arabic
+function containsArabic(text: string): boolean {
+  const arabicPattern = /[\u0600-\u06FF]/;
+  return arabicPattern.test(text);
+}
+
 // Pricing guidelines for the AI to follow when generating estimates
 const PRICING_SYSTEM_INSTRUCTION = `
 Use the following pricing schedule to provide accurate app development estimates:
@@ -178,8 +184,19 @@ export const analyzeAppWithGemini = async (
     const tempGenAI = new GoogleGenerativeAI(key);
     const tempModel = tempGenAI.getGenerativeModel({ model: GEMINI_MODEL });
 
+    // Detect if the input is in Arabic
+    const isArabic = containsArabic(appDescription);
+    console.log('Input language detected:', isArabic ? 'Arabic' : 'English');
+
+    // Create language-specific instruction
+    const languageInstruction = isArabic 
+      ? "EXTREMELY IMPORTANT: The user has provided the app description in Arabic. You MUST respond ENTIRELY in Arabic language, including ALL feature names, descriptions, the app overview, and JSON property names. Do NOT translate any part of your response to English. The entire JSON structure must be in Arabic."
+      : "Respond in English.";
+
     const prompt = `
 You are an expert in mobile and web app development cost estimation.
+${languageInstruction}
+
 Your task is to analyze the user's app description VERY SPECIFICALLY and provide:
 
 1. A personalized, detailed overview of THIS SPECIFIC app idea (4-6 sentences).
@@ -236,12 +253,14 @@ Format your response as valid JSON with the following structure:
   ]
 }
 
+${isArabic ? "تذكر أن الاستجابة بأكملها يجب أن تكون باللغة العربية، بما في ذلك جميع أسماء الميزات والأوصاف ونظرة عامة على التطبيق. لا تترجم أي جزء من استجابتك إلى اللغة الإنجليزية." : ""}
 The JSON must be properly formatted, so I can parse it. 
 REFER EXACTLY to the pricing schedule in the system instructions - do not invent your own prices.
 `;
 
     console.log('Sending request to Gemini API...');
     console.log('Using model:', GEMINI_MODEL);
+    console.log('Language mode:', isArabic ? 'Arabic' : 'English');
 
     // Create a chat session
     const chat = tempModel.startChat({
@@ -252,7 +271,9 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
         },
         {
           role: "model",
-          parts: [{ text: "I'll use these pricing guidelines for estimating app development costs." }],
+          parts: [{ text: isArabic 
+            ? "سأستخدم جدول الأسعار هذا لتقدير تكاليف تطوير التطبيقات." 
+            : "I'll use these pricing guidelines for estimating app development costs." }],
         }
       ],
     });

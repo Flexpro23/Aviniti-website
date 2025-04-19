@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function BlogClient() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [contactSubject, setContactSubject] = useState('');
-  const { dir } = useLanguage();
+  const { t, dir } = useLanguage();
   
   // Function to open contact popup with specific subject
   const openContactWithSubject = (subject: string) => {
@@ -18,41 +18,45 @@ export default function BlogClient() {
     setIsContactOpen(true);
   };
   
-  const blogPosts = [
+  const blogPostsData = [
     {
       id: 'ai-app-development-cost-guide',
-      title: 'The Complete Guide to AI App Development Costs in 2025',
-      excerpt: 'Understand the factors that influence AI app development costs, from complexity and features to maintenance and scalability.',
-      date: 'March 8, 2023',
-      category: 'Development',
-      readTime: '8 min read'
+      data: t.blog?.posts?.costGuide
     },
     {
       id: 'ai-integration-legacy-systems',
-      title: 'How to Successfully Integrate AI into Legacy Business Systems',
-      excerpt: 'Learn practical strategies for incorporating AI capabilities into existing business systems without disrupting operations.',
-      date: 'March 1, 2023',
-      category: 'Integration',
-      readTime: '6 min read'
+      data: t.blog?.posts?.integration
     },
     {
       id: 'mobile-app-development-trends',
-      title: '7 Mobile App Development Trends Reshaping User Experience in 2025',
-      excerpt: 'Discover the latest trends in mobile app development that are creating more engaging and personalized user experiences.',
-      date: 'February 22, 2023',
-      category: 'Trends',
-      readTime: '5 min read'
+      data: t.blog?.posts?.trends
     }
   ];
+
+  const blogPosts = blogPostsData.map(item => {
+    const postData = item.data;
+    let categoryKey: 'development' | 'integration' | 'trends' = 'development'; // Default
+    if (item.id === 'ai-integration-legacy-systems') categoryKey = 'integration';
+    else if (item.id === 'mobile-app-development-trends') categoryKey = 'trends';
+    
+    return {
+      id: item.id,
+      title: postData?.title || item.id.replace(/-/g, ' '),
+      excerpt: postData?.excerpt || 'Excerpt unavailable.',
+      date: postData?.date || 'Date unavailable',
+      category: t.blog?.categories?.[categoryKey] || categoryKey,
+      readTime: `${postData?.readTimeValue || 5} ${t.blog?.readTimeUnit || 'min read'}` // Use readTimeValue
+    };
+  });
 
   return (
     <main dir={dir} className="min-h-screen bg-gray-50">
       <Navbar />
       
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-center mb-4">Aviniti Blog</h1>
+        <h1 className="text-4xl font-bold text-center mb-4">{t.blog?.title || 'Aviniti Blog'}</h1>
         <p className="text-lg text-center mb-16 max-w-3xl mx-auto">
-          Insights, guides, and expert perspectives on AI, app development, and digital transformation.
+          {t.blog?.subtitle || 'Insights, guides, and expert perspectives on AI, app development, and digital transformation.'}
         </p>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -68,7 +72,7 @@ export default function BlogClient() {
                   <p className="text-gray-600 mb-4">{post.excerpt}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">{post.date}</span>
-                    <span className="text-blue-700 font-medium">Read more →</span>
+                    <span className="text-blue-700 font-medium">{t.blog?.readMore || 'Read more'} →</span>
                   </div>
                 </div>
               </div>
@@ -77,13 +81,13 @@ export default function BlogClient() {
         </div>
         
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold mb-4">Want to discuss your project?</h2>
-          <p className="mb-6">Our team of experts is ready to help you transform your ideas into reality.</p>
+          <h2 className="text-2xl font-bold mb-4">{t.blog?.cta?.title || 'Want to discuss your project?'}</h2>
+          <p className="mb-6">{t.blog?.cta?.description || 'Our team of experts is ready to help you transform your ideas into reality.'}</p>
           <button 
             onClick={() => openContactWithSubject('Project Discussion from Blog')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300"
           >
-            Contact Us
+            {t.contact?.cta || 'Contact Us'}
           </button>
         </div>
       </div>

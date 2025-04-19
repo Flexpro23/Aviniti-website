@@ -5,6 +5,7 @@ import ContactPopup from './ContactPopup';
 import NavLinks from './NavLinks';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +13,11 @@ export default function Navbar() {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [contactSubject, setContactSubject] = useState('');
   const { t, dir } = useLanguage();
+  const pathname = usePathname();
+  
+  // Check if we're on the homepage (/) or a page with a dark background
+  const isHomePage = pathname === '/';
+  const needsBackgroundWhenNotScrolled = !isHomePage;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,7 +40,9 @@ export default function Navbar() {
         className={`fixed w-full z-50 transition-all duration-300 ${
           isScrolled 
             ? 'bg-white shadow-lg py-2' 
-            : 'bg-transparent py-4'
+            : needsBackgroundWhenNotScrolled
+              ? 'bg-gray-900/90 backdrop-blur-sm py-4' // Semi-transparent dark background for other pages
+              : 'bg-transparent py-4' // Transparent for homepage
         }`}
         dir={dir}
       >
@@ -112,14 +120,14 @@ export default function Navbar() {
                 className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Blog
+                {t.navigation.blog || 'Blog'}
               </Link>
               <Link 
                 href="/faq" 
                 className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                FAQ
+                {t.navigation.faq || 'FAQ'}
               </Link>
               <a 
                 href="#about" 

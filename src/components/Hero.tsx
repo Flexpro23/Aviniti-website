@@ -141,9 +141,9 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
 
       {/* Content Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center ${dir === 'rtl' ? 'lg:flex-row-reverse' : ''}`}>
+        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-center ${dir === 'rtl' ? 'lg:flex-row-reverse' : ''}`}>
           {/* Text Content */}
-          <div className={`text-center lg:text-left ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
+          <div className={`text-center lg:text-left flex flex-col justify-center h-full ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
               <span className="block mb-2">Aviniti - AI & App Development Services</span>
               <span className="block">{t.hero.title}</span>
@@ -152,44 +152,47 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
             <p className="text-xl sm:text-2xl font-medium text-blue-100 mb-2">
               {t.hero.description}
             </p>
-            <p className="text-base sm:text-lg text-blue-200 mb-8 sm:mb-10">
+            <p className="text-base sm:text-lg text-blue-200 mb-8">
               {t.hero.subDescription}
             </p>
 
-            {/* CTA Buttons */}
-            <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''}`}>
+            {/* Moved Primary CTA Button Here */}
+            <div className={`flex justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''} mb-8`}>
               <button
                 onClick={onEstimateClick}
-                className="px-8 py-4 bg-white text-blue-700 rounded-xl font-semibold shadow-lg hover:bg-blue-50 transition-colors duration-300"
+                className="px-12 py-6 bg-white text-blue-700 rounded-xl font-semibold text-lg shadow-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105"
                 title={t.hero.estimateDescription}
               >
                 {t.hero.getEstimate}
               </button>
+            </div>
+
+            {/* Grouped Secondary Actions */}
+            <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''}`}>
               <button
                 onClick={scrollToSolutions}
-                className="px-8 py-4 bg-blue-800 text-white border border-blue-400 rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition-colors duration-300"
+                className="px-8 py-4 bg-transparent text-white border-2 border-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-blue-700 transition-colors duration-300"
                 title={t.hero.solutionsDescription}
               >
                 {t.hero.exploreSolutions}
               </button>
-            </div>
-
-            {/* Consultation Button */}
-            <button
-              onClick={handleConsultationClick}
-              className="mt-6 text-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start mx-auto lg:mx-0 group"
-              title={t.hero.consultationDescription}
-            >
-              <span className="mr-2">{t.hero.getFreeConsultation}</span>
-              <svg
-                className={`w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1 ${dir === 'rtl' ? 'rotate-180' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              {/* Consultation Button - Adjusted margin */}
+              <button
+                onClick={handleConsultationClick}
+                className="text-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
+                title={t.hero.consultationDescription}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+                <span className="mr-2">{t.hero.getFreeConsultation}</span>
+                <svg
+                  className={`w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1 ${dir === 'rtl' ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Premium Phone Animation */}
