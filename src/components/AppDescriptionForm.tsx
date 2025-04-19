@@ -214,13 +214,17 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
 
       console.log('Updating Firebase document');
       try {
-        const userRef = doc(db, "users", userId);
-        await updateDoc(userRef, {
-          'projectDetails.selectedFeatures': selectedFeatures,
-          'status': 'features_selected',
-          'updatedAt': new Date().toISOString()
-        });
-        console.log('Firebase document updated successfully');
+        if (db) {
+          const userRef = doc(db, "users", userId);
+          await updateDoc(userRef, {
+            'projectDetails.selectedFeatures': selectedFeatures,
+            'status': 'features_selected',
+            'updatedAt': new Date().toISOString()
+          });
+          console.log('Firebase document updated successfully');
+        } else {
+          console.warn('Firebase db is null, skipping document update');
+        }
       } catch (firebaseError) {
         console.error('Firebase update failed:', firebaseError);
         throw new Error('Failed to save feature selection');
