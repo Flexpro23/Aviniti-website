@@ -5,6 +5,15 @@ export async function POST(request: Request) {
   try {
     console.log('Starting report generation...');
     
+    // Check if adminDb was successfully initialized
+    if (!adminDb) {
+      console.error('CRITICAL: Firebase Admin DB is not initialized.');
+      return NextResponse.json(
+        { error: 'Server configuration error. Unable to connect to database.' },
+        { status: 500 } // Internal Server Error
+      );
+    }
+
     const body = await request.json();
     console.log('Request body:', body);
     
