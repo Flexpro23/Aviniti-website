@@ -116,13 +116,6 @@ export default function Navbar() {
                 {t.navigation.about}
               </a>
               <Link 
-                href="/blog" 
-                className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.navigation.blog || 'Blog'}
-              </Link>
-              <Link 
                 href="/faq" 
                 className="block px-4 py-3 text-primary-900 hover:text-primary-600 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
