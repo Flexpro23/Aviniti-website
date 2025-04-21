@@ -299,8 +299,17 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
         throw new Error('Please select at least one platform');
       }
 
+      // Convert competitors string to array
+      const projectDetails: ProjectDetails = {
+        description: appDetails.description,
+        answers: {
+          ...appDetails.answers,
+          competitors: appDetails.answers.competitors.split(',').map(s => s.trim()).filter(s => s !== '')
+        }
+      };
+
       // Update project details in Firebase
-      await updateProjectDetails(userId, appDetails);
+      await updateProjectDetails(userId, projectDetails);
 
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -317,8 +326,8 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
       const result = await response.json();
       handleAIAnalysisComplete(result);
     } catch (error) {
-      console.error("Error:", error);
-      setError(error instanceof Error ? error.message : 'Failed to process your request. Please try again.');
+      console.error('Error:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setIsSubmitting(false);
       setIsAnalyzing(false);
