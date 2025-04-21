@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getUserData } from '../lib/firebase-utils';
+import { getUserData, getReportData } from '../lib/firebase-utils';
 import Image from 'next/image';
 
 interface ReportData {
@@ -49,19 +49,11 @@ export default function ReportContent({ userId }: { userId: string }) {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const userData = await getUserData(userId);
-        if (!userData) {
+        const reportData = await getReportData(userId);
+        if (!reportData) {
           setError('Report not found');
           return;
         }
-
-        // Fetch the report data
-        const response = await fetch(`/api/report/${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch report');
-        }
-
-        const reportData = await response.json();
         setReport(reportData);
       } catch (error) {
         setError('Failed to load report');
