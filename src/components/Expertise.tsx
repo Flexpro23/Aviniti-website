@@ -52,7 +52,7 @@ export default function Expertise() {
                 {area.data.description}
               </p>
               <ul className="space-y-3">
-                {area.data.features.map((feature, i) => (
+                {area.data.features.map((feature: string, i: number) => (
                   <li key={i} className={`flex items-center text-neutral-700 ${dir === 'rtl' ? 'flex-row-reverse text-right' : ''}`}>
                     <svg className={`w-5 h-5 text-primary-600 ${dir === 'rtl' ? 'mr-0 ml-3' : 'mr-3'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
