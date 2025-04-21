@@ -1,6 +1,7 @@
 import { db } from './firebase';
 import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFirestoreAdmin } from './firebase-admin';
 
 export interface PersonalDetails {
   fullName: string;
@@ -112,15 +113,19 @@ export async function uploadReport(userId: string, reportBlob: Blob): Promise<st
   }
 }
 
-export async function getUserData(userId: string): Promise<UserData | null> {
+export async function getUserData(userId: string) {
   try {
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    if (!userDoc.exists()) {
+    const firestore = getFirestoreAdmin();
+    const userDoc = await firestore.collection('users').doc(userId).get();
+    
+    if (!userDoc.exists) {
+      console.error('User document not found for ID:', userId);
       return null;
     }
-    return userDoc.data() as UserData;
+    
+    return userDoc.data();
   } catch (error) {
-    console.error('Error getting user data:', error);
-    throw error;
+    console.error('Error fetching user data:', error);
+    return null;
   }
 } 

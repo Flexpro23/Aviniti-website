@@ -51,6 +51,27 @@ export default function DetailedReportStep({
       const jsPDF = jspdfModule.default;
       const html2canvas = html2canvasModule.default;
       
+      // Create a temporary div for the contact information
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = `
+        <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+          <h3 style="font-size: 18px; color: #1e40af; margin-bottom: 15px;">Contact Information</h3>
+          <p style="margin-bottom: 10px;">Ready to get started? Contact us to discuss your project further!</p>
+          <div style="margin-top: 15px;">
+            <p style="margin-bottom: 8px;"><strong>Email:</strong> Aliodat@aviniti.app</p>
+            <p style="margin-bottom: 8px;"><strong>Phone:</strong> +962 790 685 302</p>
+            <p style="margin-bottom: 8px;"><strong>Website:</strong> www.aviniti.app</p>
+          </div>
+          <div style="margin-top: 20px; text-align: center;">
+            <p style="font-size: 20px; color: #1e40af; margin-bottom: 5px;">AVINITI</p>
+            <p style="font-style: italic; color: #64748b;">Your Ideas, Our Reality</p>
+          </div>
+        </div>
+      `;
+      
+      // Append the contact information to the report container
+      reportRef.current.appendChild(tempDiv);
+      
       // Create a canvas from the report content
       const canvas = await html2canvas(reportRef.current, {
         scale: 2, // Higher scale for better quality
@@ -64,6 +85,9 @@ export default function DetailedReportStep({
           }
         }
       });
+      
+      // Remove the temporary contact information div after canvas creation
+      reportRef.current.removeChild(tempDiv);
       
       const imgData = canvas.toDataURL('image/png');
       
@@ -229,24 +253,31 @@ export default function DetailedReportStep({
         </div>
       </div>
 
-      {/* Server Report Status */}
-      {reportError && (
-        <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-lg">
-          <p className="text-sm font-medium">
-            {language === 'en' ? 'Error generating report:' : 'خطأ في إنشاء التقرير:'} {reportError}
-          </p>
-          {onRegenerateReport && (
-            <button 
-              onClick={onRegenerateReport} 
-              className="mt-2 text-xs underline text-red-600 hover:text-red-800"
-            >
-              {language === 'en' ? 'Try again' : 'حاول مرة أخرى'}
-            </button>
-          )}
+      {/* Loading State */}
+      {isGeneratingServerReport && !reportError && (
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">
+                {language === 'en' ? 'Generating report...' : 'جاري إنشاء التقرير...'}
+              </h3>
+              <p className="mt-1 text-sm text-blue-600">
+                {language === 'en' 
+                  ? 'This may take a few moments. Please wait...' 
+                  : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...'}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Buttons Section - Modified for server reports */}
+      {/* Buttons Section */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
         <button
           onClick={onClose}
@@ -271,22 +302,10 @@ export default function DetailedReportStep({
             className="px-8 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center justify-center"
             disabled={isGeneratingPDF || isGeneratingServerReport}
           >
-            {isGeneratingPDF || isGeneratingServerReport ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {language === 'en' ? 'Generating Report...' : 'جاري إنشاء التقرير...'}
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                {language === 'en' ? 'Download Report' : 'تنزيل التقرير'}
-              </>
-            )}
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            {language === 'en' ? 'Download Report' : 'تحميل التقرير'}
           </button>
         )}
       </div>

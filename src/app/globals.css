@@ -3,16 +3,97 @@
 @tailwind utilities;
 
 /* RTL Support */
-[dir="rtl"] {
+[dir=rtl] body {
   text-align: right;
 }
 
-[dir="rtl"] .space-x-8 > :not([hidden]) ~ :not([hidden]) {
+[dir=rtl] .rtl-content {
+  text-align: right;
+}
+
+[dir=rtl] .rtl-content h1, 
+[dir=rtl] .rtl-content h2, 
+[dir=rtl] .rtl-content h3 {
+  text-align: right;
+}
+
+/* RTL Layout Classes */
+[dir=rtl] .rtl-layout {
+  direction: rtl;
+}
+
+[dir=rtl] .rtl-layout > * {
+  direction: rtl;
+}
+
+/* RTL Spacing Classes */
+[dir=rtl] .space-x-8 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 1;
 }
 
-[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+[dir=rtl] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 1;
+}
+
+/* RTL Flex Classes */
+[dir=rtl] .rtl-flex {
+  flex-direction: row-reverse;
+}
+
+/* RTL Grid Classes */
+[dir=rtl] .rtl-grid {
+  direction: rtl;
+}
+
+/* RTL Text Classes */
+[dir=rtl] .rtl-text {
+  text-align: right;
+  unicode-bidi: plaintext;
+}
+
+/* RTL Button Classes */
+[dir=rtl] .rtl-button {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL Input Classes */
+[dir=rtl] .rtl-input {
+  direction: rtl;
+  text-align: right;
+}
+
+/* RTL List Classes */
+[dir=rtl] .rtl-list {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+
+[dir=rtl] .rtl-list > li {
+  text-align: right;
+}
+
+/* RTL Icon Classes */
+[dir=rtl] .rtl-icon {
+  transform: scaleX(-1);
+}
+
+/* RTL Border Classes */
+[dir=rtl] .rtl-border {
+  border-right: none;
+  border-left: 1px solid currentColor;
+}
+
+/* RTL Margin Classes */
+[dir=rtl] .rtl-margin {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+/* RTL Padding Classes */
+[dir=rtl] .rtl-padding {
+  padding-right: 0;
+  padding-left: 1rem;
 }
 
 /* Language Switcher */
@@ -36,12 +117,12 @@ html[lang="ar"] .text-base {
 }
 
 /* Fix button padding for RTL */
-[dir="rtl"] button {
+[dir=rtl] button {
   unicode-bidi: plaintext;
 }
 
 /* Ensure SVG icons maintain correct orientation */
-[dir="rtl"] svg {
+[dir=rtl] svg {
   transform: scaleX(-1);
 }
 
@@ -51,7 +132,7 @@ html[lang="ar"] .text-base {
 }
 
 /* Adjust mobile menu for RTL */
-[dir="rtl"] .md\:hidden {
+[dir=rtl] .md\:hidden {
   right: auto;
   left: 0;
 }
@@ -573,4 +654,81 @@ html[lang="ar"] .text-base {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Add vendor prefixes for line-clamp */
+@layer utilities {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-none {
+    -webkit-line-clamp: none;
+  }
+}
+
+/* Add RTL support */
+.rtl {
+  direction: rtl;
+}
+
+.rtl-content {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Ensure proper text alignment in RTL mode */
+[dir=rtl] .text-left {
+  text-align: right;
+}
+
+[dir=rtl] .text-right {
+  text-align: left;
+}
+
+/* Add smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 } 

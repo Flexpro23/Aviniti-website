@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { UserOptions } from 'jspdf-autotable';
+import { UserOptions, CellHookData } from 'jspdf-autotable';
 import admin from 'firebase-admin';
+import PdfPrinter from 'pdfmake';
+import { TDocumentDefinitions, Content, Style, StyleDictionary } from 'pdfmake/interfaces';
 
 // Add type augmentation for jsPDF to include autoTable
 declare module 'jspdf' {
@@ -79,25 +81,18 @@ function getStorageAdmin(): admin.storage.Storage {
   return adminStorage;
 }
 
-// Helper to safely get the storage bucket with error handling
+// Helper to safely get the storage bucket with error handling and proper typing
 function getStorageBucket() {
+  if (!adminStorage || typeof adminStorage === 'undefined') {
+    throw new Error('Storage admin not initialized - please ensure Firebase Admin is properly initialized');
+  }
+  
   try {
-    const storage = getStorageAdmin();
     const bucketName = process.env.FIREBASE_STORAGE_BUCKET || 'aviniti-website.firebasestorage.app';
-    
-    // Try to get the bucket in two ways
-    try {
-      // Method 1: Get default bucket
-      return storage.bucket();
-    } catch (error) {
-      console.log('Failed to get default bucket, trying with explicit name:', bucketName);
-      
-      // Method 2: Get bucket by name
-      return storage.bucket(bucketName);
-    }
+    return adminStorage.bucket(bucketName);
   } catch (error) {
     console.error('Error getting storage bucket:', error);
-    throw error;
+    throw new Error('Failed to get storage bucket: ' + (error instanceof Error ? error.message : 'Unknown error'));
   }
 }
 
@@ -168,15 +163,312 @@ interface ReportData {
   generatedAt: string;
 }
 
+// Define fonts for pdfmake
+const fonts = {
+  Roboto: {
+    normal: 'Helvetica',
+    bold: 'Helvetica-Bold',
+    italics: 'Helvetica-Oblique',
+    bolditalics: 'Helvetica-BoldOblique'
+  },
+  // Add Amiri font for Arabic text
+  Amiri: {
+    normal: 'https://fonts.gstatic.com/s/amiri/v17/J7aRnpd8CGxBHpUrtLMA7w.ttf',
+    bold: 'https://fonts.gstatic.com/s/amiri/v17/J7acnpd8CGxBHp2VkaY6zp5yGw.ttf',
+    italics: 'https://fonts.gstatic.com/s/amiri/v17/J7aRnpd8CGxBHpUutLM.ttf',
+    bolditalics: 'https://fonts.gstatic.com/s/amiri/v17/J7aanpd8CGxBHpUrjAo9_pxqGg.ttf'
+  }
+};
+
+// Helper function to detect Arabic text
+const containsArabic = (text: string): boolean => {
+  const arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  return arabicPattern.test(text);
+};
+
+// Helper function to format text with appropriate font and direction
+const formatText = (text: string | undefined): any => {
+  if (!text) return { text: '' };
+  
+  if (containsArabic(text)) {
+    return {
+      text: text,
+      font: 'Amiri',
+      alignment: 'right',
+      direction: 'rtl'
+    };
+  }
+  
+  return {
+    text: text,
+    font: 'Roboto'
+  };
+};
+
+// Update the TDocumentDefinitions interface to include rtl property
+interface CustomDocumentDefinitions extends TDocumentDefinitions {
+  rtl?: boolean;
+}
+
+async function generatePDFWithPDFMake(reportData: ReportData): Promise<Buffer> {
+  const printer = new PdfPrinter(fonts);
+
+  // Create document definition
+  const docDefinition: CustomDocumentDefinitions = {
+    rtl: containsArabic(reportData.projectOverview.appDescription),
+    
+    content: [
+      // Title
+      {
+        text: 'Project Estimate Report',
+        style: 'header',
+        alignment: 'center',
+        margin: [0, 0, 0, 20]
+      },
+      
+      // Project Overview
+      {
+        text: 'Project Overview',
+        style: 'subheader',
+        margin: [0, 20, 0, 10]
+      },
+      formatText(reportData.projectOverview.appDescription),
+      
+      // Technical Details
+      {
+        text: 'Technical Details',
+        style: 'subheader',
+        margin: [0, 20, 0, 10]
+      },
+      {
+        ul: [
+          ...reportData.technicalDetails.platforms.map(p => formatText(`Platform: ${p}`)),
+          ...reportData.technicalDetails.integrations.map(i => formatText(`Integration: ${i}`))
+        ]
+      },
+      
+      // Features
+      {
+        text: 'Selected Features',
+        style: 'subheader',
+        margin: [0, 20, 0, 10]
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: ['*', 'auto', 'auto'],
+          body: [
+            [
+              { text: 'Feature', style: 'tableHeader' },
+              { text: 'Hours', style: 'tableHeader' },
+              { text: 'Cost', style: 'tableHeader' }
+            ],
+            ...reportData.features.core.map(f => [
+              formatText(f.name),
+              { text: f.estimatedHours.toString(), alignment: 'right' },
+              { text: f.costFormatted || `$${f.cost}`, alignment: 'right' }
+            ]),
+            ...reportData.features.suggested.map(f => [
+              formatText(f.name),
+              { text: f.estimatedHours.toString(), alignment: 'right' },
+              { text: f.costFormatted || `$${f.cost}`, alignment: 'right' }
+            ])
+          ]
+        }
+      },
+      
+      // Summary
+      {
+        text: 'Summary',
+        style: 'subheader',
+        margin: [0, 20, 0, 10]
+      },
+      {
+        table: {
+          widths: ['*', 'auto'],
+          body: [
+            [
+              { text: 'Total Hours', style: 'tableHeader' },
+              { text: reportData.totalHours.toString(), alignment: 'right' }
+            ],
+            [
+              { text: 'Total Cost', style: 'tableHeader' },
+              { text: `$${reportData.totalCost.toLocaleString()}`, alignment: 'right' }
+            ]
+          ]
+        }
+      },
+      
+      // Add Contact Information Section
+      {
+        text: 'Contact Information',
+        style: 'subheader',
+        margin: [0, 30, 0, 10],
+        pageBreak: 'before'
+      },
+      {
+        text: 'Ready to start your project? Get in touch with us:',
+        margin: [0, 0, 0, 15],
+        color: '#4B5563'
+      },
+      {
+        columns: [
+          {
+            width: 'auto',
+            text: '📧',
+            margin: [0, 0, 5, 0]
+          },
+          {
+            width: '*',
+            text: [
+              { text: 'Email: ', bold: true },
+              { text: 'Aliodat@aviniti.app', color: '#2563EB', decoration: 'underline' }
+            ]
+          }
+        ],
+        margin: [0, 0, 0, 10]
+      },
+      {
+        columns: [
+          {
+            width: 'auto',
+            text: '📱',
+            margin: [0, 0, 5, 0]
+          },
+          {
+            width: '*',
+            text: [
+              { text: 'Phone: ', bold: true },
+              '+962 790 685 302'
+            ]
+          }
+        ],
+        margin: [0, 0, 0, 20]
+      },
+      {
+        canvas: [
+          {
+            type: 'line',
+            x1: 0,
+            y1: 5,
+            x2: 515,
+            y2: 5,
+            lineWidth: 1,
+            lineColor: '#E5E7EB'
+          }
+        ],
+        margin: [0, 0, 0, 20]
+      },
+      {
+        text: 'AVINITI',
+        style: {
+          fontSize: 24,
+          bold: true,
+          color: '#1E40AF',
+          alignment: 'center'
+        },
+        margin: [0, 0, 0, 5]
+      },
+      {
+        text: 'Your Ideas, Our Reality',
+        style: {
+          fontSize: 14,
+          color: '#6B7280',
+          alignment: 'center',
+          italics: true
+        },
+        margin: [0, 0, 0, 20]
+      }
+    ],
+    defaultStyle: {
+      font: 'Roboto',
+      fontSize: 12,
+      lineHeight: 1.5
+    },
+    styles: {
+      header: {
+        fontSize: 24,
+        bold: true,
+        margin: [0, 0, 0, 10]
+      },
+      subheader: {
+        fontSize: 18,
+        bold: true,
+        margin: [0, 10, 0, 5]
+      },
+      tableHeader: {
+        bold: true,
+        fontSize: 13,
+        color: 'black',
+        fillColor: '#f2f2f2'
+      }
+    },
+    footer: function(currentPage: number, pageCount: number) {
+      return {
+        columns: [
+          {
+            text: 'Aviniti - Professional App Development Services',
+            alignment: 'left',
+            margin: [40, 0, 0, 0],
+            fontSize: 8,
+            color: '#9CA3AF'
+          },
+          {
+            text: `Page ${currentPage} of ${pageCount}`,
+            alignment: 'right',
+            margin: [0, 0, 40, 0],
+            fontSize: 8,
+            color: '#9CA3AF'
+          }
+        ],
+        margin: [40, 0]
+      };
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      const pdfDoc = printer.createPdfKitDocument(docDefinition);
+      const chunks: Buffer[] = [];
+      
+      pdfDoc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+      pdfDoc.on('error', reject);
+      
+      pdfDoc.end();
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 async function generatePDF(reportData: ReportData): Promise<Buffer> {
   console.log('Generating PDF with app description:', reportData.projectOverview.appDescription?.substring(0, 50) + '...');
   
   const doc = new jsPDF();
+  
+  // Add Arabic font support
+  doc.addFont('https://fonts.gstatic.com/s/amiri/v17/J7aRnpd8CGxBHpUrtLMA7w.ttf', 'Amiri', 'normal');
+  
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
   const margin = 20;
   const lineHeight = 7;
-  
+
+  // Helper function to handle Arabic text
+  const writeArabicText = (text: string, x: number, y: number, options: any = {}) => {
+    const isArabic = /[\u0600-\u06FF]/.test(text);
+    if (isArabic) {
+      doc.setFont('Amiri');
+      // Reverse the text for RTL
+      const reversed = text.split('').reverse().join('');
+      doc.text(reversed, x, y, { ...options, align: 'right' });
+    } else {
+      doc.setFont('helvetica');
+      doc.text(text, x, y, options);
+    }
+  };
+
   // =============== COVER PAGE ===============
   
   // AVINITI Logo (blue and teal infinity symbol)
@@ -318,14 +610,24 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
   const appDescription = reportData.projectOverview.appDescription || "App description not provided";
   console.log('Using app description for PDF:', appDescription.substring(0, 50) + '...');
   
+  // Set up text properties
   doc.setFontSize(11);
   doc.setTextColor(60, 60, 60);
-  doc.setFont("helvetica", 'normal');
-  
-  // Increase width for description text and handle wrapping better
+
+  // Handle potentially Arabic description
   const maxWidth = pageWidth - (margin * 2) - 10;
+  const isArabic = /[\u0600-\u06FF]/.test(appDescription);
   const splitDescription = doc.splitTextToSize(appDescription, maxWidth);
-  doc.text(splitDescription, margin, yPos);
+  
+  if (isArabic) {
+    writeArabicText(appDescription, pageWidth - margin, yPos, {
+      align: 'right',
+      maxWidth: maxWidth
+    });
+  } else {
+    doc.setFont('helvetica', 'normal');
+    doc.text(splitDescription, margin, yPos);
+  }
   
   // Calculate space used by description and move position
   const descriptionHeight = splitDescription.length * lineHeight;
@@ -488,27 +790,47 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
     const timeDisplay = feature.timeFormatted || 
       (feature.timeDays ? `${feature.timeDays} days` : hoursToDays(feature.estimatedHours));
     
+    // --- Prepare data for potentially Arabic text ---
+    const featureName = feature.name;
+    const featureDesc = feature.description || "Feature description";
+    const featurePurpose = purposeText;
+    // --- End data preparation ---
+
     return [
-      feature.name,
-      feature.description || "Feature description",
-      purposeText,
+      featureName,
+      featureDesc,
+      featurePurpose,
       costDisplay,
       timeDisplay
     ];
   });
   
-  // Add the features table with improved styling
-  doc.autoTable({
+  // For the features table
+  const tableOptions: UserOptions = {
     startY: yPos,
     head: [['Feature', 'Description', 'Purpose', 'Cost ($)', 'Time (Days)']],
     body: featureRows,
+    didParseCell: function(data: CellHookData) {
+      // Check if cell content is Arabic
+      if ([0, 1, 2].includes(data.column.index) && 
+          typeof data.cell.raw === 'string' && 
+          /[\u0600-\u06FF]/.test(data.cell.raw)) {
+        data.cell.styles.font = 'Amiri';
+        data.cell.styles.halign = 'right';
+        // Reverse the text for RTL
+        data.cell.text = [data.cell.raw.split('').reverse().join('')];
+      } else {
+        data.cell.styles.font = 'helvetica';
+        data.cell.styles.halign = data.column.index > 2 ? 'center' : 'left';
+      }
+    },
     headStyles: {
-      fillColor: [0, 164, 176], // Teal header (Aviniti brand color)
+      fillColor: [0, 164, 176],
       textColor: [255, 255, 255],
       fontSize: 11,
       cellPadding: 4,
       fontStyle: 'bold',
-      halign: 'left',
+      halign: 'center',
     },
     bodyStyles: {
       fontSize: 10,
@@ -516,19 +838,21 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
       textColor: [60, 60, 60],
     },
     columnStyles: {
-      0: { fontStyle: 'bold', cellWidth: 40 },
+      0: { cellWidth: 40, fontStyle: 'bold' },
       1: { cellWidth: 45 },
       2: { cellWidth: 40 },
-      3: { halign: 'center', cellWidth: 20 },
-      4: { halign: 'center', cellWidth: 25 },
+      3: { cellWidth: 20 },
+      4: { cellWidth: 25 },
     },
     alternateRowStyles: {
-      fillColor: [240, 247, 255], // Light blue for alternate rows
+      fillColor: [240, 247, 255],
     },
-    theme: 'grid', // Add grid lines for better readability
+    theme: 'grid' as const,
     margin: { left: margin, right: margin },
     tableWidth: 'auto',
-  });
+  };
+
+  doc.autoTable(tableOptions);
   
   // =============== NEXT STEPS & CONTACT PAGE ===============
   doc.addPage();
@@ -610,6 +934,7 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
   
   // Add page numbers to all pages except the cover
   const pageCount = doc.getNumberOfPages();
+  doc.setFont('helvetica', 'normal'); // Ensure default font for page numbers
   for (let i = 2; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(9);
@@ -635,6 +960,24 @@ async function generatePDF(reportData: ReportData): Promise<Buffer> {
   
   // Convert to Buffer
   return Buffer.from(doc.output('arraybuffer'));
+}
+
+// Add getUserData function if it's missing
+async function getUserData(userId: string) {
+  try {
+    const firestore = getFirestoreAdmin();
+    const userDoc = await firestore.collection('users').doc(userId).get();
+    
+    if (!userDoc.exists) {
+      console.error('User document not found for ID:', userId);
+      return null;
+    }
+    
+    return userDoc.data();
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return null;
+  }
 }
 
 export async function GET(
@@ -674,356 +1017,145 @@ export async function POST(
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
-    console.log('Starting report generation for userId:', params.userId);
+    // Validate request body
     const body = await request.json();
-    console.log('Request body:', body);
+    if (!body || !body.selectedFeatures || !body.uiValues) {
+      return NextResponse.json(
+        { error: 'Invalid request body - missing required fields' },
+        { status: 400 }
+      );
+    }
 
-    // Extract features and UI values from request
     const { selectedFeatures, uiValues } = body;
-    console.log('Using values directly from UI:', uiValues);
 
-    // Initialize Firebase Admin SDK if not already initialized
-    await initializeFirebaseAdmin();
-    
-    // Get Firestore instance
-    const firestore = getFirestoreAdmin();
-
-    // Fetch user document to get personal details
-    console.log('Fetching user document...');
-    const userDoc = await firestore.collection('users').doc(params.userId).get();
-    
-    if (!userDoc.exists) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    // Initialize Firebase Admin if needed
+    if (!adminDb) {
+      try {
+        await initializeFirebaseAdmin();
+      } catch (error) {
+        console.error('Failed to initialize Firebase Admin:', error);
+        return NextResponse.json(
+          { error: 'Failed to initialize Firebase Admin' },
+          { status: 500 }
+        );
+      }
     }
 
-    const userData = userDoc.data();
-    
-    // Create report data object
-    console.log('Calculating feature costs...');
-    
-    // Determine whether to use UI-provided values or calculate from features
-    if (uiValues && (uiValues.totalCost || uiValues.totalHours)) {
-      console.log('Using UI-provided values');
-      
-      // Handle potential null or undefined values with defaults
-      let totalCost = 0;
-      if (uiValues.totalCost !== null && uiValues.totalCost !== undefined) {
-        totalCost = Number(uiValues.totalCost);
-      } else {
-        // Calculate total cost from features if not provided
-        totalCost = uiValues.features.reduce((sum: number, feature: any) => {
-          const costValue = feature.costValue || 0;
-          return sum + costValue;
-        }, 0);
-      }
+    // Get user data from Firestore
+    const userData = await getUserData(params.userId);
+    if (!userData) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
 
-      let totalHours = 0;
-      if (uiValues.totalHours !== null && uiValues.totalHours !== undefined) {
-        totalHours = Number(uiValues.totalHours);
-        // If totalHours seems unreasonably large (e.g., over 1000), it might be in minutes, convert to hours
-        if (totalHours > 1000) {
-          totalHours = Math.round(totalHours / 8); // Convert to days and then to hours (8 hours per day)
-        }
-      } else {
-        // Calculate total hours from features if not provided
-        totalHours = uiValues.features.reduce((sum: number, feature: any) => {
-          const timeHours = feature.timeHours || 0;
-          return sum + timeHours;
-        }, 0);
-      }
+    // Calculate totals
+    const totalCost = uiValues.totalCost || 
+      selectedFeatures.core.reduce((sum: number, f: any) => sum + (f.cost || 0), 0) +
+      selectedFeatures.suggested.reduce((sum: number, f: any) => sum + (f.cost || 0), 0);
 
-      // Ensure we have valid numbers
-      if (isNaN(totalCost)) totalCost = 0;
-      if (isNaN(totalHours)) totalHours = 0;
+    const totalHours = uiValues.totalHours ||
+      selectedFeatures.core.reduce((sum: number, f: any) => sum + (f.estimatedHours || 0), 0) +
+      selectedFeatures.suggested.reduce((sum: number, f: any) => sum + (f.estimatedHours || 0), 0);
 
-      console.log('Calculated totals:', { totalCost, totalHours });
-      
-      // Now create the reportData object with validated values
-      const reportData: ReportData = {
-        projectOverview: {
-          appDescription: uiValues.appDescription || userData?.appDescription || 'App description not provided',
-          targetAudience: userData?.targetAudience || [],
-          problemsSolved: userData?.problemsSolved || [],
-          competitors: userData?.competitors || '',
-        },
-        technicalDetails: {
-          platforms: userData?.platforms || [],
-          integrations: userData?.integrations || [],
-        },
-        features: {
-          core: selectedFeatures.core.map((feature: any) => {
-            // Try to find the matching feature in uiValues.features to get accurate cost and time
-            const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
-            return {
-              name: feature.name,
-              description: feature.description,
-              // Use UI values if available, otherwise fall back to defaults
-              estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
-              cost: uiFeature?.costValue || feature.cost || 100,
-              // Store additional properties to help with formatting
-              costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
-              timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
-              timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
-              purpose: uiFeature?.purpose || '',
-            };
-          }),
-          suggested: selectedFeatures.suggested.map((feature: any) => {
-            // Try to find the matching feature in uiValues.features to get accurate cost and time
-            const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
-            return {
-              name: feature.name,
-              description: feature.description,
-              // Use UI values if available, otherwise fall back to defaults
-              estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
-              cost: uiFeature?.costValue || feature.cost || 100,
-              // Store additional properties to help with formatting
-              costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
-              timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
-              timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
-              purpose: uiFeature?.purpose || '',
-            };
-          }),
-        },
-        clientInfo: {
-          // Use user's personal details if available
-          name: userData?.fullName || uiValues.fullName || uiValues.clientName || '',
-          email: userData?.emailAddress || uiValues.emailAddress || '',
-          phone: userData?.phoneNumber || uiValues.phoneNumber || '',
-          company: userData?.companyName || uiValues.companyName || '',
-        },
-        totalCost: totalCost,
-        totalHours: totalHours,
-        generatedAt: new Date().toISOString(),
-      };
-      
-      // Log the final data
-      console.log('Final report data:', {
-        appDescription: reportData.projectOverview.appDescription.substring(0, 50) + '...',
-        totalCost: reportData.totalCost,
-        totalHours: reportData.totalHours,
-        featureCount: reportData.features.core.length + reportData.features.suggested.length,
-        clientName: reportData.clientInfo.name || 'Not provided'
-      });
-      
-      // Generate the PDF
+    // Prepare report data
+    const reportData: ReportData = {
+      projectOverview: {
+        appDescription: uiValues.appDescription || 'Custom application development project',
+        targetAudience: [],
+        problemsSolved: [],
+        competitors: ''
+      },
+      technicalDetails: {
+        platforms: [],
+        integrations: []
+      },
+      features: {
+        core: selectedFeatures.core.map((feature: any) => {
+          const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
+          return {
+            name: feature.name,
+            description: feature.description,
+            estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
+            cost: uiFeature?.costValue || feature.cost || 100,
+            costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
+            timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
+            timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
+            purpose: uiFeature?.purpose || '',
+          };
+        }),
+        suggested: selectedFeatures.suggested.map((feature: any) => {
+          const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
+          return {
+            name: feature.name,
+            description: feature.description,
+            estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
+            cost: uiFeature?.costValue || feature.cost || 100,
+            costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
+            timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
+            timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
+            purpose: uiFeature?.purpose || '',
+          };
+        }),
+      },
+      clientInfo: {
+        name: userData?.fullName || uiValues.fullName || uiValues.clientName || '',
+        email: userData?.emailAddress || uiValues.emailAddress || '',
+        phone: userData?.phoneNumber || uiValues.phoneNumber || '',
+        company: userData?.companyName || uiValues.companyName || '',
+      },
+      totalCost,
+      totalHours,
+      generatedAt: new Date().toISOString(),
+    };
+
+    try {
+      // Generate PDF
       console.log('Generating PDF...');
-      const pdfBuffer = await generatePDF(reportData);
+      const pdfBuffer = await generatePDFWithPDFMake(reportData);
       
-      // Get the Storage instance
-      const storage = getStorageAdmin();
-      
-      // Upload the PDF to Firebase Storage
+      // Get Storage instance and upload PDF
       console.log('Uploading PDF to Firebase Storage...');
-      const filename = `${Date.now()}.pdf`;
-      const filePath = `reports/${params.userId}/${filename}`;
-      
-      // Get bucket with better error handling
+      const storage = getStorageAdmin();
       const bucket = getStorageBucket();
-      console.log('Storage bucket retrieved:', bucket.name);
       
-      console.log('Creating file in bucket:', filePath);
-      const file = bucket.file(filePath);
-      console.log('File reference created');
-      
-      // Upload the file
-      console.log('Starting file upload with options:', {
-        metadata: {
-          contentType: 'application/pdf',
-          metadata: {
-            createdBy: 'aviniti-app',
-            userId: params.userId,
-          },
-        },
-        public: true,
-        resumable: false,
-      });
-      
-      await file.save(pdfBuffer, {
-        metadata: {
-          contentType: 'application/pdf',
-          metadata: {
-            createdBy: 'aviniti-app',
-            userId: params.userId,
-          },
-        },
-        public: true,
-        resumable: false,
-      });
-      
-      console.log('File uploaded successfully');
-      
-      // Get the public URL
-      console.log('Getting public URL...');
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filePath)}`;
-      console.log('Public URL generated:', publicUrl);
-      
-      // Save the report to Firestore
-      console.log('Saving report to Firestore...');
-      const reportRef = firestore.collection('reports').doc();
-      await reportRef.set({
-        userId: params.userId,
-        reportPath: filePath,
-        publicUrl,
-        createdAt: new Date().toISOString(),
-        totalCost: reportData.totalCost,
-        totalHours: reportData.totalHours,
-        featureCount: reportData.features.core.length + reportData.features.suggested.length,
-      });
-      
-      // Update the user document with the report reference
-      console.log('Updating user document with report reference...');
-      await firestore.collection('users').doc(params.userId).update({
-        reports: admin.firestore.FieldValue.arrayUnion({
-          reportId: reportRef.id,
-          createdAt: new Date().toISOString(),
-          publicUrl,
-        }),
-      });
-      
-      console.log('Report generation completed successfully');
-      return NextResponse.json({ 
-        success: true,
-        url: publicUrl,
-        message: 'Report generated successfully' 
-      });
-    } else {
-      // Original fallback code for when UI values are not provided
-      console.log('UI values not provided, using fallback calculation');
-      
-      // Check if Firebase admin is initialized
-      if (!adminDb || !adminStorage) {
-        console.error('Firebase admin not initialized');
-        return NextResponse.json({ error: 'Firebase services not available' }, { status: 500 });
+      if (!bucket) {
+        throw new Error('Failed to get storage bucket');
       }
       
-      // Calculate values from scratch
-      const calculateFeatureCost = (featureName: string) => {
-        const base = BASE_COSTS[featureName as keyof typeof BASE_COSTS] || { hours: 30, multiplier: 1 };
-        
-        // For fixed-price features like Authentication and Deployment
-        if ('cost' in base) {
-          return { hours: base.hours || 0, cost: base.cost || 0 };
-        }
-        
-        // For traditional hourly-based features
-        const hours = base.hours;
-        const cost = Math.round(hours * HOURLY_RATE * base.multiplier);
-        return { hours, cost };
-      };
-
-      // Process core features
-      const coreFeatures = selectedFeatures.core.map((feature: string) => {
-        const { hours, cost } = calculateFeatureCost(feature);
-        return {
-          name: feature,
-          description: "Core functionality required for the application",
-          estimatedHours: hours,
-          cost: cost
-        };
-      });
-
-      // Process suggested features
-      const suggestedFeatures = selectedFeatures.suggested.map((feature: any) => {
-        const { hours, cost } = calculateFeatureCost(feature.name);
-        return {
-          name: feature.name,
-          description: feature.description,
-          estimatedHours: hours,
-          cost: cost
-        };
-      });
-
-      // Calculate totals
-      const totalHours = [...coreFeatures, ...suggestedFeatures].reduce(
-        (sum: number, feature: any) => sum + feature.estimatedHours, 0
-      );
-      const totalCost = [...coreFeatures, ...suggestedFeatures].reduce(
-        (sum: number, feature: any) => sum + feature.cost, 0
-      );
-
-      const reportData: ReportData = {
-        projectOverview: {
-          appDescription: userData?.appDescription || 'App description not provided',
-          targetAudience: userData?.targetAudience || [],
-          problemsSolved: userData?.problemsSolved || [],
-          competitors: userData?.competitors || '',
-        },
-        technicalDetails: {
-          platforms: userData?.platforms || [],
-          integrations: userData?.integrations || [],
-        },
-        features: {
-          core: coreFeatures,
-          suggested: suggestedFeatures,
-        },
-        clientInfo: {
-          name: userData?.fullName || '',
-          email: userData?.emailAddress || '',
-          phone: userData?.phoneNumber || '',
-          company: userData?.companyName || '',
-        },
-        totalCost,
-        totalHours,
-        generatedAt: new Date().toISOString(),
-      };
-
-      // Generate the PDF
-      console.log('Generating PDF...');
-      const pdfBuffer = await generatePDF(reportData);
-      
-      // Same storage and database logic as above
       const filename = `${Date.now()}.pdf`;
       const filePath = `reports/${params.userId}/${filename}`;
-      
-      // Get bucket with better error handling
-      const bucket = getStorageBucket();
-      console.log('Storage bucket retrieved:', bucket.name);
-      
       const file = bucket.file(filePath);
-      console.log('File reference created');
       
+      // Upload the PDF
       await file.save(pdfBuffer, {
         metadata: {
           contentType: 'application/pdf',
-          metadata: {
-            createdBy: 'aviniti-app',
-            userId: params.userId,
-          },
         },
-        public: true,
-        resumable: false,
       });
       
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(filePath)}`;
-      
-      const reportRef = adminDb.collection('reports').doc();
-      await reportRef.set({
-        userId: params.userId,
-        reportPath: filePath,
-        publicUrl,
-        createdAt: new Date().toISOString(),
-        totalCost,
-        totalHours,
-        featureCount: reportData.features.core.length + reportData.features.suggested.length,
+      // Get the download URL
+      const [url] = await file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // URL expires in 7 days
       });
       
-      await adminDb.collection('users').doc(params.userId).update({
-        reports: admin.firestore.FieldValue.arrayUnion({
-          reportId: reportRef.id,
-          createdAt: new Date().toISOString(),
-          publicUrl,
-        }),
-      });
+      return NextResponse.json({ url });
       
-      console.log('Report generation completed successfully');
-      return NextResponse.json({ 
-        success: true,
-        url: publicUrl,
-        message: 'Report generated successfully' 
-      });
+    } catch (error) {
+      console.error('Error generating or uploading PDF:', error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Failed to generate or upload PDF' },
+        { status: 500 }
+      );
     }
+    
   } catch (error) {
-    console.error('Error generating report:', error);
-    return NextResponse.json({ error: 'Error generating report' }, { status: 500 });
+    console.error('Error in report generation:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 

@@ -7,7 +7,7 @@ import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL } from '@/lib/services/GeminiService';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 import { createUserDocument } from '@/lib/firebase-utils';
 import { db } from '@/lib/firebase';
 
@@ -88,14 +88,19 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
 
   // Add a new useEffect to generate the report when reaching step 4
   useEffect(() => {
-    if (step === 4 && detailedReport && userId && !reportGenerated) {
+    if (step === 4 && detailedReport && !reportGenerated) {
+      if (!userId) {
+        console.error('No userId available for report generation');
+        setReportError('User ID is missing. Please try again or contact support.');
+        return;
+      }
+      console.log('Initiating report generation with userId:', userId);
       generateServerReport();
     }
   }, [step, detailedReport, userId, reportGenerated]);
 
   const handleUserInfoSubmit = async (details: PersonalDetails) => {
     setPersonalDetails(details);
-    // Save the user info to Firestore and get back a userId
     setIsProcessing(true);
     try {
       console.log('Creating user document with data:', details);
@@ -114,7 +119,18 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         updatedAt: new Date().toISOString(),
       });
       
+      if (!userDocRef.id) {
+        throw new Error('Failed to get user document ID');
+      }
+      
       console.log('User document created with ID:', userDocRef.id);
+      
+      // Verify the document was created
+      const docSnapshot = await getDoc(userDocRef);
+      if (!docSnapshot.exists()) {
+        throw new Error('User document was not created successfully');
+      }
+      
       setUserId(userDocRef.id);
       setStep(2);
     } catch (error) {
@@ -266,14 +282,51 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   };
 
-  // New function to call the report API
+  // New function to validate user document
+  const validateUserDocument = async (userId: string): Promise<boolean> => {
+    if (!db) {
+      console.error('Firebase database is not initialized');
+      return false;
+    }
+    
+    try {
+      const docRef = doc(db, 'users', userId);
+      const docSnapshot = await getDoc(docRef);
+      return docSnapshot.exists();
+    } catch (error) {
+      console.error('Error validating user document:', error);
+      return false;
+    }
+  };
+
   const generateServerReport = async () => {
-    if (!userId || !detailedReport || reportGenerated) return;
+    if (!userId) {
+      console.error('No userId available for report generation');
+      setReportError('User ID is missing. Please try again or contact support.');
+      return;
+    }
+
+    if (!detailedReport) {
+      console.error('No detailed report available for generation');
+      setReportError('Report data is missing. Please try again.');
+      return;
+    }
+
+    if (reportGenerated) {
+      console.log('Report already generated, skipping generation');
+      return;
+    }
     
     setIsProcessing(true);
     setReportError(null);
     
     try {
+      // Validate user document exists before proceeding
+      const isValidUser = await validateUserDocument(userId);
+      if (!isValidUser) {
+        throw new Error('User document not found in database');
+      }
+
       console.log('Generating server-side report for user:', userId);
       
       // Calculate feature data for the API
