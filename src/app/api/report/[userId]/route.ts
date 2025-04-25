@@ -6,17 +6,6 @@ import admin from 'firebase-admin';
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions, Content, Style, StyleDictionary } from 'pdfmake/interfaces';
 
-// Add this at the top of the file, after the imports
-if (process.env.NODE_ENV === 'production') {
-  const fs = require('fs');
-  const path = require('path');
-  const dir = path.join(process.cwd(), '.next', 'server', 'app', 'api', 'report', '[userId]');
-  
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-}
-
 // Add type augmentation for jsPDF to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
@@ -991,34 +980,15 @@ async function getUserData(userId: string) {
   }
 }
 
-// Add this function to handle the data.trie file
-async function ensureDataTrieFile() {
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const dataTriePath = path.join(process.cwd(), '.next', 'server', 'app', 'api', 'report', '[userId]', 'data.trie');
-    
-    if (!fs.existsSync(dataTriePath)) {
-      // Create the directory if it doesn't exist
-      const dir = path.dirname(dataTriePath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      // Create an empty data.trie file
-      fs.writeFileSync(dataTriePath, '{}');
-    }
-  } catch (error) {
-    console.error('Error ensuring data.trie file:', error);
-  }
-}
+// Remove the ensureDataTrieFile function and replace it with an in-memory solution
+const reportDataCache = new Map<string, any>();
 
-// Modify the GET handler to use the ensureDataTrieFile function
+// Modify the GET handler to use in-memory cache
 export async function GET(
   request: NextRequest,
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
-    await ensureDataTrieFile();
     if (!adminDb) {
       return NextResponse.json({ error: 'Firebase admin not initialized' }, { status: 500 });
     }
@@ -1036,6 +1006,9 @@ export async function GET(
       return NextResponse.json({ error: 'Report not found' }, { status: 404 });
     }
 
+    // Store in cache
+    reportDataCache.set(params.userId, reportDoc.data());
+
     return NextResponse.json(reportDoc.data());
   } catch (error) {
     console.error('Error in GET handler:', error);
@@ -1046,13 +1019,12 @@ export async function GET(
   }
 }
 
-// Modify the POST handler to use the ensureDataTrieFile function
+// Modify the POST handler to use in-memory cache
 export async function POST(
   request: NextRequest,
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
-    await ensureDataTrieFile();
     // Validate request body
     const body = await request.json();
     if (!body || !body.selectedFeatures || !body.uiValues) {
@@ -1066,8 +1038,8 @@ export async function POST(
     
     // Initialize Firebase Admin if needed
     if (!adminDb) {
-    try {
-      await initializeFirebaseAdmin();
+      try {
+        await initializeFirebaseAdmin();
       } catch (error) {
         console.error('Failed to initialize Firebase Admin:', error);
         return NextResponse.json(
@@ -1096,78 +1068,81 @@ export async function POST(
       selectedFeatures.suggested.reduce((sum: number, f: any) => sum + (f.estimatedHours || 0), 0);
 
     // Prepare report data
-        const reportData: ReportData = {
-          projectOverview: {
+    const reportData: ReportData = {
+      projectOverview: {
         appDescription: uiValues.appDescription || 'Custom application development project',
         targetAudience: [],
         problemsSolved: [],
         competitors: ''
-          },
-          technicalDetails: {
+      },
+      technicalDetails: {
         platforms: [],
         integrations: []
-          },
-          features: {
-            core: selectedFeatures.core.map((feature: any) => {
-              const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
-              return {
-                name: feature.name,
-                description: feature.description,
-                estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
-                cost: uiFeature?.costValue || feature.cost || 100,
-                costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
-                timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
-                timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
-                purpose: uiFeature?.purpose || '',
-              };
-            }),
-            suggested: selectedFeatures.suggested.map((feature: any) => {
-              const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
-              return {
-                name: feature.name,
-                description: feature.description,
-                estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
-                cost: uiFeature?.costValue || feature.cost || 100,
-                costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
-                timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
-                timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
-                purpose: uiFeature?.purpose || '',
-              };
-            }),
-          },
-          clientInfo: {
-            name: userData?.fullName || uiValues.fullName || uiValues.clientName || '',
-            email: userData?.emailAddress || uiValues.emailAddress || '',
-            phone: userData?.phoneNumber || uiValues.phoneNumber || '',
-            company: userData?.companyName || uiValues.companyName || '',
-          },
-          totalCost,
-          totalHours,
-          generatedAt: new Date().toISOString(),
-        };
+      },
+      features: {
+        core: selectedFeatures.core.map((feature: any) => {
+          const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
+          return {
+            name: feature.name,
+            description: feature.description,
+            estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
+            cost: uiFeature?.costValue || feature.cost || 100,
+            costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
+            timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
+            timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
+            purpose: uiFeature?.purpose || '',
+          };
+        }),
+        suggested: selectedFeatures.suggested.map((feature: any) => {
+          const uiFeature = uiValues.features?.find((f: any) => f.name === feature.name);
+          return {
+            name: feature.name,
+            description: feature.description,
+            estimatedHours: uiFeature?.timeHours || feature.estimatedHours || 8,
+            cost: uiFeature?.costValue || feature.cost || 100,
+            costFormatted: uiFeature?.costEstimate || `$${uiFeature?.costValue || feature.cost || 100}`,
+            timeFormatted: uiFeature?.timeEstimate || `${Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8)} days`,
+            timeDays: uiFeature?.timeValue || Math.ceil((uiFeature?.timeHours || feature.estimatedHours || 8) / 8),
+            purpose: uiFeature?.purpose || '',
+          };
+        }),
+      },
+      clientInfo: {
+        name: userData?.fullName || uiValues.fullName || uiValues.clientName || '',
+        email: userData?.emailAddress || uiValues.emailAddress || '',
+        phone: userData?.phoneNumber || uiValues.phoneNumber || '',
+        company: userData?.companyName || uiValues.companyName || '',
+      },
+      totalCost,
+      totalHours,
+      generatedAt: new Date().toISOString(),
+    };
+
+    // Store in cache
+    reportDataCache.set(params.userId, reportData);
 
     try {
       // Generate PDF
-        console.log('Generating PDF...');
-        const pdfBuffer = await generatePDFWithPDFMake(reportData);
-        
-        // Get Storage instance and upload PDF
-        console.log('Uploading PDF to Firebase Storage...');
-        const storage = getStorageAdmin();
-        const bucket = getStorageBucket();
+      console.log('Generating PDF...');
+      const pdfBuffer = await generatePDFWithPDFMake(reportData);
       
+      // Get Storage instance and upload PDF
+      console.log('Uploading PDF to Firebase Storage...');
+      const storage = getStorageAdmin();
+      const bucket = getStorageBucket();
+    
       if (!bucket) {
         throw new Error('Failed to get storage bucket');
       }
-        
-        const filename = `${Date.now()}.pdf`;
-        const filePath = `reports/${params.userId}/${filename}`;
-        const file = bucket.file(filePath);
-        
+      
+      const filename = `${Date.now()}.pdf`;
+      const filePath = `reports/${params.userId}/${filename}`;
+      const file = bucket.file(filePath);
+      
       // Upload the PDF
-        await file.save(pdfBuffer, {
-          metadata: {
-            contentType: 'application/pdf',
+      await file.save(pdfBuffer, {
+        metadata: {
+          contentType: 'application/pdf',
         },
       });
       
