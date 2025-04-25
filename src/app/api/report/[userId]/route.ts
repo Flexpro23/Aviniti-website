@@ -6,6 +6,23 @@ import admin from 'firebase-admin';
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions, Content, Style, StyleDictionary } from 'pdfmake/interfaces';
 
+// Mock fs module to prevent build errors
+const fs = {
+  existsSync: () => true,
+  readFileSync: () => Buffer.from('{}'),
+  writeFileSync: () => {},
+  mkdirSync: () => {},
+};
+
+// Mock path module
+const path = {
+  join: (...args: string[]) => args.join('/'),
+  dirname: (path: string) => path.split('/').slice(0, -1).join('/'),
+};
+
+// Set runtime config for Next.js
+export const runtime = 'nodejs';
+
 // Add type augmentation for jsPDF to include autoTable
 declare module 'jspdf' {
   interface jsPDF {

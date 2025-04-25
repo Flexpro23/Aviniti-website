@@ -6,8 +6,8 @@ const nextConfig = {
   },
   images: {
     formats: ['image/webp'],
+    domains: ['firebasestorage.googleapis.com', 'fonts.gstatic.com'],
     // Use these if your images are from an external source
-    // domains: ['example.com'],
     // remotePatterns: [
     //   {
     //     protocol: 'https',
@@ -25,6 +25,18 @@ const nextConfig = {
     optimizeServerReact: true,
   },
   poweredByHeader: false,
+  webpack: (config, { isServer }) => {
+    // Add fs mock for client-side
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      };
+    }
+    
+    return config;
+  },
 }
 
 module.exports = nextConfig 
