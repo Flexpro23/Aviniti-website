@@ -58,4 +58,7 @@ firebase-debug.*.log
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db 
+Thumbs.db
+
+# Ignore data.trie files
+.next/server/app/api/report/**/data.trie 

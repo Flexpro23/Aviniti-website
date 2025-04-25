@@ -6,6 +6,17 @@ import admin from 'firebase-admin';
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions, Content, Style, StyleDictionary } from 'pdfmake/interfaces';
 
+// Add this at the top of the file, after the imports
+if (process.env.NODE_ENV === 'production') {
+  const fs = require('fs');
+  const path = require('path');
+  const dir = path.join(process.cwd(), '.next', 'server', 'app', 'api', 'report', '[userId]');
+  
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
 // Add type augmentation for jsPDF to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
@@ -980,11 +991,34 @@ async function getUserData(userId: string) {
   }
 }
 
+// Add this function to handle the data.trie file
+async function ensureDataTrieFile() {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const dataTriePath = path.join(process.cwd(), '.next', 'server', 'app', 'api', 'report', '[userId]', 'data.trie');
+    
+    if (!fs.existsSync(dataTriePath)) {
+      // Create the directory if it doesn't exist
+      const dir = path.dirname(dataTriePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      // Create an empty data.trie file
+      fs.writeFileSync(dataTriePath, '{}');
+    }
+  } catch (error) {
+    console.error('Error ensuring data.trie file:', error);
+  }
+}
+
+// Modify the GET handler to use the ensureDataTrieFile function
 export async function GET(
   request: NextRequest,
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
+    await ensureDataTrieFile();
     if (!adminDb) {
       return NextResponse.json({ error: 'Firebase admin not initialized' }, { status: 500 });
     }
@@ -1004,19 +1038,21 @@ export async function GET(
 
     return NextResponse.json(reportDoc.data());
   } catch (error) {
-    console.error('Error fetching report:', error);
+    console.error('Error in GET handler:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch report' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   }
 }
 
+// Modify the POST handler to use the ensureDataTrieFile function
 export async function POST(
   request: NextRequest,
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
+    await ensureDataTrieFile();
     // Validate request body
     const body = await request.json();
     if (!body || !body.selectedFeatures || !body.uiValues) {
@@ -1152,9 +1188,9 @@ export async function POST(
     }
     
   } catch (error) {
-    console.error('Error in report generation:', error);
+    console.error('Error in POST handler:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   }
