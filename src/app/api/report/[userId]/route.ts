@@ -6,22 +6,9 @@ import admin from 'firebase-admin';
 import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions, Content, Style, StyleDictionary } from 'pdfmake/interfaces';
 
-// Mock fs module to prevent build errors
-const fs = {
-  existsSync: () => true,
-  readFileSync: () => Buffer.from('{}'),
-  writeFileSync: () => {},
-  mkdirSync: () => {},
-};
-
-// Mock path module
-const path = {
-  join: (...args: string[]) => args.join('/'),
-  dirname: (path: string) => path.split('/').slice(0, -1).join('/'),
-};
-
 // Set runtime config for Next.js
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // Add type augmentation for jsPDF to include autoTable
 declare module 'jspdf' {
@@ -81,6 +68,9 @@ async function initializeFirebaseAdmin() {
     throw error;
   }
 }
+
+// Create in-memory cache for report data
+const reportDataCache = new Map<string, any>();
 
 // Get Firestore Admin instance
 function getFirestoreAdmin(): admin.firestore.Firestore {
@@ -180,7 +170,7 @@ interface ReportData {
   generatedAt: string;
 }
 
-// Define fonts for pdfmake
+// Add a safer implementation for the fonts configuration
 const fonts = {
   Roboto: {
     normal: 'Helvetica',
@@ -188,7 +178,7 @@ const fonts = {
     italics: 'Helvetica-Oblique',
     bolditalics: 'Helvetica-BoldOblique'
   },
-  // Add Amiri font for Arabic text
+  // Use online font URLs for Arabic text
   Amiri: {
     normal: 'https://fonts.gstatic.com/s/amiri/v17/J7aRnpd8CGxBHpUrtLMA7w.ttf',
     bold: 'https://fonts.gstatic.com/s/amiri/v17/J7acnpd8CGxBHp2VkaY6zp5yGw.ttf',
@@ -997,17 +987,22 @@ async function getUserData(userId: string) {
   }
 }
 
-// Remove the ensureDataTrieFile function and replace it with an in-memory solution
-const reportDataCache = new Map<string, any>();
-
-// Modify the GET handler to use in-memory cache
+// Modify the GET handler
 export async function GET(
   request: NextRequest,
   { params }: { params: { userId: string } }
 ): Promise<NextResponse> {
   try {
     if (!adminDb) {
-      return NextResponse.json({ error: 'Firebase admin not initialized' }, { status: 500 });
+      try {
+        await initializeFirebaseAdmin();
+      } catch (error) {
+        console.error('Failed to initialize Firebase Admin:', error);
+        return NextResponse.json(
+          { error: 'Failed to initialize Firebase Admin' },
+          { status: 500 }
+        );
+      }
     }
     
     const userDoc = await adminDb.collection('users').doc(params.userId).get();
@@ -1036,7 +1031,7 @@ export async function GET(
   }
 }
 
-// Modify the POST handler to use in-memory cache
+// Modify the POST handler
 export async function POST(
   request: NextRequest,
   { params }: { params: { userId: string } }
