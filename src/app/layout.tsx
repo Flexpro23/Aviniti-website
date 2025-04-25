@@ -98,25 +98,6 @@ export default function RootLayout({
         <link rel="preload" href="/hero/hero-image.webp" as="image" type="image/webp" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Force RTL styles when needed */}
-        <style id="rtl-support">
-          {`
-            html[dir='rtl'] body {
-              text-align: right;
-            }
-            
-            html[dir='rtl'] .rtl-content {
-              text-align: right;
-            }
-            
-            html[dir='rtl'] .rtl-content h1, 
-            html[dir='rtl'] .rtl-content h2, 
-            html[dir='rtl'] .rtl-content h3 {
-              text-align: right;
-            }
-          `}
-        </style>
       </head>
       <body className={inter.className}>
         <LanguageProvider>

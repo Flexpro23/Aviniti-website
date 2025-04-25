@@ -73,14 +73,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         setDir(newDir);
         
         // Update document direction and lang
-        document.documentElement.setAttribute('dir', newDir);
-        document.documentElement.setAttribute('lang', language);
-        
-        // Add RTL class to body when in RTL mode
-        if (newDir === 'rtl') {
-          document.body.classList.add('rtl');
-        } else {
-          document.body.classList.remove('rtl');
+        if (typeof document !== 'undefined') {
+          document.documentElement.setAttribute('dir', newDir);
+          document.documentElement.setAttribute('lang', language);
+          
+          // Add RTL class to body when in RTL mode
+          if (newDir === 'rtl') {
+            document.body.classList.add('rtl');
+          } else {
+            document.body.classList.remove('rtl');
+          }
         }
       } catch (error) {
         console.error('Error updating translations:', error);
@@ -102,14 +104,16 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       setTranslations(freshTranslations);
       
       // Force document attributes update
-      document.documentElement.setAttribute('dir', dir);
-      document.documentElement.setAttribute('lang', language);
-      
-      // Update body class
-      if (dir === 'rtl') {
-        document.body.classList.add('rtl');
-      } else {
-        document.body.classList.remove('rtl');
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('dir', dir);
+        document.documentElement.setAttribute('lang', language);
+        
+        // Update body class
+        if (dir === 'rtl') {
+          document.body.classList.add('rtl');
+        } else {
+          document.body.classList.remove('rtl');
+        }
       }
     } catch (error) {
       console.error('Error refreshing translations:', error);

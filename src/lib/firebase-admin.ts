@@ -1,14 +1,13 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { getStorage, Storage } from 'firebase-admin/storage';
-import admin from 'firebase-admin';
 
 // Initialize Firebase Admin
 const apps = getApps();
 
 // Properly typed admin services
-let adminDb: admin.firestore.Firestore | undefined = undefined;
-let adminStorage: admin.storage.Storage | undefined = undefined;
+let adminDb: Firestore | undefined = undefined;
+let adminStorage: Storage | undefined = undefined;
 
 // Service account configuration
 const serviceAccount = {
@@ -71,37 +70,4 @@ export function getStorageAdmin(): Storage {
     }
   }
   return adminStorage;
-}
-
-// Initialize Firebase Admin SDK if not already initialized
-export async function initializeFirebaseAdmin() {
-  try {
-    if (!admin.apps.length) {
-      // Get environment variables
-      const projectId = process.env.FIREBASE_PROJECT_ID;
-      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-      const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || 'aviniti-website.firebasestorage.app';
-
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId,
-          clientEmail,
-          privateKey,
-        }),
-        storageBucket,
-      });
-    }
-
-    if (!adminDb) {
-      adminDb = admin.firestore();
-    }
-
-    if (!adminStorage) {
-      adminStorage = admin.storage();
-    }
-  } catch (error) {
-    console.error('Error initializing Firebase admin:', error);
-    throw error;
-  }
 } 
