@@ -286,20 +286,16 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         throw new Error('Firebase database is not initialized');
       }
 
-      // Get current user
-      const auth = getAuth();
-      const user = auth.currentUser;
+      // Create a unique ID for the report
+      const timestamp = Date.now();
+      const fileName = `${timestamp}.pdf`;
       
-      if (!user) {
-        throw new Error('You must be logged in to upload reports');
-      }
-
       // Initialize storage
       const storage = getStorage();
       
-      const timestamp = Date.now();
-      const fileName = `${timestamp}.pdf`;
-      const storageRef = ref(storage, `reports/${user.uid}/${fileName}`);
+      // Create a unique ID for this report using timestamp and email
+      const reportId = `${email.replace(/[^a-zA-Z0-9]/g, '')}_${timestamp}`;
+      const storageRef = ref(storage, `reports/${reportId}/${fileName}`);
       
       // Upload the PDF
       const snapshot = await uploadBytes(storageRef, pdfBlob);
@@ -312,7 +308,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       // Create a report document in Firestore
       const reportsRef = collection(db, 'reports');
       const reportDoc = await addDoc(reportsRef, {
-        userId: user.uid,
+        reportId,
         userEmail: email,
         personalDetails,
         appDescription,

@@ -45,26 +45,22 @@ export default function DetailedReportStep({
     setIsGeneratingPDF(true);
     
     try {
-      // Check if user is authenticated before proceeding
-      const auth = getAuth();
-      const user = auth.currentUser;
-      
-      if (!user) {
-        alert(language === 'en' 
-          ? 'You must be logged in to save your report. Please log in and try again.' 
-          : 'يجب تسجيل الدخول لحفظ تقريرك. يرجى تسجيل الدخول والمحاولة مرة أخرى.');
-        setIsGeneratingPDF(false);
-        return;
-      }
+      console.log('Starting PDF generation...');
       
       // Dynamically import the libraries only when needed
-      const [jspdfModule, html2canvasModule] = await Promise.all([
-        import('jspdf'),
-        import('html2canvas')
-      ]);
-      
-      const jsPDF = jspdfModule.default;
-      const html2canvas = html2canvasModule.default;
+      let jsPDF, html2canvas;
+      try {
+        const [jspdfModule, html2canvasModule] = await Promise.all([
+          import('jspdf'),
+          import('html2canvas')
+        ]);
+        jsPDF = jspdfModule.default;
+        html2canvas = html2canvasModule.default;
+        console.log('PDF libraries loaded successfully');
+      } catch (error) {
+        console.error('Failed to load PDF generation libraries:', error);
+        throw new Error('Failed to initialize PDF generation');
+      }
       
       // Create a temporary div for the contact information
       const tempDiv = document.createElement('div');
@@ -84,14 +80,18 @@ export default function DetailedReportStep({
         </div>
       `;
       
+      console.log('Appending contact information...');
+      
       // Append the contact information to the report container
       reportRef.current.appendChild(tempDiv);
+      
+      console.log('Creating canvas...');
       
       // Create a canvas from the report content
       const canvas = await html2canvas(reportRef.current, {
         scale: 2, // Higher scale for better quality
         useCORS: true, // Enable CORS for any images
-        logging: false,
+        logging: true, // Enable logging for debugging
         onclone: (clonedDoc) => {
           // You can modify the cloned document before rendering if needed
           const element = clonedDoc.getElementById('report-container');
@@ -101,10 +101,14 @@ export default function DetailedReportStep({
         }
       });
       
+      console.log('Canvas created successfully');
+      
       // Remove the temporary contact information div after canvas creation
       reportRef.current.removeChild(tempDiv);
       
       const imgData = canvas.toDataURL('image/png');
+      
+      console.log('Creating PDF...');
       
       // Calculate PDF dimensions (A4 format)
       const pdf = new jsPDF({
@@ -131,14 +135,22 @@ export default function DetailedReportStep({
         heightLeft -= pageHeight;
       }
       
+      console.log('PDF created successfully, getting blob...');
+      
       // Get the PDF as a blob
       const pdfBlob = pdf.output('blob');
+      
+      console.log('PDF blob created, size:', pdfBlob.size);
       
       // If onUploadPdf is provided, upload the PDF first
       if (onUploadPdf) {
         try {
+          console.log('Uploading PDF...');
           const downloadUrl = await onUploadPdf(pdfBlob);
           console.log('PDF uploaded successfully:', downloadUrl);
+          
+          // Save the PDF locally after successful upload
+          pdf.save('Aviniti_App_Development_Report.pdf');
           
           // Show success message
           alert(language === 'en' 
@@ -147,14 +159,17 @@ export default function DetailedReportStep({
         } catch (error) {
           console.error('Error uploading PDF:', error);
           // Still save the PDF locally even if upload fails
+          pdf.save('Aviniti_App_Development_Report.pdf');
+          
           alert(language === 'en' 
             ? 'Your report was saved locally but could not be uploaded to the server. Please try again later.' 
             : 'تم حفظ تقريرك محليًا ولكن لم نتمكن من تحميله إلى الخادم. يرجى المحاولة مرة أخرى لاحقًا.');
         }
+      } else {
+        // If no upload function provided, just save locally
+        console.log('No upload function provided, saving PDF locally...');
+        pdf.save('Aviniti_App_Development_Report.pdf');
       }
-      
-      // Save the PDF locally
-      pdf.save('Aviniti_App_Development_Report.pdf');
       
     } catch (error) {
       console.error('Error generating PDF:', error);
