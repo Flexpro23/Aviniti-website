@@ -11,7 +11,6 @@ const About = lazy(() => import('@/components/About'));
 const Footer = lazy(() => import('@/components/Footer'));
 import ContactPopup from '@/components/ContactPopup';
 const AIEstimateModal = lazy(() => import('@/components/AIEstimate/AIEstimateModal'));
-import FloatingContact from '@/components/FloatingContact';
 const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
 
 // Loading fallback component
@@ -57,52 +56,50 @@ export default function Home() {
         </div>
       </div>
     }>
-      <main dir={dir} className="min-h-screen">
-        <Navbar />
-        {/* Hero section with primary heading */}
-        <header role="banner" id="hero-section">
-          <Hero 
-            onEstimateClick={() => setIsAIEstimateOpen(true)} 
-            onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
-          />
-        </header>
-        {/* Main content sections */}
-        <div role="main">
-          <Projects />
-          <div id="services-section">
-            <Services />
-          </div>
-          <div id="ready-made-solutions">
-            <Suspense fallback={<LoadingFallback />}>
-              <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
-            </Suspense>
-          </div>
+    <main dir={dir} className="min-h-screen">
+      <Navbar />
+      {/* Hero section with primary heading */}
+      <header role="banner" id="hero-section">
+        <Hero 
+          onEstimateClick={() => setIsAIEstimateOpen(true)} 
+          onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
+        />
+      </header>
+      {/* Main content sections */}
+      <div role="main">
+        <Projects />
+        <div id="services-section">
+          <Services />
+        </div>
+        <div id="ready-made-solutions">
           <Suspense fallback={<LoadingFallback />}>
-            <Expertise />
-          </Suspense>
-          <Suspense fallback={<LoadingFallback />}>
-            <About />
+            <ReadyMadeSolutions onContactClick={(solutionTitle) => openContactWithSubject(`Ready-Made Solution: ${solutionTitle}`)} />
           </Suspense>
         </div>
         <Suspense fallback={<LoadingFallback />}>
-          <Footer />
+          <Expertise />
         </Suspense>
-        
-        <FloatingContact onContactClick={() => openContactWithSubject('Website Inquiry')} />
-        
-        <ContactPopup 
-          isOpen={isContactOpen}
-          onClose={() => setIsContactOpen(false)}
-          initialSubject={contactSubject}
-        />
-        
+        <Suspense fallback={<LoadingFallback />}>
+          <About />
+        </Suspense>
+      </div>
+      <Suspense fallback={<LoadingFallback />}>
+        <Footer />
+      </Suspense>
+      
+      <ContactPopup 
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        initialSubject={contactSubject}
+      />
+
         <Suspense fallback={<LoadingFallback />}>
           <AIEstimateModal
             isOpen={isAIEstimateOpen}
             onClose={() => setIsAIEstimateOpen(false)}
           />
         </Suspense>
-      </main>
+    </main>
     </Suspense>
   );
 } 

@@ -1,172 +1,131 @@
 # Aviniti Website
 
-A modern web application for AI-powered app development cost estimation and project management.
+A modern web application for Aviniti, featuring AI-powered app development estimates.
 
 ## Features
 
-- AI-powered project cost estimation
-- Interactive project requirement gathering
-- Automated report generation
-- Real-time PDF generation and storage
-- Modern, responsive UI
-- Firebase integration for data persistence
+- AI-powered app development cost estimation
+- Multi-language support (English and Arabic)
+- Firebase integration for authentication and storage
+- PDF report generation and storage
+- Responsive design for all devices
 
-## Prerequisites
+## Tech Stack
 
-- Node.js 18+ and npm
-- Firebase account with Firestore and Storage enabled
-- Google Cloud Platform account for AI services
-- Gemini API access
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **AI**: Google Gemini API
+- **PDF Generation**: jsPDF, html2canvas
 
-## Setup
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Firebase account
+- Google Gemini API key
+
+### Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/aviniti-website.git
-cd aviniti-website
-```
+   ```bash
+   git clone https://github.com/yourusername/aviniti-website.git
+   cd aviniti-website
+   ```
 
 2. Install dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-3. Create a `.env.local` file in the root directory and add your environment variables:
-```bash
-cp .env.example .env.local
-```
+3. Create a `.env.local` file in the root directory with your Firebase configuration:
+   ```
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+   NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+   ```
 
-4. Update the `.env.local` file with your actual credentials:
-- Firebase configuration
-- Firebase Admin SDK credentials
-- Gemini API key
-- Google Cloud credentials
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-5. Start the development server:
-```bash
-npm run dev
-```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Environment Variables
+## Firebase Setup
 
-The following environment variables are required:
-
-### Firebase Configuration
-- `NEXT_PUBLIC_FIREBASE_API_KEY`
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
-- `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
-
-### Firebase Admin Configuration
-- `FIREBASE_CLIENT_EMAIL`
-- `FIREBASE_PRIVATE_KEY`
-- `FIREBASE_PROJECT_ID`
-- `FIREBASE_CLIENT_ID`
-- `FIREBASE_AUTH_DOMAIN`
-- `FIREBASE_TOKEN_URI`
-
-### AI Services
-- `GEMINI_API_KEY`
-- `GOOGLE_APPLICATION_CREDENTIALS`
-
-## Development
-
-The project uses:
-- Next.js 14 with App Router
-- TypeScript
-- Tailwind CSS
-- Firebase (Firestore + Storage)
-- Google AI services
-
-## Deployment
-
-1. Build the project:
-```bash
-npm run build
-```
-
-2. Deploy to your hosting platform of choice. For Vercel:
-```bash
-vercel deploy
-```
-
-Make sure to configure your environment variables in your hosting platform's dashboard.
+1. Create a Firebase project at [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2. Enable Authentication, Firestore, and Storage services
+3. Set up Firebase Storage rules:
+   ```
+   rules_version = '2';
+   service firebase.storage {
+     match /b/{bucket}/o {
+       // Admin has full access to all files
+       match /{allPaths=**} {
+         allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+       }
+       
+       // Users can only access their own reports
+       match /reports/{userId}/{fileName} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+     }
+   }
+   ```
+4. Deploy the storage rules:
+   ```bash
+   firebase deploy --only storage
+   ```
 
 ## Security
 
+### Environment Variables
 - Never commit `.env` files or any files containing sensitive credentials
 - Keep your API keys and service account credentials secure
-- Follow Firebase security best practices for production deployments
+- Use environment variables for all sensitive information
+- The `.gitignore` file is configured to exclude sensitive files
+
+### Firebase Security
+- Firebase Storage rules are configured to restrict access based on user roles
+- Admin users have full access to all files
+- Regular users can only access their own reports
+- Authentication is required for all operations
+
+### API Keys
+- Keep your Gemini API key secure
+- Never expose API keys in client-side code
+- Use environment variables for all API keys
+- Rotate API keys regularly
+
+## Deployment
+
+The application can be deployed to Vercel:
+
+```bash
+npm run build
+# or
+yarn build
+```
 
 ## License
 
-[Your chosen license]
+This project is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
 
-## AI Estimation Feature
+## Contact
 
-The application includes an AI estimation feature that analyzes app descriptions and generates detailed estimates for development time and costs.
-
-### Gemini AI Integration
-
-The app uses Google's Generative AI SDK with the Gemini 1.5 model for analyzing app descriptions and generating estimates.
-
-#### API Key Configuration
-
-For security and flexibility, the Gemini API key can be configured in two ways:
-
-1. **Environment Variables (Recommended):**
-   Create a `.env.local` file in the root directory and add:
-   ```
-   NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
-   NEXT_PUBLIC_GEMINI_MODEL=gemini-1.5-flash
-   ```
-
-2. **Fallback Hardcoded Key:**
-   If no environment variable is found, the application will use a fallback API key.
-
-#### Available Models
-
-You can specify which Gemini model to use by setting the `NEXT_PUBLIC_GEMINI_MODEL` environment variable. Options include:
-
-- `gemini-1.5-flash` (default, faster response)
-- `gemini-1.5-pro` (more accurate but slower)
-
-### Development Mode Features
-
-When running in development mode, the app includes:
-
-- API status indicator showing if the Gemini API is accessible
-- Mock data notifications when fallback data is being used
-- Detailed console logs for debugging API interactions
-
-### Error Handling
-
-The app includes robust error handling for API interactions:
-
-- Graceful fallback to mock data when the API fails
-- Detailed error logging in the console
-- User-friendly notifications in development mode
-
-## Running Locally
-
-```bash
-# Install dependencies
-npm install
-
-# Run the development server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Troubleshooting
-
-If you encounter issues with the Gemini AI integration:
-
-1. Check your API key configuration
-2. Ensure your API key has access to the specified model
-3. Check browser console logs for detailed error messages
-4. Verify that you're using a supported model name 
+For any inquiries, please contact:
+- Email: Aliodat@aviniti.app
+- Phone: +962 790 685 302
+- Website: www.aviniti.app 

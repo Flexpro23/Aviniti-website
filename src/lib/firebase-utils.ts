@@ -139,8 +139,8 @@ export async function getUserData(userId: string) {
     return response.json();
   } catch (error) {
     console.error('Error fetching user data:', error);
-    return null;
-  }
+      return null;
+    }
 }
 
 export async function getReportData(userId: string) {

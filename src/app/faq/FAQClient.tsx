@@ -4,7 +4,6 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ContactPopup from '@/components/ContactPopup';
-import FloatingContact from '@/components/FloatingContact';
 import Script from 'next/script';
 
 export default function FAQClient() {
@@ -334,8 +333,6 @@ export default function FAQClient() {
         </div>
         
         <Footer />
-        
-        <FloatingContact onContactClick={() => openContactWithSubject('FAQ Page Inquiry')} />
         
         <ContactPopup 
           isOpen={isContactOpen}

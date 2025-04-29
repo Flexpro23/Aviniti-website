@@ -10,6 +10,8 @@ import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GE
 import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
 import { createUserDocument } from '@/lib/firebase-utils';
 import { db } from '@/lib/firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 
 export type PersonalDetails = {
   fullName: string;
@@ -46,6 +48,15 @@ export type DetailedReport = {
   totalTime: string;
 };
 
+interface DetailedReportStepProps {
+  report: DetailedReport;
+  onBack: () => void;
+  onClose: () => void;
+  isGeneratingServerReport: boolean;
+  reportError: string | null;
+  onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
+}
+
 interface AIEstimateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -54,7 +65,7 @@ interface AIEstimateModalProps {
 export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProps) {
   const { t, dir, language } = useLanguage();
   const [step, setStep] = useState(1);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     fullName: '',
     emailAddress: '',
@@ -66,11 +77,8 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     selectedPlatforms: []
   });
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AIAnalysisResult | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [detailedReport, setDetailedReport] = useState<DetailedReport | null>(null);
-  const [reportGenerated, setReportGenerated] = useState(false);
-  const [reportUrl, setReportUrl] = useState<string | null>(null);
-  const [reportError, setReportError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -85,19 +93,6 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
-
-  // Add a new useEffect to generate the report when reaching step 4
-  useEffect(() => {
-    if (step === 4 && detailedReport && !reportGenerated) {
-      if (!userId) {
-        console.error('No userId available for report generation');
-        setReportError('User ID is missing. Please try again or contact support.');
-        return;
-      }
-      console.log('Initiating report generation with userId:', userId);
-      generateServerReport();
-    }
-  }, [step, detailedReport, userId, reportGenerated]);
 
   const handleUserInfoSubmit = async (details: PersonalDetails) => {
     setPersonalDetails(details);
@@ -131,7 +126,6 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         throw new Error('User document was not created successfully');
       }
       
-      setUserId(userDocRef.id);
       setStep(2);
     } catch (error) {
       console.error('Error saving user data to Firebase:', error);
@@ -282,6 +276,67 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   };
 
+  const uploadPdfAndCreateReport = async (pdfBlob: Blob, email: string) => {
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      // Check if Firebase is initialized
+      if (!db) {
+        throw new Error('Firebase database is not initialized');
+      }
+
+      // Get current user
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (!user) {
+        throw new Error('You must be logged in to upload reports');
+      }
+
+      // Initialize storage
+      const storage = getStorage();
+      
+      const timestamp = Date.now();
+      const fileName = `${timestamp}.pdf`;
+      const storageRef = ref(storage, `reports/${user.uid}/${fileName}`);
+      
+      // Upload the PDF
+      const snapshot = await uploadBytes(storageRef, pdfBlob);
+      console.log('File uploaded successfully');
+      
+      // Get the download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log('Download URL:', downloadURL);
+      
+      // Create a report document in Firestore
+      const reportsRef = collection(db, 'reports');
+      const reportDoc = await addDoc(reportsRef, {
+        userId: user.uid,
+        userEmail: email,
+        personalDetails,
+        appDescription,
+        detailedReport,
+        pdfUrl: downloadURL,
+        createdAt: new Date().toISOString(),
+        status: 'completed'
+      });
+      
+      console.log('Report uploaded and document created:', reportDoc.id);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading report:', error);
+      if (error instanceof Error) {
+        setError(`Failed to upload report: ${error.message}`);
+      } else {
+        setError('Failed to upload report. Please try again.');
+      }
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // New function to validate user document
   const validateUserDocument = async (userId: string): Promise<boolean> => {
     if (!db) {
@@ -296,125 +351,6 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     } catch (error) {
       console.error('Error validating user document:', error);
       return false;
-    }
-  };
-
-  const generateServerReport = async () => {
-    if (!userId) {
-      console.error('No userId available for report generation');
-      setReportError('User ID is missing. Please try again or contact support.');
-      return;
-    }
-
-    if (!detailedReport) {
-      console.error('No detailed report available for generation');
-      setReportError('Report data is missing. Please try again.');
-      return;
-    }
-
-    if (reportGenerated) {
-      console.log('Report already generated, skipping generation');
-      return;
-    }
-    
-    setIsProcessing(true);
-    setReportError(null);
-    
-    try {
-      // Validate user document exists before proceeding
-      const isValidUser = await validateUserDocument(userId);
-      if (!isValidUser) {
-        throw new Error('User document not found in database');
-      }
-
-      console.log('Generating server-side report for user:', userId);
-      
-      // Calculate feature data for the API
-      const selectedFeatures = {
-        core: detailedReport.selectedFeatures
-          .filter(f => f.purpose.includes('core') || f.purpose.includes('essential'))
-          .map(f => ({ name: f.name, description: f.description })),
-        suggested: detailedReport.selectedFeatures
-          .filter(f => !f.purpose.includes('core') && !f.purpose.includes('essential'))
-          .map(f => ({ name: f.name, description: f.description }))
-      };
-      
-      // Extract all necessary values from the UI display
-      const uiValues = {
-        // Get app description from the analysis result
-        appDescription: aiAnalysisResult?.appOverview || '',
-        
-        // Extract exact cost values as shown in the UI
-        totalCost: parseInt(detailedReport.totalCost.replace(/[^0-9]/g, '')),
-        
-        // Extract exact time values as shown in the UI
-        totalHours: detailedReport.totalTime.includes('days') 
-          ? parseInt(detailedReport.totalTime.replace(/[^0-9]/g, '')) * 8 // Convert days to hours
-          : parseInt(detailedReport.totalTime.replace(/[^0-9]/g, '')) * 8 * 30, // Convert months to hours
-        
-        // Include all features with their full details
-        features: detailedReport.selectedFeatures.map(feature => ({
-          name: feature.name,
-          description: feature.description,
-          purpose: feature.purpose,
-          costValue: parseInt(feature.costEstimate.replace(/[^0-9]/g, '')),
-          costEstimate: feature.costEstimate,
-          timeValue: parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')),
-          timeHours: feature.timeEstimate.includes('day') 
-            ? parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')) * 8 
-            : parseInt(feature.timeEstimate.replace(/[^0-9]/g, '')),
-          timeEstimate: feature.timeEstimate,
-          isCore: feature.purpose.includes('core') || feature.purpose.includes('essential')
-        })),
-        
-        // Include client information
-        fullName: personalDetails?.fullName || '',
-        emailAddress: personalDetails?.emailAddress || '',
-        phoneNumber: personalDetails?.phoneNumber || '',
-        companyName: personalDetails?.companyName || '',
-        clientName: personalDetails?.fullName || ''
-      };
-      
-      console.log('Sending UI values to API:', {
-        featureCount: uiValues.features.length,
-        totalCost: uiValues.totalCost,
-        totalHours: uiValues.totalHours
-      });
-      
-      // Call the report API with both selectedFeatures and UI values
-      const response = await fetch(`/api/report/${userId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          selectedFeatures,
-          uiValues
-        }),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate report');
-      }
-      
-      const reportData = await response.json();
-      console.log('Report generated successfully:', reportData);
-      
-      if (reportData.url) {
-        setReportUrl(reportData.url);
-        setReportGenerated(true);
-      } else if (reportData.reportURL) {
-        setReportUrl(reportData.reportURL);
-        setReportGenerated(true);
-      } else {
-        throw new Error('No report URL returned');
-      }
-    } catch (error) {
-      console.error('Error generating server report:', error);
-      setReportError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -488,9 +424,8 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
               onBack={handleBack}
               onClose={onClose}
               isGeneratingServerReport={isProcessing}
-              reportUrl={reportUrl}
-              reportError={reportError}
-              onRegenerateReport={generateServerReport}
+              reportError={error}
+              onUploadPdf={(pdfBlob) => uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress)}
             />
           )}
         </div>

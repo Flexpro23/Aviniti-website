@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminStorage } from '../../../lib/firebase-admin';
+import { db, storage } from '@/lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 // Client-side imports are not used in this GET handler, but might be in others
 // import { db, storage } from '../../../lib/firebase';
 

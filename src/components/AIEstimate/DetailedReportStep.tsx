@@ -3,6 +3,7 @@
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { DetailedReport, Feature } from './AIEstimateModal';
 import { useRef, useState } from 'react';
+import { getAuth } from 'firebase/auth';
 
 interface DetailedReportStepProps {
   report: DetailedReport;
@@ -13,6 +14,7 @@ interface DetailedReportStepProps {
   reportUrl?: string | null;
   reportError?: string | null;
   onRegenerateReport?: () => void;
+  onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
 }
 
 export default function DetailedReportStep({ 
@@ -22,7 +24,8 @@ export default function DetailedReportStep({
   isGeneratingServerReport = false,
   reportUrl = null,
   reportError = null,
-  onRegenerateReport
+  onRegenerateReport,
+  onUploadPdf
 }: DetailedReportStepProps) {
   const { language } = useLanguage();
   const reportRef = useRef<HTMLDivElement>(null);
@@ -42,6 +45,18 @@ export default function DetailedReportStep({
     setIsGeneratingPDF(true);
     
     try {
+      // Check if user is authenticated before proceeding
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (!user) {
+        alert(language === 'en' 
+          ? 'You must be logged in to save your report. Please log in and try again.' 
+          : 'يجب تسجيل الدخول لحفظ تقريرك. يرجى تسجيل الدخول والمحاولة مرة أخرى.');
+        setIsGeneratingPDF(false);
+        return;
+      }
+      
       // Dynamically import the libraries only when needed
       const [jspdfModule, html2canvasModule] = await Promise.all([
         import('jspdf'),
@@ -116,7 +131,29 @@ export default function DetailedReportStep({
         heightLeft -= pageHeight;
       }
       
-      // Save the PDF
+      // Get the PDF as a blob
+      const pdfBlob = pdf.output('blob');
+      
+      // If onUploadPdf is provided, upload the PDF first
+      if (onUploadPdf) {
+        try {
+          const downloadUrl = await onUploadPdf(pdfBlob);
+          console.log('PDF uploaded successfully:', downloadUrl);
+          
+          // Show success message
+          alert(language === 'en' 
+            ? 'Your report has been saved and uploaded successfully!' 
+            : 'تم حفظ وتحميل تقريرك بنجاح!');
+        } catch (error) {
+          console.error('Error uploading PDF:', error);
+          // Still save the PDF locally even if upload fails
+          alert(language === 'en' 
+            ? 'Your report was saved locally but could not be uploaded to the server. Please try again later.' 
+            : 'تم حفظ تقريرك محليًا ولكن لم نتمكن من تحميله إلى الخادم. يرجى المحاولة مرة أخرى لاحقًا.');
+        }
+      }
+      
+      // Save the PDF locally
       pdf.save('Aviniti_App_Development_Report.pdf');
       
     } catch (error) {
@@ -302,9 +339,9 @@ export default function DetailedReportStep({
             className="px-8 py-3 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 flex items-center justify-center"
             disabled={isGeneratingPDF || isGeneratingServerReport}
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
             {language === 'en' ? 'Download Report' : 'تحميل التقرير'}
           </button>
         )}
