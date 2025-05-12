@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface ContactPopupProps {
   isOpen: boolean;
@@ -20,9 +22,16 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
     subject: initialData?.subject || initialSubject,
     message: initialData?.message || ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
+      // Reset states when modal reopens
+      setSubmitError(null);
+      setSubmitSuccess(false);
+      
       // Update form data when props change or modal opens
       setFormData({
         name: initialData?.name || formData.name,
@@ -33,11 +42,49 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
     }
   }, [isOpen, initialSubject, initialData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    onClose();
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+    
+    try {
+      if (!db) {
+        throw new Error('Firebase database is not initialized');
+      }
+      
+      // Create a message document in Firestore
+      const messagesRef = collection(db, 'messages');
+      const messageDoc = await addDoc(messagesRef, {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject || 'No Subject',
+        message: formData.message,
+        createdAt: new Date().toISOString(),
+        status: 'new'
+      });
+      
+      console.log('Message document created with ID:', messageDoc.id);
+      
+      // Show success message
+      setSubmitSuccess(true);
+      
+      // Reset form after 2 seconds and close modal
+      setTimeout(() => {
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        onClose();
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error saving message to Firebase:', error);
+      setSubmitError(
+        error instanceof Error 
+          ? `Failed to send message: ${error.message}` 
+          : 'Failed to send message. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -53,6 +100,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-700 transition-colors"
+          disabled={isSubmitting}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -61,6 +109,38 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
 
         <div className="p-8">
           <h2 className="heading-lg mb-6 text-center">Contact Us</h2>
+          
+          {/* Status Messages */}
+          {submitSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium">Thank you for your message!</h3>
+                  <p className="mt-1 text-sm">We will get back to you soon.</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {submitError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium">{submitError}</h3>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Contact Information */}
           <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
@@ -99,6 +179,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  disabled={isSubmitting}
                 />
               </div>
               <div>
@@ -113,6 +194,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                   placeholder="john@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -127,6 +209,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                 placeholder="How can we help you?"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -141,14 +224,31 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                 placeholder="Tell us about your project..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                disabled={isSubmitting}
               ></textarea>
             </div>
             <div className="flex justify-center">
-              <button type="submit" className="btn-primary">
-                Send Message
-                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+              <button 
+                type="submit" 
+                className="btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    Send Message
+                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </form>
