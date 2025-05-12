@@ -12,6 +12,7 @@ import { createUserDocument } from '@/lib/firebase-utils';
 import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
+import ContactPopup from '@/components/ContactPopup';
 
 export type PersonalDetails = {
   fullName: string;
@@ -80,6 +81,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const [detailedReport, setDetailedReport] = useState<DetailedReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [autoDownloadSuccess, setAutoDownloadSuccess] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -728,6 +730,24 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   };
 
+  // Function to generate app description summary for contact form
+  const generateAppSummary = (): string => {
+    if (!detailedReport) return '';
+    
+    const platforms = appDescription.selectedPlatforms.join(', ');
+    const featureCount = detailedReport.selectedFeatures.length;
+    const cost = detailedReport.totalCost;
+    const time = detailedReport.totalTime;
+    
+    return `App Development Inquiry: I'm interested in building a ${platforms} app with ${featureCount} features. The estimated cost is ${cost} and timeframe is ${time}. I'd like to discuss this further.`;
+  };
+  
+  // Function to handle contact button click
+  const handleContactClick = () => {
+    setIsContactOpen(true);
+    // Don't close the estimate modal yet, let the user decide
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -795,10 +815,24 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
               reportError={error}
               onUploadPdf={(pdfBlob) => uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress)}
               initialDownloadSuccess={autoDownloadSuccess}
+              onContactClick={handleContactClick}
             />
           )}
         </div>
       </div>
+      
+      {/* Contact Popup */}
+      <ContactPopup
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
+        initialSubject={`App Development Inquiry (Estimated Cost: ${detailedReport?.totalCost || ''})`}
+        initialData={{
+          name: personalDetails.fullName,
+          email: personalDetails.emailAddress,
+          subject: `App Development Inquiry (Estimated Cost: ${detailedReport?.totalCost || ''})`,
+          message: generateAppSummary()
+        }}
+      />
     </div>
   );
 } 

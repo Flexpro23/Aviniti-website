@@ -5,24 +5,33 @@ interface ContactPopupProps {
   isOpen: boolean;
   onClose: () => void;
   initialSubject?: string;
+  initialData?: {
+    name: string;
+    email: string;
+    subject?: string;
+    message?: string;
+  };
 }
 
-export default function ContactPopup({ isOpen, onClose, initialSubject = '' }: ContactPopupProps) {
+export default function ContactPopup({ isOpen, onClose, initialSubject = '', initialData }: ContactPopupProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: initialSubject,
-    message: ''
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    subject: initialData?.subject || initialSubject,
+    message: initialData?.message || ''
   });
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(prev => ({
-        ...prev,
-        subject: initialSubject
-      }));
+      // Update form data when props change or modal opens
+      setFormData({
+        name: initialData?.name || formData.name,
+        email: initialData?.email || formData.email,
+        subject: initialData?.subject || initialSubject || formData.subject,
+        message: initialData?.message || formData.message
+      });
     }
-  }, [isOpen, initialSubject]);
+  }, [isOpen, initialSubject, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

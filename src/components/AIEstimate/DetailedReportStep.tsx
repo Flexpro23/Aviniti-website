@@ -16,6 +16,8 @@ interface DetailedReportStepProps {
   onRegenerateReport?: () => void;
   onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
   initialDownloadSuccess?: boolean;
+  // New prop for contact button
+  onContactClick?: () => void;
 }
 
 export default function DetailedReportStep({ 
@@ -27,7 +29,8 @@ export default function DetailedReportStep({
   reportError = null,
   onRegenerateReport,
   onUploadPdf,
-  initialDownloadSuccess = false
+  initialDownloadSuccess = false,
+  onContactClick
 }: DetailedReportStepProps) {
   const { language } = useLanguage();
   const reportRef = useRef<HTMLDivElement>(null);
@@ -206,6 +209,15 @@ export default function DetailedReportStep({
     }
   };
 
+  // Function to handle contact button click
+  const handleContactClick = () => {
+    if (onContactClick) {
+      onContactClick();
+    } else {
+      onClose(); // Fallback to onClose if onContactClick is not provided
+    }
+  };
+
   return (
     <div>
       {/* Success Message Notification */}
@@ -370,7 +382,7 @@ export default function DetailedReportStep({
       {/* Buttons Section */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
         <button
-          onClick={onClose}
+          onClick={handleContactClick}
           className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
         >
           {language === 'en' ? 'Contact Us Now' : 'اتصل بنا الآن'}
