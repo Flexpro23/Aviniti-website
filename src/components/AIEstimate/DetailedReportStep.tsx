@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { DetailedReport, Feature } from './AIEstimateModal';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { getAuth } from 'firebase/auth';
 
 interface DetailedReportStepProps {
@@ -15,6 +15,7 @@ interface DetailedReportStepProps {
   reportError?: string | null;
   onRegenerateReport?: () => void;
   onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
+  initialDownloadSuccess?: boolean;
 }
 
 export default function DetailedReportStep({ 
@@ -25,12 +26,26 @@ export default function DetailedReportStep({
   reportUrl = null,
   reportError = null,
   onRegenerateReport,
-  onUploadPdf
+  onUploadPdf,
+  initialDownloadSuccess = false
 }: DetailedReportStepProps) {
   const { language } = useLanguage();
   const reportRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(initialDownloadSuccess);
   
+  // Set downloadSuccess when initialDownloadSuccess changes
+  useEffect(() => {
+    if (initialDownloadSuccess) {
+      setDownloadSuccess(true);
+      // Auto-hide after 5 seconds
+      const timer = setTimeout(() => {
+        setDownloadSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [initialDownloadSuccess]);
+
   // For time display, make sure it's clear we're showing days or months
   const getTimeLabel = (time: string) => {
     // Time will already be formatted as "X days" or "X-Y months" from AIEstimateModal
@@ -152,10 +167,13 @@ export default function DetailedReportStep({
           // Save the PDF locally after successful upload
           pdf.save('Aviniti_App_Development_Report.pdf');
           
-          // Show success message
-          alert(language === 'en' 
-            ? 'Your report has been saved and uploaded successfully!' 
-            : 'تم حفظ وتحميل تقريرك بنجاح!');
+          // Show success message using state instead of alert
+          setDownloadSuccess(true);
+          
+          // Automatically hide the success message after 5 seconds
+          setTimeout(() => {
+            setDownloadSuccess(false);
+          }, 5000);
         } catch (error) {
           console.error('Error uploading PDF:', error);
           // Still save the PDF locally even if upload fails
@@ -190,6 +208,26 @@ export default function DetailedReportStep({
 
   return (
     <div>
+      {/* Success Message Notification */}
+      {downloadSuccess && (
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium">
+                {language === 'en' 
+                  ? 'Your report has been successfully downloaded and saved!' 
+                  : 'تم تنزيل تقريرك وحفظه بنجاح!'}
+              </h3>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div id="report-container" ref={reportRef}>
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2">
           {language === 'en' ? 'Detailed App Development Report' : 'تقرير مفصل عن تطوير التطبيق'}

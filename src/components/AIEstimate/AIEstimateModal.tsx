@@ -79,6 +79,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const [aiAnalysisResult, setAiAnalysisResult] = useState<AIAnalysisResult | null>(null);
   const [detailedReport, setDetailedReport] = useState<DetailedReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [autoDownloadSuccess, setAutoDownloadSuccess] = useState(false);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -269,10 +270,154 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       
       setDetailedReport(detailedReport);
       setStep(4);
+      
+      // Reference to track if the auto download process is completed
+      let autoDownloadCompleted = false;
+      
+      // Automatically trigger PDF generation after a short delay to allow the UI to render
+      setTimeout(() => {
+        console.log('Auto-triggering PDF generation...');
+        if (personalDetails && personalDetails.emailAddress) {
+          // This variable is used to manage the automatic download flow
+          const autoDownloadPdf = async () => {
+            try {
+              // Create the reference to DetailedReportStep for PDF generation
+              const reportRef = document.getElementById('report-container');
+              
+              if (!reportRef) {
+                console.error('Report container element not found');
+                return;
+              }
+              
+              // Dynamically import the libraries only when needed
+              const [jspdfModule, html2canvasModule] = await Promise.all([
+                import('jspdf'),
+                import('html2canvas')
+              ]);
+              const jsPDF = jspdfModule.default;
+              const html2canvas = html2canvasModule.default;
+              
+              // Create a temporary div for the contact information
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = `
+                <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+                  <h3 style="font-size: 18px; color: #1e40af; margin-bottom: 15px;">Contact Information</h3>
+                  <p style="margin-bottom: 10px;">Ready to get started? Contact us to discuss your project further!</p>
+                  <div style="margin-top: 15px;">
+                    <p style="margin-bottom: 8px;"><strong>Email:</strong> Aliodat@aviniti.app</p>
+                    <p style="margin-bottom: 8px;"><strong>Phone:</strong> +962 790 685 302</p>
+                    <p style="margin-bottom: 8px;"><strong>Website:</strong> www.aviniti.app</p>
+                  </div>
+                  <div style="margin-top: 20px; text-align: center;">
+                    <p style="font-size: 20px; color: #1e40af; margin-bottom: 5px;">AVINITI</p>
+                    <p style="font-style: italic; color: #64748b;">Your Ideas, Our Reality</p>
+                  </div>
+                </div>
+              `;
+              
+              // Append the contact information to the report container
+              reportRef.appendChild(tempDiv);
+              
+              // Create a canvas from the report content
+              const canvas = await html2canvas(reportRef, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true, // Enable CORS for any images
+                logging: true, // Enable logging for debugging
+                onclone: (clonedDoc) => {
+                  // You can modify the cloned document before rendering if needed
+                  const element = clonedDoc.getElementById('report-container');
+                  if (element) {
+                    element.style.padding = '20px';
+                  }
+                }
+              });
+              
+              // Remove the temporary contact information div after canvas creation
+              reportRef.removeChild(tempDiv);
+              
+              const imgData = canvas.toDataURL('image/png');
+              
+              // Calculate PDF dimensions (A4 format)
+              const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+              });
+              
+              const imgWidth = 210; // A4 width in mm
+              const pageHeight = 297; // A4 height in mm
+              const imgHeight = (canvas.height * imgWidth) / canvas.width;
+              let heightLeft = imgHeight;
+              let position = 0;
+              
+              // Add the image to the first page
+              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+              
+              // Add new pages if the content is longer than one page
+              while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+              }
+              
+              // Get the PDF as a blob
+              const pdfBlob = pdf.output('blob');
+              
+              // Upload the PDF
+              await uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress);
+              
+              // Save the PDF locally
+              pdf.save('Aviniti_App_Development_Report.pdf');
+              
+              // Show a success message without requiring user interaction
+              setAutoDownloadSuccess(true);
+              
+              // Hide the success message after 5 seconds
+              setTimeout(() => {
+                setAutoDownloadSuccess(false);
+              }, 5000);
+              
+              console.log('PDF has been generated and saved successfully');
+              
+              // Close the modal and navigate to the detailed report page after a short delay
+              setTimeout(() => {
+                console.log('Auto-closing modal and navigating to detailed report page');
+                autoDownloadCompleted = true; // Mark as completed
+                onClose(); // Close the modal
+                
+                // Optional: Navigate to a detailed report page if you have one
+                // window.location.href = '/reports'; // Uncomment this line to navigate to a reports page
+              }, 2000); // Wait 2 seconds before closing to allow user to see the success message
+              
+            } catch (error) {
+              console.error('Error in auto PDF generation:', error);
+              setError('Error generating PDF report. You can try downloading it manually.');
+              autoDownloadCompleted = true; // Mark as completed even on error
+            } finally {
+              // If for some reason the autoDownloadCompleted flag wasn't set to true
+              // (this should rarely happen, but we're being defensive),
+              // we'll set isProcessing to false after a timeout
+              setTimeout(() => {
+                if (!autoDownloadCompleted) {
+                  setIsProcessing(false);
+                }
+              }, 5000); // 5 second safety timeout
+            }
+          };
+          
+          // Execute the auto-download function
+          autoDownloadPdf();
+        } else {
+          // If we don't have personal details, set processing to false
+          setIsProcessing(false);
+        }
+      }, 1000); // Wait 1 second for the UI to fully render
+      
     } catch (error) {
       console.error('Error generating detailed report:', error);
-    } finally {
-      setIsProcessing(false);
+      setIsProcessing(false); // Only set to false here on immediate errors
     }
   };
 
@@ -422,6 +567,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
               isGeneratingServerReport={isProcessing}
               reportError={error}
               onUploadPdf={(pdfBlob) => uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress)}
+              initialDownloadSuccess={autoDownloadSuccess}
             />
           )}
         </div>
