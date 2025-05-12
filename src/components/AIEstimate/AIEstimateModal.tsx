@@ -289,6 +289,10 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
                 return;
               }
               
+              // Check if device is mobile
+              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+              console.log('Device detection:', { isMobile, userAgent: navigator.userAgent });
+              
               // Dynamically import the libraries only when needed
               const [jspdfModule, html2canvasModule] = await Promise.all([
                 import('jspdf'),
@@ -315,82 +319,305 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
                 </div>
               `;
               
+              console.log('Appending contact information...');
+              
               // Append the contact information to the report container
               reportRef.appendChild(tempDiv);
               
-              // Create a canvas from the report content
-              const canvas = await html2canvas(reportRef, {
-                scale: 2, // Higher scale for better quality
-                useCORS: true, // Enable CORS for any images
-                logging: true, // Enable logging for debugging
-                onclone: (clonedDoc) => {
-                  // You can modify the cloned document before rendering if needed
-                  const element = clonedDoc.getElementById('report-container');
-                  if (element) {
-                    element.style.padding = '20px';
+              console.log('Creating canvas with mobile optimization:', isMobile);
+              
+              try {
+                // Create a canvas from the report content - reduce quality on mobile
+                const canvas = await html2canvas(reportRef, {
+                  scale: isMobile ? 1.0 : 2.0, // Lower scale on mobile for better performance
+                  useCORS: true, // Enable CORS for any images
+                  logging: true, // Enable logging for debugging
+                  onclone: (clonedDoc) => {
+                    // You can modify the cloned document before rendering if needed
+                    const element = clonedDoc.getElementById('report-container');
+                    if (element) {
+                      element.style.padding = '20px';
+                      
+                      // If mobile, simplify the content for better performance
+                      if (isMobile) {
+                        const tables = element.querySelectorAll('.sm\\:grid');
+                        tables.forEach(table => {
+                          // Simplify complex grid layouts on mobile
+                          if (table.className.includes('sm:grid-cols-5')) {
+                            table.className = table.className.replace('sm:grid-cols-5', 'grid-cols-1');
+                          }
+                        });
+                      }
+                    }
                   }
-                }
-              });
-              
-              // Remove the temporary contact information div after canvas creation
-              reportRef.removeChild(tempDiv);
-              
-              const imgData = canvas.toDataURL('image/png');
-              
-              // Calculate PDF dimensions (A4 format)
-              const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-              });
-              
-              const imgWidth = 210; // A4 width in mm
-              const pageHeight = 297; // A4 height in mm
-              const imgHeight = (canvas.height * imgWidth) / canvas.width;
-              let heightLeft = imgHeight;
-              let position = 0;
-              
-              // Add the image to the first page
-              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-              heightLeft -= pageHeight;
-              
-              // Add new pages if the content is longer than one page
-              while (heightLeft > 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-              }
-              
-              // Get the PDF as a blob
-              const pdfBlob = pdf.output('blob');
-              
-              // Upload the PDF
-              await uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress);
-              
-              // Save the PDF locally
-              pdf.save('Aviniti_App_Development_Report.pdf');
-              
-              // Show a success message without requiring user interaction
-              setAutoDownloadSuccess(true);
-              
-              // Hide the success message after 5 seconds
-              setTimeout(() => {
-                setAutoDownloadSuccess(false);
-              }, 5000);
-              
-              console.log('PDF has been generated and saved successfully');
-              
-              // Close the modal and navigate to the detailed report page after a short delay
-              setTimeout(() => {
-                console.log('Auto-closing modal and navigating to detailed report page');
-                autoDownloadCompleted = true; // Mark as completed
-                onClose(); // Close the modal
+                });
                 
-                // Optional: Navigate to a detailed report page if you have one
-                // window.location.href = '/reports'; // Uncomment this line to navigate to a reports page
-              }, 2000); // Wait 2 seconds before closing to allow user to see the success message
-              
+                console.log('Canvas created successfully, dimensions:', { width: canvas.width, height: canvas.height });
+                
+                // Remove the temporary contact information div after canvas creation
+                reportRef.removeChild(tempDiv);
+                
+                const imgData = canvas.toDataURL('image/jpeg', isMobile ? 0.7 : 0.9); // Use JPEG with lower quality on mobile
+                
+                console.log('Creating PDF...');
+                
+                // Calculate PDF dimensions (A4 format)
+                const pdf = new jsPDF({
+                  orientation: 'portrait',
+                  unit: 'mm',
+                  format: 'a4'
+                });
+                
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                // Add the image to the first page
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight); // Use JPEG instead of PNG
+                heightLeft -= pageHeight;
+                
+                // Add new pages if the content is longer than one page
+                while (heightLeft > 0) {
+                  position = heightLeft - imgHeight;
+                  pdf.addPage();
+                  pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight); // Use JPEG instead of PNG
+                  heightLeft -= pageHeight;
+                }
+                
+                console.log('PDF created successfully, getting blob...');
+                
+                // Get the PDF as a blob
+                let pdfBlob = pdf.output('blob');
+                console.log('PDF blob created, size:', pdfBlob.size);
+                
+                // On mobile, try a simpler approach if the blob is very large
+                if (isMobile && pdfBlob.size > 5000000) { // 5MB threshold
+                  console.log('PDF is too large for mobile, trying simpler approach...');
+                  
+                  // Create a simpler PDF with just text
+                  const simplePdf = new jsPDF();
+                  simplePdf.setFontSize(22);
+                  simplePdf.text('Aviniti App Development Report', 20, 20);
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('App Overview:', 20, 40);
+                  simplePdf.setFontSize(12);
+                  
+                  const appOverview = detailedReport?.appOverview || '';
+                  const splitOverview = simplePdf.splitTextToSize(appOverview, 170);
+                  simplePdf.text(splitOverview, 20, 50);
+                  
+                  let yPos = 50 + splitOverview.length * 7;
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Selected Features:', 20, yPos);
+                  simplePdf.setFontSize(12);
+                  
+                  yPos += 10;
+                  
+                  // Add features
+                  detailedReport?.selectedFeatures.forEach((feature: Feature, i: number) => {
+                    if (yPos > 270) {
+                      simplePdf.addPage();
+                      yPos = 20;
+                    }
+                    
+                    // Set font style to bold
+                    simplePdf.setFont(simplePdf.getFont().fontName, 'bold');
+                    simplePdf.text(`${i+1}. ${feature.name}`, 20, yPos);
+                    yPos += 7;
+                    
+                    // Set font style back to normal
+                    simplePdf.setFont(simplePdf.getFont().fontName, 'normal');
+                    const descText = simplePdf.splitTextToSize(`Description: ${feature.description}`, 170);
+                    simplePdf.text(descText, 25, yPos);
+                    yPos += descText.length * 7;
+                    
+                    simplePdf.text(`Cost: ${feature.costEstimate} • Time: ${feature.timeEstimate}`, 25, yPos);
+                    yPos += 10;
+                  });
+                  
+                  // Add summary
+                  if (yPos > 250) {
+                    simplePdf.addPage();
+                    yPos = 20;
+                  }
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Project Summary:', 20, yPos);
+                  yPos += 10;
+                  
+                  simplePdf.setFontSize(12);
+                  simplePdf.text(`Total Cost: ${detailedReport?.totalCost || ''}`, 20, yPos);
+                  yPos += 7;
+                  simplePdf.text(`Total Time: ${detailedReport?.totalTime || ''}`, 20, yPos);
+                  yPos += 7;
+                  simplePdf.text(`Number of Features: ${detailedReport?.selectedFeatures.length || 0}`, 20, yPos);
+                  yPos += 15;
+                  
+                  // Contact info
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Contact Information:', 20, yPos);
+                  yPos += 10;
+                  
+                  simplePdf.setFontSize(12);
+                  simplePdf.text('Email: Aliodat@aviniti.app', 20, yPos);
+                  yPos += 7;
+                  simplePdf.text('Phone: +962 790 685 302', 20, yPos);
+                  yPos += 7;
+                  simplePdf.text('Website: www.aviniti.app', 20, yPos);
+                  yPos += 15;
+                  
+                  simplePdf.setFontSize(14);
+                  simplePdf.setTextColor(29, 64, 175); // Blue color
+                  simplePdf.text('AVINITI - Your Ideas, Our Reality', 20, yPos);
+                  
+                  const simplePdfBlob = simplePdf.output('blob');
+                  console.log('Simple PDF created for mobile, size:', simplePdfBlob.size);
+                  
+                  // Use this simpler PDF instead
+                  pdfBlob = simplePdfBlob;
+                }
+                
+                // Upload the PDF
+                await uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress);
+                
+                // Save the PDF locally
+                if (isMobile) {
+                  // On mobile, open in a new tab rather than triggering download
+                  const pdfUrl = URL.createObjectURL(pdfBlob);
+                  window.open(pdfUrl, '_blank');
+                } else {
+                  pdf.save('Aviniti_App_Development_Report.pdf');
+                }
+                
+                // Show a success message without requiring user interaction
+                setAutoDownloadSuccess(true);
+                
+                // Hide the success message after 5 seconds
+                setTimeout(() => {
+                  setAutoDownloadSuccess(false);
+                }, 5000);
+                
+                console.log('PDF has been generated and saved successfully');
+                
+                // Close the modal and navigate to the detailed report page after a short delay
+                setTimeout(() => {
+                  console.log('Auto-closing modal and navigating to detailed report page');
+                  autoDownloadCompleted = true; // Mark as completed
+                  onClose(); // Close the modal
+                  
+                  // Optional: Navigate to a detailed report page if you have one
+                  // window.location.href = '/reports'; // Uncomment this line to navigate to a reports page
+                }, isMobile ? 500 : 2000); // Shorter delay on mobile
+                
+              } catch (canvasError) {
+                // Canvas generation failed, try the basic approach for mobile
+                console.error('Canvas generation failed:', canvasError);
+                
+                if (isMobile) {
+                  console.log('Attempting simplified PDF generation for mobile...');
+                  
+                  // Create a simple text-based PDF instead
+                  const simplePdf = new jsPDF();
+                  simplePdf.setFontSize(22);
+                  simplePdf.text('Aviniti App Development Report', 20, 20);
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('App Overview:', 20, 40);
+                  simplePdf.setFontSize(12);
+                  
+                  const appOverview = detailedReport?.appOverview || '';
+                  const splitOverview = simplePdf.splitTextToSize(appOverview, 170);
+                  simplePdf.text(splitOverview, 20, 50);
+                  
+                  let yPos = 50 + splitOverview.length * 7;
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Selected Features:', 20, yPos);
+                  simplePdf.setFontSize(12);
+                  
+                  yPos += 10;
+                  
+                  // Add features
+                  detailedReport?.selectedFeatures.forEach((feature: Feature, i: number) => {
+                    if (yPos > 270) {
+                      simplePdf.addPage();
+                      yPos = 20;
+                    }
+                    
+                    // Set font style to bold
+                    simplePdf.setFont(simplePdf.getFont().fontName, 'bold');
+                    simplePdf.text(`${i+1}. ${feature.name}`, 20, yPos);
+                    yPos += 7;
+                    
+                    // Set font style back to normal
+                    simplePdf.setFont(simplePdf.getFont().fontName, 'normal');
+                    const descText = simplePdf.splitTextToSize(`Description: ${feature.description}`, 170);
+                    simplePdf.text(descText, 25, yPos);
+                    yPos += descText.length * 7;
+                    
+                    simplePdf.text(`Cost: ${feature.costEstimate} • Time: ${feature.timeEstimate}`, 25, yPos);
+                    yPos += 10;
+                  });
+                  
+                  // Add summary
+                  if (yPos > 250) {
+                    simplePdf.addPage();
+                    yPos = 20;
+                  }
+                  
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Project Summary:', 20, yPos);
+                  yPos += 10;
+                  
+                  simplePdf.setFontSize(12);
+                  simplePdf.text(`Total Cost: ${detailedReport?.totalCost || ''}`, 20, yPos);
+                  yPos += 7;
+                  simplePdf.text(`Total Time: ${detailedReport?.totalTime || ''}`, 20, yPos);
+                  yPos += 7;
+                  simplePdf.text(`Number of Features: ${detailedReport?.selectedFeatures.length || 0}`, 20, yPos);
+                  yPos += 15;
+                  
+                  // Contact info
+                  simplePdf.setFontSize(16);
+                  simplePdf.text('Contact Information:', 20, yPos);
+                  yPos += 10;
+                  
+                  simplePdf.setFontSize(12);
+                  simplePdf.text('Email: Aliodat@aviniti.app', 20, yPos);
+                  yPos += 7;
+                  simplePdf.text('Phone: +962 790 685 302', 20, yPos);
+                  yPos += 7;
+                  simplePdf.text('Website: www.aviniti.app', 20, yPos);
+                  yPos += 15;
+                  
+                  simplePdf.setFontSize(14);
+                  simplePdf.setTextColor(29, 64, 175); // Blue color
+                  simplePdf.text('AVINITI - Your Ideas, Our Reality', 20, yPos);
+                  
+                  const simplePdfBlob = simplePdf.output('blob');
+                  
+                  // Upload the simple PDF
+                  await uploadPdfAndCreateReport(simplePdfBlob, personalDetails.emailAddress);
+                  
+                  // On mobile, open in a new tab rather than triggering download
+                  const pdfUrl = URL.createObjectURL(simplePdfBlob);
+                  window.open(pdfUrl, '_blank');
+                  
+                  // Show success and close
+                  setAutoDownloadSuccess(true);
+                  setTimeout(() => {
+                    setAutoDownloadSuccess(false);
+                    autoDownloadCompleted = true;
+                    onClose();
+                  }, 1000);
+                } else {
+                  throw canvasError; // Re-throw for desktop to show error
+                }
+              }
             } catch (error) {
               console.error('Error in auto PDF generation:', error);
               setError('Error generating PDF report. You can try downloading it manually.');
