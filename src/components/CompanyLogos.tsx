@@ -17,7 +17,7 @@ export default function CompanyLogos() {
   ];
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-off-white">
       <div className="container mx-auto px-4">
         <h2 className="text-center text-2xl font-medium text-gray-700 mb-10">
           {t.projects.title}

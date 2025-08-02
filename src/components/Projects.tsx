@@ -98,108 +98,71 @@ export default function Projects() {
     }
   }, [filteredProjects]);
 
-  // Update active index when scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      if (carouselRef.current && !isDragging) {
-        const scrollPosition = carouselRef.current.scrollLeft;
-        const itemWidth = carouselRef.current.clientWidth;
-        const newIndex = Math.round(scrollPosition / itemWidth);
-        if (newIndex !== activeIndex && newIndex >= 0 && newIndex < filteredProjects.length) {
-          setActiveIndex(newIndex);
-        }
-      }
-    };
-
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.addEventListener('scroll', handleScroll);
-      return () => carousel.removeEventListener('scroll', handleScroll);
-    }
-  }, [activeIndex, filteredProjects.length, isDragging]);
-
-  const categories = [
+  // Categories with their labels
+  const categories = React.useMemo(() => [
     { id: 'all' as ProjectCategory, label: t.projects.categories.all },
     { id: 'web' as ProjectCategory, label: t.projects.categories.web },
     { id: 'mobile' as ProjectCategory, label: t.projects.categories.mobile },
     { id: 'ai' as ProjectCategory, label: t.projects.categories.ai }
-  ];
+  ], [t.projects.categories]);
 
-  // Scroll functions for the carousel
-  const scrollToPrev = () => {
-    if (carouselRef.current) {
-      const newIndex = Math.max(0, activeIndex - 1);
-      const slideWidth = carouselRef.current.offsetWidth;
-      carouselRef.current.scrollTo({ 
-        left: slideWidth * newIndex, 
-        behavior: 'smooth' 
-      });
-      setActiveIndex(newIndex);
-    }
-  };
-
+  // Scroll functions
   const scrollToNext = () => {
     if (carouselRef.current) {
-      const newIndex = Math.min(filteredProjects.length - 1, activeIndex + 1);
-      const slideWidth = carouselRef.current.offsetWidth;
-      carouselRef.current.scrollTo({ 
-        left: slideWidth * newIndex, 
-        behavior: 'smooth' 
-      });
-      setActiveIndex(newIndex);
+      const cardWidth = 320; // Width of each card plus gap
+      const maxScroll = carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
+      const currentScroll = carouselRef.current.scrollLeft;
+      const nextScroll = Math.min(currentScroll + cardWidth, maxScroll);
+      carouselRef.current.scrollTo({ left: nextScroll, behavior: 'smooth' });
     }
   };
-  
+
+  const scrollToPrev = () => {
+    if (carouselRef.current) {
+      const cardWidth = 320;
+      const currentScroll = carouselRef.current.scrollLeft;
+      const prevScroll = Math.max(currentScroll - cardWidth, 0);
+      carouselRef.current.scrollTo({ left: prevScroll, behavior: 'smooth' });
+    }
+  };
+
   // Mouse drag functionality
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (carouselRef.current) {
-      setIsDragging(true);
-      setStartX(e.pageX - carouselRef.current.offsetLeft);
-      setStartScrollPosition(carouselRef.current.scrollLeft);
-    }
+    if (!carouselRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - carouselRef.current.offsetLeft);
+    setStartScrollPosition(carouselRef.current.scrollLeft);
+    carouselRef.current.style.cursor = 'grabbing';
   };
-  
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !carouselRef.current) return;
     e.preventDefault();
     const x = e.pageX - carouselRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Adjust the multiplier for speed sensitivity
+    const walk = (x - startX) * 2;
     carouselRef.current.scrollLeft = startScrollPosition - walk;
   };
-  
+
   const handleMouseUp = () => {
+    if (!carouselRef.current) return;
     setIsDragging(false);
-    // Snap to nearest slide after dragging ends
-    if (carouselRef.current) {
-      const slideWidth = carouselRef.current.offsetWidth;
-      const newIndex = Math.round(carouselRef.current.scrollLeft / slideWidth);
-      carouselRef.current.scrollTo({
-        left: slideWidth * newIndex,
-        behavior: 'smooth'
-      });
-      setActiveIndex(newIndex);
-    }
+    carouselRef.current.style.cursor = 'grab';
   };
-  
-  const handleDotClick = (index: number) => {
-    if (carouselRef.current) {
-      const slideWidth = carouselRef.current.offsetWidth;
-      carouselRef.current.scrollTo({
-        left: slideWidth * index,
-        behavior: 'smooth'
-      });
-      setActiveIndex(index);
-    }
+
+  const handleMouseLeave = () => {
+    if (!carouselRef.current) return;
+    setIsDragging(false);
+    carouselRef.current.style.cursor = 'grab';
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-gray-50 section-transition">
+    <section className="py-12 sm:py-16 bg-off-white section-transition">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`text-center max-w-3xl mx-auto mb-8 sm:mb-10 ${dir === 'rtl' ? 'rtl' : ''}`}>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-blue-800">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-slate-blue-600">
             {t.projects.title}
           </h2>
-          <p className="text-sm sm:text-base text-gray-600">
+          <p className="text-sm sm:text-base text-slate-blue-500">
             {t.projects.subtitle}
           </p>
         </div>
@@ -211,8 +174,8 @@ export default function Projects() {
               onClick={() => setActiveCategory(category.id)}
               className={`px-6 py-3 rounded-full text-sm sm:text-base transition-all duration-300 font-medium
                 ${activeCategory === category.id
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 hover:shadow'
+                  ? 'bg-gradient-to-r from-bronze-500 to-bronze-600 text-white shadow-lg transform scale-105'
+                  : 'bg-white text-slate-blue-600 hover:bg-slate-blue-50 hover:shadow border border-slate-blue-100'
                 }`}
             >
               {category.label}
@@ -225,36 +188,27 @@ export default function Projects() {
           {filteredProjects.length > 1 && (
             <button 
               onClick={scrollToPrev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 focus:outline-none"
-              aria-label="Scroll left"
-              style={{ 
-                opacity: activeIndex === 0 ? 0.5 : 1,
-                cursor: activeIndex === 0 ? 'default' : 'pointer'
-              }}
-              disabled={activeIndex === 0}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:bg-slate-blue-50 transition-colors border border-slate-blue-100"
+              aria-label="Previous project"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6 text-slate-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
           )}
-          
-          {/* Carousel container with mouse drag functionality */}
+
+          {/* Projects carousel */}
           <div 
             ref={carouselRef}
-            className={`flex overflow-x-auto gap-6 py-4 px-8 snap-x snap-mandatory hide-scrollbar ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-            style={{ 
-              scrollbarWidth: 'none', 
-              msOverflowStyle: 'none',
-              WebkitOverflowScrolling: 'touch'
-            }}
+            className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 cursor-grab"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
           >
             <style jsx>{`
-              .hide-scrollbar::-webkit-scrollbar {
+              div::-webkit-scrollbar {
                 display: none;
               }
             `}</style>
@@ -262,13 +216,12 @@ export default function Projects() {
             {filteredProjects.map((project) => (
               <div
                 key={project.key}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 flex-shrink-0 snap-start scroll-ml-4"
-                style={{ width: 'min(100%, 350px)' }}
+                className="flex-none w-80 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 snap-center group border border-slate-blue-100"
               >
+
                 <div className="p-6 flex flex-col items-center">
                   {/* Circular Image with Gradient Border */}
-                  <div className="relative w-32 h-32 mb-4 rounded-full overflow-hidden group-hover:scale-105 transition-transform duration-500 
-                              shadow-lg border-4 border-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-600 p-[3px]">
+                  <div className="relative w-32 h-32 mb-4 rounded-full overflow-hidden group-hover:scale-105 transition-transform duration-500 shadow-lg border-4 border-transparent bg-gradient-to-r from-bronze-400 via-bronze-500 to-bronze-600 p-[3px]">
                     <div className="absolute inset-0 rounded-full overflow-hidden bg-white">
                       <ImageWithFallback
                         src={project.image.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
@@ -281,11 +234,11 @@ export default function Projects() {
                     </div>
                     
                     {/* Subtle glow effect on hover */}
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-indigo-600 rounded-full opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-500"></div>
+                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-bronze-400 via-bronze-500 to-bronze-600 opacity-0 group-hover:opacity-30 blur-md transition-opacity duration-300"></div>
                   </div>
                   
                   <div className={`text-center w-full`}>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-xl font-semibold text-slate-blue-600 mb-2">
                       {project.data.title}
                     </h3>
                     
@@ -293,9 +246,9 @@ export default function Projects() {
                     <div className="flex flex-wrap justify-center gap-1 mb-3">
                       {project.categories.map((category, index) => (
                         <span key={index} className={`text-xs px-2 py-1 ${
-                          category === 'web' ? 'bg-blue-100 text-blue-700' :
-                          category === 'mobile' ? 'bg-green-100 text-green-700' :
-                          'bg-purple-100 text-purple-700'
+                          category === 'web' ? 'bg-slate-blue-100 text-slate-blue-700' :
+                          category === 'mobile' ? 'bg-bronze-100 text-bronze-700' :
+                          'bg-slate-blue-50 text-slate-blue-600'
                         } rounded-full font-medium`}>
                           {category === 'web' ? t.projects.categories.web :
                           category === 'mobile' ? t.projects.categories.mobile :
@@ -304,7 +257,7 @@ export default function Projects() {
                       ))}
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-sm text-slate-blue-400 mb-4 line-clamp-3">
                       {project.data.description}
                     </p>
                     
@@ -324,39 +277,15 @@ export default function Projects() {
           {filteredProjects.length > 1 && (
             <button 
               onClick={scrollToNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 focus:outline-none"
-              aria-label="Scroll right"
-              style={{ 
-                opacity: activeIndex === filteredProjects.length - 1 ? 0.5 : 1,
-                cursor: activeIndex === filteredProjects.length - 1 ? 'default' : 'pointer'
-              }}
-              disabled={activeIndex === filteredProjects.length - 1}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 hover:bg-slate-blue-50 transition-colors border border-slate-blue-100"
+              aria-label="Next project"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6 text-slate-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           )}
         </div>
-        
-        {/* Improved pagination dots */}
-        {filteredProjects.length > 1 && (
-          <div className="flex justify-center mt-6 space-x-2">
-            {filteredProjects.map((_, index) => (
-              <button 
-                key={index}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                  activeIndex === index 
-                    ? 'bg-blue-600 scale-125'
-                    : 'bg-gray-300 hover:bg-blue-400'
-                }`}
-                onClick={() => handleDotClick(index)}
-                aria-label={`Go to slide ${index + 1}`}
-                aria-current={activeIndex === index ? 'true' : 'false'}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

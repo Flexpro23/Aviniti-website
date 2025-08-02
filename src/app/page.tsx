@@ -10,7 +10,7 @@ const Expertise = lazy(() => import('@/components/Expertise'));
 const About = lazy(() => import('@/components/About'));
 const Footer = lazy(() => import('@/components/Footer'));
 import ContactPopup from '@/components/ContactPopup';
-const AIEstimateModal = lazy(() => import('@/components/AIEstimate/AIEstimateModal'));
+
 const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
 
 // Loading fallback component
@@ -20,7 +20,6 @@ const LoadingFallback = () => <div className="min-h-[200px] flex items-center ju
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [isAIEstimateOpen, setIsAIEstimateOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [contactSubject, setContactSubject] = useState('');
   const { dir } = useLanguage();
@@ -61,7 +60,6 @@ export default function Home() {
       {/* Hero section with primary heading */}
       <header role="banner" id="hero-section">
         <Hero 
-          onEstimateClick={() => setIsAIEstimateOpen(true)} 
           onConsultationClick={() => openContactWithSubject('Free Consultation Request')} 
         />
       </header>
@@ -93,12 +91,7 @@ export default function Home() {
         initialSubject={contactSubject}
       />
 
-        <Suspense fallback={<LoadingFallback />}>
-          <AIEstimateModal
-            isOpen={isAIEstimateOpen}
-            onClose={() => setIsAIEstimateOpen(false)}
-          />
-        </Suspense>
+
     </main>
     </Suspense>
   );

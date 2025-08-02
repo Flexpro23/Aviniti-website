@@ -3,16 +3,17 @@
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import ImageWithFallback from './utils/ImageWithFallback';
 import Script from 'next/script';
 
 interface HeroProps {
-  onEstimateClick?: () => void;
   onConsultationClick?: () => void;
 }
 
-export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps = {}) {
+export default function Hero({ onConsultationClick }: HeroProps = {}) {
   const { t, dir } = useLanguage();
+  const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState(0);
   const phoneRef = useRef<HTMLDivElement>(null);
   
@@ -21,26 +22,26 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
     {
       src: '/company-logos/flex-pro.webp',
       alt: 'Flex Pro App',
-      color: 'bg-blue-500'
+      color: 'bg-slate-blue-500'
     },
     {
       src: '/company-logos/secrtary.webp',
       alt: 'Secretary App',
-      color: 'bg-purple-500'
+      color: 'bg-bronze-500'
     },
     {
       src: '/company-logos/farm-house.webp',
       alt: 'Farm House App',
-      color: 'bg-green-500',
+      color: 'bg-bronze-600',
       customStyle: {
-        backgroundColor: '#22c55e', // Vibrant green to match the Farm House app screen
-        backgroundImage: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+        backgroundColor: '#a6714e', // Bronze-600 to match the Farm House app screen
+        backgroundImage: 'linear-gradient(135deg, #a6714e 0%, #8a5d42 100%)'
       }
     },
     {
       src: '/company-logos/skinverse.webp',
       alt: 'Skinverse App',
-      color: 'bg-pink-500'
+      color: 'bg-slate-blue-400'
     }
   ];
 
@@ -135,7 +136,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
       />
       
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-blue-600 to-slate-blue-800">
         <div className="absolute inset-0 bg-[url('/patterns/grid.svg')] opacity-20"></div>
       </div>
 
@@ -147,20 +148,20 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
               <span className="block mb-2">Aviniti - AI & App Development Services</span>
               <span className="block">{t.hero.title}</span>
-              <span className="block text-blue-200">{t.hero.subtitle}</span>
+              <span className="block text-slate-blue-200">{t.hero.subtitle}</span>
             </h1>
-            <p className="text-xl sm:text-2xl font-medium text-blue-100 mb-2">
+            <p className="text-xl sm:text-2xl font-medium text-slate-blue-100 mb-2">
               {t.hero.description}
             </p>
-            <p className="text-base sm:text-lg text-blue-200 mb-8">
+            <p className="text-base sm:text-lg text-slate-blue-200 mb-8">
               {t.hero.subDescription}
             </p>
 
-            {/* Moved Primary CTA Button Here */}
+            {/* Primary CTA Button - Updated to Bronze */}
             <div className={`flex justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''} mb-8`}>
               <button
-                onClick={onEstimateClick}
-                className="px-12 py-6 bg-white text-blue-700 rounded-xl font-semibold text-lg shadow-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105"
+                onClick={() => router.push('/estimate')}
+                className="px-12 py-6 bg-bronze-500 text-white rounded-xl font-semibold text-lg shadow-lg hover:bg-bronze-600 transition-all duration-300 transform hover:scale-105"
                 title={t.hero.estimateDescription}
               >
                 {t.hero.getEstimate}
@@ -171,7 +172,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
             <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''}`}>
               <button
                 onClick={scrollToSolutions}
-                className="px-8 py-4 bg-transparent text-white border-2 border-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-blue-700 transition-colors duration-300"
+                className="px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300"
                 title={t.hero.solutionsDescription}
               >
                 {t.hero.exploreSolutions}
@@ -179,7 +180,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
               {/* Consultation Button - Adjusted margin */}
               <button
                 onClick={handleConsultationClick}
-                className="text-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
+                className="text-slate-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
                 title={t.hero.consultationDescription}
               >
                 <span className="mr-2">{t.hero.getFreeConsultation}</span>
@@ -199,9 +200,9 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
           <div className="relative h-[550px] w-full flex items-center justify-center">
             {/* Animated Background Circles */}
             <div className="absolute inset-0 w-full h-full">
-              <div className="absolute w-64 h-64 bg-blue-400 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
-              <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-purple-400 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-              <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-cyan-400 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+              <div className="absolute w-64 h-64 bg-slate-blue-400 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
+              <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-bronze-400 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+              <div className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-slate-blue-300 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
             </div>
             
             {/* Phone Frame */}
@@ -328,13 +329,13 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
               <div className="absolute inset-0 rounded-[40px] bg-gradient-to-br from-white/10 to-transparent opacity-50 pointer-events-none z-40 overflow-hidden"></div>
               
               {/* Screen light glow */}
-              <div className="absolute -inset-10 z-[-1] opacity-30 bg-blue-500 blur-3xl rounded-full animate-pulse-soft"></div>
+              <div className="absolute -inset-10 z-[-1] opacity-30 bg-bronze-500 blur-3xl rounded-full animate-pulse-soft"></div>
             </div>
             
             {/* Floating Code Snippets */}
             <div className="absolute -right-8 top-14 transform rotate-6 animate-float-delayed">
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-3 shadow-2xl border border-white/20">
-                <pre className="text-[10px] text-blue-200 font-mono">
+                <pre className="text-[10px] text-slate-blue-200 font-mono">
                   <code>{`function useAI() {
   return AI.solutions();
 }`}</code>
@@ -344,7 +345,7 @@ export default function Hero({ onEstimateClick, onConsultationClick }: HeroProps
             
             <div className="absolute -left-8 bottom-20 transform -rotate-6 animate-float-delayed-2">
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-3 shadow-2xl border border-white/20">
-                <pre className="text-[10px] text-blue-200 font-mono">
+                <pre className="text-[10px] text-slate-blue-200 font-mono">
                   <code>{`<App
   innovation={true}
   performant={true}

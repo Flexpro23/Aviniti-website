@@ -235,11 +235,11 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
   };
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12 bg-off-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{sectionTitle}</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-blue-600 mb-4">{sectionTitle}</h2>
+          <p className="text-xl text-slate-blue-500 max-w-3xl mx-auto">
             {readyMadeSolutionsT.subtitle}
           </p>
         </div>
@@ -249,7 +249,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
           {solutions.length > 1 && (
             <button 
               onClick={scrollToPrev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 focus:outline-none"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-3 hover:bg-slate-blue-50 focus:outline-none border border-slate-blue-100"
               aria-label="Scroll left"
               style={{ 
                 opacity: activeIndex === 0 ? 0.5 : 1,
@@ -257,7 +257,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
               }}
               disabled={activeIndex === 0}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -301,18 +301,18 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                     />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2">{solutionData.title}</h3>
+                    <h3 className="text-xl font-bold mb-2 text-slate-blue-600">{solutionData.title}</h3>
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-2xl font-bold text-blue-600">{solutionData.price}</span>
-                      <span className="text-gray-500">{readyMadeSolutionsT.days} {solution.id === 'gym' ? 60 : 35}</span>
+                      <span className="text-2xl font-bold text-bronze-600">{solutionData.price}</span>
+                      <span className="text-slate-blue-400">{readyMadeSolutionsT.days} {solution.id === 'gym' ? 60 : 35}</span>
                     </div>
-                    <p className="text-gray-600 mb-6 line-clamp-3">{solutionData.description}</p>
+                    <p className="text-slate-blue-500 mb-6 line-clamp-3">{solutionData.description}</p>
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-900 mb-2">{readyMadeSolutionsT.keyFeatures}:</h4>
+                      <h4 className="font-semibold text-slate-blue-600 mb-2">{readyMadeSolutionsT.keyFeatures}:</h4>
                       <ul className="space-y-1">
                         {solutionData.features.map((feature: string, index: number) => (
-                          <li key={index} className="flex items-center text-gray-700">
-                            <svg className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <li key={index} className="flex items-center text-slate-blue-600">
+                            <svg className="w-4 h-4 text-bronze-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
                             </svg>
                             <span className="line-clamp-1">{feature}</span>
@@ -322,7 +322,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                     </div>
                     <button 
                       onClick={() => onContactClick(solutionData.title)}
-                      className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-300"
+                      className="w-full py-3 bg-bronze-500 text-white font-medium rounded-lg hover:bg-bronze-600 transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                     >
                       {readyMadeSolutionsT.getStarted}
                     </button>
@@ -336,7 +336,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
           {solutions.length > 1 && (
             <button 
               onClick={scrollToNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 focus:outline-none"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-3 hover:bg-slate-blue-50 focus:outline-none border border-slate-blue-100"
               aria-label="Scroll right"
               style={{ 
                 opacity: activeIndex === solutions.length - 1 ? 0.5 : 1,
@@ -344,7 +344,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
               }}
               disabled={activeIndex === solutions.length - 1}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -359,8 +359,8 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                 key={index}
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   activeIndex === index 
-                    ? 'bg-blue-600 scale-125'
-                    : 'bg-gray-300 hover:bg-blue-400'
+                    ? 'bg-bronze-500 scale-125'
+                    : 'bg-slate-blue-200 hover:bg-bronze-300'
                 }`}
                 onClick={() => handleDotClick(index)}
                 aria-label={`Go to slide ${index + 1}`}

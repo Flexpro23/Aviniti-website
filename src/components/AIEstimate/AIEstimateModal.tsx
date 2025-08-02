@@ -7,7 +7,7 @@ import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL } from '@/lib/services/GeminiService';
-import { collection, addDoc, getDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { createUserDocument } from '@/lib/firebase-utils';
 import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -42,11 +42,41 @@ export type AIAnalysisResult = {
   enhancementFeatures: Feature[];
 };
 
+export type CostBreakdown = {
+  [category: string]: number;
+};
+
+export type TimelinePhase = {
+  phase: string;
+  duration: string;
+  description: string;
+};
+
+export type SuccessPotentialScores = {
+  innovation: number;
+  marketViability: number;
+  monetization: number;
+  technicalFeasibility: number;
+};
+
+export type StrategicAnalysis = {
+  strengths: string;
+  challenges: string;
+  recommendedMonetization: string;
+};
+
 export type DetailedReport = {
   appOverview: string;
   selectedFeatures: Feature[];
   totalCost: string;
   totalTime: string;
+  costBreakdown: CostBreakdown;
+  timelinePhases: TimelinePhase[];
+  marketComparison: string;
+  complexityAnalysis: string;
+  // New executive dashboard fields
+  successPotentialScores?: SuccessPotentialScores;
+  strategicAnalysis?: StrategicAnalysis;
 };
 
 interface DetailedReportStepProps {
@@ -82,20 +112,106 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const [error, setError] = useState<string | null>(null);
   const [autoDownloadSuccess, setAutoDownloadSuccess] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [userDocumentId, setUserDocumentId] = useState<string | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (!isOpen) {
       // Small delay to avoid visual glitches during closing animation
       const timer = setTimeout(() => {
+        console.log('🔍 DEBUG: Modal closing, resetting state');
         setStep(1);
         setAiAnalysisResult(null);
         setDetailedReport(null);
         setIsProcessing(false);
+        setUserDocumentId(null);
       }, 300);
       return () => clearTimeout(timer);
+    } else {
+      console.log('🔍 DEBUG: Modal opening');
     }
   }, [isOpen]);
+
+  // Debug: Watch userDocumentId changes
+  useEffect(() => {
+    console.log('🔍 DEBUG: userDocumentId changed to:', userDocumentId);
+  }, [userDocumentId]);
+
+  // Debug: Watch step changes
+  useEffect(() => {
+    console.log('🔍 DEBUG: step changed to:', step);
+  }, [step]);
+
+  const handleCreateUserDocument = async (userInfo: PersonalDetails) => {
+    console.log('🔍 DEBUG: handleCreateUserDocument called with:', userInfo);
+    try {
+      const docRef = doc(collection(db, 'users')); // Creates a ref with a new ID
+      console.log('🔍 DEBUG: Generated document ID:', docRef.id);
+      
+      const docData = {
+        ...userInfo,
+        createdAt: serverTimestamp(),
+        status: 'pending-description' // A new status to show they've started
+      };
+      
+      console.log('🔍 DEBUG: Document data to save:', docData);
+      await setDoc(docRef, docData);
+      
+      console.log("✅ User document created with ID: ", docRef.id);
+      setUserDocumentId(docRef.id); // Save the ID to state
+      console.log('🔍 DEBUG: userDocumentId set in state:', docRef.id);
+      return docRef.id;
+    } catch (error) {
+      console.error("❌ Error creating user document: ", error);
+      // Handle error appropriately
+      return null;
+    }
+  };
+
+  const handleUpdateUserDocument = async (appData: { description: string; platforms: string[]; keywords: string[] }) => {
+    console.log('🔍 DEBUG: handleUpdateUserDocument called');
+    console.log('🔍 DEBUG: Received appData:', appData);
+    console.log('🔍 DEBUG: Current userDocumentId:', userDocumentId);
+    console.log('🔍 DEBUG: Database reference:', db);
+
+    // Ensure we have a document ID to update
+    if (!userDocumentId) {
+      console.error("❌ No user document ID found to update.");
+      alert("A session error occurred. Please try again from Step 1.");
+      return false; // Indicate failure
+    }
+
+    try {
+      console.log('🔍 DEBUG: Creating document reference...');
+      const userDocRef = doc(db, 'users', userDocumentId);
+      console.log('🔍 DEBUG: Document reference created:', userDocRef.path);
+
+      const updateData = {
+        appDescription: appData.description,
+        selectedPlatforms: appData.platforms,
+        detectedKeywords: appData.keywords, // Store the keywords for analysis
+        status: 'pending-features', // Update the status
+        updatedAt: serverTimestamp()
+      };
+
+      console.log('🔍 DEBUG: Update data prepared:', updateData);
+      console.log('🔍 DEBUG: Calling updateDoc...');
+
+      await updateDoc(userDocRef, updateData);
+      
+      console.log("✅ User document successfully updated with app description.");
+      console.log('🔍 DEBUG: Document should now contain Step 2 data');
+      return true; // Indicate success
+    } catch (error) {
+      console.error("❌ Error updating user document: ", error);
+      console.error("❌ Error details:", {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      return false; // Indicate failure
+    }
+  };
 
   const handleUserInfoSubmit = async (details: PersonalDetails) => {
     setPersonalDetails(details);
@@ -108,25 +224,12 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         throw new Error('Firebase database is not initialized');
       }
       
-      // Create a user document in Firestore
-      const usersRef = collection(db, 'users');
-      const userDocRef = await addDoc(usersRef, {
-        personalDetails: details,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-      
-      if (!userDocRef.id) {
-        throw new Error('Failed to get user document ID');
-      }
-      
-      console.log('User document created with ID:', userDocRef.id);
-      
-      // Verify the document was created
-      const docSnapshot = await getDoc(userDocRef);
-      if (!docSnapshot.exists()) {
-        throw new Error('User document was not created successfully');
+      // Create user document and get the ID
+      const docId = await handleCreateUserDocument(details);
+      if (!docId) {
+        // If creation fails, show an error and don't proceed
+        alert("Could not save your information. Please try again.");
+        return;
       }
       
       setStep(2);
@@ -147,19 +250,47 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     }
   };
 
-  const handleAppDescriptionSubmit = async (description: AppDescription) => {
+  const handleAppDescriptionSubmit = async (description: AppDescription & { keywords: string[] }) => {
+    console.log('🔍 DEBUG: handleAppDescriptionSubmit called with:', description);
+    console.log('🔍 DEBUG: Current userDocumentId:', userDocumentId);
+    console.log('🔍 DEBUG: Current step:', step);
+
     if (!description || !description.description || description.description.trim() === '') {
-      console.error('No app description provided or empty description');
+      console.error('❌ No app description provided or empty description');
       return;
     }
 
     if (!description.selectedPlatforms || description.selectedPlatforms.length === 0) {
-      console.error('No platforms selected for deployment');
+      console.error('❌ No platforms selected for deployment');
       return;
     }
 
+    console.log('✅ Validation passed, proceeding with submission');
     setAppDescription(description);
     setIsProcessing(true);
+
+    // Update user document with app description and keywords
+    const appData = {
+      description: description.description,
+      platforms: description.selectedPlatforms,
+      keywords: description.keywords || [] // Use detected keywords from the component
+    };
+
+    console.log('🔍 DEBUG: App data to save:', appData);
+    console.log('🔍 DEBUG: About to call handleUpdateUserDocument...');
+
+    const updateSuccess = await handleUpdateUserDocument(appData);
+
+    console.log('🔍 DEBUG: handleUpdateUserDocument result:', updateSuccess);
+
+    if (!updateSuccess) {
+      // If the update fails, show an error and stop
+      setIsProcessing(false);
+      alert("Could not save your app description. Please try again.");
+      return;
+    }
+
+    console.log('✅ Document update successful, proceeding to AI analysis');
     
     try {
       console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
@@ -262,15 +393,104 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
           : `${totalMinTime}-${totalMaxTime} days`;
       }
       
+      // Generate cost breakdown by purpose/category
+      const costBreakdown: CostBreakdown = selectedFeatures.reduce((breakdown, feature) => {
+        const cost = extractCostRange(feature.costEstimate);
+        const category = feature.purpose || 'Development';
+        
+        if (breakdown[category]) {
+          breakdown[category] += cost;
+        } else {
+          breakdown[category] = cost;
+        }
+        
+        return breakdown;
+      }, {} as CostBreakdown);
+
+      // Generate timeline phases based on feature complexity
+      const generateTimelinePhases = (): TimelinePhase[] => {
+        const phases: TimelinePhase[] = [];
+        
+        // Always start with Design phase
+        phases.push({
+          phase: "Phase 1: Design & Planning",
+          duration: "Weeks 1-2",
+          description: "UI/UX design, wireframing, and technical architecture planning"
+        });
+
+        // Core Development phase
+        phases.push({
+          phase: "Phase 2: Core Development",
+          duration: totalMinTime <= 30 ? "Weeks 3-6" : "Weeks 3-8",
+          description: "Implementation of essential features and core functionality"
+        });
+
+        // Enhancement phase (if enhancement features are selected)
+        const hasEnhancements = selectedFeatures.some(f => f.id.includes('enhancement'));
+        if (hasEnhancements) {
+          phases.push({
+            phase: "Phase 3: Advanced Features",
+            duration: totalMinTime <= 30 ? "Weeks 7-8" : "Weeks 9-10",
+            description: "Implementation of enhancement features and integrations"
+          });
+        }
+
+        // Testing and Deployment
+        phases.push({
+          phase: `Phase ${hasEnhancements ? '4' : '3'}: Testing & Deployment`,
+          duration: totalMinTime <= 30 ? "Weeks 9-10" : "Weeks 11-12",
+          description: "Quality assurance, bug fixes, and platform deployment"
+        });
+
+        return phases;
+      };
+
+      // Generate AI insights
+      const marketComparison = `For an app with ${selectedFeatures.length} features, typical market estimates range from $${Math.round(totalCost * 0.8).toLocaleString()} to $${Math.round(totalCost * 1.3).toLocaleString()}. Your estimate represents excellent value for the comprehensive feature set.`;
+      
+      const complexityLevel = totalCost > 15000 ? 'High' : totalCost > 8000 ? 'Medium' : 'Low';
+      const complexityAnalysis = `This project has ${complexityLevel.toLowerCase()} technical complexity. ${
+        complexityLevel === 'High' 
+          ? 'The combination of advanced features requires sophisticated architecture and experienced developers.' 
+          : complexityLevel === 'Medium'
+          ? 'The feature set requires solid development expertise with moderate architectural considerations.'
+          : 'The straightforward feature set allows for efficient development with standard practices.'
+      }`;
+
       // Generate detailed report
       const detailedReport: DetailedReport = {
         appOverview: aiAnalysisResult?.appOverview || '',
         selectedFeatures,
         totalCost: `$${totalCost.toLocaleString()}`,
-        totalTime: timeDisplay
+        totalTime: timeDisplay,
+        costBreakdown,
+        timelinePhases: generateTimelinePhases(),
+        marketComparison,
+        complexityAnalysis
       };
       
       setDetailedReport(detailedReport);
+
+      // Update user document with feature selection and basic report
+      if (userDocumentId) {
+        try {
+          const userDocRef = doc(db, 'users', userDocumentId);
+          await updateDoc(userDocRef, {
+            selectedFeatures,
+            basicReport: detailedReport,
+            totalCost: `$${totalCost.toLocaleString()}`,
+            totalTime: timeDisplay,
+            costBreakdown,
+            timelinePhases: generateTimelinePhases(),
+            status: 'report-generated',
+            updatedAt: serverTimestamp()
+          });
+          console.log('User document updated with feature selection and complete report data');
+        } catch (error) {
+          console.error('Error updating user document with features:', error);
+        }
+      }
+
       setStep(4);
       
       // Reference to track if the auto download process is completed
@@ -809,6 +1029,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
           {step === 4 && detailedReport && (
             <DetailedReportStep 
               report={detailedReport}
+              userInfo={personalDetails}
               onBack={handleBack}
               onClose={onClose}
               isGeneratingServerReport={isProcessing}

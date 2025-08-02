@@ -157,7 +157,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
           </button>
           <button
             type="submit"
-            className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center ${
+            className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-bronze-500 hover:bg-bronze-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${
               isSubmitting ? 'opacity-70 cursor-wait' : ''
             }`}
             disabled={isSubmitting}

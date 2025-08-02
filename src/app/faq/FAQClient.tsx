@@ -226,7 +226,7 @@ export default function FAQClient() {
   // Render with a key based on language to force complete re-render when language changes
   return (
     <div key={`faq-container-${language}-${forceUpdate}`}>
-      <main dir={dir} className={`min-h-screen bg-gray-50 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+      <main dir={dir} className={`min-h-screen bg-off-white ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
         <Script
           id="faq-schema"
           type="application/ld+json"
@@ -248,84 +248,44 @@ export default function FAQClient() {
         
         <Navbar />
         
-        {/* Debug language switcher */}
-        <div className="bg-gray-100 p-4 flex justify-center items-center gap-4 text-xs">
-          <span>Debug - Current: {language}</span>
-          <button
-            onClick={() => setLanguage('en')}
-            className={`px-3 py-1 rounded ${language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            {getNestedTranslation(['common', 'english'], 'English')}
-          </button>
-          <button
-            onClick={() => setLanguage('ar')}
-            className={`px-3 py-1 rounded ${language === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          >
-            {getNestedTranslation(['common', 'arabic'], 'Arabic')}
-          </button>
-          <button
-            onClick={() => {
-              document.documentElement.dir = dir;
-              document.documentElement.lang = language;
-              console.log('Manual DOM update: dir=', dir, 'lang=', language);
-            }}
-            className="px-3 py-1 rounded bg-yellow-500 text-white"
-          >
-            Force DOM Update
-          </button>
-          <button
-            onClick={() => {
-              refreshTranslations();
-              setTimeout(() => setForceUpdate(prev => prev + 1), 50);
-              console.log('Manual translations refresh');
-            }}
-            className="px-3 py-1 rounded bg-green-500 text-white"
-          >
-            Refresh Translations
-          </button>
-          <button
-            onClick={() => {
-              resetLanguageContext();
-              console.log('Reset language context');
-            }}
-            className="px-3 py-1 rounded bg-red-500 text-white"
-          >
-            Reset Context
-          </button>
+        {/* Header Section */}
+        <div className="bg-off-white py-20 border-b border-slate-blue-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-blue-600 pt-8">
+              {getNestedTranslation(['faq', 'title'], "Frequently Asked Questions")}
+            </h1>
+            <p className="text-xl text-slate-blue-500 max-w-3xl mx-auto">
+              {getNestedTranslation(['faq', 'subtitle'], "Get answers to common questions about our services, processes, and expertise.")}
+            </p>
+          </div>
         </div>
         
         <div className="container mx-auto px-4 py-16">
-          <h1 className="text-4xl font-bold text-center mb-12">
-            {getNestedTranslation(['faq', 'title'], "Frequently Asked Questions")}
-          </h1>
-          <p className="text-lg text-center mb-16 max-w-3xl mx-auto">
-            {getNestedTranslation(['faq', 'subtitle'], "Get answers to common questions about our services, processes, and expertise.")}
-          </p>
           
           <div className={`max-w-4xl mx-auto ${dir === 'rtl' ? 'rtl-content' : ''}`}>
             {faqCategories.map((category, categoryIndex) => (
               <div key={`category-${categoryIndex}-${language}-${forceUpdate}`} className="mb-12">
-                <h2 className="text-2xl font-bold mb-6 text-blue-800">{category.title}</h2>
+                <h2 className="text-2xl font-bold mb-6 text-slate-blue-600">{category.title}</h2>
                 {category.faqs.map((faq, faqIndex) => (
-                  <div key={`faq-${categoryIndex}-${faqIndex}-${language}-${forceUpdate}`} className="mb-6 bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-xl font-semibold mb-3 text-gray-800">{faq.question}</h3>
-                    <p className="text-gray-700">{faq.answer}</p>
+                  <div key={`faq-${categoryIndex}-${faqIndex}-${language}-${forceUpdate}`} className="mb-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-slate-blue-100">
+                    <h3 className="text-xl font-semibold mb-3 text-slate-blue-600">{faq.question}</h3>
+                    <p className="text-slate-blue-500">{faq.answer}</p>
                   </div>
                 ))}
               </div>
             ))}
           </div>
           
-          <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold mb-4">
+          <div className="mt-16 text-center bg-white rounded-2xl p-8 shadow-lg border border-slate-blue-100">
+            <h2 className="text-2xl font-bold mb-4 text-slate-blue-600">
               {getNestedTranslation(['faq', 'cta', 'title'], "Still have questions?")}
             </h2>
-            <p className="mb-6">
+            <p className="mb-6 text-slate-blue-500">
               {getNestedTranslation(['faq', 'cta', 'description'], "Our team is ready to help you with any specific questions about your project.")}
             </p>
             <button 
               onClick={() => openContactWithSubject('Question from FAQ Page')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition duration-300"
+              className="bg-bronze-500 hover:bg-bronze-600 text-white font-medium py-3 px-8 rounded-lg transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               {getNestedTranslation(['contact', 'cta'], "Contact Us")}
             </button>

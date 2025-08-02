@@ -150,7 +150,7 @@ html[lang="ar"] .text-base {
   left: 0;
   right: 0;
   height: 100px;
-  background: linear-gradient(to bottom, rgba(30, 64, 175, 0), rgba(249, 250, 251, 1));
+  background: linear-gradient(to bottom, rgba(53, 70, 93, 0), rgba(244, 244, 242, 1));
   z-index: 5;
 }
 
@@ -268,41 +268,64 @@ html[lang="ar"] .text-base {
 }
 
 :root {
-  /* Primary Colors - Blue */
-  --primary-50: #EFF6FF;
-  --primary-100: #DBEAFE;
-  --primary-200: #BFDBFE;
-  --primary-300: #93C5FD;
-  --primary-400: #60A5FA;
-  --primary-500: #3B82F6;
-  --primary-600: #2563EB;
-  --primary-700: #1D4ED8;
-  --primary-800: #1E40AF;
-  --primary-900: #1E3A8A;
+  /* New Brand Colors - Slate Blue */
+  --slate-blue-50: #f1f3f6;
+  --slate-blue-100: #e1e6ec;
+  --slate-blue-200: #c6cfdc;
+  --slate-blue-300: #9fb0c4;
+  --slate-blue-400: #708aa6;
+  --slate-blue-500: #556b8b;
+  --slate-blue-600: #35465d;
+  --slate-blue-700: #2d3a4d;
+  --slate-blue-800: #283041;
+  --slate-blue-900: #252a37;
 
-  /* Secondary Colors - Cyan */
-  --secondary-50: #ECFEFF;
-  --secondary-100: #CFFAFE;
-  --secondary-200: #A5F3FC;
-  --secondary-300: #67E8F9;
-  --secondary-400: #22D3EE;
-  --secondary-500: #06B6D4;
-  --secondary-600: #0891B2;
-  --secondary-700: #0E7490;
-  --secondary-800: #155E75;
-  --secondary-900: #164E63;
+  /* Bronze Colors */
+  --bronze-50: #faf8f6;
+  --bronze-100: #f4f0ec;
+  --bronze-200: #e8ddd6;
+  --bronze-300: #d8c4b5;
+  --bronze-400: #c5a28e;
+  --bronze-500: #c08460;
+  --bronze-600: #a6714e;
+  --bronze-700: #8a5d42;
+  --bronze-800: #724e39;
+  --bronze-900: #5e4131;
 
-  /* Neutral Colors */
-  --neutral-50: #F8FAFC;
-  --neutral-100: #F1F5F9;
-  --neutral-200: #E2E8F0;
-  --neutral-300: #CBD5E1;
-  --neutral-400: #94A3B8;
-  --neutral-500: #64748B;
+  /* Update existing variables to new brand colors */
+  --primary-50: var(--slate-blue-50);
+  --primary-100: var(--slate-blue-100);
+  --primary-200: var(--slate-blue-200);
+  --primary-300: var(--slate-blue-300);
+  --primary-400: var(--slate-blue-400);
+  --primary-500: var(--slate-blue-500);
+  --primary-600: var(--slate-blue-600);
+  --primary-700: var(--slate-blue-700);
+  --primary-800: var(--slate-blue-800);
+  --primary-900: var(--slate-blue-900);
+
+  --secondary-50: var(--bronze-50);
+  --secondary-100: var(--bronze-100);
+  --secondary-200: var(--bronze-200);
+  --secondary-300: var(--bronze-300);
+  --secondary-400: var(--bronze-400);
+  --secondary-500: var(--bronze-500);
+  --secondary-600: var(--bronze-600);
+  --secondary-700: var(--bronze-700);
+  --secondary-800: var(--bronze-800);
+  --secondary-900: var(--bronze-900);
+
+  /* Neutral Colors - keeping existing but updating body background */
+  --neutral-50: #f4f4f2; /* off-white */
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
   --neutral-600: #475569;
   --neutral-700: #334155;
-  --neutral-800: #1E293B;
-  --neutral-900: #0F172A;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
 }
 
 @layer base {
@@ -312,11 +335,15 @@ html[lang="ar"] .text-base {
   }
 
   body {
-    @apply bg-white text-neutral-800 antialiased;
+    @apply bg-off-white text-slate-blue-800 antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
+    @apply font-bold tracking-tight text-slate-blue-600;
+  }
+
+  a {
+    @apply text-bronze-500 hover:text-bronze-600 transition-colors;
   }
 }
 
@@ -333,18 +360,16 @@ html[lang="ar"] .text-base {
 
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-lg font-semibold text-white 
-           bg-gradient-to-r from-secondary-500 via-secondary-400 to-secondary-500
-           hover:from-secondary-600 hover:via-secondary-500 hover:to-secondary-600
+           bg-bronze-500 hover:bg-bronze-600
            transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]
-           shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2
+           shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-bronze-500 focus:ring-offset-2
            px-8 py-4 text-lg;
   }
 
   .btn-primary.btn-prominent {
     @apply text-xl sm:text-2xl px-10 sm:px-12 py-5 sm:py-6 
            shadow-xl hover:shadow-2xl hover:scale-105
-           bg-gradient-to-r from-secondary-400 to-secondary-500 
-           hover:from-secondary-500 hover:to-secondary-600;
+           bg-bronze-500 hover:bg-bronze-600;
   }
 
   .btn-wizard {
@@ -352,10 +377,11 @@ html[lang="ar"] .text-base {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg font-semibold text-white 
-           bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 
+    @apply inline-flex items-center justify-center rounded-lg font-semibold
+           text-slate-blue-600 bg-transparent border-2 border-slate-blue-600
+           hover:bg-slate-blue-600 hover:text-white
            transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]
-           shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30 focus:ring-offset-2
+           shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-slate-blue-500 focus:ring-offset-2
            px-8 py-4 text-lg;
   }
 
@@ -364,7 +390,7 @@ html[lang="ar"] .text-base {
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold;
+    @apply text-3xl md:text-4xl font-bold text-slate-blue-600;
   }
 
   .card {
@@ -383,11 +409,11 @@ html[lang="ar"] .text-base {
 
   .heading-lg {
     @apply text-4xl md:text-5xl font-bold bg-clip-text text-transparent 
-           bg-gradient-to-r from-primary-600 to-primary-800;
+           bg-gradient-to-r from-slate-blue-600 to-slate-blue-800;
   }
 
   .heading-md {
-    @apply text-2xl font-bold text-primary-900;
+    @apply text-2xl font-bold text-slate-blue-600;
   }
 
   .section-padding {
@@ -400,7 +426,7 @@ html[lang="ar"] .text-base {
 
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r 
-           from-primary-600 to-secondary-500;
+           from-slate-blue-600 to-bronze-500;
   }
 }
 
@@ -477,11 +503,11 @@ html[lang="ar"] .text-base {
 
 /* Gradient Backgrounds */
 .bg-gradient-primary {
-  @apply bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700;
+  @apply bg-gradient-to-br from-slate-blue-600 via-slate-blue-700 to-slate-blue-800;
 }
 
 .bg-gradient-secondary {
-  @apply bg-gradient-to-br from-secondary-500 via-secondary-600 to-secondary-700;
+  @apply bg-gradient-to-br from-bronze-500 via-bronze-600 to-bronze-700;
 }
 
 /* Glass Effect */
@@ -548,23 +574,23 @@ html[lang="ar"] .text-base {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  @apply bg-neutral-100;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary-200 rounded-full hover:bg-primary-300
-         border-4 border-solid border-gray-100;
+  @apply bg-bronze-200 rounded-full hover:bg-bronze-300
+         border-4 border-solid border-neutral-100;
 }
 
 /* Focus Styles */
 :focus-visible {
-  @apply outline-none ring-2 ring-secondary-500 ring-offset-2;
+  @apply outline-none ring-2 ring-bronze-500 ring-offset-2;
 }
 
 /* Selection Color */
 ::selection {
-  background-color: rgba(6, 182, 212, 0.2); /* secondary-500 with 0.2 opacity */
-  color: var(--secondary-900);
+  background-color: rgba(192, 132, 96, 0.2); /* bronze-500 with 0.2 opacity */
+  color: var(--bronze-900);
 }
 
 /* Aspect Ratio */
@@ -611,7 +637,7 @@ html[lang="ar"] .text-base {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(30, 58, 138, 0.3), rgba(30, 58, 138, 0.1));
+  background: linear-gradient(to bottom, rgba(53, 70, 93, 0.3), rgba(53, 70, 93, 0.1));
   backdrop-filter: blur(20px);
   z-index: -1;
 }

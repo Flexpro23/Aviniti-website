@@ -11,8 +11,8 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/ge
 // Get the API key from environment variables if available
 export const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 
-// Update the model options for more flexibility
-export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-1.5-flash';
+// Update the model options for more flexibility - using faster gemini-2.5-flash
+export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
 
 // Initialize the Google Generative AI with your API key
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -498,4 +498,159 @@ export const testGeminiApiConnection = async (): Promise<{ success: boolean; mes
       message: `API connection failed: ${errorMessage}`,
     };
   }
-}; 
+};
+
+/**
+ * Enhanced function to generate executive dashboard data using Gemini AI
+ * @param appDescription - The user's app description
+ * @param selectedFeatures - Array of selected features
+ * @param totalCost - Calculated total cost
+ * @param totalMinTime - Minimum development time
+ * @param totalMaxTime - Maximum development time
+ * @returns Promise with comprehensive dashboard data
+ */
+export const generateExecutiveDashboard = async (
+  appDescription: string,
+  selectedFeatures: any[],
+  totalCost: number,
+  totalMinTime: number,
+  totalMaxTime: number
+): Promise<any> => {
+  try {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === '') {
+      console.warn('No Gemini API key - using fallback data for executive dashboard');
+      return generateFallbackDashboard(appDescription, selectedFeatures, totalCost, totalMinTime, totalMaxTime);
+    }
+
+    const featureList = selectedFeatures.map(f => `- ${f.name}: ${f.description} (${f.costEstimate})`).join('\n');
+    
+    const prompt = `
+      As a senior technology consultant and venture strategist, create a comprehensive executive dashboard analysis for this app development project.
+      
+      App Description: "${appDescription}"
+      
+      Selected Features:
+      ${featureList}
+      
+      Total Cost: $${totalCost.toLocaleString()}
+      Development Time: ${totalMinTime}-${totalMaxTime} days
+      
+      Please provide a JSON response with the following structure:
+      {
+        "appOverview": "A strategic 2-3 sentence summary focusing on business value and market positioning",
+        "successPotentialScores": {
+          "innovation": [1-10 score],
+          "marketViability": [1-10 score], 
+          "monetization": [1-10 score],
+          "technicalFeasibility": [1-10 score]
+        },
+        "strategicAnalysis": {
+          "strengths": "2-3 sentences highlighting key competitive advantages",
+          "challenges": "2-3 sentences identifying main risks and mitigation strategies", 
+          "recommendedMonetization": "2-3 sentences with specific revenue model recommendations"
+        },
+        "costBreakdown": {
+          "UI/UX Design": [dollar amount],
+          "Core Development": [dollar amount],
+          "Quality Assurance": [dollar amount],
+          "Infrastructure & Deployment": [dollar amount],
+          "Project Management": [dollar amount]
+        },
+        "timelinePhases": [
+          {
+            "phase": "Discovery & Design",
+            "duration": "Weeks 1-2", 
+            "description": "User research, wireframing, and UI/UX design"
+          },
+          {
+            "phase": "Core Development",
+            "duration": "Weeks 3-6",
+            "description": "Feature implementation and backend development"  
+          },
+          {
+            "phase": "Testing & Launch",
+            "duration": "Weeks 7-8",
+            "description": "Quality assurance, deployment, and market launch"
+          }
+        ],
+        "marketComparison": "2-3 sentences comparing this solution to existing market alternatives",
+        "complexityAnalysis": "2-3 sentences assessing technical complexity and development risks"
+      }
+
+      Ensure all dollar amounts in costBreakdown sum to approximately $${totalCost}.
+      Base success scores on real market analysis principles.
+      Provide actionable strategic insights suitable for C-level executives.
+    `;
+
+    console.log('Generating executive dashboard with Gemini...');
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    // Extract JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('No valid JSON found in Gemini response, using fallback');
+      return generateFallbackDashboard(appDescription, selectedFeatures, totalCost, totalMinTime, totalMaxTime);
+    }
+
+    const dashboardData = JSON.parse(jsonMatch[0]);
+    console.log('Successfully generated executive dashboard data');
+    return dashboardData;
+
+  } catch (error) {
+    console.error('Error generating executive dashboard:', error);
+    return generateFallbackDashboard(appDescription, selectedFeatures, totalCost, totalMinTime, totalMaxTime);
+  }
+};
+
+/**
+ * Fallback function for executive dashboard when Gemini API is unavailable
+ */
+function generateFallbackDashboard(
+  appDescription: string,
+  selectedFeatures: any[],
+  totalCost: number,
+  totalMinTime: number,
+  totalMaxTime: number
+): any {
+  return {
+    appOverview: `Strategic mobile application focusing on ${appDescription.substring(0, 50)}... This solution addresses key market needs with modern technology stack and user-centric design.`,
+    successPotentialScores: {
+      innovation: 7,
+      marketViability: 8,
+      monetization: 7,
+      technicalFeasibility: 8
+    },
+    strategicAnalysis: {
+      strengths: "Strong feature set with proven market demand. Modern technology choices ensure scalability and maintainability for long-term success.",
+      challenges: "Competitive market requires differentiated positioning. User acquisition costs and retention strategies will be critical for sustainable growth.",
+      recommendedMonetization: "Freemium model recommended with core features free and premium tiers for advanced functionality. Consider subscription model for recurring revenue."
+    },
+    costBreakdown: {
+      "UI/UX Design": Math.round(totalCost * 0.2),
+      "Core Development": Math.round(totalCost * 0.45),
+      "Quality Assurance": Math.round(totalCost * 0.15),
+      "Infrastructure & Deployment": Math.round(totalCost * 0.1),
+      "Project Management": Math.round(totalCost * 0.1)
+    },
+    timelinePhases: [
+      {
+        phase: "Discovery & Design",
+        duration: "Weeks 1-2",
+        description: "User research, competitive analysis, wireframing, and UI/UX design"
+      },
+      {
+        phase: "Core Development", 
+        duration: `Weeks 3-${Math.ceil(totalMinTime / 7) + 2}`,
+        description: "Feature implementation, backend development, and API integration"
+      },
+      {
+        phase: "Testing & Launch",
+        duration: "Final 1-2 weeks", 
+        description: "Quality assurance, performance optimization, and market deployment"
+      }
+    ],
+    marketComparison: "Competitively positioned with modern features and technology stack. Differentiation through user experience and specific feature combinations provides market advantage.",
+    complexityAnalysis: `${totalCost > 15000 ? 'High' : totalCost > 8000 ? 'Medium' : 'Low'} complexity project requiring ${selectedFeatures.length > 8 ? 'experienced' : 'intermediate'} development expertise. Technical risks are manageable with proper architecture and testing.`
+  };
+} 

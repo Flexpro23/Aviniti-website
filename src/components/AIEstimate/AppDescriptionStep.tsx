@@ -1,22 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { AppDescription } from './AIEstimateModal';
 import { testGeminiApiConnection } from '@/lib/services/GeminiService';
+import InlineAnalysisDisplay from './InlineAnalysisDisplay';
 
 interface AppDescriptionStepProps {
-  onSubmit: (data: AppDescription) => void;
+  onSubmit: (data: AppDescription & { keywords: string[] }) => void;
   onBack: () => void;
   isProcessing: boolean;
   initialData: AppDescription;
+  onKeywordsChange?: (keywords: string[]) => void;
 }
 
 export default function AppDescriptionStep({ 
   onSubmit, 
   onBack, 
   isProcessing,
-  initialData 
+  initialData,
+  onKeywordsChange
 }: AppDescriptionStepProps) {
   const { t, language } = useLanguage();
   const [description, setDescription] = useState(initialData.description);
@@ -27,6 +30,12 @@ export default function AppDescriptionStep({
     working: false,
     message: ''
   });
+
+  // New state for Phase 1 enhancements
+  const [keywords, setKeywords] = useState<string[]>([]);
+  const [isAnalyzingKeywords, setIsAnalyzingKeywords] = useState(false);
+  const [inlineAnalysis, setInlineAnalysis] = useState<any>(null);
+  const [isInlineAnalyzing, setIsInlineAnalyzing] = useState(false);
 
   // Platform options
   const platformOptions = [
@@ -45,6 +54,74 @@ export default function AppDescriptionStep({
   
   // State to track which thinking message to display
   const [thinkingIndex, setThinkingIndex] = useState(0);
+  
+  // Debounced keyword analysis
+  const analyzeKeywords = useCallback(async (text: string) => {
+    if (text.length < 10) {
+      setKeywords([]);
+      return;
+    }
+
+    setIsAnalyzingKeywords(true);
+    try {
+      const response = await fetch('/api/analyze-keywords', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: text }),
+      });
+      const data = await response.json();
+      const newKeywords = data.keywords || [];
+      setKeywords(newKeywords);
+      if (onKeywordsChange) {
+        onKeywordsChange(newKeywords);
+      }
+    } catch (error) {
+      console.error('Keyword analysis failed:', error);
+      setKeywords([]);
+    } finally {
+      setIsAnalyzingKeywords(false);
+    }
+  }, []);
+
+  // Automatic app idea analysis
+  const analyzeAppIdea = useCallback(async (text: string) => {
+    if (text.length < 60) return;
+
+    setIsInlineAnalyzing(true);
+    try {
+      const response = await fetch('/api/analyze-idea', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ideaDescription: text }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setInlineAnalysis(data);
+      }
+    } catch (error) {
+      console.error('App idea analysis failed:', error);
+    } finally {
+      setIsInlineAnalyzing(false);
+    }
+  }, []);
+
+  // Debounced effect for keyword analysis
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      analyzeKeywords(description);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [description, analyzeKeywords]);
+
+  // Debounced effect for app idea analysis
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      analyzeAppIdea(description);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [description, analyzeAppIdea]);
   
   // Check if the Gemini API is working
   useEffect(() => {
@@ -104,7 +181,7 @@ export default function AppDescriptionStep({
 
     setError('');
     setThinkingIndex(0); // Reset thinking index before processing
-    onSubmit({ description, selectedPlatforms });
+    onSubmit({ description, selectedPlatforms, keywords });
   };
 
   return (
@@ -169,23 +246,60 @@ export default function AppDescriptionStep({
             <label htmlFor="appDescription" className="block text-sm font-medium text-gray-700 mb-2">
               {t.aiEstimate.steps.appDescription.description} <span className="text-red-500">*</span>
             </label>
-            <textarea
-              id="appDescription"
-              rows={8}
-              className={`w-full px-4 py-3 text-sm sm:text-base rounded-lg border ${
-                error ? 'border-red-500' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-              placeholder={t.aiEstimate.steps.appDescription.placeholder}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              disabled={isProcessing}
-            ></textarea>
+            <div className="relative">
+              <textarea
+                id="appDescription"
+                rows={8}
+                className={`w-full px-4 py-3 text-sm sm:text-base rounded-lg border ${
+                  error ? 'border-red-500' : 'border-gray-300'
+                } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                placeholder={t.aiEstimate.steps.appDescription.placeholder}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={isProcessing}
+              ></textarea>
+              
+              {/* Keywords Display */}
+              {keywords.length > 0 && (
+                <div className="mt-3 p-3 bg-bronze-50 rounded-lg border border-bronze-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-4 h-4 text-bronze-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-sm font-medium text-bronze-700">
+                      AI Detected Keywords
+                      {isAnalyzingKeywords && (
+                        <span className="ml-2 animate-pulse">...</span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {keywords.map((keyword, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-bronze-200 text-bronze-800"
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
             {error && (
               <p className="mt-1 text-sm text-red-500">{error}</p>
             )}
-            <p className="mt-2 text-sm text-gray-500">
-              {`${description.length} ${t.aiEstimate.steps.appDescription.charactersCount}`}
-            </p>
+            <div className="flex justify-between items-center mt-2">
+              <p className="text-sm text-gray-500">
+                {`${description.length} ${t.aiEstimate.steps.appDescription.charactersCount}`}
+              </p>
+              {description.length >= 60 && !inlineAnalysis && isInlineAnalyzing && (
+                <span className="text-sm text-blue-600 animate-pulse">
+                  Analyzing your idea...
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Platform Selection */}
@@ -228,11 +342,19 @@ export default function AppDescriptionStep({
             </div>
           </div>
 
+          {/* Inline Analysis Display */}
+          {inlineAnalysis && (
+            <InlineAnalysisDisplay 
+              result={inlineAnalysis} 
+              className="animate-in slide-in-from-bottom duration-500"
+            />
+          )}
+
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={onBack}
-              className="w-full sm:w-auto px-6 py-2 text-sm sm:text-base border border-gray-300 hover:border-gray-400 bg-white text-gray-700 hover:text-gray-900 rounded-lg transition-all duration-200 flex items-center justify-center"
+              className="w-full sm:w-auto px-6 py-2 text-sm sm:text-base border border-gray-300 hover:border-gray-400 bg-white text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 flex items-center justify-center"
               disabled={isProcessing}
             >
               <svg className={`w-5 h-5 ${language === 'ar' ? '' : 'mr-2'} ${language === 'ar' ? 'ml-2 transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,7 +364,7 @@ export default function AppDescriptionStep({
             </button>
             <button
               type="submit"
-              className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center ${
+              className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-bronze-500 hover:bg-bronze-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${
                 isProcessing ? 'opacity-70 cursor-wait' : ''
               }`}
               disabled={isProcessing}
