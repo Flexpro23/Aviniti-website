@@ -176,15 +176,19 @@ export default function AIEstimatePage() {
       
       // 🔥 NEW: Save app description to Firebase BEFORE AI analysis
       try {
-        console.log('💾 Saving app description to Firebase...');
-        const userDocRef = doc(db, 'users', personalDetails.emailAddress);
-        await updateDoc(userDocRef, {
-          appDescription: description.description,
-          selectedPlatforms: description.selectedPlatforms,
-          status: 'pending-features',
-          updatedAt: serverTimestamp()
-        });
-        console.log('✅ App description saved to Firebase successfully');
+        if (db) {
+          console.log('💾 Saving app description to Firebase...');
+          const userDocRef = doc(db, 'users', personalDetails.emailAddress);
+          await updateDoc(userDocRef, {
+            appDescription: description.description,
+            selectedPlatforms: description.selectedPlatforms,
+            status: 'pending-features',
+            updatedAt: serverTimestamp()
+          });
+          console.log('✅ App description saved to Firebase successfully');
+        } else {
+          console.warn('⚠️ Firebase not initialized, skipping app description save');
+        }
       } catch (dbError) {
         console.error('❌ Failed to save app description to Firebase:', dbError);
         // Continue with AI analysis even if Firebase update fails
@@ -285,22 +289,26 @@ export default function AIEstimatePage() {
 
       // 🔥 NEW: Save selected features and report to Firebase
       try {
-        console.log('💾 Saving selected features and report to Firebase...');
-        const userDocRef = doc(db, 'users', personalDetails.emailAddress);
-        await updateDoc(userDocRef, {
-          selectedFeatures,
-          totalCost: `$${totalCost.toLocaleString()}`,
-          totalTime: totalMinTime === totalMaxTime ? `${totalMinTime} days` : `${totalMinTime}-${totalMaxTime} days`,
-          costBreakdown: dashboardReport.costBreakdown,
-          timelinePhases: dashboardReport.timelinePhases,
-          marketComparison: dashboardReport.marketComparison,
-          complexityAnalysis: dashboardReport.complexityAnalysis,
-          successPotentialScores: dashboardReport.successPotentialScores,
-          strategicAnalysis: dashboardReport.strategicAnalysis,
-          status: 'report-generated',
-          updatedAt: serverTimestamp()
-        });
-        console.log('✅ Selected features and report saved to Firebase successfully');
+        if (db) {
+          console.log('💾 Saving selected features and report to Firebase...');
+          const userDocRef = doc(db, 'users', personalDetails.emailAddress);
+          await updateDoc(userDocRef, {
+            selectedFeatures,
+            totalCost: `$${totalCost.toLocaleString()}`,
+            totalTime: totalMinTime === totalMaxTime ? `${totalMinTime} days` : `${totalMinTime}-${totalMaxTime} days`,
+            costBreakdown: dashboardReport.costBreakdown,
+            timelinePhases: dashboardReport.timelinePhases,
+            marketComparison: dashboardReport.marketComparison,
+            complexityAnalysis: dashboardReport.complexityAnalysis,
+            successPotentialScores: dashboardReport.successPotentialScores,
+            strategicAnalysis: dashboardReport.strategicAnalysis,
+            status: 'report-generated',
+            updatedAt: serverTimestamp()
+          });
+          console.log('✅ Selected features and report saved to Firebase successfully');
+        } else {
+          console.warn('⚠️ Firebase not initialized, skipping features save');
+        }
       } catch (dbError) {
         console.error('❌ Failed to save features to Firebase:', dbError);
         // Continue to next step even if Firebase update fails
