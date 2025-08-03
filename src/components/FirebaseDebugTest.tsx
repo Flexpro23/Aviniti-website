@@ -19,6 +19,11 @@ export default function FirebaseDebugTest() {
     try {
       addResult('🧪 Starting Firebase test...');
 
+      if (!db) {
+        addResult('❌ Firebase database is not initialized');
+        return;
+      }
+
       // Test 1: Create document
       addResult('📝 Step 1: Creating test document...');
       const docRef = doc(collection(db, 'users'));
@@ -50,7 +55,8 @@ export default function FirebaseDebugTest() {
       addResult('🎉 All tests passed! Firebase is working correctly.');
 
     } catch (error) {
-      addResult(`❌ Error: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      addResult(`❌ Error: ${errorMessage}`);
       console.error('Firebase test error:', error);
     } finally {
       setIsRunning(false);

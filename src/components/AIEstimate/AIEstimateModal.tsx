@@ -145,6 +145,11 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const handleCreateUserDocument = async (userInfo: PersonalDetails) => {
     console.log('🔍 DEBUG: handleCreateUserDocument called with:', userInfo);
     try {
+      if (!db) {
+        console.warn('⚠️ Firebase not initialized, skipping user document creation');
+        return null;
+      }
+      
       const docRef = doc(collection(db, 'users')); // Creates a ref with a new ID
       console.log('🔍 DEBUG: Generated document ID:', docRef.id);
       
@@ -181,6 +186,11 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       return false; // Indicate failure
     }
 
+    if (!db) {
+      console.warn('⚠️ Firebase not initialized, skipping user document update');
+      return false;
+    }
+
     try {
       console.log('🔍 DEBUG: Creating document reference...');
       const userDocRef = doc(db, 'users', userDocumentId);
@@ -204,11 +214,12 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       return true; // Indicate success
     } catch (error) {
       console.error("❌ Error updating user document: ", error);
-      console.error("❌ Error details:", {
-        message: error.message,
-        code: error.code,
-        stack: error.stack
-      });
+      if (error instanceof Error) {
+        console.error("❌ Error details:", {
+          message: error.message,
+          stack: error.stack
+        });
+      }
       return false; // Indicate failure
     }
   };
@@ -472,7 +483,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       setDetailedReport(detailedReport);
 
       // Update user document with feature selection and basic report
-      if (userDocumentId) {
+      if (userDocumentId && db) {
         try {
           const userDocRef = doc(db, 'users', userDocumentId);
           await updateDoc(userDocRef, {
