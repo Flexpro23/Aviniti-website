@@ -504,6 +504,7 @@ export default function AIEstimatePage() {
                   {step === 4 && detailedReport && (
                     <DetailedReportStep 
                       report={detailedReport}
+                      userInfo={personalDetails}
                       onBack={handleBack}
                       onClose={() => router.push('/')}
                       isGeneratingServerReport={isProcessing}
