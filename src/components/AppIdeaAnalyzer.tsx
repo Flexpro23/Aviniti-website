@@ -6,7 +6,7 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import AnalysisResults, { AnalysisData } from './AnalysisResults';
 
 export default function AppIdeaAnalyzer() {
-  const { t, dir } = useLanguage();
+  const { t, dir, language } = useLanguage();
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisData | null>(null);
@@ -25,7 +25,10 @@ export default function AppIdeaAnalyzer() {
 
   const handleSubmit = async () => {
     if (userInput.trim().length < minCharCount) {
-      setError(`Please provide at least ${minCharCount} characters for a meaningful analysis.`);
+      const errorMessage = language === 'ar' 
+        ? `يرجى تقديم ${minCharCount} حرفًا على الأقل للحصول على تحليل مفيد.`
+        : `Please provide at least ${minCharCount} characters for a meaningful analysis.`;
+      setError(errorMessage);
       return;
     }
 
@@ -36,7 +39,10 @@ export default function AppIdeaAnalyzer() {
       const response = await fetch('/api/analyze-idea', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ideaDescription: userInput.trim() }),
+        body: JSON.stringify({ 
+          ideaDescription: userInput.trim(),
+          language: language 
+        }),
       });
 
       const data = await response.json();
@@ -119,10 +125,13 @@ export default function AppIdeaAnalyzer() {
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-slate-blue-600 mb-2">
-                AI App Idea Analyzer
+                {language === 'ar' ? 'محلل أفكار التطبيقات بالذكاء الاصطناعي' : 'AI App Idea Analyzer'}
               </h3>
               <p className="text-slate-blue-500">
-                Get instant, professional insights into your app concept's potential
+                {language === 'ar' 
+                  ? 'احصل على رؤى مهنية حول مفهوم تطبيقك مع التحليل المدعوم بالذكاء الاصطناعي' 
+                  : 'Get instant, professional insights into your app concept\'s potential'
+                }
               </p>
             </div>
 
@@ -130,7 +139,7 @@ export default function AppIdeaAnalyzer() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="app-idea" className="block text-sm font-semibold text-slate-blue-600 mb-2">
-                  Describe your app idea in detail
+                  {t.services.appIdeaAnalyzer.placeholder.split('.')[0]}
                 </label>
                 <div className="relative">
                   <textarea
@@ -138,7 +147,7 @@ export default function AppIdeaAnalyzer() {
                     rows={6}
                     value={userInput}
                     onChange={handleInputChange}
-                    placeholder="Example: I want to create a fitness app that uses AI to create personalized workout plans based on user's physical condition, available equipment, and fitness goals. Users can track their progress, get real-time form corrections using computer vision, and connect with virtual trainers for live sessions..."
+                    placeholder={t.services.appIdeaAnalyzer.placeholder}
                     className={`w-full px-4 py-3 border-2 border-slate-blue-200 rounded-xl focus:border-bronze-400 focus:ring-0 transition-colors duration-300 resize-none ${
                       error ? 'border-red-400 focus:border-red-400' : ''
                     }`}
@@ -154,11 +163,11 @@ export default function AppIdeaAnalyzer() {
                         ? 'text-amber-500' 
                         : 'text-slate-blue-400'
                     }`}>
-                      {charCount}/{maxCharCount}
+                      {charCount}/{maxCharCount} {t.services.appIdeaAnalyzer.charactersCount}
                     </span>
                     {charCount < minCharCount && (
                       <span className="text-red-500 ml-1">
-                        (min: {minCharCount})
+                        ({language === 'ar' ? `الحد الأدنى: ${minCharCount}` : `min: ${minCharCount}`})
                       </span>
                     )}
                   </div>
@@ -195,7 +204,7 @@ export default function AppIdeaAnalyzer() {
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
                   </svg>
-                  Analyze My Idea
+                  {t.services.appIdeaAnalyzer.analyzeButton}
                 </span>
               </button>
             </div>
@@ -225,15 +234,23 @@ export default function AppIdeaAnalyzer() {
               transition={{ delay: 0.5 }}
             >
               <h3 className="text-xl font-semibold text-slate-blue-600 mb-4">
-                AI is Analyzing Your Idea...
+                {t.services.appIdeaAnalyzer.analyzing}
               </h3>
               <div className="space-y-2 max-w-md mx-auto">
-                {[
-                  'Assessing Market Viability...',
-                  'Evaluating Innovation Potential...',
-                  'Analyzing Monetization Opportunities...',
-                  'Determining Technical Feasibility...'
-                ].map((text, index) => (
+                {(language === 'ar' 
+                  ? [
+                      'تقييم جدوى السوق...',
+                      'تقييم إمكانات الابتكار...',
+                      'تحليل فرص تحقيق الدخل...',
+                      'تحديد الجدوى التقنية...'
+                    ]
+                  : [
+                      'Assessing Market Viability...',
+                      'Evaluating Innovation Potential...',
+                      'Analyzing Monetization Opportunities...',
+                      'Determining Technical Feasibility...'
+                    ]
+                ).map((text, index) => (
                   <motion.p
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -259,13 +276,13 @@ export default function AppIdeaAnalyzer() {
           >
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-slate-blue-600">
-                Analysis Complete
+                {language === 'ar' ? 'اكتمل التحليل' : 'Analysis Complete'}
               </h3>
               <button
                 onClick={resetAnalyzer}
                 className="px-4 py-2 text-sm text-bronze-600 hover:text-bronze-700 border border-bronze-300 hover:border-bronze-400 rounded-lg transition-colors duration-300"
               >
-                Analyze Another Idea
+                {t.services.appIdeaAnalyzer.resetButton}
               </button>
             </div>
             <AnalysisResults data={analysisResult} ideaDescription={userInput} />

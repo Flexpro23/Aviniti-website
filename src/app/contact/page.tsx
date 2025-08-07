@@ -115,7 +115,7 @@ export default function ContactPage() {
       {/* Hero Section */}
       <div className="bg-off-white py-20 border-b border-slate-blue-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-blue-600 pt-8">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-blue-600 pt-12">
             Contact Us
           </h1>
           <p className="text-xl text-slate-blue-500 max-w-3xl mx-auto pt-8">

@@ -47,6 +47,10 @@ export default function DetailedReportStep({
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(initialDownloadSuccess);
   
+  // New state for proactive background generation
+  const [isGeneratingInBackground, setIsGeneratingInBackground] = useState(false);
+  const [serverReportUrl, setServerReportUrl] = useState<string | null>(null);
+  
   // Set downloadSuccess when initialDownloadSuccess changes
   useEffect(() => {
     if (initialDownloadSuccess) {
@@ -59,6 +63,34 @@ export default function DetailedReportStep({
     }
   }, [initialDownloadSuccess]);
 
+  // Proactive PDF generation on component mount
+  useEffect(() => {
+    const proactivelyGenerateReport = async () => {
+      console.log('Starting proactive PDF generation in background...');
+      setIsGeneratingInBackground(true);
+      
+      try {
+        const url = await generateAndUploadPdf();
+        if (url) {
+          setServerReportUrl(url); // Save the Firebase Storage URL on success
+          console.log('Background PDF generation completed successfully:', url);
+        } else {
+          console.log('Background PDF generation failed, will fall back to on-demand generation');
+        }
+      } catch (error) {
+        console.error('Error in proactive PDF generation:', error);
+      } finally {
+        setIsGeneratingInBackground(false);
+      }
+    };
+
+    // Only run proactive generation if onUploadPdf function is available
+    // and we don't already have a server report URL
+    if (onUploadPdf && !serverReportUrl && !isGeneratingInBackground) {
+      proactivelyGenerateReport();
+    }
+  }, []); // Empty dependency array means it runs once on mount
+
   // For time display, make sure it's clear we're showing days or months
   const getTimeLabel = (time: string) => {
     // Time will already be formatted as "X days" or "X-Y months" from AIEstimateModal
@@ -66,11 +98,9 @@ export default function DetailedReportStep({
     return time.replace('weeks', 'days');
   };
 
-  // Function to generate and download PDF - World-Class Page-by-Page Approach
-  const handleDownloadReport = async () => {
-    if (!pdfRef.current || isGeneratingPDF) return;
-    
-    setIsGeneratingPDF(true);
+  // Reusable function to generate and upload PDF (for background and on-demand generation)
+  const generateAndUploadPdf = async (): Promise<string | null> => {
+    if (!pdfRef.current) return null;
     
     try {
       console.log('Starting pixel-perfect PDF generation...');
@@ -101,16 +131,17 @@ export default function DetailedReportStep({
         
         console.log(`Rendering page ${i + 1}/${pages.length}...`);
         
-        // Capture each page as its own canvas
+        // Capture each page as its own canvas with optimized settings
         const canvas = await html2canvas(page, {
-          scale: 2, // Use a high scale for crisp quality
+          scale: 1.5, // Reduced from 2 to 1.5 for smaller file size while maintaining quality
           useCORS: true,
           logging: false,
           backgroundColor: '#ffffff',
           allowTaint: true,
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        // Use JPEG with compression instead of PNG for much smaller file size
+        const imgData = canvas.toDataURL('image/jpeg', 0.85); // 85% quality JPEG
         
         // Calculate the aspect ratio to fit the A4 page width perfectly
         const aspectRatio = canvas.height / canvas.width;
@@ -122,52 +153,120 @@ export default function DetailedReportStep({
         }
 
         // Add the captured page image to the current PDF page
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
         
         console.log(`Page ${i + 1} rendered successfully`);
       }
 
-      // Generate dynamic filename based on user's name
-      const userName = userInfo?.fullName
-        ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
-        : 'User';
-      const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
+      console.log('PDF generation complete, preparing for upload...');
       
-      console.log('PDF generation complete, saving...');
-      
-      // Get the PDF as a blob for upload if needed
+      // Get the PDF as a blob for upload
       const pdfBlob = pdf.output('blob');
       
-      // If onUploadPdf is provided, upload the PDF first
+      // If onUploadPdf is provided, upload the PDF and return the URL
       if (onUploadPdf) {
         try {
-          console.log('Uploading PDF...');
+          console.log('Uploading PDF to server...');
           const downloadUrl = await onUploadPdf(pdfBlob);
           console.log('PDF uploaded successfully:', downloadUrl);
-          
-          // Save the PDF locally after successful upload with dynamic filename
-          pdf.save(fileName);
-          
-          // Show success message using state instead of alert
-          setDownloadSuccess(true);
-          
-          // Automatically hide the success message after 5 seconds
-          setTimeout(() => {
-            setDownloadSuccess(false);
-          }, 5000);
+          return downloadUrl; // Return the Firebase Storage URL
         } catch (error) {
           console.error('Error uploading PDF:', error);
-          // Still save the PDF locally even if upload fails with dynamic filename
-          pdf.save(fileName);
-          
-          alert(language === 'en' 
-            ? 'Your report was saved locally but could not be uploaded to the server. Please try again later.' 
-            : 'تم حفظ تقريرك محليًا ولكن لم نتمكن من تحميله إلى الخادم. يرجى المحاولة مرة أخرى لاحقًا.');
+          return null; // Return null on upload failure
         }
       } else {
-        // If no upload function provided, just save locally with dynamic filename
-        console.log('No upload function provided, saving PDF locally...');
-        pdf.save(fileName);
+        // If no upload function provided, return null (will fall back to local generation)
+        console.log('No upload function provided');
+        return null;
+      }
+      
+    } catch (error) {
+      console.error('Background PDF generation failed:', error);
+      return null; // Return null on generation failure
+    }
+  };
+
+  // Function to generate PDF locally and download immediately (fallback method)
+  const generateLocalPdfBlob = async (): Promise<Blob | null> => {
+    if (!pdfRef.current) return null;
+    
+    try {
+      console.log('Generating PDF locally for immediate download...');
+      
+      // Dynamically import the libraries only when needed
+      const { default: jsPDF } = await import('jspdf');
+      const { default: html2canvas } = await import('html2canvas');
+      
+      // Create a new PDF document in A4 portrait format
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: 'a4',
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+
+      // Select all the individual page elements from our hidden blueprint
+      const pages = pdfRef.current.querySelectorAll('.pdf-page');
+
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i] as HTMLElement;
+        
+        // Capture each page as its own canvas with optimized settings
+        const canvas = await html2canvas(page, {
+          scale: 1.5, // Optimized scale for smaller file size
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          allowTaint: true,
+        });
+
+        // Use JPEG with compression for smaller file size
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+        const aspectRatio = canvas.height / canvas.width;
+        const imgHeight = pdfWidth * aspectRatio;
+
+        if (i > 0) {
+          pdf.addPage();
+        }
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+      }
+
+      // Return the blob for local download
+      return pdf.output('blob');
+      
+    } catch (error) {
+      console.error('Error generating local PDF:', error);
+      return null;
+    }
+  };
+
+  // Legacy download handler (now simplified to save locally with proper filename)
+  const handleDownloadReport = async () => {
+    if (!pdfRef.current || isGeneratingPDF) return;
+    
+    setIsGeneratingPDF(true);
+    
+    try {
+      const pdfBlob = await generateLocalPdfBlob();
+      
+      if (pdfBlob) {
+        // Generate dynamic filename based on user's name
+        const userName = userInfo?.fullName
+          ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
+          : 'User';
+        const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
+        
+        // Create a temporary URL and trigger download
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
         
         // Show success message
         setDownloadSuccess(true);
@@ -190,6 +289,97 @@ export default function DetailedReportStep({
   const openServerReport = () => {
     if (reportUrl) {
       window.open(reportUrl, '_blank');
+    }
+  };
+
+  // Intelligent download click handler - checks if report is ready or falls back to local generation
+  const handleDownloadClick = async () => {
+    // If the report is already generated and uploaded, download it instantly
+    if (serverReportUrl) {
+      console.log('Downloading pre-generated report from server:', serverReportUrl);
+      
+      try {
+        // Generate dynamic filename based on user's name
+        const userName = userInfo?.fullName
+          ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
+          : 'User';
+        const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
+        
+        // Fetch the PDF blob from the server URL and force download
+        const response = await fetch(serverReportUrl);
+        const pdfBlob = await response.blob();
+        
+        // Create a blob URL and trigger download
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the blob URL
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        
+        // Show success message
+        setDownloadSuccess(true);
+        setTimeout(() => {
+          setDownloadSuccess(false);
+        }, 5000);
+      } catch (error) {
+        console.error('Error downloading pre-generated PDF:', error);
+        // If direct download fails, open in new tab as fallback
+        window.open(serverReportUrl, '_blank');
+      }
+      return;
+    }
+
+    // If the background process is still running, let the user know
+    if (isGeneratingInBackground) {
+      alert(language === 'en' 
+        ? 'Your report is being prepared in the background. Please wait a moment and try again.' 
+        : 'يتم إعداد تقريرك في الخلفية. يرجى الانتظار لحظة والمحاولة مرة أخرى.');
+      return;
+    }
+
+    // If background generation failed, fall back to local generation and download
+    console.log('Falling back to local PDF generation...');
+    setIsGeneratingPDF(true);
+    
+    try {
+      const pdfBlob = await generateLocalPdfBlob();
+      
+      if (pdfBlob) {
+        // Generate dynamic filename based on user's name
+        const userName = userInfo?.fullName
+          ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
+          : 'User';
+        const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
+        
+        // Create a temporary URL and trigger download
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Show success message
+        setDownloadSuccess(true);
+        setTimeout(() => {
+          setDownloadSuccess(false);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error in fallback PDF generation:', error);
+      alert(language === 'en' 
+        ? 'There was an error generating your PDF. Please try again.' 
+        : 'حدث خطأ في إنشاء ملف PDF الخاص بك. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -468,8 +658,14 @@ export default function DetailedReportStep({
             </button>
           ) : (
             <button
-              onClick={handleDownloadReport}
-              className="px-8 py-3 border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white rounded-lg transition-all duration-200 flex items-center justify-center font-medium"
+              onClick={handleDownloadClick}
+              className={`px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium ${
+                serverReportUrl 
+                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' // Ready state - green
+                  : isGeneratingInBackground 
+                    ? 'border border-blue-600 text-blue-600 bg-blue-50 cursor-not-allowed' // Preparing state - blue
+                    : 'border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white' // Default state
+              }`}
               disabled={isGeneratingPDF || isGeneratingServerReport}
             >
               {isGeneratingPDF ? (
@@ -479,6 +675,21 @@ export default function DetailedReportStep({
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                   {language === 'en' ? 'Generating Blueprint...' : 'إنشاء المخطط...'}
+                </>
+              ) : serverReportUrl ? (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  {language === 'en' ? 'Download Report' : 'تحميل التقرير'}
+                </>
+              ) : isGeneratingInBackground ? (
+                <>
+                  <svg className="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  {language === 'en' ? 'Preparing Blueprint...' : 'إعداد المخطط...'}
                 </>
               ) : (
                 <>
@@ -492,13 +703,29 @@ export default function DetailedReportStep({
           )}
         </div>
         
-        {/* Loading helper text - now centered below both buttons */}
-        {isGeneratingPDF && (
+        {/* Loading helper text - shows different messages based on state */}
+        {(isGeneratingPDF || isGeneratingInBackground) && (
           <div className="text-center">
             <p className="text-sm text-gray-500">
+              {isGeneratingInBackground 
+                ? (language === 'en' 
+                    ? 'Preparing your report in the background for instant access...' 
+                    : 'إعداد تقريرك في الخلفية للوصول الفوري...')
+                : (language === 'en' 
+                    ? 'This may take a moment. Please wait...' 
+                    : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...')
+              }
+            </p>
+          </div>
+        )}
+        
+        {/* Success indicator when report is ready */}
+        {serverReportUrl && !isGeneratingInBackground && (
+          <div className="text-center">
+            <p className="text-sm text-green-600 font-medium">
               {language === 'en' 
-                ? 'This may take a moment. Please wait...' 
-                : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...'}
+                ? '✅ Your report is ready for instant download!' 
+                : '✅ تقريرك جاهز للتحميل الفوري!'}
             </p>
           </div>
         )}

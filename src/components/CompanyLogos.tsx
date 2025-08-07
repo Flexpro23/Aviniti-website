@@ -14,6 +14,7 @@ export default function CompanyLogos() {
     { id: 5, src: '/company-logos/secrtary.webp', fallbackSrc: '/company-logos/secrtary.png', alt: 'Secrtary' },
     { id: 6, src: '/company-logos/skinverse.webp', fallbackSrc: '/company-logos/skinverse.png', alt: 'Skinverse' },
     { id: 7, src: '/company-logos/wear-share.webp', fallbackSrc: '/company-logos/wear-share.png', alt: 'Wear Share' },
+    { id: 8, src: '/HairVision.png', fallbackSrc: '/HairVision.png', alt: 'HairVision Pro' },
   ];
 
   return (

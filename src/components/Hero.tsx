@@ -98,8 +98,8 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
   }, []);
 
   // Memoize these functions to prevent unnecessary rerenders
-  const scrollToSolutions = () => {
-    document.getElementById('services-section')?.scrollIntoView({ 
+  const scrollToReadyMadeSolutions = () => {
+    document.getElementById('ready-made-solutions')?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     });
@@ -144,9 +144,9 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center lg:items-center ${dir === 'rtl' ? 'lg:flex-row-reverse' : ''}`}>
           {/* Text Content */}
-          <div className={`text-center lg:text-left flex flex-col justify-center h-full ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
+          <div className={`text-center lg:text-left flex flex-col justify-center h-full pt-12 ${dir === 'rtl' ? 'lg:text-right' : ''}`}>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
-              <span className="block mb-2">Aviniti - AI & App Development Services</span>
+              <span className="block mb-2">{t.hero.companyTitle}</span>
               <span className="block">{t.hero.title}</span>
               <span className="block text-slate-blue-200">{t.hero.subtitle}</span>
             </h1>
@@ -171,19 +171,19 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
             {/* Grouped Secondary Actions */}
             <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start ${dir === 'rtl' ? 'lg:justify-end' : ''}`}>
               <button
-                onClick={scrollToSolutions}
+                onClick={scrollToReadyMadeSolutions}
                 className="px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300"
-                title={t.hero.solutionsDescription}
+                title="View our ready-made app solutions"
               >
-                {t.hero.exploreSolutions}
+                Ready-Made Solutions
               </button>
-              {/* Consultation Button - Adjusted margin */}
+              {/* Contact Us Button */}
               <button
-                onClick={handleConsultationClick}
+                onClick={() => router.push('/contact')}
                 className="text-slate-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
-                title={t.hero.consultationDescription}
+                title="Get in touch with our team"
               >
-                <span className="mr-2">{t.hero.getFreeConsultation}</span>
+                <span className="mr-2">Contact Us</span>
                 <svg
                   className={`w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1 ${dir === 'rtl' ? 'rotate-180' : ''}`}
                   fill="none"

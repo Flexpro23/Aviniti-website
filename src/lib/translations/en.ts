@@ -16,6 +16,7 @@ export const en = {
     contact: 'Contact Us'
   },
   hero: {
+    companyTitle: 'Aviniti - AI & App Development Services',
     title: 'Transform Your Vision',
     subtitle: 'With AI-Powered Apps',
     description: 'From Innovative Concept to Enterprise Scale',
@@ -70,6 +71,11 @@ export const en = {
       title: 'Skinverse',
       category: 'Beauty & Wellness',
       description: 'An AI-powered skincare app delivering personalized skin reports and product recommendations based on facial analysis'
+    },
+    hairVisionPro: {
+      title: 'HairVision Pro',
+      category: 'Mobile Apps, AI Solutions, Web Development',
+      description: 'An enterprise-grade medical AI platform designed for hair restoration specialists. HairVision Pro leverages advanced AI to instantly analyze patient photos, generate comprehensive diagnostic reports, and create photorealistic simulations of post-procedure outcomes, streamlining the entire clinical workflow from consultation to surgical planning.'
     }
   },
   services: {
@@ -90,6 +96,15 @@ export const en = {
     cloud: {
       title: 'Cloud Solutions',
       description: 'Scalable cloud infrastructure using AWS, Google Cloud, and Azure'
+    },
+    appIdeaAnalyzer: {
+      title: 'Put Your Idea to the Test',
+      subtitle: 'Get instant AI-powered analysis of your app concept. Discover market potential, technical feasibility, and monetization strategies in minutes.',
+      placeholder: 'Describe your app idea in detail. What problem does it solve? Who is your target audience? What features do you envision? The more details you provide, the better our AI can analyze your concept.',
+      analyzeButton: 'Analyze My Idea',
+      analyzing: 'Analyzing your idea...',
+      charactersCount: 'characters',
+      resetButton: 'Analyze Another Idea'
     },
     readyMadeSolutions: {
       title: 'Ready-Made App Solutions',
@@ -133,6 +148,13 @@ export const en = {
           price: '$15,000',
           description: 'Property rental marketplace platform similar to Airbnb. Connects hosts with travelers, includes booking system, payment processing, review, and secure payment processing.',
           features: ['User & Host Portals', 'Booking System', 'Search & Filters', 'Review System', 'Secure Payment']
+        },
+        hairTransplant: {
+          title: 'Hair Transplant Doctor AI Assistant',
+          price: '$18,000',
+          days: '45',
+          description: 'An advanced AI assistant designed to revolutionize the hair transplant consultation process. The system automates patient analysis, generates detailed surgical reports, and creates photorealistic simulations to enhance patient communication and clinical decision-making.',
+          features: ['AI Patient Analysis', 'Automated Report Generation', 'Photorealistic Simulations', 'Clinical Decision Support', 'Patient Communication Tools']
         }
       }
     }

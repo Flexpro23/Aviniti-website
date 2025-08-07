@@ -3,11 +3,13 @@ import { NextResponse } from 'next/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const systemPrompt = `You are an expert in mobile and web app development cost estimation.
+const getSystemPrompt = (language: string) => `You are an expert in mobile and web app development cost estimation.
 Your task is to analyze user input and provide:
 1. A concise overview of the app idea.
 2. A list of core features necessary for a functional version of the app.
 3. A list of suggested features that could add value, with a short description explaining how each feature adds value.
+
+Please respond in ${language === 'ar' ? 'Arabic' : 'English'}.
 
 [Feature pricing data omitted for brevity]
 
@@ -28,8 +30,9 @@ Suggested Features:
 
 export async function POST(request: Request) {
   try {
-    const { description, answers } = await request.json();
+    const { description, answers, language = 'en' } = await request.json();
 
+    const systemPrompt = getSystemPrompt(language);
     const prompt = `${systemPrompt}
 
 Analyze this app idea:
@@ -82,8 +85,12 @@ Integrations: ${answers.integrations.join(', ')}`;
     });
   } catch (error) {
     console.error("Gemini API Error:", error);
+    const { language = 'en' } = await request.json().catch(() => ({ language: 'en' }));
+    const errorMessage = language === 'ar' 
+      ? 'فشل في تحليل الذكاء الاصطناعي'
+      : 'AI analysis failed';
     return NextResponse.json(
-      { error: 'AI analysis failed' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

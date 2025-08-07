@@ -195,7 +195,7 @@ export default function AIEstimatePage() {
       }
       
       // Try to get analysis from the Gemini API
-      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms);
+      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms, language);
       console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
       
       setAiAnalysisResult(analysis);
@@ -395,7 +395,7 @@ export default function AIEstimatePage() {
       {/* Header */}
       <div className="bg-off-white text-slate-blue-600 py-16 border-b border-slate-blue-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-blue-600 pt-8">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-blue-600 pt-12">
             Get Your AI-Powered App Estimate
           </h1>
           <p className="text-xl text-slate-blue-500 mb-8">

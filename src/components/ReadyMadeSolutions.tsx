@@ -132,6 +132,10 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
     {
       id: 'airbnb',
       image: '/Ready-made-solutions/Airbnb-Style Marketplace App Solutions.svg'
+    },
+    {
+      id: 'hairTransplant',
+      image: '/Hair Transplant Doctor AI Assistant.jpeg'
     }
   ];
 

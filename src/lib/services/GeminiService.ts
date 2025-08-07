@@ -166,7 +166,8 @@ When providing estimates, format costs as strings with dollar signs (e.g., "$1,0
 export const analyzeAppWithGemini = async (
   appDescription: string,
   apiKey?: string,
-  selectedPlatforms?: string[]
+  selectedPlatforms?: string[],
+  language?: string
 ): Promise<AIAnalysisResult> => {
   try {
     console.log('Analyzing app with Gemini...');
@@ -184,13 +185,14 @@ export const analyzeAppWithGemini = async (
     const tempGenAI = new GoogleGenerativeAI(key);
     const tempModel = tempGenAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-    // Detect if the input is in Arabic
-    const isArabic = containsArabic(appDescription);
-    console.log('Input language detected:', isArabic ? 'Arabic' : 'English');
+    // Determine the response language
+    const isArabic = language === 'ar' || containsArabic(appDescription);
+    console.log('Language parameter:', language);
+    console.log('Response language determined:', isArabic ? 'Arabic' : 'English');
 
     // Create language-specific instruction
     const languageInstruction = isArabic 
-      ? "EXTREMELY IMPORTANT: The user has provided the app description in Arabic. You MUST respond ENTIRELY in Arabic language, including ALL feature names, descriptions, the app overview, and JSON property names. Do NOT translate any part of your response to English. The entire JSON structure must be in Arabic."
+      ? "EXTREMELY IMPORTANT: The user wants a response in Arabic. You MUST respond ENTIRELY in Arabic language, including ALL feature names, descriptions, the app overview, and JSON property names. Do NOT translate any part of your response to English. The entire JSON structure must be in Arabic."
       : "Respond in English.";
 
     const prompt = `

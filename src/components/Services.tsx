@@ -76,10 +76,10 @@ export default function Services() {
         <div className={`mt-16 sm:mt-20 ${dir === 'rtl' ? 'rtl' : ''}`}>
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
             <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 text-slate-blue-600">
-              Put Your Idea to the Test
+              {t.services.appIdeaAnalyzer.title}
             </h3>
             <p className="text-sm sm:text-base text-slate-blue-500">
-              Get instant AI-powered analysis of your app concept. Discover market potential, technical feasibility, and monetization strategies in minutes.
+              {t.services.appIdeaAnalyzer.subtitle}
             </p>
           </div>
           

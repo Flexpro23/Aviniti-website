@@ -308,7 +308,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       console.log('Selected platforms:', description.selectedPlatforms);
       
       // Try to get analysis from the Gemini API
-      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms);
+      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms, language);
       console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
       
       setAiAnalysisResult(analysis);

@@ -120,7 +120,7 @@ export default function RootLayout({
         
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/NBG-logo.png" type="image/png" />
+        <link rel="icon" href="/justLogo.png" type="image/png" />
         
         {/* Preload critical resources */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />

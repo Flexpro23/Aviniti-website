@@ -67,6 +67,14 @@ const useProjects = (t: any) => {
       data: t.projects.skinverse,
       iosUrl: 'https://apps.apple.com/jo/app/skinverse/id6502641700',
       androidUrl: 'https://play.google.com/store/apps/details?id=com.mycompany.singlevendorapp&hl=en'
+    },
+    {
+      key: 'hairVisionPro',
+      image: '/HairVision.png',
+      categories: ['mobile', 'web', 'ai'] as ProjectCategory[],
+      data: t.projects.hairVisionPro,
+      iosUrl: '#',
+      androidUrl: '#'
     }
   ], [t.projects]);
 };

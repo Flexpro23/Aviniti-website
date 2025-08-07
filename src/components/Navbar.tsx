@@ -11,6 +11,8 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [contactSubject, setContactSubject] = useState('');
   const { t, dir } = useLanguage();
@@ -22,12 +24,26 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      
+      // Set scrolled state for styling
+      setIsScrolled(currentScrollY > 20);
+      
+      // Handle visibility - hide when scrolling down, show when scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down - hide navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   // Function to open contact popup with specific subject
   const openContactWithSubject = (subject: string) => {
@@ -38,7 +54,9 @@ export default function Navbar() {
   return (
     <>
       <nav 
-        className="fixed w-full z-50 bg-slate-blue-600 shadow-lg py-4"
+        className={`fixed w-full z-50 bg-slate-blue-600 shadow-lg py-4 transition-transform duration-300 ease-in-out ${
+          isVisible ? 'translate-y-0' : '-translate-y-full'
+        }`}
         dir={dir}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,13 +64,13 @@ export default function Navbar() {
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center space-x-2">
                 {/* Logo Image */}
-                <div className="relative w-14 h-14">
+                <div className="relative w-20 h-20">
                   <Image
-                    src="/NBG-logo.png"
+                    src="/justLogo.png"
                     alt="Aviniti Logo"
                     fill
                     className="object-contain"
-                    sizes="56px"
+                    sizes="80px"
                     priority
                   />
                 </div>
@@ -110,20 +128,6 @@ export default function Navbar() {
               >
                 Get AI Estimate
               </Link>
-              <a 
-                href="#services-section" 
-                className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.navigation.services}
-              </a>
-              <a 
-                href="#ready-made-solutions" 
-                className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.navigation.readyMadeSolutions}
-              </a>
               <Link 
                 href="/faq" 
                 className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
@@ -138,13 +142,6 @@ export default function Navbar() {
               >
                 Blog
               </Link>
-              <a 
-                href="#about" 
-                className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.navigation.about}
-              </a>
               <Link 
                 href="/contact"
                 onClick={() => setIsMenuOpen(false)}

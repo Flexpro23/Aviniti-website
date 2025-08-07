@@ -5,18 +5,23 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const { ideaDescription } = await request.json();
+    const { ideaDescription, language = 'en' } = await request.json();
 
     if (!ideaDescription || ideaDescription.trim().length < 50) {
+      const errorMessage = language === 'ar' 
+        ? 'يرجى تقديم وصف مفصل لفكرة التطبيق (50 حرفًا على الأقل)'
+        : 'Please provide a detailed app idea description (minimum 50 characters)';
       return NextResponse.json(
-        { error: 'Please provide a detailed app idea description (minimum 50 characters)' },
+        { error: errorMessage },
         { status: 400 }
       );
     }
 
+    const responseLanguage = language === 'ar' ? 'Arabic' : 'English';
     const prompt = `
       As a venture capitalist and tech product strategist, analyze the following app idea.
       Your response MUST be in a valid JSON format. Do not include any text before or after the JSON object.
+      Please provide your analysis in ${responseLanguage}.
 
       The idea is: "${ideaDescription}"
 
@@ -67,8 +72,12 @@ export async function POST(request: Request) {
     return NextResponse.json(analysisResult);
   } catch (error) {
     console.error("Gemini API Error:", error);
+    const { language = 'en' } = await request.json().catch(() => ({ language: 'en' }));
+    const errorMessage = language === 'ar' 
+      ? 'فشل في تحليل الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.'
+      : 'AI analysis failed. Please try again.';
     return NextResponse.json(
-      { error: 'AI analysis failed. Please try again.' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
