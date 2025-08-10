@@ -13,6 +13,7 @@ import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import ContactPopup from '@/components/ContactPopup';
+import { reportConversion } from '@/lib/analytics/gtag';
 
 export type PersonalDetails = {
   fullName: string;
@@ -163,6 +164,11 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       await setDoc(docRef, docData);
       
       console.log("✅ User document created with ID: ", docRef.id);
+      try {
+        reportConversion();
+      } catch (e) {
+        console.warn('Conversion reporting failed (non-blocking):', e);
+      }
       setUserDocumentId(docRef.id); // Save the ID to state
       console.log('🔍 DEBUG: userDocumentId set in state:', docRef.id);
       return docRef.id;

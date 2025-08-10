@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
 
@@ -133,6 +134,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   )
