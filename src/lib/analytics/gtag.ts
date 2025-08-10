@@ -1,12 +1,5 @@
 export const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID
 
-// Ensure TypeScript knows about window.gtag
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void
-  }
-}
-
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const reportConversion = () => {
   // Kept for backwards compatibility; delegate to new utility
