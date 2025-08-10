@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
+import MetaPixel from '@/components/analytics/MetaPixel'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -156,6 +157,7 @@ export default function RootLayout({
             />
           </>
         )}
+        <MetaPixel />
       </body>
     </html>
   )
