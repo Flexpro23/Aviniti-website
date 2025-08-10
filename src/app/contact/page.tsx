@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { reportConversion } from '@/lib/analytics/gtag';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 
