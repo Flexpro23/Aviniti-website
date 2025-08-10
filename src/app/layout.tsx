@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import Script from 'next/script'
@@ -8,6 +9,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://aviniti.app'),
   title: 'Aviniti - AI & App Development Services | Your Ideas, Our Reality',
   description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
   keywords: 'AI app development, software development, mobile app development, web development, AI solutions, Amman Jordan, custom software',
@@ -134,7 +136,9 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
       </body>
     </html>
   )
