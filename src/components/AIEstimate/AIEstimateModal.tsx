@@ -13,7 +13,7 @@ import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import ContactPopup from '@/components/ContactPopup';
-import { reportConversion } from '@/lib/analytics/gtag';
+import { reportConversion } from '@/lib/gtag';
 
 export type PersonalDetails = {
   fullName: string;

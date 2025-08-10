@@ -1,8 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
-import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
 
@@ -42,6 +40,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID
   return (
     <html suppressHydrationWarning lang="en">
       <head>
@@ -136,9 +135,27 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
         </LanguageProvider>
-        <Suspense fallback={null}>
-          <GoogleAnalytics />
-        </Suspense>
+        {/* Google Ads global site tag */}
+        {GADS_ID && (
+          <>
+            <Script
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GADS_ID}`}
+            />
+            <Script
+              id="gtag-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);} 
+                  gtag('js', new Date());
+                  gtag('config', '${GADS_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
       </body>
     </html>
   )

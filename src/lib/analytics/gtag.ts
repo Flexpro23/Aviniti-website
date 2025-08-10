@@ -9,21 +9,17 @@ declare global {
 
 // https://developers.google.com/analytics/devguides/collection/gtagjs/events
 export const reportConversion = () => {
-  const conversionId = 'AW-17405911095/cJyWCLTK-4IbELfA5OtA'
-  if (typeof window === 'undefined') {
-    return
-  }
-  if (typeof window.gtag !== 'function') {
-    console.warn('gtag function not found. Conversion not reported.')
-    return
-  }
-  window.gtag('event', 'conversion', {
-    send_to: conversionId,
-  })
-  // Optional debug log
-  if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console
-    console.log(`Conversion event sent to ${conversionId}`)
+  // Kept for backwards compatibility; delegate to new utility
+  try {
+    // Dynamically import new utility to avoid circular deps
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require('../gtag') as { reportConversion: () => void }
+    mod.reportConversion()
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to delegate reportConversion to src/lib/gtag.ts', e)
+    }
   }
 }
 
