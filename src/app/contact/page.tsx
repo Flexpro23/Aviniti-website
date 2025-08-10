@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { reportConversion } from '@/lib/analytics/gtag';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Navbar from '@/components/Navbar';
 
@@ -36,6 +37,7 @@ export default function ContactPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setSubmitStatus('success');
+      reportConversion();
       setFormData({
         name: '',
         email: '',
