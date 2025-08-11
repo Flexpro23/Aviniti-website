@@ -1,11 +1,25 @@
 import './globals.css'
+import './accessibility.css'
 import type { Metadata } from 'next'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import MetaPixel from '@/components/analytics/MetaPixel'
+import PerformanceMonitor from '@/components/utils/PerformanceMonitor'
+import fs from 'fs'
+import path from 'path'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+})
+
+// Read critical CSS for inlining
+const criticalCSS = fs.readFileSync(
+  path.join(process.cwd(), 'src/app/critical.css'),
+  'utf8'
+)
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://aviniti.app'),
@@ -45,10 +59,28 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <head>
+        {/* Inline critical CSS to reduce render-blocking */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/company-logos/flex-pro.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/hero/hero-image.webp" as="image" type="image/webp" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//connect.facebook.net" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        
         <meta name="google-site-verification" content="lJLyXN8_uDjPPnfHtb9J8tyt5ktEpkeIjFpuQcv2xvA" />
+        
+        {/* Structured data - load with high priority */}
         <Script
           id="schema-org"
           type="application/ld+json"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
@@ -96,47 +128,17 @@ export default function RootLayout({
           }}
         />
         
-        {/* Meta Pixel Code */}
-        <Script id="meta-pixel" strategy="afterInteractive">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '931338648950378');
-            fbq('track', 'PageView');
-          `}
-        </Script>
-        <noscript>
-          <img 
-            height="1" 
-            width="1" 
-            style={{display: 'none'}}
-            src="https://www.facebook.com/tr?id=931338648950378&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
-        
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/justLogo.png" type="image/png" />
-        
-        {/* Preload critical resources */}
-        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
-        <link rel="preload" href="/company-logos/flex-pro.webp" as="image" type="image/webp" />
-        <link rel="preload" href="/hero/hero-image.webp" as="image" type="image/webp" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={inter.className}>
         <LanguageProvider>
           {children}
         </LanguageProvider>
-        {/* Google Ads global site tag */}
+        
+        {/* Defer non-critical scripts */}
+        {/* Google Ads - load after page is interactive */}
         {GADS_ID && (
           <>
             <Script
@@ -157,7 +159,36 @@ export default function RootLayout({
             />
           </>
         )}
+        
+        {/* Meta Pixel - load with delay to improve initial page load */}
+        <Script id="meta-pixel" strategy="lazyOnload">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '931338648950378');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+        
+        {/* Noscript fallback for Meta Pixel */}
+        <noscript>
+          <img 
+            height="1" 
+            width="1" 
+            style={{display: 'none'}}
+            src="https://www.facebook.com/tr?id=931338648950378&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
+        
         <MetaPixel />
+        <PerformanceMonitor />
       </body>
     </html>
   )

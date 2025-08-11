@@ -1,10 +1,10 @@
 'use client';
 
 import { useLanguage } from '@/lib/context/LanguageContext';
-import Image from 'next/image';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import ImageWithFallback from './utils/ImageWithFallback';
+import OptimizedImage from './utils/OptimizedImage';
+import { LazyLoadOnIntersection } from './utils/LazyComponent';
 import Script from 'next/script';
 
 interface HeroProps {
@@ -18,21 +18,24 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
   const phoneRef = useRef<HTMLDivElement>(null);
   
   // App screens to showcase in the phone frame - using actual app screenshots
-  const appScreens = [
+  const appScreens = useMemo(() => [
     {
       src: '/company-logos/flex-pro.webp',
       alt: 'Flex Pro App',
-      color: 'bg-slate-blue-500'
+      color: 'bg-slate-blue-500',
+      sizes: '(max-width: 768px) 200px, 300px'
     },
     {
       src: '/company-logos/secrtary.webp',
       alt: 'Secretary App',
-      color: 'bg-bronze-500'
+      color: 'bg-bronze-500',
+      sizes: '(max-width: 768px) 200px, 300px'
     },
     {
       src: '/company-logos/farm-house.webp',
       alt: 'Farm House App',
       color: 'bg-bronze-600',
+      sizes: '(max-width: 768px) 200px, 300px',
       customStyle: {
         backgroundColor: '#a6714e', // Bronze-600 to match the Farm House app screen
         backgroundImage: 'linear-gradient(135deg, #a6714e 0%, #8a5d42 100%)'
@@ -41,9 +44,10 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
     {
       src: '/company-logos/skinverse.webp',
       alt: 'Skinverse App',
-      color: 'bg-slate-blue-400'
+      color: 'bg-slate-blue-400',
+      sizes: '(max-width: 768px) 200px, 300px'
     }
-  ];
+  ], []);
 
   // Rotate through app screens
   useEffect(() => {
@@ -58,17 +62,25 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
     const phoneElement = phoneRef.current;
     if (!phoneElement) return;
 
-    // Handle phone element mouse interactions
+    // Handle phone element mouse interactions with throttling
+    let ticking = false;
+    
     const handleMouseMove = (e: MouseEvent) => {
-      if (!phoneElement) return;
-      
-      // Calculate relative position
-      const rect = phoneElement.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      
-      // Apply subtle 3D transform
-      phoneElement.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          if (!phoneElement) return;
+          
+          // Calculate relative position
+          const rect = phoneElement.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          
+          // Apply subtle 3D transform
+          phoneElement.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
     const handleMouseLeave = () => {
@@ -84,8 +96,8 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       phoneElement.style.transition = 'none';
     };
 
-    // Add event listeners
-    phoneElement.addEventListener('mousemove', handleMouseMove);
+    // Add event listeners with passive option for better performance
+    phoneElement.addEventListener('mousemove', handleMouseMove, { passive: true });
     phoneElement.addEventListener('mouseleave', handleMouseLeave);
     phoneElement.addEventListener('mouseenter', handleMouseEnter);
     
@@ -98,18 +110,18 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
   }, []);
 
   // Memoize these functions to prevent unnecessary rerenders
-  const scrollToReadyMadeSolutions = () => {
+  const scrollToReadyMadeSolutions = useCallback(() => {
     document.getElementById('ready-made-solutions')?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     });
-  };
+  }, []);
   
-  const handleConsultationClick = () => {
+  const handleConsultationClick = useCallback(() => {
     if (onConsultationClick) {
       onConsultationClick();
     }
-  };
+  }, [onConsultationClick]);
 
   return (
     <section className="relative min-h-screen flex items-center py-16 sm:py-20 overflow-hidden">
@@ -250,13 +262,14 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white/20 p-2 shadow-inner">
                             <div className="absolute inset-0 rounded-full overflow-hidden bg-white flex items-center justify-center">
-                              <ImageWithFallback
+                              <OptimizedImage
                                 src={screen.src.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
-                                fallbackSrc={screen.src}
                                 alt={screen.alt}
                                 fill
                                 className="object-contain p-2 rounded-full"
                                 sizes="128px"
+                                priority={index === 0}
+                                quality={85}
                               />
                             </div>
                             
