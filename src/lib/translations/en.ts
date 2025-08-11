@@ -15,6 +15,28 @@ export const en = {
     faq: 'FAQ',
     contact: 'Contact Us'
   },
+  coreValues: {
+    title: 'Our Core Values',
+    partnership: {
+      title: 'Partnership',
+      description: 'We work closely with our clients as trusted partners, ensuring every solution aligns with their business goals'
+    },
+    innovation: {
+      title: 'Innovation',
+      description: 'We leverage cutting-edge AI and technology to create solutions that push boundaries and drive digital transformation'
+    },
+    reliability: {
+      title: 'Reliability',
+      description: 'We build stable, secure, and scalable solutions that our clients can depend on for long-term success'
+    },
+    efficiency: {
+      title: 'Efficiency',
+      description: 'Our streamlined development process and AI-powered tools enable us to deliver high-quality solutions faster'
+    },
+    cta: 'Ready to transform your business with innovative solutions?',
+    contactUs: 'Contact Us',
+    getAIEstimate: 'Get AI Estimate'
+  },
   hero: {
     companyTitle: 'Aviniti - AI & App Development Services',
     title: 'Transform Your Vision',

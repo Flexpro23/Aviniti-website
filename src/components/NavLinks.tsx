@@ -21,13 +21,13 @@ export default function NavLinks({ isScrolled }: NavLinksProps) {
         {t.navigation.home}
       </Link>
       <Link href="/estimate" className={linkClasses}>
-        Get AI Estimate
+        {t.coreValues.getAIEstimate}
       </Link>
       <Link href="/faq" className={linkClasses}>
         {t.navigation.faq || 'FAQ'}
       </Link>
       <Link href="/blog" className={linkClasses}>
-        Blog
+        {t.navigation.blog}
       </Link>
       <Link 
         href="/contact"

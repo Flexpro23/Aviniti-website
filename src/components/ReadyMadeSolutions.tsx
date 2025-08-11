@@ -89,7 +89,7 @@ const fallbackTranslations: ReadyMadeSolutionsTranslation = {
 };
 
 export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolutionsProps) {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   
@@ -270,7 +270,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
           {/* Carousel container with mouse drag functionality */}
           <div 
             ref={carouselRef}
-            className={`flex overflow-x-auto gap-6 py-4 px-8 snap-x snap-mandatory hide-scrollbar ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            className={`flex overflow-x-auto gap-6 py-4 px-8 snap-x snap-mandatory hide-scrollbar carousel-container ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             style={{ 
               scrollbarWidth: 'none', 
               msOverflowStyle: 'none',

@@ -33,23 +33,23 @@ export default function About() {
   const coreValues = [
     {
       iconName: 'lightbulb',
-      title: 'Innovation',
-      description: 'We leverage cutting-edge AI and technology to create solutions that push boundaries and drive digital transformation.'
+      title: t.coreValues.innovation.title,
+      description: t.coreValues.innovation.description
     },
     {
       iconName: 'handshake',
-      title: 'Partnership',
-      description: 'We work closely with our clients as trusted partners, ensuring every solution aligns with their business goals.'
+      title: t.coreValues.partnership.title,
+      description: t.coreValues.partnership.description
     },
     {
       iconName: 'rocket',
-      title: 'Efficiency',
-      description: 'Our streamlined development process and AI-powered tools enable us to deliver high-quality solutions faster.'
+      title: t.coreValues.efficiency.title,
+      description: t.coreValues.efficiency.description
     },
     {
       iconName: 'shield',
-      title: 'Reliability',
-      description: 'We build stable, secure, and scalable solutions that our clients can depend on for long-term success.'
+      title: t.coreValues.reliability.title,
+      description: t.coreValues.reliability.description
     }
   ];
 
@@ -82,8 +82,7 @@ export default function About() {
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
-                loading="lazy"
-                priority={false}
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-blue-600/20 to-transparent"></div>
             </div>
@@ -110,7 +109,7 @@ export default function About() {
 
             {/* Core Values Section */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-slate-blue-600 mb-8">Our Core Values</h3>
+              <h3 className="text-2xl font-bold text-slate-blue-600 mb-8">{t.coreValues.title}</h3>
               <div className="grid gap-6 sm:grid-cols-2">
                 {coreValues.map((value, index) => (
                   <div 
@@ -134,20 +133,20 @@ export default function About() {
             {/* Call to Action */}
             <div className="bg-gradient-to-r from-slate-blue-50 to-bronze-50 rounded-xl p-6 border border-slate-blue-100">
               <p className="text-slate-blue-600 font-medium mb-4">
-                Ready to transform your business with innovative solutions?
+                {t.coreValues.cta}
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <a 
                   href="/estimate" 
                   className="inline-flex items-center justify-center px-6 py-3 bg-bronze-500 text-white rounded-lg font-semibold hover:bg-bronze-600 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  Get AI Estimate
+                  {t.coreValues.getAIEstimate}
                 </a>
                 <a 
                   href="/contact" 
                   className="inline-flex items-center justify-center px-6 py-3 bg-transparent border-2 border-slate-blue-600 text-slate-blue-600 rounded-lg font-semibold hover:bg-slate-blue-600 hover:text-white transition-colors duration-300"
                 >
-                  Contact Us
+                  {t.coreValues.contactUs}
                 </a>
               </div>
             </div>

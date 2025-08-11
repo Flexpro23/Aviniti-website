@@ -20,7 +20,7 @@ export default function FeatureSelectionStep({
   onBack,
   isProcessing
 }: FeatureSelectionStepProps) {
-  const { language } = useLanguage();
+  const { language, dir } = useLanguage();
   const [essentialFeatures, setEssentialFeatures] = useState<Feature[]>(
     aiAnalysis.essentialFeatures.map(feature => ({ ...feature, selected: true }))
   );
@@ -318,8 +318,11 @@ export default function FeatureSelectionStep({
             {/* Scrollable Content */}
             <div 
               ref={scrollContainerRef}
-              className="flex overflow-x-auto space-x-6 pb-6 px-16" 
-              style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
+              className="flex overflow-x-auto space-x-6 pb-6 px-16 carousel-container" 
+              style={{
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none'
+              }}
               onScroll={checkScroll}
             >
               <style jsx>{`

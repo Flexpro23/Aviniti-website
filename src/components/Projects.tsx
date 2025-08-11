@@ -4,8 +4,7 @@ import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import AppStoreLinks from './AppStoreLinks';
-import dynamic from 'next/dynamic';
-const ImageWithFallback = dynamic(() => import('./utils/ImageWithFallback'), { ssr: false, loading: () => null });
+import ImageWithFallback from './utils/ImageWithFallback';
 import React from 'react';
 
 type ProjectCategory = 'all' | 'web' | 'mobile' | 'ai';

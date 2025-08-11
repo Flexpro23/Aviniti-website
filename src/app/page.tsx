@@ -9,8 +9,7 @@ import Services from '@/components/Services';
 const Expertise = lazy(() => import('@/components/Expertise'));
 const About = lazy(() => import('@/components/About'));
 const Footer = lazy(() => import('@/components/Footer'));
-import dynamic from 'next/dynamic';
-const ContactPopup = dynamic(() => import('@/components/ContactPopup'), { ssr: false, loading: () => null });
+import ContactPopup from '@/components/ContactPopup';
 
 const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
 

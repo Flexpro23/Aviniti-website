@@ -1,53 +1,74 @@
-import './globals.css'
-// Accessibility CSS moved to public and loaded non-blocking
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
-import { Inter } from 'next/font/google'
-import MetaPixel from '@/components/analytics/MetaPixel'
-import PerformanceMonitor from '@/components/utils/PerformanceMonitor'
-import LoadStylesheet from '@/components/utils/LoadStylesheet'
-import fs from 'fs'
-import path from 'path'
 
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-})
-
-// Read critical CSS for inlining
-const criticalCSS = fs.readFileSync(
-  path.join(process.cwd(), 'src/app/critical.css'),
-  'utf8'
-)
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  title: {
+    default: 'Aviniti - AI & App Development Company | Your Ideas, Our Reality',
+    template: '%s | Aviniti'
+  },
+  description: 'Aviniti is a leading AI and app development company specializing in custom software solutions, mobile apps, and AI integration. Transform your ideas into reality with our expert team.',
+  keywords: [
+    'AI app development',
+    'mobile app development',
+    'custom software solutions',
+    'AI integration',
+    'web development',
+    'software company',
+    'app development services',
+    'AI development company'
+  ],
+  authors: [{ name: 'Aviniti Team' }],
+  creator: 'Aviniti',
+  publisher: 'Aviniti',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   metadataBase: new URL('https://aviniti.app'),
-  title: 'Aviniti - AI & App Development Services | Your Ideas, Our Reality',
-  description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
-  keywords: 'AI app development, software development, mobile app development, web development, AI solutions, Amman Jordan, custom software',
-  verification: {
-    other: {
-      'msvalidate.01': '91B0C67DCCBBDB8F54D6E11EE8F18F25',
-    },
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://aviniti.app',
+    title: 'Aviniti - AI & App Development Company | Your Ideas, Our Reality',
+    description: 'Aviniti is a leading AI and app development company specializing in custom software solutions, mobile apps, and AI integration.',
+    siteName: 'Aviniti',
+    images: [
+      {
+        url: '/justLogo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Aviniti - AI & App Development Company',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Aviniti - AI & App Development Company | Your Ideas, Our Reality',
+    description: 'Aviniti is a leading AI and app development company specializing in custom software solutions, mobile apps, and AI integration.',
+    images: ['/justLogo.png'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
-  openGraph: {
-    title: 'Aviniti - AI & App Development Services | Your Ideas, Our Reality',
-    description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
-    url: 'https://aviniti.app',
-    siteName: 'Aviniti',
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Aviniti - AI & App Development Services',
-    description: 'Custom AI solutions and app development services for businesses',
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
   },
 }
 
@@ -56,120 +77,89 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const GADS_ID = process.env.NEXT_PUBLIC_GADS_ID
   return (
-    <html suppressHydrationWarning lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Inline critical CSS to reduce render-blocking */}
-        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
-        
-        {/* Preload critical resources (keep to a minimum) */}
-        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-         {/* Preconnect/DNS-prefetch for external domains */}
-         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
-         <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
-         <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
-         <link rel="preconnect" href="https://region1.google-analytics.com" crossOrigin="anonymous" />
-         <link rel="preconnect" href="https://firebase.googleapis.com" crossOrigin="anonymous" />
-         <link rel="preconnect" href="https://firebaseinstallations.googleapis.com" crossOrigin="anonymous" />
-         <link rel="dns-prefetch" href="//connect.facebook.net" />
-         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-         <link rel="dns-prefetch" href="//www.google-analytics.com" />
-        
-        <meta name="google-site-verification" content="lJLyXN8_uDjPPnfHtb9J8tyt5ktEpkeIjFpuQcv2xvA" />
-        
-        {/* Structured data - load with high priority */}
+        {/* Google Analytics */}
         <Script
-          id="schema-org"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+          `}
+        </Script>
+
+        {/* Google Ads */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=AW-17405911095`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17405911095');
+          `}
+        </Script>
+
+        {/* Meta Pixel */}
+        <Script id="fb-pixel" strategy="afterInteractive">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || '931338648950378'}');
+            fbq('track', 'PageView');
+          `}
+        </Script>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || '931338648950378'}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
+
+        {/* Structured Data */}
+        <Script
+          id="structured-data-organization"
           type="application/ld+json"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: 'Aviniti',
-              url: 'https://aviniti.app',
-              logo: 'https://aviniti.app/logo.svg',
-              description: 'Aviniti is a dynamic software and AI app development company in Amman, Jordan. We specialize in custom AI solutions, mobile apps, and web development for businesses.',
-              address: {
-                '@type': 'PostalAddress',
-                addressLocality: 'Amman',
-                addressRegion: 'Amman',
-                addressCountry: 'Jordan'
-              },
-              contactPoint: {
-                '@type': 'ContactPoint',
-                contactType: 'customer service',
-                email: 'info@aviniti.app'
-              },
-              sameAs: [
-                'https://www.linkedin.com/company/aviniti',
+              'name': 'Aviniti',
+              'description': 'Aviniti is a dynamic AI and app development company specializing in custom software solutions, mobile apps, and AI integration.',
+              'url': 'https://aviniti.app',
+              'logo': 'https://aviniti.app/justLogo.png',
+              'serviceType': ['AI Development', 'App Development', 'Software Solutions'],
+              'areaServed': 'Worldwide',
+              'sameAs': [
+                'https://linkedin.com/company/aviniti',
                 'https://twitter.com/aviniti'
-              ],
-              offers: {
-                '@type': 'AggregateOffer',
-                offers: [
-                  {
-                    '@type': 'Offer',
-                    name: 'AI App Development',
-                    description: 'Custom AI-powered application development services'
-                  },
-                  {
-                    '@type': 'Offer',
-                    name: 'Mobile App Development',
-                    description: 'Native and cross-platform mobile application development'
-                  },
-                  {
-                    '@type': 'Offer',
-                    name: 'Web Development',
-                    description: 'Responsive and modern web application development'
-                  }
-                ]
-              }
+              ]
             })
           }}
         />
-        
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/justLogo.png" type="image/png" />
-        {/* Accessibility stylesheet will be injected client-side to avoid render blocking */}
       </head>
       <body className={inter.className}>
         <LanguageProvider>
           {children}
         </LanguageProvider>
-        
-        {/* Defer non-critical scripts */}
-         {/* Google Ads/Analytics - load lazily to reduce main-thread contention */}
-        {GADS_ID && (
-          <>
-            <Script
-              strategy="lazyOnload"
-              src={`https://www.googletagmanager.com/gtag/js?id=${GADS_ID}`}
-            />
-            <Script
-              id="gtag-init"
-              strategy="lazyOnload"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);} 
-                  gtag('js', new Date());
-                  gtag('config', '${GADS_ID}');
-                `,
-              }}
-            />
-          </>
-        )}
-        {/* Load Meta Pixel via dedicated component (lazy) to avoid duplication */}
-        <MetaPixel />
-        <LoadStylesheet href="/css/accessibility.css" />
-        <PerformanceMonitor />
       </body>
     </html>
   )
-} 
+}

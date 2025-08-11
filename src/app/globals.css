@@ -7,6 +7,40 @@
   text-align: right;
 }
 
+/* RTL Horizontal Scrolling Support */
+[dir="rtl"] .overflow-x-auto {
+  direction: rtl;
+}
+
+[dir="rtl"] .overflow-x-auto > * {
+  direction: ltr;
+}
+
+/* Ensure proper scrolling behavior in RTL */
+[dir="rtl"] .carousel-container {
+  direction: rtl;
+}
+
+[dir="rtl"] .carousel-container > * {
+  direction: ltr;
+}
+
+/* Additional RTL scrolling fixes */
+[dir="rtl"] .overflow-x-auto {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[dir="rtl"] .overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure proper touch scrolling on mobile */
+[dir="rtl"] .carousel-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
 [dir="rtl"] .rtl-content {
   text-align: right;
 }

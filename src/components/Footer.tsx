@@ -54,27 +54,27 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Home
+                  {t.navigation.home}
                 </Link>
               </li>
               <li>
                 <Link href="/estimate" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Get AI Estimate
+                  {t.coreValues.getAIEstimate}
                 </Link>
               </li>
               <li>
                 <a href="#services-section" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Services
+                  {t.navigation.services}
                 </a>
               </li>
               <li>
                 <a href="#ready-made-solutions" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Ready-Made Solutions
+                  {t.navigation.readyMadeSolutions}
                 </a>
               </li>
               <li>
                 <Link href="/blog" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Blog
+                  {t.navigation.blog}
                 </Link>
               </li>
             </ul>
@@ -86,17 +86,17 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/contact" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  Contact Us
+                  {t.navigation.contact}
                 </Link>
               </li>
               <li>
                 <Link href="/faq" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  FAQ
+                  {t.navigation.faq}
                 </Link>
               </li>
               <li>
                 <a href="#about" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
-                  About Us
+                  {t.navigation.about}
                 </a>
               </li>
               <li>

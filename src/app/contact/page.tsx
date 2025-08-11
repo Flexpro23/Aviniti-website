@@ -101,7 +101,7 @@ export default function ContactPage() {
     'AI Development Project',
     'Mobile App Development',
     'Web Development',
-    'Ready-Made Solutions',
+    t.navigation.readyMadeSolutions,
     'Free Consultation Request',
     'Technical Support',
     'Partnership Inquiry',

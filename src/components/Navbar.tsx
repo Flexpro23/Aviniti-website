@@ -2,13 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import ContactPopup from './ContactPopup';
 import NavLinks from './NavLinks';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { usePathname } from 'next/navigation';
-
-const ContactPopup = dynamic(() => import('./ContactPopup'), { ssr: false, loading: () => null });
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -128,7 +126,7 @@ export default function Navbar() {
                 className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Get AI Estimate
+                {t.coreValues.getAIEstimate}
               </Link>
               <Link 
                 href="/faq" 
@@ -142,7 +140,7 @@ export default function Navbar() {
                 className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Blog
+                {t.navigation.blog}
               </Link>
               <Link 
                 href="/contact"

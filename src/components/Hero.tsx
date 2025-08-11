@@ -1,12 +1,11 @@
 'use client';
 
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import Image from 'next/image';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import OptimizedImage from './utils/OptimizedImage';
-import { LazyLoadOnIntersection } from './utils/LazyComponent';
-import dynamic from 'next/dynamic';
-const Script = dynamic(() => import('next/script'), { ssr: false });
+import ImageWithFallback from './utils/ImageWithFallback';
+import Script from 'next/script';
 
 interface HeroProps {
   onConsultationClick?: () => void;
@@ -19,24 +18,21 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
   const phoneRef = useRef<HTMLDivElement>(null);
   
   // App screens to showcase in the phone frame - using actual app screenshots
-  const appScreens = useMemo(() => [
+  const appScreens = [
     {
       src: '/company-logos/flex-pro.webp',
       alt: 'Flex Pro App',
-      color: 'bg-slate-blue-500',
-      sizes: '(max-width: 768px) 200px, 300px'
+      color: 'bg-slate-blue-500'
     },
     {
       src: '/company-logos/secrtary.webp',
       alt: 'Secretary App',
-      color: 'bg-bronze-500',
-      sizes: '(max-width: 768px) 200px, 300px'
+      color: 'bg-bronze-500'
     },
     {
       src: '/company-logos/farm-house.webp',
       alt: 'Farm House App',
       color: 'bg-bronze-600',
-      sizes: '(max-width: 768px) 200px, 300px',
       customStyle: {
         backgroundColor: '#a6714e', // Bronze-600 to match the Farm House app screen
         backgroundImage: 'linear-gradient(135deg, #a6714e 0%, #8a5d42 100%)'
@@ -45,10 +41,9 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
     {
       src: '/company-logos/skinverse.webp',
       alt: 'Skinverse App',
-      color: 'bg-slate-blue-400',
-      sizes: '(max-width: 768px) 200px, 300px'
+      color: 'bg-slate-blue-400'
     }
-  ], []);
+  ];
 
   // Rotate through app screens
   useEffect(() => {
@@ -63,25 +58,17 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
     const phoneElement = phoneRef.current;
     if (!phoneElement) return;
 
-    // Handle phone element mouse interactions with throttling
-    let ticking = false;
-    
+    // Handle phone element mouse interactions
     const handleMouseMove = (e: MouseEvent) => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          if (!phoneElement) return;
-          
-          // Calculate relative position
-          const rect = phoneElement.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width - 0.5;
-          const y = (e.clientY - rect.top) / rect.height - 0.5;
-          
-          // Apply subtle 3D transform
-          phoneElement.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
-          ticking = false;
-        });
-        ticking = true;
-      }
+      if (!phoneElement) return;
+      
+      // Calculate relative position
+      const rect = phoneElement.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      
+      // Apply subtle 3D transform
+      phoneElement.style.transform = `perspective(1000px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg)`;
     };
     
     const handleMouseLeave = () => {
@@ -97,8 +84,8 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       phoneElement.style.transition = 'none';
     };
 
-    // Add event listeners with passive option for better performance
-    phoneElement.addEventListener('mousemove', handleMouseMove, { passive: true });
+    // Add event listeners
+    phoneElement.addEventListener('mousemove', handleMouseMove);
     phoneElement.addEventListener('mouseleave', handleMouseLeave);
     phoneElement.addEventListener('mouseenter', handleMouseEnter);
     
@@ -111,18 +98,18 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
   }, []);
 
   // Memoize these functions to prevent unnecessary rerenders
-  const scrollToReadyMadeSolutions = useCallback(() => {
+  const scrollToReadyMadeSolutions = () => {
     document.getElementById('ready-made-solutions')?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     });
-  }, []);
+  };
   
-  const handleConsultationClick = useCallback(() => {
+  const handleConsultationClick = () => {
     if (onConsultationClick) {
       onConsultationClick();
     }
-  }, [onConsultationClick]);
+  };
 
   return (
     <section className="relative min-h-screen flex items-center py-16 sm:py-20 overflow-hidden">
@@ -130,7 +117,6 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       <Script
         id="structured-data-organization"
         type="application/ld+json"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
@@ -189,7 +175,7 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
                 className="px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300"
                 title="View our ready-made app solutions"
               >
-                Ready-Made Solutions
+                {t.navigation.readyMadeSolutions}
               </button>
               {/* Contact Us Button */}
               <button
@@ -264,14 +250,13 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white/20 p-2 shadow-inner">
                             <div className="absolute inset-0 rounded-full overflow-hidden bg-white flex items-center justify-center">
-                              <OptimizedImage
+                              <ImageWithFallback
                                 src={screen.src.replace(/\.(png|jpg|jpeg|svg)$/, '.webp')}
+                                fallbackSrc={screen.src}
                                 alt={screen.alt}
                                 fill
                                 className="object-contain p-2 rounded-full"
                                 sizes="128px"
-                                priority={index === 0}
-                                quality={85}
                               />
                             </div>
                             
