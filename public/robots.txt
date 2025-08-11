@@ -1,6 +1,9 @@
-# Allow all crawlers
+# *
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://aviniti.app/sitemap.xml 
+# Host
+Host: https://www.aviniti.app
+
+# Sitemaps
+Sitemap: https://www.aviniti.app/sitemap.xml
