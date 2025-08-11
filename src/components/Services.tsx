@@ -2,7 +2,8 @@
 
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Image from 'next/image';
-import AppIdeaAnalyzer from './AppIdeaAnalyzer';
+import dynamic from 'next/dynamic';
+const AppIdeaAnalyzer = dynamic(() => import('./AppIdeaAnalyzer'), { ssr: false, loading: () => null });
 import { 
   FaCode, 
   FaRobot, 

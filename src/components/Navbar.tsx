@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import ContactPopup from './ContactPopup';
+import dynamic from 'next/dynamic';
 import NavLinks from './NavLinks';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { usePathname } from 'next/navigation';
+
+const ContactPopup = dynamic(() => import('./ContactPopup'), { ssr: false, loading: () => null });
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

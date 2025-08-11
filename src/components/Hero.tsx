@@ -5,7 +5,8 @@ import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import OptimizedImage from './utils/OptimizedImage';
 import { LazyLoadOnIntersection } from './utils/LazyComponent';
-import Script from 'next/script';
+import dynamic from 'next/dynamic';
+const Script = dynamic(() => import('next/script'), { ssr: false });
 
 interface HeroProps {
   onConsultationClick?: () => void;
@@ -129,6 +130,7 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       <Script
         id="structured-data-organization"
         type="application/ld+json"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',

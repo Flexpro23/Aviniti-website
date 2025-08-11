@@ -82,56 +82,9 @@ const nextConfig = {
       };
     }
 
-    // Optimize bundle splitting
-    if (!dev) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: 10,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 5,
-            reuseExistingChunk: true,
-          },
-        },
-      };
-    }
+    // Use Next.js default chunking to enable per-route code splitting
 
-    // Optimize images
-    config.module.rules.push({
-      test: /\.(png|jpe?g|gif|svg)$/i,
-      use: [
-        {
-          loader: 'image-webpack-loader',
-          options: {
-            mozjpeg: {
-              progressive: true,
-              quality: 65,
-            },
-            optipng: {
-              enabled: false,
-            },
-            pngquant: {
-              quality: [0.65, 0.90],
-              speed: 4,
-            },
-            gifsicle: {
-              interlaced: false,
-            },
-            webp: {
-              quality: 75,
-            },
-          },
-        },
-      ],
-    });
+    // Rely on Next.js Image Optimization instead of image-webpack-loader on the client to avoid extra transforms
     
     return config;
   },

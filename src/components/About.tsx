@@ -82,7 +82,8 @@ export default function About() {
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
-                priority
+                loading="lazy"
+                priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-blue-600/20 to-transparent"></div>
             </div>

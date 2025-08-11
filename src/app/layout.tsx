@@ -1,11 +1,12 @@
 import './globals.css'
-import './accessibility.css'
+// Accessibility CSS moved to public and loaded non-blocking
 import type { Metadata } from 'next'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import MetaPixel from '@/components/analytics/MetaPixel'
 import PerformanceMonitor from '@/components/utils/PerformanceMonitor'
+import LoadStylesheet from '@/components/utils/LoadStylesheet'
 import fs from 'fs'
 import path from 'path'
 
@@ -62,17 +63,21 @@ export default function RootLayout({
         {/* Inline critical CSS to reduce render-blocking */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
         
-        {/* Preload critical resources */}
+        {/* Preload critical resources (keep to a minimum) */}
         <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
-        <link rel="preload" href="/company-logos/flex-pro.webp" as="image" type="image/webp" />
-        <link rel="preload" href="/hero/hero-image.webp" as="image" type="image/webp" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* DNS prefetch for external domains */}
-        <link rel="dns-prefetch" href="//connect.facebook.net" />
-        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+         {/* Preconnect/DNS-prefetch for external domains */}
+         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+         <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+         <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
+         <link rel="preconnect" href="https://region1.google-analytics.com" crossOrigin="anonymous" />
+         <link rel="preconnect" href="https://firebase.googleapis.com" crossOrigin="anonymous" />
+         <link rel="preconnect" href="https://firebaseinstallations.googleapis.com" crossOrigin="anonymous" />
+         <link rel="dns-prefetch" href="//connect.facebook.net" />
+         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         
         <meta name="google-site-verification" content="lJLyXN8_uDjPPnfHtb9J8tyt5ktEpkeIjFpuQcv2xvA" />
         
@@ -131,6 +136,7 @@ export default function RootLayout({
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/justLogo.png" type="image/png" />
+        {/* Accessibility stylesheet will be injected client-side to avoid render blocking */}
       </head>
       <body className={inter.className}>
         <LanguageProvider>
@@ -138,16 +144,16 @@ export default function RootLayout({
         </LanguageProvider>
         
         {/* Defer non-critical scripts */}
-        {/* Google Ads - load after page is interactive */}
+         {/* Google Ads/Analytics - load lazily to reduce main-thread contention */}
         {GADS_ID && (
           <>
             <Script
-              strategy="afterInteractive"
+              strategy="lazyOnload"
               src={`https://www.googletagmanager.com/gtag/js?id=${GADS_ID}`}
             />
             <Script
               id="gtag-init"
-              strategy="afterInteractive"
+              strategy="lazyOnload"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
@@ -159,35 +165,9 @@ export default function RootLayout({
             />
           </>
         )}
-        
-        {/* Meta Pixel - load with delay to improve initial page load */}
-        <Script id="meta-pixel" strategy="lazyOnload">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '931338648950378');
-            fbq('track', 'PageView');
-          `}
-        </Script>
-        
-        {/* Noscript fallback for Meta Pixel */}
-        <noscript>
-          <img 
-            height="1" 
-            width="1" 
-            style={{display: 'none'}}
-            src="https://www.facebook.com/tr?id=931338648950378&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
-        
+        {/* Load Meta Pixel via dedicated component (lazy) to avoid duplication */}
         <MetaPixel />
+        <LoadStylesheet href="/css/accessibility.css" />
         <PerformanceMonitor />
       </body>
     </html>
