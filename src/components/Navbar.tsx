@@ -86,7 +86,7 @@ export default function Navbar() {
               </Link>
             </div>
             
-            <div className="hidden md:flex items-center justify-center space-x-6 flex-1">
+            <div className={`hidden md:flex items-center justify-center gap-6 flex-1 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
               <NavLinks 
                 isScrolled={false}
               />
@@ -143,11 +143,11 @@ export default function Navbar() {
                 {t.navigation.blog}
               </Link>
               <Link 
-                href="/contact"
+                href="/ai-lab"
                 onClick={() => setIsMenuOpen(false)}
                 className="block w-full text-left px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
               >
-                {t.navigation.contact}
+                {t.navigation.aiIdeaLab}
               </Link>
               <div className="px-4 py-3">
                 <LanguageSwitcher isScrolled={true} />

@@ -11,6 +11,7 @@ export const en = {
     about: 'About',
     services: 'Services',
     readyMadeSolutions: 'Ready-Made Solutions',
+    aiIdeaLab: 'AI Idea Lab',
     blog: 'Blog',
     faq: 'FAQ',
     contact: 'Contact Us'
@@ -406,5 +407,15 @@ export const en = {
         backToFeatures: 'Back to Feature Selection'
       }
     }
+  },
+  aiIdeaLab: {
+    heading: "Don't Have an App Idea Yet?",
+    subheading: "Let Our AI Strategist Help You Brainstorm.",
+    description: "Our Aviniti Ideation Engine will engage you in a strategic conversation to understand your passions and goals, then generate hyper-personalized, viable app ideas tailored just for you.",
+    benefit1: "Discover Untapped Opportunities",
+    benefit2: "Engage in a Natural Conversation",
+    benefit3: "Receive a Custom Idea Blueprint",
+    ctaEnglish: "Start in English",
+    ctaArabic: "ابدأ باللغة العربية"
   }
 }; 

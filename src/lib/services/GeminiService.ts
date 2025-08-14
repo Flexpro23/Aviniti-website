@@ -503,6 +503,85 @@ export const testGeminiApiConnection = async (): Promise<{ success: boolean; mes
 };
 
 /**
+ * Generates a conversational response for the AI Strategy Bot
+ * @param systemPrompt The system prompt defining the AI's role and behavior
+ * @param conversationHistory Array of previous messages in the conversation
+ * @param userInput The current user input
+ * @returns A promise that resolves to the AI's response
+ */
+export const generateConversationalResponse = async (
+  systemPrompt: string,
+  conversationHistory: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }>,
+  userInput: string,
+  apiKey?: string
+): Promise<string> => {
+  try {
+    // Use provided API key or fall back to environment variable
+    const key = apiKey || process.env.GEMINI_API_KEY || GEMINI_API_KEY;
+    
+    if (!key || key.trim() === '') {
+      console.error('No Gemini API key provided for conversational response');
+      throw new Error('API key is required for conversational responses');
+    }
+
+    console.log('Generating conversational response with Gemini...');
+    console.log('Using model:', GEMINI_MODEL);
+
+    // Create a new model instance with the provided API key
+    const genAI = new GoogleGenerativeAI(key);
+    const modelInstance = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+
+    // Create a chat session with the conversation history
+    const chat = modelInstance.startChat({
+      history: conversationHistory,
+    });
+
+    // Send the system prompt and user input
+    const prompt = `${systemPrompt}\n\nUser: ${userInput}`;
+    const result = await chat.sendMessage(prompt);
+    const response = result.response.text();
+
+    if (!response) {
+      console.error('Empty response from Gemini API');
+      throw new Error('Empty response from Gemini API');
+    }
+
+    console.log('Successfully generated conversational response');
+    return response;
+
+  } catch (error) {
+    console.error('Error generating conversational response:', error);
+    throw error;
+  }
+};
+
+/**
+ * Class-based wrapper for GeminiService to support the API route pattern
+ */
+export class GeminiService {
+  private apiKey: string;
+
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey || process.env.GEMINI_API_KEY || GEMINI_API_KEY;
+  }
+
+  /**
+   * Generates a conversational response using the Gemini API
+   * @param systemPrompt The system prompt defining the AI's role and behavior
+   * @param conversationHistory Array of previous messages in the conversation
+   * @param userInput The current user input
+   * @returns A promise that resolves to the AI's response
+   */
+  async generateResponse(
+    systemPrompt: string,
+    conversationHistory: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }>,
+    userInput: string
+  ): Promise<string> {
+    return generateConversationalResponse(systemPrompt, conversationHistory, userInput, this.apiKey);
+  }
+}
+
+/**
  * Enhanced function to generate executive dashboard data using Gemini AI
  * @param appDescription - The user's app description
  * @param selectedFeatures - Array of selected features

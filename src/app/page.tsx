@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Projects from '@/components/Projects';
 import Services from '@/components/Services';
+
 // Use lazy loading for components that aren't immediately visible
 const Expertise = lazy(() => import('@/components/Expertise'));
 const About = lazy(() => import('@/components/About'));
