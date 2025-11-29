@@ -1,56 +1,140 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from 'next/server';
+import rateLimit from '@/lib/rate-limit';
+import { PRICING_SCHEDULE } from '@/config/pricing';
 
+// Use server-side environment variable for key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+// Get model from env or default to the requested 2.5-flash
+const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+
+// Rate limiter: 20 requests per minute per IP to prevent 429s during testing/demos
+const limiter = rateLimit({
+  interval: 60 * 1000, // 1 minute
+  uniqueTokenPerInterval: 500,
+});
+
+function sanitizeInput(input: string): string {
+  // Remove potential control characters but keep standard text
+  return input.replace(/[\x00-\x1F\x7F]/g, "").trim();
+}
+
+// Pricing guidelines for the AI to follow
+const PRICING_SYSTEM_INSTRUCTION = PRICING_SCHEDULE;
+
 
 export async function POST(request: Request) {
   try {
-    const { ideaDescription, language = 'en' } = await request.json();
+    // Rate Limiting
+    const ip = request.headers.get('x-forwarded-for') || 'anonymous';
+    try {
+      await limiter.check(NextResponse, 20, ip);
+    } catch {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
 
-    if (!ideaDescription || ideaDescription.trim().length < 50) {
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY is not set in environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing API Key' },
+        { status: 500 }
+      );
+    }
+
+    const { ideaDescription, selectedPlatforms, language = 'en' } = await request.json();
+
+    if (!ideaDescription || ideaDescription.trim().length < 10) {
       const errorMessage = language === 'ar' 
-        ? 'يرجى تقديم وصف مفصل لفكرة التطبيق (50 حرفًا على الأقل)'
-        : 'Please provide a detailed app idea description (minimum 50 characters)';
+        ? 'يرجى تقديم وصف مفصل لفكرة التطبيق'
+        : 'Please provide a detailed app idea description';
       return NextResponse.json(
         { error: errorMessage },
         { status: 400 }
       );
     }
 
+    const sanitizedIdea = sanitizeInput(ideaDescription);
+    
+    // Safety check for length after sanitization
+    if (sanitizedIdea.length > 2000) {
+       return NextResponse.json(
+        { error: 'Input too long. Please limit to 2000 characters.' },
+        { status: 400 }
+      );
+    }
+
     const responseLanguage = language === 'ar' ? 'Arabic' : 'English';
+    
+    // System instruction embedded in prompt
     const prompt = `
-      As a venture capitalist and tech product strategist, analyze the following app idea.
-      Your response MUST be in a valid JSON format. Do not include any text before or after the JSON object.
-      Please provide your analysis in ${responseLanguage}.
+      You are an expert in mobile and web app development cost estimation.
+      ${language === 'ar' ? "EXTREMELY IMPORTANT: The user wants a response in Arabic. You MUST respond ENTIRELY in Arabic language, including ALL feature names, descriptions, the app overview, and JSON property names. Do NOT translate any part of your response to English. The entire JSON structure must be in Arabic." : "Respond in English."}
+      
+      System: You are a venture capitalist and tech product strategist.
+      Task: Analyze the app idea provided below and return ONLY a JSON object.
+      Language: Output strictly in ${responseLanguage}.
+      
+      Your task is to analyze the user's app description VERY SPECIFICALLY and provide a COMPREHENSIVE feature breakdown.
+      
+      1. A personalized, detailed overview of THIS SPECIFIC app idea (4-6 sentences).
+         - Do not use generic descriptions
+         - Address the specific problem this particular app solves
+         - Mention the specific target audience
+         - Describe the business model
+      
+      2. A COMPREHENSIVE list of essential features (Aim for 12-20 features) necessary for a fully functional MVP.
+         - ALWAYS include "UI/UX Design" ($500, 10 days).
+         - ALWAYS include the deployment platforms selected: ${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web'}.
+         - Select specific features from the pricing schedule below that match the app's needs.
+         - DO NOT use generic names; use the specific names from the pricing schedule where possible.
+      
+      3. A STRONG list of enhancement features (Aim for 6-10 features) that would add significant value.
+      
+      ${PRICING_SYSTEM_INSTRUCTION}
+      
+      App Idea:
+      """
+      ${sanitizedIdea}
+      """
 
-      The idea is: "${ideaDescription}"
-
-      Your analysis should include the following keys:
-      1. "innovationScore": A number between 1 and 10, where 1 is a direct copy of an existing app and 10 is a groundbreaking new concept.
-      2. "marketViabilityScore": A number between 1 and 10, assessing the potential user base and market demand.
-      3. "monetizationScore": A number between 1 and 10, rating the potential for revenue generation.
-      4. "technicalFeasibilityScore": A number between 1 and 10, where 1 is extremely complex (requiring years of R&D) and 10 is straightforward to build with existing technology.
-      5. "strengths": A short paragraph (2-3 sentences) detailing the strongest aspects of the idea.
-      6. "challenges": A short paragraph (2-3 sentences) identifying the biggest potential hurdles or weaknesses.
-      7. "recommendedMonetization": A short paragraph (2-3 sentences) suggesting the most suitable business model (e.g., Subscription, Freemium, Ads, One-time purchase).
-
-      Example JSON structure:
+      Required JSON Structure:
       {
-        "innovationScore": 8,
-        "marketViabilityScore": 7,
-        "monetizationScore": 9,
-        "technicalFeasibilityScore": 8,
-        "strengths": "This idea targets a highly engaged niche community with clear needs. The potential for user-generated content could lead to strong organic growth.",
-        "challenges": "The main challenge will be user acquisition in a crowded market. A strong, unique feature set will be essential to stand out from existing competitors.",
-        "recommendedMonetization": "A freemium model is highly recommended. Core features should be free to build a user base, with advanced analytics and community tools available via a premium subscription."
+        "appOverview": "Detailed analysis string...",
+        "essentialFeatures": [
+          {
+            "name": "Feature Name",
+            "description": "Specific description",
+            "purpose": "Feature purpose",
+            "costEstimate": "$X",
+            "timeEstimate": "Y days"
+          }
+        ],
+        "enhancementFeatures": [ ... ]
       }
     `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-    const result = await model.generateContent(prompt);
+    // Use the configured model
+    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    
+    console.log(`Analysing with model: ${MODEL_NAME}`);
+    
+    let result;
+    try {
+      result = await model.generateContent(prompt);
+    } catch (apiError: any) {
+      console.error('Gemini API call failed:', apiError);
+      // Handle specific API errors if needed (e.g. quota exceeded)
+      throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+    }
+    
     const text = result.response.text();
 
     // Find JSON in the response
+    // Improved regex to catch JSON even if wrapped in markdown code blocks
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     
     if (!jsonMatch) {
@@ -59,19 +143,25 @@ export async function POST(request: Request) {
     }
 
     const jsonString = jsonMatch[0];
-    const analysisResult = JSON.parse(jsonString);
-
-    // Validate the response structure
-    const requiredFields = ['innovationScore', 'marketViabilityScore', 'monetizationScore', 'technicalFeasibilityScore', 'strengths', 'challenges', 'recommendedMonetization'];
-    const missingFields = requiredFields.filter(field => !(field in analysisResult));
     
-    if (missingFields.length > 0) {
-      throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+    let analysisResult;
+    try {
+      analysisResult = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      console.error('Raw JSON String:', jsonString);
+      // Attempt to clean common JSON errors (like trailing commas) could go here
+      throw new Error('Failed to parse AI response as JSON');
     }
 
     return NextResponse.json(analysisResult);
   } catch (error) {
     console.error("Gemini API Error:", error);
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error("Error details:", error.message);
+      console.error("Stack:", error.stack);
+    }
     const { language = 'en' } = await request.json().catch(() => ({ language: 'en' }));
     const errorMessage = language === 'ar' 
       ? 'فشل في تحليل الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.'

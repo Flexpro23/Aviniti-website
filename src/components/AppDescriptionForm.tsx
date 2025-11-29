@@ -411,7 +411,7 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
                 id="description"
                 required
                 rows={6}
-                className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 shadow-sm"
+                className="w-full px-4 py-3 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 shadow-sm"
                 placeholder="Example: I want to create a mobile app that helps people track their daily water intake and reminds them to stay hydrated..."
                 value={appDetails.description}
                 onChange={(e) => setAppDetails({...appDetails, description: e.target.value})}
@@ -484,7 +484,7 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
               <textarea
                 id="competitors"
                 rows={4}
-                className="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 shadow-sm"
+                className="w-full px-4 py-3 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-300 shadow-sm"
                 placeholder="Example: While there are several water tracking apps available, our app will be unique because..."
                 value={appDetails.answers.competitors}
                 onChange={(e) => setAppDetails({
@@ -669,7 +669,15 @@ export default function AppDescriptionForm({ isOpen, onClose, userId, onAnalyze 
           isOpen={showFeatureSelection}
           onClose={() => setShowFeatureSelection(false)}
           coreFeatures={analysisResult.coreFeatures}
-          suggestedFeatures={analysisResult.suggestedFeatures}
+          suggestedFeatures={analysisResult.suggestedFeatures.map((f, i) => ({
+            id: `suggested-${i}`,
+            name: f.name,
+            description: f.description,
+            category: 'Suggested',
+            costEstimate: '$500',
+            timeEstimate: '3 days',
+            isSelected: false
+          }))}
           userId={userId}
           onSubmit={handleFeatureSelectionSubmit}
         />

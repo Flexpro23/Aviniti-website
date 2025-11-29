@@ -83,7 +83,7 @@ export default function KeyMetricCards({
 
   return (
     <motion.div 
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -92,7 +92,7 @@ export default function KeyMetricCards({
         <motion.div
           key={card.title}
           variants={cardVariants}
-          className={`bg-gradient-to-br ${card.bgGradient} p-6 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300`}
+          className={`bg-gradient-to-br ${card.bgGradient} p-5 rounded-xl border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300`}
         >
           <div className="flex items-center justify-between mb-4">
             <div className={`p-3 rounded-lg bg-gradient-to-r ${card.gradient} text-white shadow-lg`}>

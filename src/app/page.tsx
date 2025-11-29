@@ -9,6 +9,7 @@ import Services from '@/components/Services';
 const Expertise = lazy(() => import('@/components/Expertise'));
 const About = lazy(() => import('@/components/About'));
 const Footer = lazy(() => import('@/components/Footer'));
+const TrustElements = lazy(() => import('@/components/TrustElements'));
 import ContactPopup from '@/components/ContactPopup';
 
 const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
@@ -55,6 +56,13 @@ export default function Home() {
         </div>
       </div>
     }>
+    {/* Skip to main content link for accessibility */}
+    <a 
+      href="#main-content" 
+      className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-bronze-500 focus:text-white focus:rounded-lg focus:shadow-lg"
+    >
+      Skip to main content
+    </a>
     <main dir={dir} className="min-h-screen">
       <Navbar />
       {/* Hero section with primary heading */}
@@ -64,8 +72,12 @@ export default function Home() {
         />
       </header>
       {/* Main content sections */}
-      <div role="main">
+      <div role="main" id="main-content" aria-label="Main content">
         <Projects />
+        {/* Trust Elements - Testimonials and Security Badges */}
+        <Suspense fallback={<LoadingFallback />}>
+          <TrustElements />
+        </Suspense>
         <div id="services-section">
           <Services />
         </div>

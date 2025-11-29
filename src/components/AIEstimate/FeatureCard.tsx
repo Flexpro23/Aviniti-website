@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Feature } from './AIEstimateModal';
+import { Feature } from '@/types/report';
 
 interface FeatureCardProps {
   feature: Feature;
@@ -97,7 +97,7 @@ export default function FeatureCard({ feature, isSelected, onToggle, category }:
       {/* Purpose Tag */}
       <div className="mb-3">
         <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-blue-100 text-slate-blue-700">
-          {feature.purpose}
+          {feature.purpose || 'Feature'}
         </span>
       </div>
 

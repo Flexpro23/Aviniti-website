@@ -41,7 +41,7 @@ try {
   // Initialize Storage
   storage = getStorage(app);
   console.log('Storage initialized successfully');
-  
+
   // Initialize Analytics if supported
   isSupported().then(yes => {
     if (yes) {

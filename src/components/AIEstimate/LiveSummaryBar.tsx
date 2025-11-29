@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
-import { Feature } from './AIEstimateModal';
+import { Feature } from '@/types/report';
 import { useEffect, useState } from 'react';
 
 interface LiveSummaryBarProps {

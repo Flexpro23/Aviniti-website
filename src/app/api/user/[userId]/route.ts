@@ -3,10 +3,11 @@ import { getFirestoreAdmin } from '@/lib/firebase-admin';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  props: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> {
   try {
     const firestore = getFirestoreAdmin();
+    const params = await props.params;
     const userDoc = await firestore.collection('users').doc(params.userId).get();
     
     if (!userDoc.exists) {

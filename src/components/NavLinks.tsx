@@ -16,7 +16,7 @@ export default function NavLinks({ isScrolled }: NavLinksProps) {
   }`;
 
   return (
-    <div className={`hidden md:flex items-center ${dir === 'rtl' ? 'space-x-reverse' : ''} space-x-8`}>
+    <div className="hidden md:flex items-center gap-8">
       <Link href="/" className={linkClasses}>
         {t.navigation.home}
       </Link>

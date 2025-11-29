@@ -12,12 +12,13 @@ import WorldClassProcessingAnimation from '@/components/AIEstimate/WorldClassPro
 
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL, generateExecutiveDashboard } from '@/lib/services/GeminiService';
 import { collection, addDoc, getDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { createUserDocument } from '@/lib/firebase-utils';
+import { createUserDocument } from '@/services/estimateService';
 import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 import ContactPopup from '@/components/ContactPopup';
 import Navbar from '@/components/Navbar';
+
+import { Feature, AIAnalysisResult, CostBreakdown, TimelinePhase, AnalysisScores as SuccessPotentialScores, StrategicAnalysis, ReportData } from '@/types/report';
 
 export type PersonalDetails = {
   fullName: string;
@@ -29,45 +30,6 @@ export type PersonalDetails = {
 export type AppDescription = {
   description: string;
   selectedPlatforms: string[];
-};
-
-export type Feature = {
-  id: string;
-  name: string;
-  description: string;
-  purpose: string;
-  costEstimate: string;
-  timeEstimate: string;
-  selected: boolean;
-};
-
-export type AIAnalysisResult = {
-  appOverview: string;
-  essentialFeatures: Feature[];
-  enhancementFeatures: Feature[];
-};
-
-export type CostBreakdown = {
-  [category: string]: number;
-};
-
-export type TimelinePhase = {
-  phase: string;
-  duration: string;
-  description: string;
-};
-
-export type SuccessPotentialScores = {
-  innovation: number;
-  marketViability: number;
-  monetization: number;
-  technicalFeasibility: number;
-};
-
-export type StrategicAnalysis = {
-  strengths: string;
-  challenges: string;
-  recommendedMonetization: string;
 };
 
 export type DetailedReport = {
@@ -141,7 +103,7 @@ export default function AIEstimatePage() {
       
       // Try to create user document if needed
       try {
-        await createUserDocument(details.emailAddress, {
+        await createUserDocument({
           fullName: details.fullName,
           phoneNumber: details.phoneNumber,
           companyName: details.companyName,
@@ -224,7 +186,7 @@ export default function AIEstimatePage() {
     setIsProcessing(true);
     
     try {
-      const selectedFeatures = features.filter(f => f.selected);
+      const selectedFeatures = features.filter(f => f.isSelected);
       
       const extractCostRange = (costEstimate: string) => {
         const costString = costEstimate.replace(/[^0-9,-]/g, '');
@@ -380,11 +342,11 @@ export default function AIEstimatePage() {
 
   const getStepTitle = () => {
     switch (step) {
-      case 1: return 'Personal Information';
-      case 2: return 'App Description';
-      case 3: return 'Feature Selection';
-      case 4: return 'Detailed Report';
-      default: return 'AI Estimate';
+      case 1: return t.aiEstimate.stepTitles.personalInfo;
+      case 2: return t.aiEstimate.stepTitles.appDescription;
+      case 3: return t.aiEstimate.stepTitles.featureSelection;
+      case 4: return t.aiEstimate.stepTitles.detailedReport;
+      default: return t.aiEstimate.stepTitles.default;
     }
   };
 
@@ -396,38 +358,38 @@ export default function AIEstimatePage() {
       <div className="bg-off-white text-slate-blue-600 py-16 border-b border-slate-blue-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-blue-600 pt-12">
-            Get Your AI-Powered App Estimate
+            {t.aiEstimate.header.title}
           </h1>
           <p className="text-xl text-slate-blue-500 mb-8">
-            Receive an instant, detailed estimate for your app development project powered by advanced AI analysis
+            {t.aiEstimate.header.subtitle}
           </p>
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 1 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
                 1
               </div>
-              <span className="hidden sm:inline text-slate-blue-600">Personal Info</span>
+              <span className="hidden sm:inline text-slate-blue-600">{t.aiEstimate.stepIndicators.personalInfo}</span>
             </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
+            <div className="w-8 h-1 bg-slate-blue-200 hidden sm:block"></div>
+            <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 2 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
                 2
               </div>
-              <span className="hidden sm:inline text-slate-blue-600">App Description</span>
+              <span className="hidden sm:inline text-slate-blue-600">{t.aiEstimate.stepIndicators.appDescription}</span>
             </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
+            <div className="w-8 h-1 bg-slate-blue-200 hidden sm:block"></div>
+            <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 3 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
                 3
               </div>
-              <span className="hidden sm:inline text-slate-blue-600">Features</span>
+              <span className="hidden sm:inline text-slate-blue-600">{t.aiEstimate.stepIndicators.features}</span>
             </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
+            <div className="w-8 h-1 bg-slate-blue-200 hidden sm:block"></div>
+            <div className="flex items-center gap-2">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 4 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
                 4
               </div>
-              <span className="hidden sm:inline text-slate-blue-600">Report</span>
+              <span className="hidden sm:inline text-slate-blue-600">{t.aiEstimate.stepIndicators.report}</span>
             </div>
           </div>
         </div>
@@ -440,7 +402,7 @@ export default function AIEstimatePage() {
           <div className="p-6 sm:p-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-slate-blue-600 mb-2">
-                Step {step}: {getStepTitle()}
+                {t.aiEstimate.stepTitles.stepPrefix} {step}: {getStepTitle()}
               </h2>
               <div className="w-full bg-slate-blue-100 rounded-full h-2">
                 <div 

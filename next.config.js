@@ -6,15 +6,18 @@ const nextConfig = {
   },
   images: {
     formats: ['image/webp'],
-    domains: ['firebasestorage.googleapis.com', 'fonts.gstatic.com'],
-    // Use these if your images are from an external source
-    // remotePatterns: [
-    //   {
-    //     protocol: 'https',
-    //     hostname: 'example.com',
-    //     pathname: '/images/**',
-    //   },
-    // ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fonts.gstatic.com',
+        pathname: '/**',
+      },
+    ],
   },
   // Performance optimizations
   compiler: {

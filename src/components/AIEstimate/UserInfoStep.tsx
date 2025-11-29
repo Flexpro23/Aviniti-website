@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { PersonalDetails } from './AIEstimateModal';
+import { PersonalDetails } from '@/types/estimate';
 
 interface UserInfoStepProps {
   onSubmit: (data: PersonalDetails) => void;
@@ -16,13 +16,22 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
   const [formData, setFormData] = useState<PersonalDetails>(initialData);
   const [errors, setErrors] = useState<Partial<Record<keyof PersonalDetails, string>>>({});
   const [localSubmitting, setLocalSubmitting] = useState(false);
+  const firstInputRef = useRef<HTMLInputElement>(null);
   
   const isSubmitting = localSubmitting || isProcessing;
+
+  // Auto-focus first input on mount
+  useEffect(() => {
+    if (firstInputRef.current && !initialData.fullName) {
+      firstInputRef.current.focus();
+    }
+  }, [initialData.fullName]);
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PersonalDetails, string>> = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\+?[\d\s-]{10,}$/;
+    // More permissive phone regex - accepts international formats
+    const phoneRegex = /^[\d\s\-\+\(\)]{7,20}$/;
 
     if (!formData.fullName.trim()) {
       newErrors.fullName = t.aiEstimate.steps.userInfo.errors.fullName;
@@ -35,9 +44,13 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
     }
 
     if (!formData.phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone number is required';
-    } else if (!phoneRegex.test(formData.phoneNumber.trim())) {
-      newErrors.phoneNumber = 'Please enter a valid phone number';
+      newErrors.phoneNumber = language === 'en' ? 'Phone number is required' : 'رقم الهاتف مطلوب';
+    } else if (!phoneRegex.test(formData.phoneNumber.trim().replace(/\s/g, ''))) {
+      newErrors.phoneNumber = language === 'en' ? 'Please enter a valid phone number' : 'الرجاء إدخال رقم هاتف صحيح';
+    }
+
+    if (!formData.companyName?.trim()) {
+      newErrors.companyName = language === 'en' ? 'Company name is required' : 'اسم الشركة مطلوب';
     }
 
     setErrors(newErrors);
@@ -53,6 +66,12 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
 
     setLocalSubmitting(true);
     
+    // Optimize: Cache form data in session storage to persist across reloads/steps
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('userInfo_temp', JSON.stringify(formData));
+    }
+    
+    // Optimize: Direct submission without unnecessary delays or checks
     onSubmit(formData);
   };
 
@@ -72,19 +91,24 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
               {t.aiEstimate.steps.userInfo.fullName} <span className="text-red-500">*</span>
             </label>
             <input
+              ref={firstInputRef}
               type="text"
               id="fullName"
+              name="name"
+              autoComplete="name"
               required
-              className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+              className={`w-full px-4 py-2 text-base rounded-lg border ${
                 errors.fullName ? 'border-red-500' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+              } focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors`}
               placeholder={language === 'en' ? "John Doe" : "محمد أحمد"}
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               disabled={isSubmitting}
+              aria-invalid={errors.fullName ? 'true' : 'false'}
+              aria-describedby={errors.fullName ? 'fullName-error' : undefined}
             />
             {errors.fullName && (
-              <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+              <p id="fullName-error" className="mt-1 text-sm text-red-500" role="alert">{errors.fullName}</p>
             )}
           </div>
 
@@ -95,17 +119,21 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
             <input
               type="email"
               id="emailAddress"
+              name="email"
+              autoComplete="email"
               required
-              className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+              className={`w-full px-4 py-2 text-base rounded-lg border ${
                 errors.emailAddress ? 'border-red-500' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+              } focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors`}
               placeholder={language === 'en' ? "john@example.com" : "محمد@مثال.com"}
               value={formData.emailAddress}
               onChange={(e) => setFormData({ ...formData, emailAddress: e.target.value })}
               disabled={isSubmitting}
+              aria-invalid={errors.emailAddress ? 'true' : 'false'}
+              aria-describedby={errors.emailAddress ? 'email-error' : undefined}
             />
             {errors.emailAddress && (
-              <p className="mt-1 text-sm text-red-500">{errors.emailAddress}</p>
+              <p id="email-error" className="mt-1 text-sm text-red-500" role="alert">{errors.emailAddress}</p>
             )}
           </div>
 
@@ -116,33 +144,47 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
             <input
               type="tel"
               id="phoneNumber"
+              name="tel"
+              autoComplete="tel"
               required
-              className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+              className={`w-full px-4 py-2 text-base rounded-lg border ${
                 errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+              } focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors`}
               placeholder={language === 'en' ? "+1 (234) 567-8900" : "+٩٦٢ ٧٩ ١٢٣ ٤٥٦٧"}
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               disabled={isSubmitting}
+              aria-invalid={errors.phoneNumber ? 'true' : 'false'}
+              aria-describedby={errors.phoneNumber ? 'phone-error' : undefined}
             />
             {errors.phoneNumber && (
-              <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>
+              <p id="phone-error" className="mt-1 text-sm text-red-500" role="alert">{errors.phoneNumber}</p>
             )}
           </div>
 
           <div>
             <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
-              {t.aiEstimate.steps.userInfo.companyName} <span className="text-gray-400 text-xs font-normal">{t.aiEstimate.steps.userInfo.optional}</span>
+              {t.aiEstimate.steps.userInfo.companyName} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               id="companyName"
-              className="w-full px-4 py-2 text-sm sm:text-base rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              name="organization"
+              autoComplete="organization"
+              required
+              className={`w-full px-4 py-2 text-base rounded-lg border ${
+                errors.companyName ? 'border-red-500' : 'border-gray-300'
+              } focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors`}
               placeholder={language === 'en' ? "Your Company" : "شركتك"}
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
               disabled={isSubmitting}
+              aria-invalid={errors.companyName ? 'true' : 'false'}
+              aria-describedby={errors.companyName ? 'company-error' : undefined}
             />
+            {errors.companyName && (
+              <p id="company-error" className="mt-1 text-sm text-red-500" role="alert">{errors.companyName}</p>
+            )}
           </div>
         </div>
 
@@ -168,7 +210,7 @@ export default function UserInfoStep({ onSubmit, onCancel, initialData, isProces
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                {t.aiEstimate.steps.userInfo.processing}
+                {t.aiEstimate.steps.userInfo.processing || (language === 'en' ? "Saving..." : "جاري الحفظ...")}
               </span>
             ) : (
               <span className="flex items-center">

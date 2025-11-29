@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-4">
+            <div className="flex items-center gap-3 mb-4">
               <div className="relative w-12 h-12">
                 <Image
                   src="/justLogo.png"
@@ -25,23 +25,24 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white">AVINITI</h3>
-                <p className="text-sm text-slate-blue-300">YOUR IDEAS, OUR REALITY</p>
+                <p className="text-sm text-slate-blue-300">{t.common.tagline}</p>
               </div>
             </div>
             <p className="text-slate-blue-200 mb-6 max-w-md">
-              Transforming innovative ideas into premium digital solutions. We specialize in AI-powered applications, custom software development, and cutting-edge mobile apps.
+              {t.footer.description}
             </p>
-            <div className="flex space-x-4">
+            <div className="flex gap-4">
               <a 
-                href="mailto:info@aviniti.app" 
+                href="mailto:aliodat@aviniti.app" 
                 className="text-slate-blue-300 hover:text-bronze-400 transition-colors"
               >
-                info@aviniti.app
+                aliodat@aviniti.app
               </a>
               <span className="text-slate-blue-400">|</span>
               <a 
                 href="tel:+962790685302" 
                 className="text-slate-blue-300 hover:text-bronze-400 transition-colors"
+                dir="ltr"
               >
                 +962 79 068 5302
               </a>
@@ -50,8 +51,8 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
-            <ul className="space-y-2">
+            <h4 className="text-lg font-semibold text-white mb-4">{t.footer.quickLinks}</h4>
+            <ul className="space-y-3 sm:space-y-2">
               <li>
                 <Link href="/" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
                   {t.navigation.home}
@@ -82,8 +83,8 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Support</h4>
-            <ul className="space-y-2">
+            <h4 className="text-lg font-semibold text-white mb-4">{t.footer.support}</h4>
+            <ul className="space-y-3 sm:space-y-2">
               <li>
                 <Link href="/contact" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
                   {t.navigation.contact}
@@ -117,14 +118,14 @@ export default function Footer() {
         <div className="border-t border-slate-blue-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-slate-blue-400 text-sm">
-              © {new Date().getFullYear()} Aviniti. All rights reserved.
+              © {new Date().getFullYear()} Aviniti. {t.footer.rights}
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+            <div className="flex gap-6 mt-4 md:mt-0">
               <Link href="/privacy-policy" className="text-slate-blue-400 hover:text-bronze-400 text-sm transition-colors">
-                Privacy Policy
+                {t.footer.privacy}
               </Link>
               <Link href="/terms-of-service" className="text-slate-blue-400 hover:text-bronze-400 text-sm transition-colors">
-                Terms of Service
+                {t.footer.terms}
               </Link>
             </div>
           </div>

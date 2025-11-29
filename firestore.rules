@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users Collection Rules
+    // Note: Current implementation uses email as document ID.
+    // Since frontend-only Auth is not yet implemented, we rely on document ID matching.
+    match /users/{userId} {
+      // Allow creation only if the provided email matches the document ID
+      allow create: if request.resource.data.emailAddress == userId;
+      
+      // Allow updates only if the email address remains consistent with the ID
+      // This prevents moving data to a different user identity
+      allow update: if request.resource.data.emailAddress == userId;
+      
+      // Allow public read access to check for existing users
+      // In a production environment with Auth, this should be restricted to request.auth.uid == userId
+      allow read: if true;
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

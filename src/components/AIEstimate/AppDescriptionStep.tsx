@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { AppDescription } from './AIEstimateModal';
+import { AIAnalysisResult, Feature, AppDescription } from '@/types/estimate';
 import { testGeminiApiConnection } from '@/lib/services/GeminiService';
 import InlineAnalysisDisplay from './InlineAnalysisDisplay';
 
@@ -62,6 +62,8 @@ export default function AppDescriptionStep({
       return;
     }
 
+    // Gemini API calls disabled
+    /*
     setIsAnalyzingKeywords(true);
     try {
       const response = await fetch('/api/analyze-keywords', {
@@ -81,12 +83,15 @@ export default function AppDescriptionStep({
     } finally {
       setIsAnalyzingKeywords(false);
     }
+    */
   }, []);
 
   // Automatic app idea analysis
   const analyzeAppIdea = useCallback(async (text: string) => {
     if (text.length < 60) return;
 
+    // Gemini API calls disabled
+    /*
     setIsInlineAnalyzing(true);
     try {
       const response = await fetch('/api/analyze-idea', {
@@ -106,6 +111,7 @@ export default function AppDescriptionStep({
     } finally {
       setIsInlineAnalyzing(false);
     }
+    */
   }, []);
 
   // Debounced effect for keyword analysis
@@ -119,6 +125,9 @@ export default function AppDescriptionStep({
 
   // Debounced effect for app idea analysis
   useEffect(() => {
+    // Only analyze if description length is substantial
+    if (description.length < 60) return;
+    
     const timer = setTimeout(() => {
       analyzeAppIdea(description);
     }, 1500);
@@ -126,37 +135,14 @@ export default function AppDescriptionStep({
     return () => clearTimeout(timer);
   }, [description, analyzeAppIdea]);
   
-  // Check if the Gemini API is working
-  useEffect(() => {
-    const checkApiStatus = async () => {
-      try {
-        // Test the Gemini API connection
-        const testResult = await testGeminiApiConnection();
-        setApiStatus({
-          checked: true,
-          working: testResult.success,
-          message: testResult.message
-        });
-      } catch (error) {
-        setApiStatus({
-          checked: true,
-          working: false,
-          message: error instanceof Error ? error.message : 'Unknown error checking API status'
-        });
-      }
-    };
-
-    checkApiStatus();
-  }, []);
-  
-  // Update the thinking message every few seconds during processing
+  // Optimized: Reduced frequency of thinking message updates
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
     if (isProcessing) {
       interval = setInterval(() => {
         setThinkingIndex((prevIndex) => (prevIndex + 1) % thinkingMessages.length);
-      }, 2500);
+      }, 4000); // Increased from 2500ms to 4000ms to reduce render cycles
     }
     
     return () => {
@@ -220,31 +206,7 @@ export default function AppDescriptionStep({
         </div>
       )}
 
-      {isProcessing ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="relative w-24 h-24 mb-8">
-            <div className="absolute inset-0 border-4 border-blue-200 border-opacity-50 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg className="w-10 h-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-          </div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            {t.aiEstimate.steps.appDescription.thinking.title}
-          </h3>
-          <p className="text-gray-600 text-center max-w-md animate-pulse">
-            {thinkingMessages[thinkingIndex]}
-          </p>
-          <div className="mt-8 max-w-md">
-            <div className="h-2 bg-blue-100 rounded mb-3 animate-pulse"></div>
-            <div className="h-2 bg-blue-100 rounded mb-3 animate-pulse" style={{ width: '85%' }}></div>
-            <div className="h-2 bg-blue-100 rounded mb-3 animate-pulse" style={{ width: '70%' }}></div>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="appDescription" className="block text-sm font-medium text-gray-700 mb-2">
               {t.aiEstimate.steps.appDescription.description} <span className="text-red-500">*</span>
@@ -381,7 +343,6 @@ export default function AppDescriptionStep({
             </button>
           </div>
         </form>
-      )}
     </div>
   );
 } 

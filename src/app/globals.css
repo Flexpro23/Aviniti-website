@@ -370,14 +370,40 @@ html[lang="ar"] .text-base {
 
   body {
     @apply bg-off-white text-slate-blue-800 antialiased;
+    font-family: var(--font-body), 'DM Sans', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-slate-blue-600;
+    @apply tracking-tight text-slate-blue-600;
+    font-family: var(--font-heading), 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+  }
+
+  h1 {
+    @apply text-fluid-4xl md:text-fluid-5xl;
+  }
+
+  h2 {
+    @apply text-fluid-3xl md:text-fluid-4xl;
+  }
+
+  h3 {
+    @apply text-fluid-2xl md:text-fluid-3xl;
+  }
+
+  h4 {
+    @apply text-fluid-xl md:text-fluid-2xl;
   }
 
   a {
     @apply text-bronze-500 hover:text-bronze-600 transition-colors;
+  }
+
+  /* Improved text rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -424,7 +450,8 @@ html[lang="ar"] .text-base {
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-slate-blue-600;
+    @apply text-fluid-3xl md:text-fluid-4xl text-slate-blue-600;
+    font-family: var(--font-heading), 'Instrument Serif', Georgia, serif;
   }
 
   .card {
@@ -442,12 +469,14 @@ html[lang="ar"] .text-base {
   }
 
   .heading-lg {
-    @apply text-4xl md:text-5xl font-bold bg-clip-text text-transparent 
+    @apply text-fluid-4xl md:text-fluid-5xl bg-clip-text text-transparent 
            bg-gradient-to-r from-slate-blue-600 to-slate-blue-800;
+    font-family: var(--font-heading), 'Instrument Serif', Georgia, serif;
   }
 
   .heading-md {
-    @apply text-2xl font-bold text-slate-blue-600;
+    @apply text-fluid-2xl text-slate-blue-600;
+    font-family: var(--font-heading), 'Instrument Serif', Georgia, serif;
   }
 
   .section-padding {
@@ -791,4 +820,211 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
-} 
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+
+/* Screen reader only - visible on focus */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only.focus\:not-sr-only:focus,
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  :root {
+    --slate-blue-400: #4a6082;
+    --slate-blue-500: #3d5270;
+    --bronze-400: #a87d5a;
+  }
+}
+
+/* Focus visible styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--bronze-500, #c08460);
+  outline-offset: 2px;
+}
+
+/* Improved button focus states */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--bronze-500, #c08460);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(192, 132, 96, 0.2);
+}
+
+/* ARIA live region styles */
+[aria-live="polite"],
+[aria-live="assertive"] {
+  position: relative;
+}
+
+/* Improved color contrast - use text-slate-blue-500 instead of 400 */
+.text-contrast-safe {
+  color: var(--slate-blue-500, #556b8b);
+}
+
+/* Accessible hidden content that can be focused */
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Chart accessibility - ensure data is available as text */
+.chart-accessible-data {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Touch target size for mobile accessibility */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ===== MOBILE UX IMPROVEMENTS ===== */
+
+/* Safe area insets for notched devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Sticky CTA container that doesn't obscure content */
+.sticky-cta-container {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, white 80%, transparent);
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 40;
+}
+
+/* Mobile-optimized scrolling */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Bottom sheet handle indicator */
+.sheet-handle {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: #d1d5db;
+  margin: 8px auto;
+}
+
+/* Swipe hint animation */
+@keyframes swipe-hint {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.swipe-hint {
+  animation: swipe-hint 2s ease-in-out infinite;
+}
+
+/* Mobile card improvements */
+@media (max-width: 640px) {
+  .card {
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Larger touch targets for mobile */
+  .mobile-touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Improved spacing for mobile */
+  .section-padding {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+/* Prevent text selection during swipe */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Haptic feedback visual cue (for supported browsers) */
+.haptic-feedback:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}

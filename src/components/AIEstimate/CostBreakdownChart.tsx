@@ -2,7 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { motion } from 'framer-motion';
-import { CostBreakdown } from './AIEstimateModal';
+import { CostBreakdown } from '@/types/estimate';
 
 interface CostBreakdownChartProps {
   costBreakdown: CostBreakdown;
@@ -10,11 +10,14 @@ interface CostBreakdownChartProps {
 }
 
 export default function CostBreakdownChart({ costBreakdown, totalCost }: CostBreakdownChartProps) {
+  // Calculate total sum from individual values for percentage calculation
+  const totalSum = Object.values(costBreakdown).reduce((sum, val) => sum + val, 0);
+
   // Convert cost breakdown to chart data
   const chartData = Object.entries(costBreakdown).map(([category, cost]) => ({
     name: category,
     value: cost,
-    percentage: Math.round((cost / Object.values(costBreakdown).reduce((sum, val) => sum + val, 0)) * 100)
+    percentage: Math.round((cost / totalSum) * 100)
   }));
 
   // Color palette using brand colors
@@ -57,7 +60,7 @@ export default function CostBreakdownChart({ costBreakdown, totalCost }: CostBre
         </div>
         <div>
           <h3 className="text-xl font-bold text-slate-blue-600">Cost Breakdown</h3>
-          <p className="text-sm text-slate-blue-500">{totalCost} total investment</p>
+          <p className="text-sm text-slate-blue-500">{totalCost.replace(/^\$+/g, '$')} total investment</p>
         </div>
       </div>
 

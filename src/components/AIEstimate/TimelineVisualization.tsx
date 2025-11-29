@@ -77,22 +77,22 @@ export default function TimelineVisualization({ timelinePhases }: TimelineVisual
             )}
             
             <div className="flex items-start">
-              {/* Phase indicator */}
-              <div className={`flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r ${colors[index % colors.length]} text-white font-bold text-lg shadow-lg mr-4 flex-shrink-0`}>
+              {/* Phase indicator - Optimized for mobile */}
+              <div className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${colors[index % colors.length]} text-white font-bold text-base md:text-lg shadow-lg mr-3 md:mr-4 flex-shrink-0 z-10 relative`}>
                 {index + 1}
               </div>
               
               {/* Phase content */}
-              <div className={`flex-1 bg-gradient-to-r ${bgColors[index % bgColors.length]} p-4 rounded-lg border border-gray-200`}>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                  <h4 className="text-lg font-semibold text-gray-900">
+              <div className={`flex-1 bg-gradient-to-r ${bgColors[index % bgColors.length]} p-3 md:p-4 rounded-lg border border-gray-200`}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1 sm:mb-2">
+                  <h4 className="text-base md:text-lg font-semibold text-gray-900">
                     {phase.phase}
                   </h4>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${colors[index % colors.length]} text-white shadow-sm`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs md:text-sm font-medium bg-gradient-to-r ${colors[index % colors.length]} text-white shadow-sm mt-1 sm:mt-0 self-start sm:self-auto`}>
                     {phase.duration}
                   </span>
                 </div>
-                <p className="text-gray-700">
+                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                   {phase.description}
                 </p>
               </div>

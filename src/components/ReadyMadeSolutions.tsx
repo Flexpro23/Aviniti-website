@@ -302,6 +302,7 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
                       alt={solutionData.title}
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 350px"
                     />
                   </div>
                   <div className="p-6">

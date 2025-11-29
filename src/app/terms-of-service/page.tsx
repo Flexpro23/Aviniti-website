@@ -67,7 +67,7 @@ const TermsOfServicePage = () => {
 
           <section>
             <h2 className="text-2xl font-bold text-slate-blue-600 mb-4">10. Contact Us</h2>
-            <p className="text-slate-blue-500 leading-relaxed">To resolve a complaint or receive further information, please contact us at: <a href="mailto:info@aviniti.app" className="text-bronze-500 hover:text-bronze-600 transition-colors">info@aviniti.app</a></p>
+            <p className="text-slate-blue-500 leading-relaxed">To resolve a complaint or receive further information, please contact us at: <a href="mailto:aliodat@aviniti.app" className="text-bronze-500 hover:text-bronze-600 transition-colors">aliodat@aviniti.app</a></p>
           </section>
         </div>
       </div>

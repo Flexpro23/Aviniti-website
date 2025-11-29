@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import AnalysisResults, { AnalysisData } from './AnalysisResults';
+import AnalysisResults from './AnalysisResults';
+import { AnalysisData } from '@/types/report';
 
 export default function AppIdeaAnalyzer() {
   const { t, dir, language } = useLanguage();

@@ -187,7 +187,7 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
                   type="text"
                   id="fullName"
                   required
-                  className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+                  className={`w-full px-4 py-2 text-base rounded-lg border ${
                     errors.fullName ? 'border-red-500' : 'border-neutral-300'
                   } focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors`}
                   placeholder="John Doe"
@@ -207,7 +207,7 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
                   type="tel"
                   id="phoneNumber"
                   required
-                  className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+                  className={`w-full px-4 py-2 text-base rounded-lg border ${
                     errors.phoneNumber ? 'border-red-500' : 'border-neutral-300'
                   } focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors`}
                   placeholder="+1 (234) 567-8900"
@@ -226,7 +226,7 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
                 <input
                   type="text"
                   id="companyName"
-                  className="w-full px-4 py-2 text-sm sm:text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="w-full px-4 py-2 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                   placeholder="Your Company"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
@@ -241,7 +241,7 @@ export default function UserInfoForm({ isOpen, onClose, onContinue }: UserInfoFo
                   type="email"
                   id="emailAddress"
                   required
-                  className={`w-full px-4 py-2 text-sm sm:text-base rounded-lg border ${
+                  className={`w-full px-4 py-2 text-base rounded-lg border ${
                     errors.emailAddress ? 'border-red-500' : 'border-neutral-300'
                   } focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors`}
                   placeholder="john@example.com"

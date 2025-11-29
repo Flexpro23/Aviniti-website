@@ -22,87 +22,14 @@ export default function BlogPage() {
   const { t, dir } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const blogPosts: BlogPost[] = [
-    {
-      id: '1',
-      title: 'AI Integration in Legacy Systems: A Complete Guide',
-      excerpt: 'Learn how to seamlessly integrate AI capabilities into existing legacy systems without disrupting your business operations.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-15',
-      readTime: '8 min read',
-      category: 'AI',
-      tags: ['AI', 'Legacy Systems', 'Integration'],
-      slug: 'ai-integration-legacy-systems'
-    },
-    {
-      id: '2',
-      title: 'Mobile App Development Trends for 2024',
-      excerpt: 'Discover the latest trends in mobile app development that are shaping the industry and driving innovation.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-10',
-      readTime: '6 min read',
-      category: 'Mobile',
-      tags: ['Mobile', 'Trends', 'Development'],
-      slug: 'mobile-app-development-trends'
-    },
-    {
-      id: '3',
-      title: 'AI App Development Cost Guide: Everything You Need to Know',
-      excerpt: 'A comprehensive breakdown of AI app development costs, factors that influence pricing, and how to budget effectively.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-05',
-      readTime: '10 min read',
-      category: 'AI',
-      tags: ['AI', 'Costs', 'Planning'],
-      slug: 'ai-app-development-cost-guide'
-    },
-    {
-      id: '4',
-      title: 'Building Scalable Web Applications with Modern Frameworks',
-      excerpt: 'Best practices for building scalable web applications using Next.js, React, and other modern frameworks.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-28',
-      readTime: '7 min read',
-      category: 'Web',
-      tags: ['Web', 'Scalability', 'Frameworks'],
-      slug: 'scalable-web-applications'
-    },
-    {
-      id: '5',
-      title: 'The Future of AI in Business: Opportunities and Challenges',
-      excerpt: 'Explore how AI is transforming businesses across industries and the challenges organizations face in adoption.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-20',
-      readTime: '9 min read',
-      category: 'AI',
-      tags: ['AI', 'Business', 'Future'],
-      slug: 'future-of-ai-in-business'
-    },
-    {
-      id: '6',
-      title: 'Essential Security Practices for Modern Applications',
-      excerpt: 'Learn about critical security measures every modern application should implement to protect user data.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-15',
-      readTime: '8 min read',
-      category: 'Security',
-      tags: ['Security', 'Best Practices', 'Development'],
-      slug: 'essential-security-practices'
-    }
-  ];
+  const blogPosts: BlogPost[] = t.blog.posts;
 
   const categories = [
-    { value: 'all', label: 'All Articles' },
-    { value: 'AI', label: 'AI & Machine Learning' },
-    { value: 'Mobile', label: 'Mobile Development' },
-    { value: 'Web', label: 'Web Development' },
-    { value: 'Security', label: 'Security' }
+    { value: 'all', label: t.blog.categories.all },
+    { value: 'AI', label: t.blog.categories.ai },
+    { value: 'Mobile', label: t.blog.categories.mobile },
+    { value: 'Web', label: t.blog.categories.web },
+    { value: 'Security', label: t.blog.categories.security }
   ];
 
   const filteredPosts = selectedCategory === 'all' 
@@ -117,10 +44,10 @@ export default function BlogPage() {
       <div className="bg-off-white py-20 border-b border-slate-blue-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-blue-600 pt-12">
-            Aviniti Tech Blog
+            {t.blog.title}
           </h1>
           <p className="text-xl text-slate-blue-500 max-w-3xl mx-auto">
-            Insights, tutorials, and industry updates from our team of AI and app development experts
+            {t.blog.subtitle}
           </p>
         </div>
       </div>
@@ -150,7 +77,7 @@ export default function BlogPage() {
         {/* Featured Article */}
         {filteredPosts.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">Featured Article</h2>
+            <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">{t.blog.featured}</h2>
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="md:flex">
                 <div className="md:w-1/3 bg-gradient-to-br from-slate-blue-600 to-slate-blue-700 p-8 flex items-center justify-center">
@@ -160,7 +87,7 @@ export default function BlogPage() {
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                     </div>
-                    <div className="text-sm opacity-90">Featured</div>
+                    <div className="text-sm opacity-90">{t.blog.featured}</div>
                   </div>
                 </div>
                 <div className="md:w-2/3 p-8">
@@ -181,8 +108,8 @@ export default function BlogPage() {
                     href={`/blog/${filteredPosts[0].slug}`}
                     className="inline-flex items-center bg-transparent border-2 border-slate-blue-600 text-slate-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-slate-blue-600 hover:text-white transition-colors duration-300"
                   >
-                    Read Full Article
-                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {t.blog.readFull}
+                    <svg className={`w-5 h-5 ${dir === 'rtl' ? 'mr-2 rotate-180' : 'ml-2'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
@@ -195,14 +122,14 @@ export default function BlogPage() {
         {/* Blog Posts Grid */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">
-            {selectedCategory === 'all' ? 'Latest Articles' : `${categories.find(c => c.value === selectedCategory)?.label} Articles`}
+            {selectedCategory === 'all' ? t.blog.latest : `${categories.find(c => c.value === selectedCategory)?.label} ${t.blog.articles}`}
           </h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredPosts.slice(1).map((post) => (
               <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group border border-slate-blue-100">
                 <div className="h-48 bg-gradient-to-br from-slate-blue-500 to-slate-blue-600 relative overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
+                  <div className={`absolute bottom-4 ${dir === 'rtl' ? 'right-4' : 'left-4'}`}>
                     <span className="bg-bronze-100 text-bronze-600 px-3 py-1 rounded-full text-sm font-medium">
                       {post.category}
                     </span>
@@ -229,9 +156,9 @@ export default function BlogPage() {
                     </div>
                     <Link 
                       href={`/blog/${post.slug}`}
-                      className="text-bronze-500 font-medium hover:text-bronze-600 transition-colors duration-300"
+                      className="text-bronze-500 font-medium hover:text-bronze-600 transition-colors duration-300 flex items-center gap-1"
                     >
-                      Read More →
+                      {t.blog.readMore} {dir === 'rtl' ? '←' : '→'}
                     </Link>
                   </div>
                 </div>
@@ -242,18 +169,18 @@ export default function BlogPage() {
 
         {/* Newsletter Signup */}
         <div className="bg-gradient-to-r from-slate-blue-600 to-slate-blue-700 rounded-2xl p-8 text-center text-white border border-slate-blue-500">
-          <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
+          <h3 className="text-2xl font-bold mb-4">{t.blog.newsletter.title}</h3>
           <p className="text-slate-blue-200 mb-6 max-w-2xl mx-auto">
-            Subscribe to our newsletter to get the latest insights on AI, app development, and technology trends delivered to your inbox.
+            {t.blog.newsletter.description}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder={t.blog.newsletter.placeholder}
               className="flex-1 px-4 py-3 rounded-lg text-slate-blue-600 placeholder-slate-blue-400 border border-slate-blue-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500"
             />
             <button className="bg-bronze-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-bronze-600 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Subscribe
+              {t.blog.newsletter.button}
             </button>
           </div>
         </div>

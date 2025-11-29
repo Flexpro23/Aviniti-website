@@ -224,7 +224,7 @@ export default function Projects() {
             {filteredProjects.map((project) => (
               <div
                 key={project.key}
-                className="flex-none w-80 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 snap-center group border border-slate-blue-100"
+                className="flex-none w-[85vw] sm:w-80 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 snap-center group border border-slate-blue-100"
               >
 
                 <div className="p-6 flex flex-col items-center">

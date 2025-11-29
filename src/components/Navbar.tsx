@@ -62,7 +62,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center gap-2">
                 {/* Logo Image */}
                 <div className="relative w-20 h-20">
                   <Image
@@ -70,7 +70,7 @@ export default function Navbar() {
                     alt="Aviniti Logo"
                     fill
                     className="object-contain"
-                    sizes="80px"
+                    sizes="(max-width: 768px) 80px, 80px"
                     priority
                   />
                 </div>
@@ -80,13 +80,13 @@ export default function Navbar() {
                     AVINITI
                   </span>
                   <span className="nav-logo-subtext text-base text-gray-200">
-                    YOUR IDEAS, OUR REALITY
+                    {t.common.tagline}
                   </span>
                 </div>
               </Link>
             </div>
             
-            <div className="hidden md:flex items-center justify-center space-x-6 flex-1">
+            <div className="hidden md:flex items-center justify-center gap-6 flex-1">
               <NavLinks 
                 isScrolled={false}
               />
@@ -120,7 +120,7 @@ export default function Navbar() {
         {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden absolute w-full">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+            <div className="px-2 pt-2 pb-3 space-y-2 bg-white shadow-lg">
               <Link 
                 href="/estimate" 
                 className="block px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"

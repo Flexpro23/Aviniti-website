@@ -17,12 +17,20 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log('Request body:', body);
     
-    const { userId, selectedFeatures } = body;
+    const { userId, selectedFeatures, email } = body;
 
     if (!userId) {
       console.error('Missing userId');
       return NextResponse.json(
         { error: 'Missing userId' },
+        { status: 400 }
+      );
+    }
+
+    if (!email) {
+      console.error('Missing email for verification');
+      return NextResponse.json(
+        { error: 'Email is required for verification' },
         { status: 400 }
       );
     }
@@ -57,6 +65,17 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+
+      // Verify email matches (IDOR Protection)
+      const userEmail = userData.personalDetails?.emailAddress;
+      if (!userEmail || userEmail.toLowerCase() !== email.toLowerCase()) {
+        console.error('Email mismatch for user ID:', userId);
+        return NextResponse.json(
+          { error: 'Unauthorized access' },
+          { status: 403 }
+        );
+      }
+
 
       if (!userData.projectDetails) {
         console.error('Project details missing from user data');

@@ -10,10 +10,27 @@ interface CostBreakdownPieChartProps {
 }
 
 export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPieChartProps) {
-  const data = Object.entries(costBreakdown).map(([name, value]) => ({
+  // Helper to ensure values are numbers
+  const parseCost = (val: string | number) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') {
+      // Remove $ and , and convert to number
+      return parseFloat(val.replace(/[^0-9.-]+/g, '')) || 0;
+    }
+    return 0;
+  };
+
+  const numericCostBreakdown = Object.entries(costBreakdown).reduce((acc, [key, value]) => {
+    acc[key] = parseCost(value);
+    return acc;
+  }, {} as Record<string, number>);
+
+  const totalCost = Object.values(numericCostBreakdown).reduce((a, b) => a + b, 0);
+
+  const data = Object.entries(numericCostBreakdown).map(([name, value]) => ({
     name,
     value,
-    percentage: Math.round((value / Object.values(costBreakdown).reduce((a, b) => a + b, 0)) * 100)
+    percentage: totalCost > 0 ? Math.round((value / totalCost) * 100) : 0
   }));
 
   const COLORS = [
@@ -58,20 +75,42 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
 
   return (
     <motion.div 
-      className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg"
+      className="bg-white p-5 rounded-xl border border-gray-200 shadow-lg"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
+      role="figure"
+      aria-label="Cost breakdown pie chart showing investment allocation by development phase"
     >
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center mb-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mr-3"></div>
+          <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mr-3" aria-hidden="true"></div>
           <h3 className="text-lg font-bold text-gray-900">Cost Breakdown</h3>
         </div>
-        <p className="text-sm text-gray-600">Investment allocation by development phase</p>
+        <p className="text-sm text-slate-blue-500">Investment allocation by development phase</p>
       </div>
 
-      <div className="h-64">
+      {/* Accessible data table for screen readers */}
+      <div className="sr-only" role="table" aria-label="Cost breakdown data">
+        <div role="rowgroup">
+          <div role="row">
+            <span role="columnheader">Category</span>
+            <span role="columnheader">Cost</span>
+            <span role="columnheader">Percentage</span>
+          </div>
+        </div>
+        <div role="rowgroup">
+          {data.map((item, index) => (
+            <div key={index} role="row">
+              <span role="cell">{item.name}</span>
+              <span role="cell">${item.value.toLocaleString()}</span>
+              <span role="cell">{item.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-64" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -104,9 +143,9 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">Total Investment:</span>
-          <span className="text-lg font-bold text-gray-900">
-            ${Object.values(costBreakdown).reduce((a, b) => a + b, 0).toLocaleString()}
+          <span className="text-sm font-medium text-gray-700">Total Cost:</span>
+          <span className="text-lg font-bold text-gray-900" aria-label={`Total cost: ${totalCost.toLocaleString()} dollars`}>
+            ${totalCost.toLocaleString()}
           </span>
         </div>
       </div>

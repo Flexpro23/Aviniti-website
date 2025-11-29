@@ -17,23 +17,22 @@ const serviceAccount = {
 };
 
 if (!apps.length) {
-  try {
-    const app = initializeApp({
-      credential: cert(serviceAccount),
-      storageBucket: "aviniti-website.firebasestorage.app"
-    });
-    
-    // Initialize services
-    adminDb = getFirestore(app);
-    adminStorage = getStorage(app);
-    
-  } catch (error) {
-    console.error('Error initializing Firebase Admin:', error instanceof Error ? error.message : 'Unknown error');
-    if (error instanceof Error) {
-      console.error('Stack trace:', error.stack);
+  if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
+    try {
+      const app = initializeApp({
+        credential: cert(serviceAccount),
+        storageBucket: "aviniti-website.firebasestorage.app"
+      });
+      
+      // Initialize services
+      adminDb = getFirestore(app);
+      adminStorage = getStorage(app);
+      
+    } catch (error) {
+      console.error('Error initializing Firebase Admin:', error instanceof Error ? error.message : 'Unknown error');
     }
-    // Throw error to prevent undefined behavior
-    throw new Error('Firebase Admin initialization failed');
+  } else {
+    console.warn('Firebase Admin: Missing service account credentials. Skipping initialization.');
   }
 }
 

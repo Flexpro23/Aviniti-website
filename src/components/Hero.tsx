@@ -84,16 +84,28 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
       phoneElement.style.transition = 'none';
     };
 
+    // Handle scroll for mobile parallax
+    const handleScroll = () => {
+      if (!phoneElement || window.innerWidth >= 1024) return; // Only on mobile/tablet
+      
+      const scrollY = window.scrollY;
+      const rotation = Math.sin(scrollY * 0.002) * 5; // Gentle rotation
+      
+      phoneElement.style.transform = `perspective(1000px) rotateY(${rotation}deg)`;
+    };
+
     // Add event listeners
     phoneElement.addEventListener('mousemove', handleMouseMove);
     phoneElement.addEventListener('mouseleave', handleMouseLeave);
     phoneElement.addEventListener('mouseenter', handleMouseEnter);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Cleanup
     return () => {
       phoneElement.removeEventListener('mousemove', handleMouseMove);
       phoneElement.removeEventListener('mouseleave', handleMouseLeave);
       phoneElement.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -173,7 +185,7 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
               <button
                 onClick={scrollToReadyMadeSolutions}
                 className="px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300"
-                title="View our ready-made app solutions"
+                title={t.hero.readyMadeTitle}
               >
                 {t.navigation.readyMadeSolutions}
               </button>
@@ -181,9 +193,9 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
               <button
                 onClick={() => router.push('/contact')}
                 className="text-slate-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
-                title="Get in touch with our team"
+                title={t.hero.contactTitle}
               >
-                <span className="mr-2">Contact Us</span>
+                <span className="mr-2">{t.navigation.contact}</span>
                 <svg
                   className={`w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1 ${dir === 'rtl' ? 'rotate-180' : ''}`}
                   fill="none"

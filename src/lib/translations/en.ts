@@ -48,7 +48,9 @@ export const en = {
     exploreSolutions: 'Explore Solutions',
     solutionsDescription: 'View our services and case studies',
     getFreeConsultation: 'Get a Free Consultation',
-    consultationDescription: 'Schedule a 30-minute strategy session'
+    consultationDescription: 'Schedule a 30-minute strategy session',
+    readyMadeTitle: 'View our ready-made app solutions',
+    contactTitle: 'Get in touch with our team'
   },
   projects: {
     title: 'Trusted By',
@@ -229,8 +231,37 @@ export const en = {
     cta: 'Contact Us Now',
     callUs: 'Call Us Directly'
   },
+  trust: {
+    badges: {
+      ssl: { title: 'SSL Secured', description: 'All data encrypted' },
+      gdpr: { title: 'GDPR Compliant', description: 'Data privacy protected' },
+      nda: { title: 'NDA Available', description: 'Ideas protected' },
+      support: { title: '24/7 Support', description: 'Always available' }
+    }
+  },
+  contactPopup: {
+    title: 'Contact Us',
+    successTitle: 'Thank you for your message!',
+    successMessage: 'We will get back to you soon.',
+    nameLabel: 'Your Name *',
+    emailLabel: 'Your Email *',
+    subjectLabel: 'Subject',
+    messageLabel: 'Message',
+    namePlaceholder: 'John Doe',
+    emailPlaceholder: 'john@example.com',
+    subjectPlaceholder: 'How can we help you?',
+    messagePlaceholder: 'Tell us about your project...',
+    sendButton: 'Send Message',
+    sendingButton: 'Sending...',
+    errorMessage: 'Failed to send message. Please try again.'
+  },
   footer: {
-    rights: 'All rights reserved'
+    rights: 'All rights reserved',
+    description: 'Transforming innovative ideas into premium digital solutions. We specialize in AI-powered applications, custom software development, and cutting-edge mobile apps.',
+    quickLinks: 'Quick Links',
+    support: 'Support',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service'
   },
   faq: {
     title: 'Frequently Asked Questions',
@@ -332,7 +363,175 @@ export const en = {
       description: 'Our team is ready to help you with any specific questions about your project'
     }
   },
+  blog: {
+    title: 'Aviniti Tech Blog',
+    subtitle: 'Insights, tutorials, and industry updates from our team of AI and app development experts',
+    categories: {
+      all: 'All Articles',
+      ai: 'AI & Machine Learning',
+      mobile: 'Mobile Development',
+      web: 'Web Development',
+      security: 'Security'
+    },
+    featured: 'Featured Article',
+    readFull: 'Read Full Article',
+    latest: 'Latest Articles',
+    articles: 'Articles',
+    readMore: 'Read More',
+    newsletter: {
+      title: 'Stay Updated',
+      description: 'Subscribe to our newsletter to get the latest insights on AI, app development, and technology trends delivered to your inbox.',
+      placeholder: 'Enter your email',
+      button: 'Subscribe'
+    },
+    posts: [
+      {
+        id: '1',
+        title: 'AI Integration in Legacy Systems: A Complete Guide',
+        excerpt: 'Learn how to seamlessly integrate AI capabilities into existing legacy systems without disrupting your business operations.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2024-01-15',
+        readTime: '8 min read',
+        category: 'AI',
+        tags: ['AI', 'Legacy Systems', 'Integration'],
+        slug: 'ai-integration-legacy-systems'
+      },
+      {
+        id: '2',
+        title: 'Mobile App Development Trends for 2024',
+        excerpt: 'Discover the latest trends in mobile app development that are shaping the industry and driving innovation.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2024-01-10',
+        readTime: '6 min read',
+        category: 'Mobile',
+        tags: ['Mobile', 'Trends', 'Development'],
+        slug: 'mobile-app-development-trends'
+      },
+      {
+        id: '3',
+        title: 'AI App Development Cost Guide: Everything You Need to Know',
+        excerpt: 'A comprehensive breakdown of AI app development costs, factors that influence pricing, and how to budget effectively.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2024-01-05',
+        readTime: '10 min read',
+        category: 'AI',
+        tags: ['AI', 'Costs', 'Planning'],
+        slug: 'ai-app-development-cost-guide'
+      },
+      {
+        id: '4',
+        title: 'Building Scalable Web Applications with Modern Frameworks',
+        excerpt: 'Best practices for building scalable web applications using Next.js, React, and other modern frameworks.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2023-12-28',
+        readTime: '7 min read',
+        category: 'Web',
+        tags: ['Web', 'Scalability', 'Frameworks'],
+        slug: 'scalable-web-applications'
+      },
+      {
+        id: '5',
+        title: 'The Future of AI in Business: Opportunities and Challenges',
+        excerpt: 'Explore how AI is transforming businesses across industries and the challenges organizations face in adoption.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2023-12-20',
+        readTime: '9 min read',
+        category: 'AI',
+        tags: ['AI', 'Business', 'Future'],
+        slug: 'future-of-ai-in-business'
+      },
+      {
+        id: '6',
+        title: 'Essential Security Practices for Modern Applications',
+        excerpt: 'Learn about critical security measures every modern application should implement to protect user data.',
+        content: 'Full article content would go here...',
+        author: 'Aviniti Team',
+        date: '2023-12-15',
+        readTime: '8 min read',
+        category: 'Security',
+        tags: ['Security', 'Best Practices', 'Development'],
+        slug: 'essential-security-practices'
+      }
+    ]
+  },
+  privacyPolicy: {
+    title: 'Privacy Policy',
+    lastUpdated: 'Last Updated',
+    intro: {
+      title: '1. Introduction',
+      content: 'Welcome to Aviniti ("we", "our", "us"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, aviniti.app, including our AI Instant Estimator tool.'
+    },
+    collection: {
+      title: '2. Information We Collect',
+      content: 'We may collect information about you in a variety of ways. The information we may collect on the Site includes:',
+      personalData: {
+        title: 'Personal Data:',
+        content: 'Personally identifiable information, such as your name, email address, and telephone number, and company name that you voluntarily give to us when you use our AI Instant Estimator or our contact form.'
+      },
+      derivativeData: {
+        title: 'Derivative Data:',
+        content: 'Information our servers automatically collect when you access the Site, such as your IP address, your browser type, your operating system, your access times, and the pages you have viewed directly before and after accessing the Site.'
+      },
+      projectData: {
+        title: 'Project Data:',
+        content: 'Descriptions, requirements, and any other information related to your app idea that you provide to our AI Instant Estimator.'
+      }
+    },
+    use: {
+      title: '3. Use of Your Information',
+      content: 'Having accurate information permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the Site to:',
+      items: [
+        'Generate an AI-powered project estimate and report.',
+        'Contact you regarding your project inquiry or quote.',
+        'Improve our website and service offerings.',
+        'Monitor and analyze usage and trends to improve your experience with the Site.'
+      ]
+    },
+    disclosure: {
+      title: '4. Disclosure of Your Information',
+      content: 'We do not share, sell, rent or trade your information with third parties for their commercial purposes. We may share information we have collected about you in certain situations, such as with third-party service providers (e.g., Google Gemini AI) for the sole purpose of providing the service you requested.'
+    },
+    security: {
+      title: '5. Security of Your Information',
+      content: 'We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.'
+    },
+    retention: {
+      title: '6. Data Retention',
+      content: 'We will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use your information to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our legal agreements and policies.'
+    },
+    rights: {
+      title: '7. Your Privacy Rights',
+      content: 'You have the right to access, update, or delete your personal information. If you would like to exercise any of these rights, please contact us using the information provided below.'
+    },
+    contact: {
+      title: '8. Contact Us',
+      content: 'If you have questions or comments about this Privacy Policy, please contact us at:'
+    }
+  },
   aiEstimate: {
+    header: {
+      title: 'Get Your AI-Powered App Estimate',
+      subtitle: 'Receive an instant, detailed estimate for your app development project powered by advanced AI analysis'
+    },
+    stepTitles: {
+      stepPrefix: 'Step',
+      personalInfo: 'Personal Information',
+      appDescription: 'App Description',
+      featureSelection: 'Feature Selection',
+      detailedReport: 'Detailed Report',
+      default: 'AI Estimate'
+    },
+    stepIndicators: {
+      personalInfo: 'Personal Info',
+      appDescription: 'App Description',
+      features: 'Features',
+      report: 'Report'
+    },
     steps: {
       userInfo: {
         title: 'Get Your AI Estimate',

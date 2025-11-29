@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { AIAnalysisResult, Feature } from './AIEstimateModal';
+import { AIAnalysisResult, Feature } from '@/types/report';
 import FeatureCard from './FeatureCard';
 import LiveSummaryBar from './LiveSummaryBar';
 
@@ -22,7 +22,7 @@ export default function FeatureSelectionStep({
 }: FeatureSelectionStepProps) {
   const { language, dir } = useLanguage();
   const [essentialFeatures, setEssentialFeatures] = useState<Feature[]>(
-    aiAnalysis.essentialFeatures.map(feature => ({ ...feature, selected: true }))
+    aiAnalysis.essentialFeatures.map(feature => ({ ...feature, isSelected: true }))
   );
   const [enhancementFeatures, setEnhancementFeatures] = useState<Feature[]>(
     aiAnalysis.enhancementFeatures.map(feature => ({ ...feature }))
@@ -36,6 +36,40 @@ export default function FeatureSelectionStep({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Custom Feature State
+  const [isCustomFeatureModalOpen, setIsCustomFeatureModalOpen] = useState(false);
+  const [customFeature, setCustomFeature] = useState({
+    name: '',
+    description: '',
+    costEstimate: '',
+    timeEstimate: ''
+  });
+
+  const handleAddCustomFeature = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customFeature.name || !customFeature.costEstimate) return;
+
+    const newFeature: Feature = {
+      id: `custom-${Date.now()}`,
+      name: customFeature.name,
+      description: customFeature.description || 'Custom feature added by user',
+      purpose: 'Custom',
+      costEstimate: customFeature.costEstimate.startsWith('$') ? customFeature.costEstimate : `$${customFeature.costEstimate}`,
+      timeEstimate: customFeature.timeEstimate || '3 days',
+      category: 'Custom',
+      isSelected: true
+    };
+
+    setEnhancementFeatures(prev => [newFeature, ...prev]);
+    setIsCustomFeatureModalOpen(false);
+    setCustomFeature({ name: '', description: '', costEstimate: '', timeEstimate: '' });
+    
+    setNotification({
+      message: language === 'en' ? 'Custom feature added successfully!' : 'تم إضافة الميزة المخصصة بنجاح!',
+      type: 'info'
+    });
+  };
 
   // Check scroll position
   const checkScroll = () => {
@@ -53,45 +87,174 @@ export default function FeatureSelectionStep({
     }
   };
 
-  // Scroll functions
+  // Scroll left function
   const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -320, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
-    }
-  };
-
-  // Setup scroll listeners
-  useEffect(() => {
     const container = scrollContainerRef.current;
     if (container) {
-      checkScroll();
-      container.addEventListener('scroll', checkScroll);
-      return () => container.removeEventListener('scroll', checkScroll);
+      const cardWidth = 320 + 24; // card width + gap
+      container.scrollTo({
+        left: container.scrollLeft - cardWidth,
+        behavior: 'smooth'
+      });
     }
-  }, [enhancementFeatures]);
+  };
+
+  // Scroll right function
+  const scrollRight = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = 320 + 24; // card width + gap
+      container.scrollTo({
+        left: container.scrollLeft + cardWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Dependency Rules
+  const DEPENDENCY_RULES = [
+    {
+      triggers: ['notification', 'chat', 'message', 'profile', 'social', 'comment', 'login', 'sign up'],
+      requires: ['authentication', 'login', 'sign up', 'account'],
+      message: language === 'en' ? 'requires User Authentication' : 'يتطلب مصادقة المستخدم'
+    },
+    {
+      triggers: ['payment', 'subscription', 'checkout', 'order', 'cart'],
+      requires: ['authentication', 'login', 'sign up', 'account'],
+      message: language === 'en' ? 'requires User Authentication' : 'يتطلب مصادقة المستخدم'
+    },
+    {
+      triggers: ['map', 'location', 'gps', 'delivery'],
+      requires: ['map', 'location', 'gps'],
+      message: language === 'en' ? 'requires Maps Integration' : 'يتطلب دمج الخرائط'
+    }
+  ];
+
+  const [notification, setNotification] = useState<{message: string, type: 'info' | 'warning'} | null>(null);
+
+  // Clear notification after 3 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const toggleFeatureSelection = (id: string) => {
-    // Check if it's an essential feature
-    const isEssential = essentialFeatures.some(f => f.id === id);
+    const allCurrentFeatures = [...essentialFeatures, ...enhancementFeatures];
+    const targetFeature = allCurrentFeatures.find(f => f.id === id);
     
-    if (isEssential) {
-      setEssentialFeatures(prevFeatures =>
-        prevFeatures.map(feature =>
-          feature.id === id ? { ...feature, selected: !feature.selected } : feature
-        )
-      );
+    if (!targetFeature) return;
+
+    const isSelecting = !targetFeature.isSelected;
+    
+    // Logic for selecting a feature
+    if (isSelecting) {
+      let featureToAutoSelect: Feature | undefined;
+      let dependencyReason = '';
+
+      // Check if this feature triggers any dependency
+      for (const rule of DEPENDENCY_RULES) {
+        const nameLower = targetFeature.name.toLowerCase();
+        if (rule.triggers.some(t => nameLower.includes(t))) {
+          // Check if we already satisfy the requirement
+          const satisfies = allCurrentFeatures.some(f => 
+            f.isSelected && rule.requires.some(r => f.name.toLowerCase().includes(r))
+          );
+
+          if (!satisfies) {
+            // Find a feature that can satisfy this
+            featureToAutoSelect = allCurrentFeatures.find(f => 
+              !f.isSelected && rule.requires.some(r => f.name.toLowerCase().includes(r))
+            );
+            if (featureToAutoSelect) {
+              dependencyReason = rule.message;
+              break; // Found a dependency to enforce
+            }
+          }
+        }
+      }
+
+      // Apply selection
+      const updateFeatures = (features: Feature[]) => features.map(f => {
+        if (f.id === id) return { ...f, isSelected: true };
+        if (featureToAutoSelect && f.id === featureToAutoSelect.id) return { ...f, isSelected: true };
+        return f;
+      });
+
+      setEssentialFeatures(prev => updateFeatures(prev));
+      setEnhancementFeatures(prev => updateFeatures(prev));
+
+      if (featureToAutoSelect) {
+        setNotification({
+          message: language === 'en' 
+            ? `Auto-selected ${featureToAutoSelect.name} as ${targetFeature.name} ${dependencyReason}.`
+            : `تم تحديد ${featureToAutoSelect.name} تلقائيًا لأن ${targetFeature.name} ${dependencyReason}.`,
+          type: 'info'
+        });
+      }
+
     } else {
-      setEnhancementFeatures(prevFeatures =>
-        prevFeatures.map(feature =>
-          feature.id === id ? { ...feature, selected: !feature.selected } : feature
-        )
-      );
+      // Logic for deselecting a feature
+      // Check if any OTHER selected feature depends on this one
+      // This is harder because dependencies are defined "forward".
+      // We need to see if any currently selected feature requires THIS feature.
+      
+      const dependentFeatures: Feature[] = [];
+      
+      // For every OTHER selected feature, check if it requires THIS feature
+      const otherSelected = allCurrentFeatures.filter(f => f.isSelected && f.id !== id);
+      
+      for (const other of otherSelected) {
+        for (const rule of DEPENDENCY_RULES) {
+           if (rule.triggers.some(t => other.name.toLowerCase().includes(t))) {
+             // The 'other' feature requires something from 'rule.requires'
+             // Does THIS feature satisfy that?
+             if (rule.requires.some(r => targetFeature.name.toLowerCase().includes(r))) {
+               // Yes, we are deselecting a requirement. 
+               // Are there OTHER selected features that also satisfy it?
+               const alternatives = otherSelected.filter(f => 
+                 f.id !== other.id && // not the dependent one
+                 rule.requires.some(r => f.name.toLowerCase().includes(r))
+               );
+               
+               if (alternatives.length === 0) {
+                 dependentFeatures.push(other);
+               }
+             }
+           }
+        }
+      }
+
+      if (dependentFeatures.length > 0) {
+        // Warn user
+        const dependentNames = dependentFeatures.map(f => f.name).join(', ');
+        const confirmMessage = language === 'en'
+          ? `Deselecting ${targetFeature.name} will also deselect: ${dependentNames} because they depend on it. Continue?`
+          : `إلغاء تحديد ${targetFeature.name} سيؤدي أيضًا إلى إلغاء تحديد: ${dependentNames} لأنها تعتمد عليه. هل تريد الاستمرار؟`;
+          
+        if (!window.confirm(confirmMessage)) {
+          return; // Cancel deselect
+        }
+        
+        // Deselect target AND dependents
+        const idsToDeselect = [id, ...dependentFeatures.map(f => f.id)];
+        
+        const updateFeatures = (features: Feature[]) => features.map(f => 
+          idsToDeselect.includes(f.id) ? { ...f, isSelected: false } : f
+        );
+        
+        setEssentialFeatures(prev => updateFeatures(prev));
+        setEnhancementFeatures(prev => updateFeatures(prev));
+        
+      } else {
+        // Just deselect target
+        const updateFeatures = (features: Feature[]) => features.map(f => 
+          f.id === id ? { ...f, isSelected: false } : f
+        );
+        setEssentialFeatures(prev => updateFeatures(prev));
+        setEnhancementFeatures(prev => updateFeatures(prev));
+      }
     }
   };
 
@@ -101,7 +264,7 @@ export default function FeatureSelectionStep({
   };
 
   const allFeatures = [...essentialFeatures, ...enhancementFeatures];
-  const selectedFeatures = allFeatures.filter(feature => feature.selected);
+  const selectedFeatures = allFeatures.filter(feature => feature.isSelected);
   
   // Calculate estimated costs and time
   const calculateEstimates = () => {
@@ -217,6 +380,29 @@ export default function FeatureSelectionStep({
         )}
       </motion.div>
 
+      {/* Notification Toast */}
+      {notification && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-xl border-l-4 ${
+            notification.type === 'warning' ? 'bg-amber-50 border-amber-500 text-amber-800' : 'bg-blue-50 border-blue-500 text-blue-800'
+          }`}
+        >
+          <div className="flex items-center">
+            <svg className={`w-5 h-5 mr-2 ${notification.type === 'warning' ? 'text-amber-500' : 'text-blue-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {notification.type === 'warning' ? (
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              ) : (
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              )}
+            </svg>
+            <p className="font-medium">{notification.message}</p>
+          </div>
+        </motion.div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Section 1: Essential Features */}
         <motion.section variants={sectionVariants} className="mb-12">
@@ -242,7 +428,7 @@ export default function FeatureSelectionStep({
               >
                 <FeatureCard
                   feature={feature}
-                  isSelected={feature.selected}
+                  isSelected={feature.isSelected || false}
                   onToggle={toggleFeatureSelection}
                   category="essential"
                 />
@@ -251,11 +437,11 @@ export default function FeatureSelectionStep({
           </div>
         </motion.section>
 
-        {/* Section 2: Enhancement Features - Horizontal Scroll */}
+        {/* Section 2: Enhancement Features - Improved Grid Layout */}
         <motion.section variants={sectionVariants}>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-slate-blue-500 rounded-xl flex items-center justify-center mr-4">
+              <div className="w-12 h-12 bg-slate-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-sm">
                 <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -265,128 +451,73 @@ export default function FeatureSelectionStep({
                 <p className="text-base text-slate-blue-500">Optional features to make your app stand out</p>
               </div>
             </div>
-            
-            {/* Scroll Indicator */}
-            <div className="flex items-center space-x-2 text-slate-blue-400">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            <button
+              type="button"
+              onClick={() => setIsCustomFeatureModalOpen(true)}
+              className="flex items-center px-4 py-2 bg-white border-2 border-dashed border-slate-blue-300 rounded-xl text-slate-blue-600 hover:bg-slate-blue-50 hover:border-slate-blue-400 transition-all text-sm font-medium group"
+            >
+              <svg className="w-5 h-5 mr-2 text-slate-blue-400 group-hover:text-slate-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="text-sm">Scroll to explore</span>
-            </div>
+              {language === 'en' ? 'Add Custom Feature' : 'إضافة ميزة مخصصة'}
+            </button>
           </div>
-          
-          {/* Horizontal Scroll Container with Controls */}
-          <div className="relative">
-            {/* Left Arrow */}
-            <motion.button
-              type="button"
-              onClick={scrollLeft}
-              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 border-2 transition-all duration-200 ${
-                canScrollLeft 
-                  ? 'border-slate-blue-300 text-slate-blue-600 hover:border-bronze-400 hover:text-bronze-600 hover:shadow-xl' 
-                  : 'border-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
-              disabled={!canScrollLeft}
-              animate={{ opacity: canScrollLeft ? 1 : 0.5 }}
-              whileHover={canScrollLeft ? { scale: 1.05 } : {}}
-              whileTap={canScrollLeft ? { scale: 0.95 } : {}}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </motion.button>
 
-            {/* Right Arrow */}
-            <motion.button
-              type="button"
-              onClick={scrollRight}
-              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-3 border-2 transition-all duration-200 ${
-                canScrollRight 
-                  ? 'border-slate-blue-300 text-slate-blue-600 hover:border-bronze-400 hover:text-bronze-600 hover:shadow-xl' 
-                  : 'border-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
-              disabled={!canScrollRight}
-              animate={{ opacity: canScrollRight ? 1 : 0.5 }}
-              whileHover={canScrollRight ? { scale: 1.05 } : {}}
-              whileTap={canScrollRight ? { scale: 0.95 } : {}}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </motion.button>
-
-            {/* Scrollable Content */}
-            <div 
-              ref={scrollContainerRef}
-              className="flex overflow-x-auto space-x-6 pb-6 px-16 carousel-container" 
-              style={{
-                scrollbarWidth: 'none', 
-                msOverflowStyle: 'none'
-              }}
-              onScroll={checkScroll}
-            >
-              <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-              {enhancementFeatures.map((feature, index) => (
-                <motion.div
-                  key={feature.id}
-                  className="flex-shrink-0 w-80"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <FeatureCard
-                    feature={feature}
-                    isSelected={feature.selected}
-                    onToggle={toggleFeatureSelection}
-                    category="enhancement"
-                  />
-                </motion.div>
-              ))}
-              
-              {/* End indicator */}
-              <div className="flex-shrink-0 w-8 flex items-center justify-center">
-                <div className="w-1 h-12 bg-gradient-to-b from-slate-blue-200 to-transparent rounded-full"></div>
-              </div>
-            </div>
-
-            {/* Scroll Progress Indicator */}
-            <div className="flex justify-center mt-4">
-              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-bronze-400 to-bronze-600 rounded-full"
-                  initial={{ width: "0%" }}
-                  animate={{ width: `${scrollProgress * 100}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </div>
+          {/* Compact Grid Layout for Enhancement Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {enhancementFeatures.map((feature, index) => (
+              <motion.div
+                key={feature.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                className={`relative p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:shadow-md group ${
+                  feature.isSelected 
+                    ? 'border-bronze-500 bg-bronze-50/30' 
+                    : 'border-gray-100 bg-white hover:border-bronze-200'
+                }`}
+                onClick={() => toggleFeatureSelection(feature.id)}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-semibold text-gray-900 pr-8 leading-tight">{feature.name}</h4>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                    feature.isSelected 
+                      ? 'border-bronze-500 bg-bronze-500' 
+                      : 'border-gray-300 group-hover:border-bronze-300'
+                  }`}>
+                    {feature.isSelected && (
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                
+                <p className="text-xs text-gray-500 mb-3 line-clamp-2 min-h-[2.5em]">{feature.description}</p>
+                
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-600">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {feature.timeEstimate}
+                  </span>
+                  <span className="font-bold text-bronze-600 text-sm">{feature.costEstimate}</span>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 
         {/* Navigation Buttons */}
         <motion.div
-          className="flex justify-between items-center pt-8 border-t border-slate-blue-100"
+          className="flex flex-col gap-4 pt-8 border-t border-slate-blue-100"
           variants={sectionVariants}
         >
           <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center px-6 py-3 text-slate-blue-600 border border-slate-blue-300 rounded-xl hover:bg-slate-blue-50 transition-all duration-300"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            {language === 'en' ? 'Back' : 'رجوع'}
-          </button>
-          
-          <button
             type="submit"
             disabled={isProcessing || selectedFeatures.length === 0}
-            className={`flex items-center px-8 py-4 bg-bronze-500 text-white font-semibold rounded-xl transition-all duration-300 ${
+            className={`flex items-center justify-center w-full px-6 py-3 bg-bronze-500 text-white font-semibold rounded-xl transition-all duration-300 ${
               isProcessing || selectedFeatures.length === 0
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:bg-bronze-600 hover:scale-105 shadow-lg hover:shadow-xl'
@@ -412,8 +543,102 @@ export default function FeatureSelectionStep({
               </>
             )}
           </button>
+
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center justify-center w-full px-6 py-3 text-slate-blue-600 border border-slate-blue-300 rounded-xl hover:bg-slate-blue-50 transition-all duration-300"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            {language === 'en' ? 'Back' : 'رجوع'}
+          </button>
         </motion.div>
       </form>
+
+      {/* Custom Feature Modal */}
+      {isCustomFeatureModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6"
+          >
+            <h3 className="text-xl font-bold mb-4 text-gray-800">
+              {language === 'en' ? 'Add Custom Feature' : 'إضافة ميزة مخصصة'}
+            </h3>
+            <form onSubmit={handleAddCustomFeature} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {language === 'en' ? 'Feature Name' : 'اسم الميزة'} *
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  value={customFeature.name}
+                  onChange={e => setCustomFeature({...customFeature, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {language === 'en' ? 'Description' : 'الوصف'}
+                </label>
+                <textarea
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows={2}
+                  value={customFeature.description}
+                  onChange={e => setCustomFeature({...customFeature, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {language === 'en' ? 'Est. Cost ($)' : 'التكلفة المقدرة'} *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="500"
+                    value={customFeature.costEstimate}
+                    onChange={e => setCustomFeature({...customFeature, costEstimate: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {language === 'en' ? 'Est. Time (days)' : 'الوقت المقدر (أيام)'}
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="3 days"
+                    value={customFeature.timeEstimate}
+                    onChange={e => setCustomFeature({...customFeature, timeEstimate: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsCustomFeatureModalOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  {language === 'en' ? 'Cancel' : 'إلغاء'}
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {language === 'en' ? 'Add Feature' : 'إضافة'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
 
       {/* Live Summary Bar */}
       <LiveSummaryBar

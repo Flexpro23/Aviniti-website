@@ -52,6 +52,11 @@ A modern web application for Aviniti, featuring AI-powered app development estim
    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
    NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+   
+   # For Admin Features (Server-side only)
+   FIREBASE_PROJECT_ID=your_project_id
+   FIREBASE_CLIENT_EMAIL=your_client_email
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
    ```
 
 4. Run the development server:
@@ -89,6 +94,20 @@ A modern web application for Aviniti, featuring AI-powered app development estim
    firebase deploy --only storage
    ```
 
+## Deployment
+
+1. Build the application for production:
+   ```bash
+   npm run build
+   ```
+
+2. Start the production server:
+   ```bash
+   npm start
+   ```
+
+For deploying to Vercel or other platforms, ensure all environment variables are set in the platform's configuration dashboard.
+
 ## Security
 
 ### Environment Variables
@@ -98,34 +117,18 @@ A modern web application for Aviniti, featuring AI-powered app development estim
 - The `.gitignore` file is configured to exclude sensitive files
 
 ### Firebase Security
-- Firebase Storage rules are configured to restrict access based on user roles
-- Admin users have full access to all files
-- Regular users can only access their own reports
-- Authentication is required for all operations
+- **Firestore Rules**: Configured to strictly validate user data integrity.
+  - `users` collection: Allows creation/update only if `emailAddress` matches the document ID.
+  - Default deny for all other collections.
+- **Storage Rules**: Configured to allow specific file types.
+  - `reports` path: Allows PDF uploads only (`application/pdf`).
+  - Public read access is enabled for generated reports to be shareable.
+- **API Keys**: Restrict API keys in Google Cloud Console to specific domains (e.g., your production domain).
 
-### API Keys
-- Keep your Gemini API key secure
-- Never expose API keys in client-side code
-- Use environment variables for all API keys
-- Rotate API keys regularly
+## Contributing
 
-## Deployment
-
-The application can be deployed to Vercel:
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-## License
-
-This project is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
-
-## Contact
-
-For any inquiries, please contact:
-- Email: Aliodat@aviniti.app
-- Phone: +962 790 685 302
-- Website: www.aviniti.app 
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
