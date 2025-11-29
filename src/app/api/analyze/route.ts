@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const FALLBACK_MODEL = 'gemini-1.5-flash';
+
 const getSystemPrompt = (language: string) => `You are an expert in mobile and web app development cost estimation.
 Your task is to analyze user input and provide:
 1. A concise overview of the app idea.
@@ -10,8 +13,6 @@ Your task is to analyze user input and provide:
 3. A list of suggested features that could add value, with a short description explaining how each feature adds value.
 
 Please respond in ${language === 'ar' ? 'Arabic' : 'English'}.
-
-[Feature pricing data omitted for brevity]
 
 If a feature requested by the user is not in your knowledge base, respond with 'N/A'.
 
@@ -30,6 +31,14 @@ Suggested Features:
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('GEMINI_API_KEY is not set in environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error: Missing API Key' },
+        { status: 500 }
+      );
+    }
+
     const { description, answers, language = 'en' } = await request.json();
 
     const systemPrompt = getSystemPrompt(language);
@@ -46,8 +55,32 @@ Market Research: ${answers.competitors}
 Platforms: ${answers.platforms.join(', ')}
 Integrations: ${answers.integrations.join(', ')}`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const result = await model.generateContent(prompt);
+    let modelName = PRIMARY_MODEL;
+    let model = genAI.getGenerativeModel({ model: modelName });
+    let result;
+
+    try {
+       console.log(`Analysing (analyze) with model: ${modelName}`);
+       result = await model.generateContent(prompt);
+    } catch (apiError: any) {
+       console.error(`Gemini API call failed with ${modelName}:`, apiError);
+       
+       if (modelName !== FALLBACK_MODEL) {
+         console.log(`Attempting fallback to ${FALLBACK_MODEL}...`);
+         modelName = FALLBACK_MODEL;
+         model = genAI.getGenerativeModel({ model: modelName });
+         try {
+           result = await model.generateContent(prompt);
+           console.log(`Fallback to ${FALLBACK_MODEL} successful`);
+         } catch (fallbackError: any) {
+            console.error(`Fallback model ${FALLBACK_MODEL} also failed:`, fallbackError);
+            throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+         }
+       } else {
+         throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+       }
+    }
+
     const text = result.response.text();
 
     // Parse the response
@@ -85,6 +118,11 @@ Integrations: ${answers.integrations.join(', ')}`;
     });
   } catch (error) {
     console.error("Gemini API Error:", error);
+    // Log more details
+    if (error instanceof Error) {
+       console.error("Error message:", error.message);
+    }
+    
     const { language = 'en' } = await request.json().catch(() => ({ language: 'en' }));
     const errorMessage = language === 'ar' 
       ? 'فشل في تحليل الذكاء الاصطناعي'
@@ -94,4 +132,4 @@ Integrations: ${answers.integrations.join(', ')}`;
       { status: 500 }
     );
   }
-} 
+}

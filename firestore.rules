@@ -18,6 +18,16 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // Reports Collection Rules
+    match /reports/{reportId} {
+      // Allow creating reports (required for the estimation tool)
+      // We validate that the basic structure exists
+      allow create: if request.resource.data.keys().hasAll(['userEmail', 'status']);
+      
+      // Allow reading reports (publicly accessible for now, can be restricted to owner later)
+      allow read: if true;
+    }
+
     // Default deny for all other collections
     match /{document=**} {
       allow read, write: if false;

@@ -7,7 +7,8 @@ import { PRICING_SCHEDULE } from '@/config/pricing';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Get model from env or default to the requested 2.5-flash
-const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const FALLBACK_MODEL = 'gemini-1.5-flash';
 
 // Rate limiter: 20 requests per minute per IP to prevent 429s during testing/demos
 const limiter = rateLimit({
@@ -117,18 +118,33 @@ export async function POST(request: Request) {
       }
     `;
 
-    // Use the configured model
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+    // Try primary model first
+    let modelName = PRIMARY_MODEL;
+    let model = genAI.getGenerativeModel({ model: modelName });
     
-    console.log(`Analysing with model: ${MODEL_NAME}`);
+    console.log(`Analysing with model: ${modelName}`);
     
     let result;
     try {
       result = await model.generateContent(prompt);
     } catch (apiError: any) {
-      console.error('Gemini API call failed:', apiError);
-      // Handle specific API errors if needed (e.g. quota exceeded)
-      throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+      console.error(`Gemini API call failed with ${modelName}:`, apiError);
+      
+      // If fallback is different and primary failed, try fallback
+      if (modelName !== FALLBACK_MODEL) {
+        console.log(`Attempting fallback to ${FALLBACK_MODEL}...`);
+        modelName = FALLBACK_MODEL;
+        model = genAI.getGenerativeModel({ model: modelName });
+        try {
+          result = await model.generateContent(prompt);
+          console.log(`Fallback to ${FALLBACK_MODEL} successful`);
+        } catch (fallbackError: any) {
+           console.error(`Fallback model ${FALLBACK_MODEL} also failed:`, fallbackError);
+           throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+        }
+      } else {
+        throw new Error(`Gemini API Error: ${apiError.message || 'Unknown error'}`);
+      }
     }
     
     const text = result.response.text();
@@ -162,12 +178,21 @@ export async function POST(request: Request) {
       console.error("Error details:", error.message);
       console.error("Stack:", error.stack);
     }
-    const { language = 'en' } = await request.json().catch(() => ({ language: 'en' }));
+    
+    // Try to recover the language for the error message
+    let language = 'en';
+    try {
+       const body = await request.clone().json();
+       if (body.language) language = body.language;
+    } catch {
+       // Ignore
+    }
+
     const errorMessage = language === 'ar' 
       ? 'فشل في تحليل الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.'
       : 'AI analysis failed. Please try again.';
     return NextResponse.json(
-      { error: errorMessage },
+      { error: errorMessage, details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

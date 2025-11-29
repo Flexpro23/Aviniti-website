@@ -3,10 +3,12 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     // Reports Storage Rules
-    match /reports/{userId}/{fileName} {
-      // Allow uploads only for PDF files
-      allow write: if request.resource.contentType == 'application/pdf'
-                   && fileName.matches('.*\\.pdf');
+    // We use a recursive wildcard to handle any nesting, though code uses reports/{email}/{filename}
+    match /reports/{allPaths=**} {
+      // Allow uploads for PDF files
+      // We check content type but allow unauthenticated uploads as this is a public tool
+      allow write: if request.resource.contentType == 'application/pdf' 
+                   || request.resource.contentType == 'application/octet-stream'; // Sometimes browsers default to this
       
       // Allow public read access for generated reports
       allow read: if true;
