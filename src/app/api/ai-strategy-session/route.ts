@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { db } from '@/lib/firebase-admin';
+import { adminDb as db } from '@/lib/firebase-admin';
 
 interface Message {
   id: string;
@@ -150,8 +150,12 @@ Use the conversation history below as context. Produce only JSON with no extra t
             };
             
             // Save to Firestore
-            await db.collection('opportunities').doc(opportunityId).set(opportunityWithId);
-            savedOpportunities.push(opportunityWithId);
+            if (db) {
+              await db.collection('opportunities').doc(opportunityId).set(opportunityWithId);
+              savedOpportunities.push(opportunityWithId);
+            } else {
+              console.error('Firestore admin not initialized, cannot save opportunity');
+            }
           }
 
           // Return the confirmation and the saved opportunities with IDs

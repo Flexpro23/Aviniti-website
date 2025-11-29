@@ -133,8 +133,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity }) => {
             </div>
           </div>
         </div>
-      )}
-      </div>
+        )}
 
       {/* Core Value */}
       <div className="mb-4">
