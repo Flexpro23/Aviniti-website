@@ -20,6 +20,7 @@ module.exports = {
           700: '#2d3a4d',
           800: '#283041',
           900: '#252a37',
+          dark: '#1e293b', // Additional dark variant
         },
         'bronze': {
           50: '#faf8f6',

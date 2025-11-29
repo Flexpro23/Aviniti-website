@@ -16,7 +16,7 @@ export default function NavLinks({ isScrolled }: NavLinksProps) {
   }`;
 
   return (
-    <div className="hidden md:flex items-center gap-8">
+    <div className={`hidden md:flex items-center gap-8 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
       <Link href="/" className={linkClasses}>
         {t.navigation.home}
       </Link>
@@ -30,14 +30,10 @@ export default function NavLinks({ isScrolled }: NavLinksProps) {
         {t.navigation.blog}
       </Link>
       <Link 
-        href="/contact"
-        className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 whitespace-nowrap ${
-          isScrolled
-            ? 'text-slate-blue-600 hover:text-bronze-500'
-            : 'text-white hover:text-slate-blue-200'
-        }`}
+        href="/ai-lab"
+        className={`px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300 whitespace-nowrap`}
       >
-        {t.navigation.contact}
+        {t.navigation.aiIdeaLab}
       </Link>
     </div>
   );
