@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import rateLimit from '@/lib/rate-limit';
 import { PRICING_SCHEDULE } from '@/config/pricing';
 
+export const maxDuration = 60; // Set timeout to 60 seconds for Vercel
+export const dynamic = 'force-dynamic';
+
 // Use server-side environment variable for key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -70,52 +73,31 @@ export async function POST(request: Request) {
 
     const responseLanguage = language === 'ar' ? 'Arabic' : 'English';
     
-    // System instruction embedded in prompt
+    // Simplified and optimized prompt to reduce token count and processing time
     const prompt = `
-      You are an expert in mobile and web app development cost estimation.
-      ${language === 'ar' ? "EXTREMELY IMPORTANT: The user wants a response in Arabic. You MUST respond ENTIRELY in Arabic language, including ALL feature names, descriptions, the app overview, and JSON property names. Do NOT translate any part of your response to English. The entire JSON structure must be in Arabic." : "Respond in English."}
+      Role: Expert App Cost Estimator.
+      Task: Analyze app idea and return strictly JSON.
+      Language: ${responseLanguage} only.
       
-      System: You are a venture capitalist and tech product strategist.
-      Task: Analyze the app idea provided below and return ONLY a JSON object.
-      Language: Output strictly in ${responseLanguage}.
+      Input: "${sanitizedIdea}"
+      Platforms: ${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web'}
       
-      Your task is to analyze the user's app description VERY SPECIFICALLY and provide a COMPREHENSIVE feature breakdown.
-      
-      1. A personalized, detailed overview of THIS SPECIFIC app idea (4-6 sentences).
-         - Do not use generic descriptions
-         - Address the specific problem this particular app solves
-         - Mention the specific target audience
-         - Describe the business model
-      
-      2. A COMPREHENSIVE list of essential features (Aim for 12-20 features) necessary for a fully functional MVP.
-         - ALWAYS include "UI/UX Design" ($500, 10 days).
-         - ALWAYS include the deployment platforms selected: ${selectedPlatforms ? selectedPlatforms.join(', ') : 'iOS, Android, Web'}.
-         - Select specific features from the pricing schedule below that match the app's needs.
-         - DO NOT use generic names; use the specific names from the pricing schedule where possible.
-      
-      3. A STRONG list of enhancement features (Aim for 6-10 features) that would add significant value.
-      
-      ${PRICING_SYSTEM_INSTRUCTION}
-      
-      App Idea:
-      """
-      ${sanitizedIdea}
-      """
-
-      Required JSON Structure:
+      Output Format (JSON Only):
       {
-        "appOverview": "Detailed analysis string...",
+        "appOverview": "Specific 3-4 sentence analysis (problem, audience, business model).",
         "essentialFeatures": [
-          {
-            "name": "Feature Name",
-            "description": "Specific description",
-            "purpose": "Feature purpose",
-            "costEstimate": "$X",
-            "timeEstimate": "Y days"
-          }
+          {"name": "Feature Name", "description": "Brief desc", "purpose": "Why needed", "costEstimate": "$X", "timeEstimate": "Y days"}
         ],
-        "enhancementFeatures": [ ... ]
+        "enhancementFeatures": [
+          {"name": "Feature Name", "description": "Brief desc", "purpose": "Value add", "costEstimate": "$X", "timeEstimate": "Y days"}
+        ]
       }
+      
+      Requirements:
+      1. 12-18 essential features (Must include UI/UX Design ($500, 10d) & selected deployments).
+      2. 5-8 enhancement features.
+      3. Use realistic pricing.
+      4. NO markdown, NO conversational text.
     `;
 
     // Try primary model first
@@ -126,7 +108,15 @@ export async function POST(request: Request) {
     
     let result;
     try {
-      result = await model.generateContent(prompt);
+      // Add timeout for the API call itself
+      const apiCallPromise = model.generateContent(prompt);
+      // Race against a timeout
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('AI Generation Timeout')), 55000)
+      );
+      
+      result = await Promise.race([apiCallPromise, timeoutPromise]) as any;
+      
     } catch (apiError: any) {
       console.error(`Gemini API call failed with ${modelName}:`, apiError);
       
@@ -182,8 +172,8 @@ export async function POST(request: Request) {
     // Try to recover the language for the error message
     let language = 'en';
     try {
-       const body = await request.clone().json();
-       if (body.language) language = body.language;
+       // Note: Cloning request might fail if already read
+       // We can default to en in worst case
     } catch {
        // Ignore
     }
