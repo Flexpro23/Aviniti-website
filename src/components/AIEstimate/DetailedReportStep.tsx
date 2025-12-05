@@ -25,32 +25,34 @@ interface DetailedReportStepProps {
   onRegenerateReport?: () => void;
   onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
   initialDownloadSuccess?: boolean;
-  // New prop for contact button
   onContactClick?: () => void;
+  // New prop for testing or customization
+  generationDelay?: number;
 }
 
-export default function DetailedReportStep({ 
+export default function DetailedReportStep({
   report,
-  userInfo, 
-  onBack, 
-  onClose, 
+  userInfo,
+  onBack,
+  onClose,
   isGeneratingServerReport = false,
   reportUrl = null,
   reportError = null,
   onRegenerateReport,
   onUploadPdf,
   initialDownloadSuccess = false,
-  onContactClick
+  onContactClick,
+  generationDelay = 1000
 }: DetailedReportStepProps) {
   const { language } = useLanguage();
   const reportRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(initialDownloadSuccess);
-  
+
   // New state for proactive background generation
   const [isGeneratingInBackground, setIsGeneratingInBackground] = useState(false);
   const [serverReportUrl, setServerReportUrl] = useState<string | null>(null);
-  
+
   // Set downloadSuccess when initialDownloadSuccess changes
   useEffect(() => {
     if (initialDownloadSuccess) {
@@ -101,7 +103,7 @@ export default function DetailedReportStep({
   const generateAndUploadPdf = async (): Promise<string | null> => {
     try {
       console.log('Starting PDF generation service...');
-      
+
       // Use native PDF generation with report data for vector-based output
       const pdfBlob = await generateClientSidePDF({
         reportData: getReportData(),
@@ -111,7 +113,7 @@ export default function DetailedReportStep({
       });
 
       console.log('PDF generation complete, preparing for upload...');
-      
+
       // If onUploadPdf is provided, upload the PDF and return the URL
       if (onUploadPdf) {
         try {
@@ -127,7 +129,7 @@ export default function DetailedReportStep({
         console.log('No upload function provided');
         return null;
       }
-      
+
     } catch (error) {
       console.error('Background PDF generation failed:', error);
       return null; // Return null on generation failure
@@ -139,7 +141,7 @@ export default function DetailedReportStep({
     const proactivelyGenerateReport = async () => {
       console.log('Starting proactive PDF generation in background...');
       setIsGeneratingInBackground(true);
-      
+
       try {
         const url = await generateAndUploadPdf();
         if (url) {
@@ -159,9 +161,9 @@ export default function DetailedReportStep({
     // and we don't already have a server report URL
     // And wait a bit for render
     if (onUploadPdf && !serverReportUrl && !isGeneratingInBackground) {
-        setTimeout(proactivelyGenerateReport, 1000);
+      setTimeout(proactivelyGenerateReport, generationDelay);
     }
-  }, []); 
+  }, []);
 
 
   // Function to generate PDF locally and download immediately (fallback method)
@@ -175,7 +177,7 @@ export default function DetailedReportStep({
       });
     } catch (error) {
       console.error('Error generating local PDF:', error);
-      return null;
+      throw error;
     }
   };
 
@@ -191,18 +193,18 @@ export default function DetailedReportStep({
     // If the report is already generated and uploaded, download it instantly
     if (serverReportUrl) {
       console.log('Downloading pre-generated report from server:', serverReportUrl);
-      
+
       try {
         // Generate dynamic filename based on user's name
         const userName = userInfo?.fullName
           ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
           : 'User';
         const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
-        
+
         // Fetch the PDF blob from the server URL and force download
         const response = await fetch(serverReportUrl);
         const pdfBlob = await response.blob();
-        
+
         // Create a blob URL and trigger download
         const blobUrl = URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
@@ -212,10 +214,10 @@ export default function DetailedReportStep({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         // Clean up the blob URL
         setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-        
+
         // Show success message
         setDownloadSuccess(true);
         setTimeout(() => {
@@ -231,8 +233,8 @@ export default function DetailedReportStep({
 
     // If the background process is still running, let the user know
     if (isGeneratingInBackground) {
-      alert(language === 'en' 
-        ? 'Your report is being prepared in the background. Please wait a moment and try again.' 
+      alert(language === 'en'
+        ? 'Your report is being prepared in the background. Please wait a moment and try again.'
         : 'يتم إعداد تقريرك في الخلفية. يرجى الانتظار لحظة والمحاولة مرة أخرى.');
       return;
     }
@@ -240,17 +242,17 @@ export default function DetailedReportStep({
     // If background generation failed, fall back to local generation and download
     console.log('Falling back to local PDF generation...');
     setIsGeneratingPDF(true);
-    
+
     try {
       const pdfBlob = await generateLocalPdfBlob();
-      
+
       if (pdfBlob) {
         // Generate dynamic filename based on user's name
         const userName = userInfo?.fullName
           ? userInfo.fullName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')
           : 'User';
         const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
-        
+
         // Create a temporary URL and trigger download
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement('a');
@@ -260,7 +262,7 @@ export default function DetailedReportStep({
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         // Show success message
         setDownloadSuccess(true);
         setTimeout(() => {
@@ -269,8 +271,8 @@ export default function DetailedReportStep({
       }
     } catch (error) {
       console.error('Error in fallback PDF generation:', error);
-      alert(language === 'en' 
-        ? 'There was an error generating your PDF. Please try again.' 
+      alert(language === 'en'
+        ? 'There was an error generating your PDF. Please try again.'
         : 'حدث خطأ في إنشاء ملف PDF الخاص بك. يرجى المحاولة مرة أخرى.');
     } finally {
       setIsGeneratingPDF(false);
@@ -287,12 +289,12 @@ export default function DetailedReportStep({
   };
 
   // Calculate average success score for metrics
-  const averageSuccessScore = report.successPotentialScores ? 
+  const averageSuccessScore = report.successPotentialScores ?
     Math.round(
-      (report.successPotentialScores.innovation + 
-       report.successPotentialScores.marketViability + 
-       report.successPotentialScores.monetization + 
-       report.successPotentialScores.technicalFeasibility) / 4
+      (report.successPotentialScores.innovation +
+        report.successPotentialScores.marketViability +
+        report.successPotentialScores.monetization +
+        report.successPotentialScores.technicalFeasibility) / 4
     ) : 7;
 
   const containerVariants = {
@@ -309,7 +311,7 @@ export default function DetailedReportStep({
     <div>
       {/* Success Message Notification */}
       {downloadSuccess && (
-        <motion.div 
+        <motion.div
           className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -322,25 +324,25 @@ export default function DetailedReportStep({
             </div>
             <div className="ml-3">
               <h3 className="text-sm font-medium">
-                {language === 'en' 
-                  ? 'Your Project Blueprint has been successfully generated!' 
+                {language === 'en'
+                  ? 'Your Project Blueprint has been successfully generated!'
                   : 'تم إنشاء مخطط مشروعك بنجاح!'}
               </h3>
             </div>
           </div>
         </motion.div>
       )}
-      
-      <motion.div 
-        id="printable-report" 
-        ref={reportRef} 
+
+      <motion.div
+        id="printable-report"
+        ref={reportRef}
         className="bg-gray-50 min-h-screen p-3 md:p-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         {/* Executive Dashboard Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -357,14 +359,14 @@ export default function DetailedReportStep({
           <div className="mt-4 w-24 h-1 bg-gradient-to-r from-bronze-400 to-bronze-600 mx-auto rounded-full"></div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="max-w-7xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {/* Key Metrics Cards */}
-          <KeyMetricCards 
+          <KeyMetricCards
             totalCost={report.totalCost}
             totalTime={report.totalTime}
             successScore={averageSuccessScore}
@@ -372,7 +374,7 @@ export default function DetailedReportStep({
           />
 
           {/* App Overview Section */}
-          <motion.div 
+          <motion.div
             className="bg-white p-3 rounded-xl border border-gray-200 shadow-lg mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -389,12 +391,12 @@ export default function DetailedReportStep({
 
           {/* Strategic Analysis Cards (Replaces Market & Complexity Sections) */}
           {report.strategicAnalysis && (
-            <StrategicAnalysisCards 
+            <StrategicAnalysisCards
               strategicAnalysis={{
                 ...report.strategicAnalysis,
                 marketComparison: report.marketComparison,
                 complexityAnalysis: report.complexityAnalysis
-              }} 
+              }}
             />
           )}
 
@@ -411,7 +413,7 @@ export default function DetailedReportStep({
             <div className="lg:col-span-2">
               <CostBreakdownPieChart costBreakdown={report.costBreakdown} />
             </div>
-            
+
             {/* Timeline - 3 columns */}
             <div className="lg:col-span-3">
               <TimelineVisualization timelinePhases={report.timelinePhases} />
@@ -419,7 +421,7 @@ export default function DetailedReportStep({
           </div>
 
           {/* Selected Features Table - Minimal Grid */}
-          <motion.div 
+          <motion.div
             className="bg-white p-3 rounded-xl border border-gray-200 shadow-lg mb-6"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -434,7 +436,7 @@ export default function DetailedReportStep({
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {report.selectedFeatures.map((feature, index) => (
-                <div 
+                <div
                   key={feature.id}
                   className="p-3 rounded-lg border border-gray-100 bg-gray-50 hover:border-bronze-200 transition-colors flex flex-col justify-between h-full"
                 >
@@ -454,7 +456,7 @@ export default function DetailedReportStep({
                 </div>
               ))}
             </div>
-            
+
             <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
               <span className="font-bold text-slate-blue-900">Total Project Investment</span>
               <div className="text-right">
@@ -484,8 +486,8 @@ export default function DetailedReportStep({
                 {language === 'en' ? 'Generating report...' : 'جاري إنشاء التقرير...'}
               </h3>
               <p className="mt-1 text-sm text-blue-600">
-                {language === 'en' 
-                  ? 'This may take a few moments. Please wait...' 
+                {language === 'en'
+                  ? 'This may take a few moments. Please wait...'
                   : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...'}
               </p>
             </div>
@@ -499,8 +501,8 @@ export default function DetailedReportStep({
         <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
           {/* Schedule Consultation Button */}
           <ScheduleButton
-            prefillName={userInfo.fullName}
-            prefillEmail={userInfo.emailAddress}
+            prefillName={userInfo?.fullName ?? ''}
+            prefillEmail={userInfo?.emailAddress ?? ''}
             source="detailed-report"
             variant="primary"
             className="px-8 py-3"
@@ -512,7 +514,7 @@ export default function DetailedReportStep({
               {language === 'en' ? 'Schedule Consultation' : 'حجز استشارة'}
             </span>
           </ScheduleButton>
-          
+
           <button
             onClick={handleContactClick}
             className="px-8 py-3 border border-slate-blue-300 hover:border-slate-blue-400 text-slate-blue-600 hover:bg-slate-blue-50 rounded-lg transition-all duration-200 flex items-center justify-center font-semibold"
@@ -522,7 +524,7 @@ export default function DetailedReportStep({
             </svg>
             {language === 'en' ? 'Send Message' : 'أرسل رسالة'}
           </button>
-          
+
           {reportUrl ? (
             <button
               onClick={openServerReport}
@@ -536,13 +538,12 @@ export default function DetailedReportStep({
           ) : (
             <button
               onClick={handleDownloadClick}
-              className={`px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium ${
-                serverReportUrl 
-                  ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' // Ready state - green
-                  : isGeneratingInBackground 
-                    ? 'border border-blue-600 text-blue-600 bg-blue-50 cursor-not-allowed' // Preparing state - blue
-                    : 'border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white' // Default state
-              }`}
+              className={`px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium ${serverReportUrl
+                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' // Ready state - green
+                : isGeneratingInBackground
+                  ? 'border border-blue-600 text-blue-600 bg-blue-50 cursor-not-allowed' // Preparing state - blue
+                  : 'border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white' // Default state
+                }`}
               disabled={isGeneratingPDF || isGeneratingServerReport}
             >
               {isGeneratingPDF ? (
@@ -579,29 +580,29 @@ export default function DetailedReportStep({
             </button>
           )}
         </div>
-        
+
         {/* Loading helper text - shows different messages based on state */}
         {(isGeneratingPDF || isGeneratingInBackground) && (
           <div className="text-center">
             <p className="text-sm text-gray-500">
-              {isGeneratingInBackground 
-                ? (language === 'en' 
-                    ? 'Preparing your report in the background for instant access...' 
-                    : 'إعداد تقريرك في الخلفية للوصول الفوري...')
-                : (language === 'en' 
-                    ? 'This may take a moment. Please wait...' 
-                    : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...')
+              {isGeneratingInBackground
+                ? (language === 'en'
+                  ? 'Preparing your report in the background for instant access...'
+                  : 'إعداد تقريرك في الخلفية للوصول الفوري...')
+                : (language === 'en'
+                  ? 'This may take a moment. Please wait...'
+                  : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...')
               }
             </p>
           </div>
         )}
-        
+
         {/* Success indicator when report is ready */}
         {serverReportUrl && !isGeneratingInBackground && (
           <div className="text-center">
             <p className="text-sm text-green-600 font-medium">
-              {language === 'en' 
-                ? '✅ Your report is ready for instant download!' 
+              {language === 'en'
+                ? '✅ Your report is ready for instant download!'
                 : '✅ تقريرك جاهز للتحميل الفوري!'}
             </p>
           </div>
