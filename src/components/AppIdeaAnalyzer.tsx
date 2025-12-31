@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import AnalysisResults, { AnalysisData } from './AnalysisResults';
+import AnalysisResults from './AnalysisResults';
+import { AnalysisData } from '@/types/report';
 
 export default function AppIdeaAnalyzer() {
   const { t, dir, language } = useLanguage();
@@ -36,6 +37,10 @@ export default function AppIdeaAnalyzer() {
     setError(null);
 
     try {
+      // Setup client-side timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s client timeout
+
       const response = await fetch('/api/analyze-idea', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,7 +48,10 @@ export default function AppIdeaAnalyzer() {
           ideaDescription: userInput.trim(),
           language: language 
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -54,7 +62,13 @@ export default function AppIdeaAnalyzer() {
       setAnalysisResult(data);
     } catch (err) {
       console.error('Analysis error:', err);
-      setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError(language === 'ar' 
+          ? 'استغرق التحليل وقتًا أطول من المتوقع. يرجى المحاولة مرة أخرى أو تبسيط وصفك.'
+          : 'Analysis took too long. Please try again or simplify your description.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

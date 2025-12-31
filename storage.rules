@@ -1,14 +1,22 @@
 rules_version = '2';
+
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow public access to reports
-    match /reports/{reportId}/{fileName} {
-      allow read, write: if true;
+    // Reports Storage Rules
+    // We use a recursive wildcard to handle any nesting, though code uses reports/{email}/{filename}
+    match /reports/{allPaths=**} {
+      // Allow uploads for PDF files
+      // We check content type but allow unauthenticated uploads as this is a public tool
+      allow write: if request.resource.contentType == 'application/pdf' 
+                   || request.resource.contentType == 'application/octet-stream'; // Sometimes browsers default to this
+      
+      // Allow public read access for generated reports
+      allow read: if true;
     }
     
-    // Admin has full access to all other files
+    // Default deny for all other paths
     match /{allPaths=**} {
-      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
+      allow read, write: if false;
     }
   }
-} 
+}

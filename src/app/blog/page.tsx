@@ -25,80 +25,7 @@ export default function BlogPage() {
   // Safe access to blog page translations with fallbacks
   const blogT = (t as any).blogPage || {};
 
-  const blogPosts: BlogPost[] = [
-    {
-      id: '1',
-      title: 'AI Integration in Legacy Systems: A Complete Guide',
-      excerpt: 'Learn how to seamlessly integrate AI capabilities into existing legacy systems without disrupting your business operations.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-15',
-      readTime: '8 min read',
-      category: 'AI',
-      tags: ['AI', 'Legacy Systems', 'Integration'],
-      slug: 'ai-integration-legacy-systems'
-    },
-    {
-      id: '2',
-      title: 'Mobile App Development Trends for 2024',
-      excerpt: 'Discover the latest trends in mobile app development that are shaping the industry and driving innovation.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-10',
-      readTime: '6 min read',
-      category: 'Mobile',
-      tags: ['Mobile', 'Trends', 'Development'],
-      slug: 'mobile-app-development-trends'
-    },
-    {
-      id: '3',
-      title: 'AI App Development Cost Guide: Everything You Need to Know',
-      excerpt: 'A comprehensive breakdown of AI app development costs, factors that influence pricing, and how to budget effectively.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2024-01-05',
-      readTime: '10 min read',
-      category: 'AI',
-      tags: ['AI', 'Costs', 'Planning'],
-      slug: 'ai-app-development-cost-guide'
-    },
-    {
-      id: '4',
-      title: 'Building Scalable Web Applications with Modern Frameworks',
-      excerpt: 'Best practices for building scalable web applications using Next.js, React, and other modern frameworks.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-28',
-      readTime: '7 min read',
-      category: 'Web',
-      tags: ['Web', 'Scalability', 'Frameworks'],
-      slug: 'scalable-web-applications'
-    },
-    {
-      id: '5',
-      title: 'The Future of AI in Business: Opportunities and Challenges',
-      excerpt: 'Explore how AI is transforming businesses across industries and the challenges organizations face in adoption.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-20',
-      readTime: '9 min read',
-      category: 'AI',
-      tags: ['AI', 'Business', 'Future'],
-      slug: 'future-of-ai-in-business'
-    },
-    {
-      id: '6',
-      title: 'Essential Security Practices for Modern Applications',
-      excerpt: 'Learn about critical security measures every modern application should implement to protect user data.',
-      content: 'Full article content would go here...',
-      author: 'Aviniti Team',
-      date: '2023-12-15',
-      readTime: '8 min read',
-      category: 'Security',
-      tags: ['Security', 'Best Practices', 'Development'],
-      slug: 'essential-security-practices'
-    }
-  ];
+  const blogPosts: BlogPost[] = t.blog.posts;
 
   const categories = [
     { value: 'all', label: blogT.allArticles || 'All Articles' },
@@ -163,7 +90,7 @@ export default function BlogPage() {
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                     </div>
-                    <div className="text-sm opacity-90">Featured</div>
+                    <div className="text-sm opacity-90">{t.blog.featured}</div>
                   </div>
                 </div>
                 <div className="md:w-2/3 p-8">
@@ -205,7 +132,7 @@ export default function BlogPage() {
               <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group border border-slate-blue-100">
                 <div className="h-48 bg-gradient-to-br from-slate-blue-500 to-slate-blue-600 relative overflow-hidden">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
+                  <div className={`absolute bottom-4 ${dir === 'rtl' ? 'right-4' : 'left-4'}`}>
                     <span className="bg-bronze-100 text-bronze-600 px-3 py-1 rounded-full text-sm font-medium">
                       {post.category}
                     </span>
@@ -232,7 +159,7 @@ export default function BlogPage() {
                     </div>
                     <Link 
                       href={`/blog/${post.slug}`}
-                      className="text-bronze-500 font-medium hover:text-bronze-600 transition-colors duration-300"
+                      className="text-bronze-500 font-medium hover:text-bronze-600 transition-colors duration-300 flex items-center gap-1"
                     >
                       {blogT.readMore || 'Read More'} {dir === 'rtl' ? '←' : '→'}
                     </Link>

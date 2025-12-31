@@ -10,6 +10,7 @@ import Services from '@/components/Services';
 const Expertise = lazy(() => import('@/components/Expertise'));
 const About = lazy(() => import('@/components/About'));
 const Footer = lazy(() => import('@/components/Footer'));
+const TrustElements = lazy(() => import('@/components/TrustElements'));
 import ContactPopup from '@/components/ContactPopup';
 
 const ReadyMadeSolutions = lazy(() => import('@/components/ReadyMadeSolutions'));
@@ -67,6 +68,10 @@ export default function Home() {
       {/* Main content sections */}
       <div role="main" aria-label="Main content">
         <Projects />
+        {/* Trust Elements - Testimonials and Security Badges */}
+        <Suspense fallback={<LoadingFallback />}>
+          <TrustElements />
+        </Suspense>
         <div id="services-section">
           <Services />
         </div>

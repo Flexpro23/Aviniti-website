@@ -15,7 +15,7 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
   const data = Object.entries(costBreakdown).map(([name, value]) => ({
     name,
     value,
-    percentage: Math.round((value / Object.values(costBreakdown).reduce((a, b) => a + b, 0)) * 100)
+    percentage: totalCost > 0 ? Math.round((value / totalCost) * 100) : 0
   }));
 
   const COLORS = [
@@ -60,10 +60,12 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
 
   return (
     <motion.div 
-      className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg"
+      className="bg-white p-5 rounded-xl border border-gray-200 shadow-lg"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
+      role="figure"
+      aria-label="Cost breakdown pie chart showing investment allocation by development phase"
     >
       <div className="mb-6">
         <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
@@ -77,7 +79,27 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
         </p>
       </div>
 
-      <div className="h-64">
+      {/* Accessible data table for screen readers */}
+      <div className="sr-only" role="table" aria-label="Cost breakdown data">
+        <div role="rowgroup">
+          <div role="row">
+            <span role="columnheader">Category</span>
+            <span role="columnheader">Cost</span>
+            <span role="columnheader">Percentage</span>
+          </div>
+        </div>
+        <div role="rowgroup">
+          {data.map((item, index) => (
+            <div key={index} role="row">
+              <span role="cell">{item.name}</span>
+              <span role="cell">${item.value.toLocaleString()}</span>
+              <span role="cell">{item.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-64" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

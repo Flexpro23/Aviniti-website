@@ -45,7 +45,7 @@ const initializeFirebase = async () => {
 // Simple GET handler
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  props: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> {
   try {
     await initializeFirebase();
@@ -54,6 +54,7 @@ export async function GET(
       return NextResponse.json({ error: 'Database not initialized' }, { status: 500 });
     }
     
+    const params = await props.params;
     const userId = params.userId;
     
     // Check cache first
@@ -81,7 +82,7 @@ export async function GET(
 // Simple POST handler
 export async function POST(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  props: { params: Promise<{ userId: string }> }
 ): Promise<NextResponse> {
   try {
     await initializeFirebase();
@@ -90,6 +91,7 @@ export async function POST(
       return NextResponse.json({ error: 'Firebase not initialized' }, { status: 500 });
     }
     
+    const params = await props.params;
     const userId = params.userId;
     const body = await request.json();
     

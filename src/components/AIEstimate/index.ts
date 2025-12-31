@@ -6,8 +6,11 @@ export { default as DetailedReportStep } from './DetailedReportStep';
 
 export type { 
   PersonalDetails,
-  AppDescription,
+  AppDescription
+} from '@/types/estimate';
+
+export type {
   Feature,
   AIAnalysisResult,
-  DetailedReport
-} from './AIEstimateModal'; 
+  ReportData as DetailedReport
+} from '@/types/report'; 

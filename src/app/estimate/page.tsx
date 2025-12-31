@@ -12,12 +12,13 @@ import WorldClassProcessingAnimation from '@/components/AIEstimate/WorldClassPro
 
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL, generateExecutiveDashboard } from '@/lib/services/GeminiService';
 import { collection, addDoc, getDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { createUserDocument } from '@/lib/firebase-utils';
+import { createUserDocument } from '@/services/estimateService';
 import { db } from '@/lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 import ContactPopup from '@/components/ContactPopup';
 import Navbar from '@/components/Navbar';
+
+import { Feature, AIAnalysisResult, CostBreakdown, TimelinePhase, AnalysisScores as SuccessPotentialScores, StrategicAnalysis, ReportData } from '@/types/report';
 
 export type PersonalDetails = {
   fullName: string;
@@ -29,45 +30,6 @@ export type PersonalDetails = {
 export type AppDescription = {
   description: string;
   selectedPlatforms: string[];
-};
-
-export type Feature = {
-  id: string;
-  name: string;
-  description: string;
-  purpose: string;
-  costEstimate: string;
-  timeEstimate: string;
-  selected: boolean;
-};
-
-export type AIAnalysisResult = {
-  appOverview: string;
-  essentialFeatures: Feature[];
-  enhancementFeatures: Feature[];
-};
-
-export type CostBreakdown = {
-  [category: string]: number;
-};
-
-export type TimelinePhase = {
-  phase: string;
-  duration: string;
-  description: string;
-};
-
-export type SuccessPotentialScores = {
-  innovation: number;
-  marketViability: number;
-  monetization: number;
-  technicalFeasibility: number;
-};
-
-export type StrategicAnalysis = {
-  strengths: string;
-  challenges: string;
-  recommendedMonetization: string;
 };
 
 export type DetailedReport = {

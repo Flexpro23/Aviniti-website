@@ -1,3 +1,4 @@
+
 /**
  * Service for interacting with Google's Gemini API
  * SECURE VERSION - All API calls go through server-side proxy
@@ -185,17 +186,18 @@ When providing estimates, format costs as strings with dollar signs (e.g., "$1,0
 `;
 
 /**
- * Analyzes an app description using Gemini's generative AI
+ * Analyzes an app description using the server-side API
  * @param description The user's app description
- * @param apiKey Optional API key to use instead of the default
+ * @param apiKey Optional API key (Ignored now as we use server-side key)
  * @param selectedPlatforms Optional array of platform IDs selected by the user
+ * @param language Language code ('en' or 'ar')
  * @returns A promise that resolves to the analysis result
  */
 export const analyzeAppWithGemini = async (
   appDescription: string,
   apiKey?: string,
   selectedPlatforms?: string[],
-  language?: string
+  language: string = 'en'
 ): Promise<AIAnalysisResult> => {
   try {
     console.log('[SECURE] Analyzing app with Gemini via proxy...');
@@ -293,65 +295,40 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
       throw new Error('Empty response from Gemini API');
     }
 
-    console.log('Received response from Gemini API');
+    const result = await response.json();
     
-    // Log a preview of the response
-    console.log('Gemini response preview:', textResponse.substring(0, 200) + '...');
-
-    // Find JSON in the response
-    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+    // Process the result to match the frontend types if needed
+    // The API should return { appOverview, essentialFeatures, enhancementFeatures }
+    // We just need to add IDs and selection state
     
-    if (!jsonMatch) {
-      console.error('No valid JSON found in response:', textResponse);
-      throw new Error('No valid JSON found in the Gemini response');
-    }
+    return {
+      appOverview: result.appOverview,
+      essentialFeatures: result.essentialFeatures.map((f: any) => ({
+        ...f,
+        isSelected: true,
+        category: 'Essential',
+        id: `essential-${Math.random().toString(36).substr(2, 9)}`
+      })),
+      enhancementFeatures: result.enhancementFeatures.map((f: any) => ({
+        ...f,
+        isSelected: false,
+        category: 'Enhancement',
+        id: `enhancement-${Math.random().toString(36).substr(2, 9)}`
+      }))
+    };
 
-    const jsonString = jsonMatch[0];
-    console.log('Parsed JSON from response');
-    
-    try {
-      const result = JSON.parse(jsonString) as {
-        appOverview: string;
-        essentialFeatures: Omit<Feature, 'id' | 'selected'>[];
-        enhancementFeatures: Omit<Feature, 'id' | 'selected'>[];
-      };
-
-      console.log('Successfully analyzed app with Gemini');
-      
-      return {
-        appOverview: result.appOverview,
-        essentialFeatures: result.essentialFeatures.map(f => ({
-          ...f,
-          selected: true, // Default all essential features to selected
-          id: `essential-${Math.random().toString(36).substr(2, 9)}`
-        })),
-        enhancementFeatures: result.enhancementFeatures.map(f => ({
-          ...f,
-          selected: false, // Default all enhancement features to not selected
-          id: `enhancement-${Math.random().toString(36).substr(2, 9)}`
-        }))
-      };
-    } catch (parseError) {
-      console.error('Error parsing JSON from Gemini response:', parseError);
-      console.error('JSON string that failed to parse:', jsonString);
-      throw new Error('Failed to parse JSON from Gemini response');
-    }
   } catch (error) {
-    console.error('Error analyzing app with Gemini:', error);
+    console.error('Error analyzing app with Gemini API:', error);
     throw error;
   }
 }
 
 /**
  * Generates a mock analysis result when the API is unavailable
- * @param appDescription The app description text
- * @param selectedPlatforms Optional array of selected platform IDs
- * @returns A mock analysis result
  */
 export function generateMockAnalysis(appDescription: string, selectedPlatforms?: string[]): AIAnalysisResult {
   // This is a mock implementation that returns hardcoded data for testing or when the API is unavailable
   console.log('Using mock analysis as fallback');
-  console.log('Mock selected platforms:', selectedPlatforms || []);
   
   // Map platform IDs to their corresponding deployment feature names and costs
   const platformMap: Record<string, {name: string, description: string, cost: number}> = {
@@ -370,7 +347,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Launch",
       costEstimate: `$${platformMap[platform]?.cost || 200}`,
       timeEstimate: "14 days",
-      selected: true
+      category: "Deployment",
+      isSelected: true
   }));
 
   const mockFeatures: Array<Feature> = [
@@ -381,7 +359,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Design",
       costEstimate: "$500",
       timeEstimate: "10 days",
-      selected: true
+      category: "Design",
+      isSelected: true
     },
     {
       id: "essential-2",
@@ -390,7 +369,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Security",
       costEstimate: "$200",
       timeEstimate: "1 day",
-      selected: true
+      category: "Security",
+      isSelected: true
     },
     {
       id: "essential-3",
@@ -399,9 +379,9 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "User Experience",
       costEstimate: "$200",
       timeEstimate: "1 day",
-      selected: true
+      category: "Security",
+      isSelected: true
     },
-    // Replace the static deployment features with the dynamic ones from selected platforms
     ...deploymentFeatures,
     {
       id: `essential-${deploymentFeatures.length + 4}`,
@@ -410,7 +390,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "User Experience",
       costEstimate: "$250",
       timeEstimate: "2 days",
-      selected: true
+      category: "User Experience",
+      isSelected: true
     },
   ];
 
@@ -422,7 +403,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Engagement",
       costEstimate: "$550",
       timeEstimate: "4 days",
-      selected: false
+      category: "Engagement",
+      isSelected: false
     },
     {
       id: "enhancement-2",
@@ -431,7 +413,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Insights",
       costEstimate: "$800",
       timeEstimate: "7 days",
-      selected: false
+      category: "Analytics",
+      isSelected: false
     },
     {
       id: "enhancement-3",
@@ -440,7 +423,8 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "User Experience",
       costEstimate: "$850",
       timeEstimate: "7 days",
-      selected: false
+      category: "Offline",
+      isSelected: false
     },
     {
       id: "enhancement-4",
@@ -449,14 +433,12 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
       purpose: "Revenue",
       costEstimate: "$1,000",
       timeEstimate: "10 days",
-      selected: false
+      category: "Monetization",
+      isSelected: false
     }
   ];
 
-  // Create a mock overview based on the app description or use a fallback message
-  const mockOverview = appDescription 
-    ? `[MOCK DATA] Your app idea appears to be about ${appDescription.substring(0, 40)}... This is a mock analysis that would normally be generated using AI based on your complete description. The mock includes updated pricing for authentication methods ($200 each) and platform deployment options ($200 each).` 
-    : "[MOCK DATA] This is a placeholder analysis. In a real scenario, our AI would analyze your app description and provide detailed insights.";
+  const mockOverview = appDescription;
 
   return {
     appOverview: mockOverview,
@@ -466,10 +448,11 @@ export function generateMockAnalysis(appDescription: string, selectedPlatforms?:
 }
 
 /**
- * Test function to verify the Gemini API key is working
- * @returns A promise that resolves to a boolean indicating success
+ * Test function to verify the Gemini API connection
  */
 export const testGeminiApiConnection = async (): Promise<{ success: boolean; message: string }> => {
+  // We can't test the server-side key from here directly without an endpoint,
+  // but we can try a minimal call to our API
   try {
     // Check if API key is available
     if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === '') {

@@ -36,15 +36,16 @@ export default function Footer() {
             </p>
             <div className={`flex ${dir === 'rtl' ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
               <a 
-                href="mailto:info@aviniti.app" 
+                href="mailto:aliodat@aviniti.app" 
                 className="text-slate-blue-300 hover:text-bronze-400 transition-colors"
               >
-                info@aviniti.app
+                aliodat@aviniti.app
               </a>
               <span className="text-slate-blue-400">|</span>
               <a 
                 href="tel:+962790685302" 
                 className="text-slate-blue-300 hover:text-bronze-400 transition-colors"
+                dir="ltr"
               >
                 +962 79 068 5302
               </a>

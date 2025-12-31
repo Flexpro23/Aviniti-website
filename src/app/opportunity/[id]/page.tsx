@@ -20,9 +20,9 @@ interface Opportunity {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const OpportunityPage: React.FC<PageProps> = ({ params }) => {
@@ -33,7 +33,8 @@ const OpportunityPage: React.FC<PageProps> = ({ params }) => {
   useEffect(() => {
     const fetchOpportunity = async () => {
       try {
-        const response = await fetch(`/api/opportunity/${params.id}`);
+        const resolvedParams = await params;
+        const response = await fetch(`/api/opportunity/${resolvedParams.id}`);
         if (!response.ok) {
           throw new Error('Opportunity not found');
         }
@@ -47,7 +48,7 @@ const OpportunityPage: React.FC<PageProps> = ({ params }) => {
     };
 
     fetchOpportunity();
-  }, [params.id]);
+  }, [params]);
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   

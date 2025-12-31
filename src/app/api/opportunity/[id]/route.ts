@@ -6,11 +6,19 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
     const opportunityId = params.id;
     const db = getFirestoreAdmin();
+    
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database not initialized' },
+        { status: 500 }
+      );
+    }
     
     // Fetch the opportunity from Firestore
     const opportunityDoc = await db.collection('opportunities').doc(opportunityId).get();

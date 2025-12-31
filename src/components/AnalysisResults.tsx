@@ -4,16 +4,7 @@ import { motion } from 'framer-motion';
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import Link from 'next/link';
-
-export interface AnalysisData {
-  innovationScore: number;
-  marketViabilityScore: number;
-  monetizationScore: number;
-  technicalFeasibilityScore: number;
-  strengths: string;
-  challenges: string;
-  recommendedMonetization: string;
-}
+import { AnalysisData } from '@/types/report';
 
 interface AnalysisResultsProps {
   data: AnalysisData;

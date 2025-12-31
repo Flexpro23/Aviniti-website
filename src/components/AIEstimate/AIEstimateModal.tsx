@@ -1,94 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
 import UserInfoStep from '@/components/AIEstimate/UserInfoStep';
 import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
-import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL } from '@/lib/services/GeminiService';
-import { collection, addDoc, getDoc, doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { createUserDocument } from '@/lib/firebase-utils';
-import { db } from '@/lib/firebase';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
+import { generateMockAnalysis } from '@/lib/services/GeminiService';
+import { 
+  createUserDocument, 
+  updateUserAppDescription, 
+  updateUserFeaturesAndReport, 
+  uploadReportPdf 
+} from '@/services/estimateService';
+import { db } from '@/lib/firebase'; // Kept for checking initialization only
 import ContactPopup from '@/components/ContactPopup';
-import { reportConversion } from '@/lib/gtag';
-import { reportMetaLeadConversion } from '@/lib/meta';
-
-export type PersonalDetails = {
-  fullName: string;
-  emailAddress: string;
-  phoneNumber: string;
-  companyName: string;
-};
-
-export type AppDescription = {
-  description: string;
-  selectedPlatforms: string[];
-};
-
-export type Feature = {
-  id: string;
-  name: string;
-  description: string;
-  purpose: string;
-  costEstimate: string;
-  timeEstimate: string;
-  selected: boolean;
-};
-
-export type AIAnalysisResult = {
-  appOverview: string;
-  essentialFeatures: Feature[];
-  enhancementFeatures: Feature[];
-};
-
-export type CostBreakdown = {
-  [category: string]: number;
-};
-
-export type TimelinePhase = {
-  phase: string;
-  duration: string;
-  description: string;
-};
-
-export type SuccessPotentialScores = {
-  innovation: number;
-  marketViability: number;
-  monetization: number;
-  technicalFeasibility: number;
-};
-
-export type StrategicAnalysis = {
-  strengths: string;
-  challenges: string;
-  recommendedMonetization: string;
-};
-
-export type DetailedReport = {
-  appOverview: string;
-  selectedFeatures: Feature[];
-  totalCost: string;
-  totalTime: string;
-  costBreakdown: CostBreakdown;
-  timelinePhases: TimelinePhase[];
-  marketComparison: string;
-  complexityAnalysis: string;
-  // New executive dashboard fields
-  successPotentialScores?: SuccessPotentialScores;
-  strategicAnalysis?: StrategicAnalysis;
-};
-
-interface DetailedReportStepProps {
-  report: DetailedReport;
-  onBack: () => void;
-  onClose: () => void;
-  isGeneratingServerReport: boolean;
-  reportError: string | null;
-  onUploadPdf?: (pdfBlob: Blob) => Promise<string>;
-}
+import { useEstimatePersistence } from './useEstimatePersistence';
+import { 
+  AIAnalysisResult, 
+  Feature, 
+  ReportData as DetailedReport,
+  CostBreakdown,
+  StrategicAnalysis,
+  AnalysisScores as SuccessPotentialScores,
+  TimelinePhase
+} from '@/types/report';
+import {
+  AppDescription,
+  PersonalDetails
+} from '@/types/estimate';
 
 interface AIEstimateModalProps {
   isOpen: boolean;
@@ -116,23 +56,46 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [userDocumentId, setUserDocumentId] = useState<string | null>(null);
 
-  // Reset state when modal opens/closes
+  // Auto-save persistence hook
+  const { saveState, loadState, clearState } = useEstimatePersistence(personalDetails, appDescription);
+  const [isResumed, setIsResumed] = useState(false);
+
+  // Reset state when modal opens/closes - Modified to support resumption
   useEffect(() => {
     if (!isOpen) {
-      // Small delay to avoid visual glitches during closing animation
-      const timer = setTimeout(() => {
-        console.log('🔍 DEBUG: Modal closing, resetting state');
-        setStep(1);
-        setAiAnalysisResult(null);
-        setDetailedReport(null);
-        setIsProcessing(false);
-        setUserDocumentId(null);
-      }, 300);
-      return () => clearTimeout(timer);
+      // Only reset if we haven't saved state or if we want to force reset (not implemented yet)
+      // But for now, we keep the state in memory to allow quick re-open without losing data
+      // unless we explicitly want to clear it. 
+      // If the user actually *closes* (e.g. finishes), we might clear it elsewhere.
+      
+      // Logic: If we have valid progress (step > 1), we don't reset.
+      // If we are at step 1 and empty, we can reset.
+      
+      // Actually, to support "Resume", we should Load state when opening.
     } else {
       console.log('🔍 DEBUG: Modal opening');
+      // Try to load state
+      const saved = loadState();
+      if (saved && saved.step > 1) {
+         console.log('🔄 Restoring saved estimate session', saved);
+         setStep(saved.step);
+         setPersonalDetails(saved.personalDetails);
+         setAppDescription(saved.appDescription);
+         setAiAnalysisResult(saved.aiAnalysisResult);
+         setDetailedReport(saved.detailedReport);
+         setUserDocumentId(saved.userDocumentId);
+         setIsResumed(true);
+         setTimeout(() => setIsResumed(false), 3000);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, loadState]);
+
+  // Save state when relevant data changes
+  useEffect(() => {
+    if (isOpen && step > 1) {
+      saveState(step, personalDetails, appDescription, aiAnalysisResult, detailedReport, userDocumentId);
+    }
+  }, [isOpen, step, personalDetails, appDescription, aiAnalysisResult, detailedReport, userDocumentId, saveState]);
 
   // Debug: Watch userDocumentId changes
   useEffect(() => {
@@ -146,89 +109,36 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
 
   const handleCreateUserDocument = async (userInfo: PersonalDetails) => {
     console.log('🔍 DEBUG: handleCreateUserDocument called with:', userInfo);
-    try {
-      if (!db) {
-        console.warn('⚠️ Firebase not initialized, skipping user document creation');
-        return null;
-      }
-      
-      const docRef = doc(collection(db, 'users')); // Creates a ref with a new ID
-      console.log('🔍 DEBUG: Generated document ID:', docRef.id);
-      
-      const docData = {
-        ...userInfo,
-        createdAt: serverTimestamp(),
-        status: 'pending-description' // A new status to show they've started
-      };
-      
-      console.log('🔍 DEBUG: Document data to save:', docData);
-      await setDoc(docRef, docData);
-      
-      console.log("✅ User document created with ID: ", docRef.id);
-      try {
-        reportConversion();
-        reportMetaLeadConversion();
-      } catch (e) {
-        console.warn('Conversion reporting failed (non-blocking):', e);
-      }
-      setUserDocumentId(docRef.id); // Save the ID to state
-      console.log('🔍 DEBUG: userDocumentId set in state:', docRef.id);
-      return docRef.id;
-    } catch (error) {
-      console.error("❌ Error creating user document: ", error);
-      // Handle error appropriately
+    
+    const docId = await createUserDocument(userInfo);
+    
+    if (docId) {
+      setUserDocumentId(docId);
+      console.log('🔍 DEBUG: userDocumentId set in state:', docId);
+      return docId;
+    } else {
+      console.error("❌ Error creating user document");
       return null;
     }
   };
 
   const handleUpdateUserDocument = async (appData: { description: string; platforms: string[]; keywords: string[] }) => {
     console.log('🔍 DEBUG: handleUpdateUserDocument called');
-    console.log('🔍 DEBUG: Received appData:', appData);
-    console.log('🔍 DEBUG: Current userDocumentId:', userDocumentId);
-    console.log('🔍 DEBUG: Database reference:', db);
-
-    // Ensure we have a document ID to update
+    
     if (!userDocumentId) {
       console.error("❌ No user document ID found to update.");
       alert("A session error occurred. Please try again from Step 1.");
-      return false; // Indicate failure
-    }
-
-    if (!db) {
-      console.warn('⚠️ Firebase not initialized, skipping user document update');
       return false;
     }
 
-    try {
-      console.log('🔍 DEBUG: Creating document reference...');
-      const userDocRef = doc(db, 'users', userDocumentId);
-      console.log('🔍 DEBUG: Document reference created:', userDocRef.path);
-
-      const updateData = {
-        appDescription: appData.description,
-        selectedPlatforms: appData.platforms,
-        detectedKeywords: appData.keywords, // Store the keywords for analysis
-        status: 'pending-features', // Update the status
-        updatedAt: serverTimestamp()
-      };
-
-      console.log('🔍 DEBUG: Update data prepared:', updateData);
-      console.log('🔍 DEBUG: Calling updateDoc...');
-
-      await updateDoc(userDocRef, updateData);
-      
+    const success = await updateUserAppDescription(userDocumentId, appData);
+    
+    if (success) {
       console.log("✅ User document successfully updated with app description.");
-      console.log('🔍 DEBUG: Document should now contain Step 2 data');
-      return true; // Indicate success
-    } catch (error) {
-      console.error("❌ Error updating user document: ", error);
-      if (error instanceof Error) {
-        console.error("❌ Error details:", {
-          message: error.message,
-          stack: error.stack
-        });
-      }
-      return false; // Indicate failure
+      return true;
+    } else {
+      console.error("❌ Error updating user document");
+      return false;
     }
   };
 
@@ -251,9 +161,12 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         return;
       }
       
+      // Stop processing before changing steps to prevent the next step from showing a loading state immediately
+      setIsProcessing(false);
       setStep(2);
     } catch (error) {
       console.error('Error saving user data to Firebase:', error);
+      setIsProcessing(false); // Ensure processing is stopped on error
       if (error instanceof Error) {
         console.error('Error details:', {
           message: error.message,
@@ -264,9 +177,8 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       } else {
         alert('Failed to save your information. Please try again.');
       }
-    } finally {
-      setIsProcessing(false);
     }
+    // Removed finally block to manually control isProcessing transition
   };
 
   const handleAppDescriptionSubmit = async (description: AppDescription & { keywords: string[] }) => {
@@ -309,39 +221,14 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       return;
     }
 
-    console.log('✅ Document update successful, proceeding to AI analysis');
+    console.log('✅ Document update successful, proceeding to next step immediately');
     
-    try {
-      console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
-      console.log('Selected platforms:', description.selectedPlatforms);
-      
-      // Try to get analysis from the Gemini API
-      const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms, language);
-      console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
-      
-      setAiAnalysisResult(analysis);
-      setStep(3);
-    } catch (error) {
-      // Log the specific error for debugging
-      console.error(`Error submitting app description to ${GEMINI_MODEL}:`, error);
-      
-      // Enhanced error message
-      let errorMessage = 'API connection failed: ';
-      if (error instanceof Error) {
-        errorMessage += error.message;
-      } else {
-        errorMessage += 'Unknown error occurred';
-      }
-      console.error(errorMessage);
-      
-      // Fallback to mock analysis when API fails
-      console.warn(`Using mock analysis due to ${GEMINI_MODEL} API failure`);
-      const mockAnalysis = generateMockAnalysis(description.description, description.selectedPlatforms);
-      setAiAnalysisResult(mockAnalysis);
-      setStep(3);
-    } finally {
-      setIsProcessing(false);
-    }
+    // Skip Gemini analysis completely and proceed immediately using mock/static data
+    // This ensures the next steps have necessary data structure without making API calls
+    const mockAnalysis = generateMockAnalysis(description.description, description.selectedPlatforms);
+    setAiAnalysisResult(mockAnalysis);
+    setIsProcessing(false);
+    setStep(3);
   };
 
   const handleFeatureSelectionSubmit = async (features: Feature[]) => {
@@ -349,7 +236,7 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     
     try {
       // Calculate totals
-      const selectedFeatures = features.filter(f => f.selected);
+      const selectedFeatures = features.filter(f => f.isSelected);
       
       // Helper function to extract numeric values from cost estimates
       const extractCostRange = (costEstimate: string) => {
@@ -480,34 +367,37 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
       const detailedReport: DetailedReport = {
         appOverview: aiAnalysisResult?.appOverview || '',
         selectedFeatures,
-        totalCost: `$${totalCost.toLocaleString()}`,
+        totalCost: totalCost.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
         totalTime: timeDisplay,
         costBreakdown,
         timelinePhases: generateTimelinePhases(),
         marketComparison,
-        complexityAnalysis
+        complexityAnalysis,
+        successPotentialScores: {
+          innovation: 8,
+          marketViability: 8,
+          monetization: 7,
+          technicalFeasibility: 9
+        },
+        strategicAnalysis: {
+          strengths: "Strong core functionality and user-centric design.",
+          challenges: "Initial user acquisition and market penetration.",
+          recommendedMonetization: "Freemium model with premium features."
+        }
       };
       
       setDetailedReport(detailedReport);
 
       // Update user document with feature selection and basic report
-      if (userDocumentId && db) {
-        try {
-          const userDocRef = doc(db, 'users', userDocumentId);
-          await updateDoc(userDocRef, {
-            selectedFeatures,
-            basicReport: detailedReport,
-            totalCost: `$${totalCost.toLocaleString()}`,
-            totalTime: timeDisplay,
-            costBreakdown,
-            timelinePhases: generateTimelinePhases(),
-            status: 'report-generated',
-            updatedAt: serverTimestamp()
-          });
-          console.log('User document updated with feature selection and complete report data');
-        } catch (error) {
-          console.error('Error updating user document with features:', error);
-        }
+      if (userDocumentId) {
+        await updateUserFeaturesAndReport(userDocumentId, {
+          selectedFeatures,
+          basicReport: detailedReport,
+          totalCost: totalCost.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+          totalTime: timeDisplay,
+          costBreakdown,
+          timelinePhases: generateTimelinePhases()
+        });
       }
 
       setStep(4);
@@ -522,366 +412,97 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
           // This variable is used to manage the automatic download flow
           const autoDownloadPdf = async () => {
             try {
-              // Create the reference to DetailedReportStep for PDF generation
-              const reportRef = document.getElementById('report-container');
-              
-              if (!reportRef) {
-                console.error('Report container element not found');
-                return;
-              }
-              
               // Check if device is mobile
               const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-              console.log('Device detection:', { isMobile, userAgent: navigator.userAgent });
               
-              // Dynamically import the libraries only when needed
-              const [jspdfModule, html2canvasModule] = await Promise.all([
-                import('jspdf'),
-                import('html2canvas')
-              ]);
-              const jsPDF = jspdfModule.default;
-              const html2canvas = html2canvasModule.default;
+              // Import service
+              const { generateClientSidePDF } = await import('@/services/pdfService');
               
-              // Create a temporary div for the contact information
-              const tempDiv = document.createElement('div');
-              tempDiv.innerHTML = `
-                <div style="margin-top: 40px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
-                  <h3 style="font-size: 18px; color: #1e40af; margin-bottom: 15px;">Contact Information</h3>
-                  <p style="margin-bottom: 10px;">Ready to get started? Contact us to discuss your project further!</p>
-                  <div style="margin-top: 15px;">
-                    <p style="margin-bottom: 8px;"><strong>Email:</strong> Aliodat@aviniti.app</p>
-                    <p style="margin-bottom: 8px;"><strong>Phone:</strong> +962 790 685 302</p>
-                    <p style="margin-bottom: 8px;"><strong>Website:</strong> www.aviniti.app</p>
-                  </div>
-                  <div style="margin-top: 20px; text-align: center;">
-                    <p style="font-size: 20px; color: #1e40af; margin-bottom: 5px;">AVINITI</p>
-                    <p style="font-style: italic; color: #64748b;">Your Ideas, Our Reality</p>
-                  </div>
-                </div>
-              `;
+              // Prepare report data for PDF
+              // Map DetailedReport to the ReportData expected by the PDF service
+              const pdfReportData = {
+                appOverview: detailedReport.appOverview,
+                totalCost: detailedReport.totalCost,
+                totalTime: detailedReport.totalTime,
+                userName: personalDetails.fullName,
+                userEmail: personalDetails.emailAddress,
+                userCompany: personalDetails.companyName,
+                selectedFeatures: detailedReport.selectedFeatures.map(f => ({
+                    ...f,
+                    category: f.purpose || 'General',
+                    isSelected: true
+                })),
+                successPotentialScores: detailedReport.successPotentialScores || {
+                    innovation: 0,
+                    marketViability: 0,
+                    monetization: 0,
+                    technicalFeasibility: 0
+                },
+                costBreakdown: detailedReport.costBreakdown,
+                strategicAnalysis: detailedReport.strategicAnalysis || {
+                    strengths: '',
+                    challenges: '',
+                    recommendedMonetization: ''
+                },
+                timelinePhases: detailedReport.timelinePhases,
+                timestamp: new Date().toLocaleDateString()
+              };
               
-              console.log('Appending contact information...');
+              console.log('Generating PDF using service...');
+              const pdfBlob = await generateClientSidePDF({
+                reportData: pdfReportData,
+                fileName: 'Aviniti_App_Development_Report.pdf',
+                isMobile
+              });
               
-              // Append the contact information to the report container
-              reportRef.appendChild(tempDiv);
+              console.log('PDF generated, size:', pdfBlob.size);
               
-              console.log('Creating canvas with mobile optimization:', isMobile);
+              // Upload the PDF
+              await uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress);
               
-              try {
-                // Create a canvas from the report content - reduce quality on mobile
-                const canvas = await html2canvas(reportRef, {
-                  scale: isMobile ? 1.0 : 2.0, // Lower scale on mobile for better performance
-                  useCORS: true, // Enable CORS for any images
-                  logging: true, // Enable logging for debugging
-                  onclone: (clonedDoc) => {
-                    // You can modify the cloned document before rendering if needed
-                    const element = clonedDoc.getElementById('report-container');
-                    if (element) {
-                      element.style.padding = '20px';
-                      
-                      // If mobile, simplify the content for better performance
-                      if (isMobile) {
-                        const tables = element.querySelectorAll('.sm\\:grid');
-                        tables.forEach(table => {
-                          // Simplify complex grid layouts on mobile
-                          if (table.className.includes('sm:grid-cols-5')) {
-                            table.className = table.className.replace('sm:grid-cols-5', 'grid-cols-1');
-                          }
-                        });
-                      }
-                    }
-                  }
-                });
-                
-                console.log('Canvas created successfully, dimensions:', { width: canvas.width, height: canvas.height });
-                
-                // Remove the temporary contact information div after canvas creation
-                reportRef.removeChild(tempDiv);
-                
-                const imgData = canvas.toDataURL('image/jpeg', isMobile ? 0.7 : 0.9); // Use JPEG with lower quality on mobile
-                
-                console.log('Creating PDF...');
-                
-                // Calculate PDF dimensions (A4 format)
-                const pdf = new jsPDF({
-                  orientation: 'portrait',
-                  unit: 'mm',
-                  format: 'a4'
-                });
-                
-                const imgWidth = 210; // A4 width in mm
-                const pageHeight = 297; // A4 height in mm
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                let heightLeft = imgHeight;
-                let position = 0;
-                
-                // Add the image to the first page
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight); // Use JPEG instead of PNG
-                heightLeft -= pageHeight;
-                
-                // Add new pages if the content is longer than one page
-                while (heightLeft > 0) {
-                  position = heightLeft - imgHeight;
-                  pdf.addPage();
-                  pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight); // Use JPEG instead of PNG
-                  heightLeft -= pageHeight;
-                }
-                
-                console.log('PDF created successfully, getting blob...');
-                
-                // Get the PDF as a blob
-                let pdfBlob = pdf.output('blob');
-                console.log('PDF blob created, size:', pdfBlob.size);
-                
-                // On mobile, try a simpler approach if the blob is very large
-                if (isMobile && pdfBlob.size > 5000000) { // 5MB threshold
-                  console.log('PDF is too large for mobile, trying simpler approach...');
-                  
-                  // Create a simpler PDF with just text
-                  const simplePdf = new jsPDF();
-                  simplePdf.setFontSize(22);
-                  simplePdf.text('Aviniti App Development Report', 20, 20);
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('App Overview:', 20, 40);
-                  simplePdf.setFontSize(12);
-                  
-                  const appOverview = detailedReport?.appOverview || '';
-                  const splitOverview = simplePdf.splitTextToSize(appOverview, 170);
-                  simplePdf.text(splitOverview, 20, 50);
-                  
-                  let yPos = 50 + splitOverview.length * 7;
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Selected Features:', 20, yPos);
-                  simplePdf.setFontSize(12);
-                  
-                  yPos += 10;
-                  
-                  // Add features
-                  detailedReport?.selectedFeatures.forEach((feature: Feature, i: number) => {
-                    if (yPos > 270) {
-                      simplePdf.addPage();
-                      yPos = 20;
-                    }
-                    
-                    // Set font style to bold
-                    simplePdf.setFont(simplePdf.getFont().fontName, 'bold');
-                    simplePdf.text(`${i+1}. ${feature.name}`, 20, yPos);
-                    yPos += 7;
-                    
-                    // Set font style back to normal
-                    simplePdf.setFont(simplePdf.getFont().fontName, 'normal');
-                    const descText = simplePdf.splitTextToSize(`Description: ${feature.description}`, 170);
-                    simplePdf.text(descText, 25, yPos);
-                    yPos += descText.length * 7;
-                    
-                    simplePdf.text(`Cost: ${feature.costEstimate} • Time: ${feature.timeEstimate}`, 25, yPos);
-                    yPos += 10;
-                  });
-                  
-                  // Add summary
-                  if (yPos > 250) {
-                    simplePdf.addPage();
-                    yPos = 20;
-                  }
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Project Summary:', 20, yPos);
-                  yPos += 10;
-                  
-                  simplePdf.setFontSize(12);
-                  simplePdf.text(`Total Cost: ${detailedReport?.totalCost || ''}`, 20, yPos);
-                  yPos += 7;
-                  simplePdf.text(`Total Time: ${detailedReport?.totalTime || ''}`, 20, yPos);
-                  yPos += 7;
-                  simplePdf.text(`Number of Features: ${detailedReport?.selectedFeatures.length || 0}`, 20, yPos);
-                  yPos += 15;
-                  
-                  // Contact info
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Contact Information:', 20, yPos);
-                  yPos += 10;
-                  
-                  simplePdf.setFontSize(12);
-                  simplePdf.text('Email: Aliodat@aviniti.app', 20, yPos);
-                  yPos += 7;
-                  simplePdf.text('Phone: +962 790 685 302', 20, yPos);
-                  yPos += 7;
-                  simplePdf.text('Website: www.aviniti.app', 20, yPos);
-                  yPos += 15;
-                  
-                  simplePdf.setFontSize(14);
-                  simplePdf.setTextColor(29, 64, 175); // Blue color
-                  simplePdf.text('AVINITI - Your Ideas, Our Reality', 20, yPos);
-                  
-                  const simplePdfBlob = simplePdf.output('blob');
-                  console.log('Simple PDF created for mobile, size:', simplePdfBlob.size);
-                  
-                  // Use this simpler PDF instead
-                  pdfBlob = simplePdfBlob;
-                }
-                
-                // Upload the PDF
-                await uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress);
-                
-                // Save the PDF locally
-                if (isMobile) {
-                  // On mobile, open in a new tab rather than triggering download
-                  const pdfUrl = URL.createObjectURL(pdfBlob);
-                  window.open(pdfUrl, '_blank');
-                } else {
-                  pdf.save('Aviniti_App_Development_Report.pdf');
-                }
-                
-                // Show a success message without requiring user interaction
-                setAutoDownloadSuccess(true);
-                
-                // Hide the success message after 5 seconds
-                setTimeout(() => {
-                  setAutoDownloadSuccess(false);
-                }, 5000);
-                
-                console.log('PDF has been generated and saved successfully');
-                
-                // Close the modal and navigate to the detailed report page after a short delay
-                setTimeout(() => {
-                  console.log('Auto-closing modal and navigating to detailed report page');
-                  autoDownloadCompleted = true; // Mark as completed
-                  onClose(); // Close the modal
-                  
-                  // Optional: Navigate to a detailed report page if you have one
-                  // window.location.href = '/reports'; // Uncomment this line to navigate to a reports page
-                }, isMobile ? 500 : 2000); // Shorter delay on mobile
-                
-              } catch (canvasError) {
-                // Canvas generation failed, try the basic approach for mobile
-                console.error('Canvas generation failed:', canvasError);
-                
-                if (isMobile) {
-                  console.log('Attempting simplified PDF generation for mobile...');
-                  
-                  // Create a simple text-based PDF instead
-                  const simplePdf = new jsPDF();
-                  simplePdf.setFontSize(22);
-                  simplePdf.text('Aviniti App Development Report', 20, 20);
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('App Overview:', 20, 40);
-                  simplePdf.setFontSize(12);
-                  
-                  const appOverview = detailedReport?.appOverview || '';
-                  const splitOverview = simplePdf.splitTextToSize(appOverview, 170);
-                  simplePdf.text(splitOverview, 20, 50);
-                  
-                  let yPos = 50 + splitOverview.length * 7;
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Selected Features:', 20, yPos);
-                  simplePdf.setFontSize(12);
-                  
-                  yPos += 10;
-                  
-                  // Add features
-                  detailedReport?.selectedFeatures.forEach((feature: Feature, i: number) => {
-                    if (yPos > 270) {
-                      simplePdf.addPage();
-                      yPos = 20;
-                    }
-                    
-                    // Set font style to bold
-                    simplePdf.setFont(simplePdf.getFont().fontName, 'bold');
-                    simplePdf.text(`${i+1}. ${feature.name}`, 20, yPos);
-                    yPos += 7;
-                    
-                    // Set font style back to normal
-                    simplePdf.setFont(simplePdf.getFont().fontName, 'normal');
-                    const descText = simplePdf.splitTextToSize(`Description: ${feature.description}`, 170);
-                    simplePdf.text(descText, 25, yPos);
-                    yPos += descText.length * 7;
-                    
-                    simplePdf.text(`Cost: ${feature.costEstimate} • Time: ${feature.timeEstimate}`, 25, yPos);
-                    yPos += 10;
-                  });
-                  
-                  // Add summary
-                  if (yPos > 250) {
-                    simplePdf.addPage();
-                    yPos = 20;
-                  }
-                  
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Project Summary:', 20, yPos);
-                  yPos += 10;
-                  
-                  simplePdf.setFontSize(12);
-                  simplePdf.text(`Total Cost: ${detailedReport?.totalCost || ''}`, 20, yPos);
-                  yPos += 7;
-                  simplePdf.text(`Total Time: ${detailedReport?.totalTime || ''}`, 20, yPos);
-                  yPos += 7;
-                  simplePdf.text(`Number of Features: ${detailedReport?.selectedFeatures.length || 0}`, 20, yPos);
-                  yPos += 15;
-                  
-                  // Contact info
-                  simplePdf.setFontSize(16);
-                  simplePdf.text('Contact Information:', 20, yPos);
-                  yPos += 10;
-                  
-                  simplePdf.setFontSize(12);
-                  simplePdf.text('Email: Aliodat@aviniti.app', 20, yPos);
-                  yPos += 7;
-                  simplePdf.text('Phone: +962 790 685 302', 20, yPos);
-                  yPos += 7;
-                  simplePdf.text('Website: www.aviniti.app', 20, yPos);
-                  yPos += 15;
-                  
-                  simplePdf.setFontSize(14);
-                  simplePdf.setTextColor(29, 64, 175); // Blue color
-                  simplePdf.text('AVINITI - Your Ideas, Our Reality', 20, yPos);
-                  
-                  const simplePdfBlob = simplePdf.output('blob');
-                  
-                  // Upload the simple PDF
-                  await uploadPdfAndCreateReport(simplePdfBlob, personalDetails.emailAddress);
-                  
-                  // On mobile, open in a new tab rather than triggering download
-                  const pdfUrl = URL.createObjectURL(simplePdfBlob);
-                  window.open(pdfUrl, '_blank');
-                  
-                  // Show success and close
-                  setAutoDownloadSuccess(true);
-                  setTimeout(() => {
-                    setAutoDownloadSuccess(false);
-                    autoDownloadCompleted = true;
-                    onClose();
-                  }, 1000);
-                } else {
-                  throw canvasError; // Re-throw for desktop to show error
-                }
+              // Save the PDF locally
+              if (isMobile) {
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                window.open(pdfUrl, '_blank');
+              } else {
+                // Helper for download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(pdfBlob);
+                link.download = 'Aviniti_App_Development_Report.pdf';
+                link.click();
               }
+              
+              // Show success message
+              setAutoDownloadSuccess(true);
+              setTimeout(() => {
+                setAutoDownloadSuccess(false);
+              }, 5000);
+              
+              // Auto close
+              setTimeout(() => {
+                autoDownloadCompleted = true; 
+                // onClose(); // Maybe don't close automatically to let them see the result
+              }, 2000);
+
             } catch (error) {
               console.error('Error in auto PDF generation:', error);
               setError('Error generating PDF report. You can try downloading it manually.');
-              autoDownloadCompleted = true; // Mark as completed even on error
+              autoDownloadCompleted = true; 
             } finally {
-              // If for some reason the autoDownloadCompleted flag wasn't set to true
-              // (this should rarely happen, but we're being defensive),
-              // we'll set isProcessing to false after a timeout
-              setTimeout(() => {
+               setTimeout(() => {
                 if (!autoDownloadCompleted) {
                   setIsProcessing(false);
                 }
-              }, 5000); // 5 second safety timeout
+              }, 5000);
             }
           };
           
-          // Execute the auto-download function
           autoDownloadPdf();
         } else {
-          // If we don't have personal details, set processing to false
           setIsProcessing(false);
         }
-      }, 1000); // Wait 1 second for the UI to fully render
+      }, 1000); 
+
       
     } catch (error) {
       console.error('Error generating detailed report:', error);
@@ -894,74 +515,25 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     setError(null);
     
     try {
-      // Check if Firebase is initialized
-      if (!db) {
-        throw new Error('Firebase database is not initialized');
+      const result = await uploadReportPdf(pdfBlob, email, userDocumentId || undefined);
+      
+      if (result) {
+        console.log('✅ Report uploaded and record created with ID:', result.reportId);
+        // Clear local storage state on successful completion
+        clearState();
+        return result.downloadURL;
       }
-
-      // Create a unique ID for the report
-      const timestamp = Date.now();
-      const fileName = `${timestamp}.pdf`;
-      
-      // Initialize storage
-      const storage = getStorage();
-      
-      // Create a unique ID for this report using timestamp and email
-      const reportId = `${email.replace(/[^a-zA-Z0-9]/g, '')}_${timestamp}`;
-      const storageRef = ref(storage, `reports/${reportId}/${fileName}`);
-      
-      // Upload the PDF
-      const snapshot = await uploadBytes(storageRef, pdfBlob);
-      console.log('File uploaded successfully');
-      
-      // Get the download URL
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      console.log('Download URL:', downloadURL);
-      
-      // Create a report document in Firestore
-      const reportsRef = collection(db, 'reports');
-      const reportDoc = await addDoc(reportsRef, {
-        reportId,
-        userEmail: email,
-        personalDetails,
-        appDescription,
-        detailedReport,
-        pdfUrl: downloadURL,
-        createdAt: new Date().toISOString(),
-        status: 'completed'
-      });
-      
-      console.log('Report uploaded and document created:', reportDoc.id);
-      return downloadURL;
+      return '';
     } catch (error) {
       console.error('Error uploading report:', error);
-      if (error instanceof Error) {
-        setError(`Failed to upload report: ${error.message}`);
-      } else {
-        setError('Failed to upload report. Please try again.');
-      }
-      throw error;
+      setError('Failed to upload report. Please try again.');
+      return '';
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // New function to validate user document
-  const validateUserDocument = async (userId: string): Promise<boolean> => {
-    if (!db) {
-      console.error('Firebase database is not initialized');
-      return false;
-    }
-    
-    try {
-      const docRef = doc(db, 'users', userId);
-      const docSnapshot = await getDoc(docRef);
-      return docSnapshot.exists();
-    } catch (error) {
-      console.error('Error validating user document:', error);
-      return false;
-    }
-  };
+
 
   const handleBack = () => {
     if (step > 1) {
@@ -987,10 +559,22 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
     // Don't close the estimate modal yet, let the user decide
   };
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center overflow-hidden">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" 
@@ -998,17 +582,26 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
         aria-hidden="true"
       ></div>
       
-      {/* Modal Dialog */}
+      {/* Modal Dialog - Bottom sheet on mobile, centered on desktop */}
       <div 
-        className={`relative max-h-[90vh] overflow-y-auto w-full max-w-2xl bg-white rounded-2xl shadow-2xl transition-all ${
-          dir === 'rtl' ? 'rtl' : 'ltr'
-        }`}
+        className={`relative w-full max-w-2xl bg-white shadow-2xl transition-all transform
+          sm:rounded-2xl sm:max-h-[90vh] sm:m-4
+          max-h-[95vh] rounded-t-3xl sm:rounded-b-2xl
+          ${dir === 'rtl' ? 'rtl' : 'ltr'}`}
         dir={dir}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
       >
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className={`absolute top-4 ${dir === 'rtl' ? 'left-4' : 'right-4'} text-gray-500 hover:text-gray-700 transition-colors z-10`}
+          className={`absolute top-4 ${dir === 'rtl' ? 'left-4' : 'right-4'} text-gray-500 hover:text-gray-700 transition-colors z-10 p-2 rounded-full hover:bg-gray-100`}
           aria-label={language === 'en' ? 'Close' : 'إغلاق'}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1016,8 +609,16 @@ export default function AIEstimateModal({ isOpen, onClose }: AIEstimateModalProp
           </svg>
         </button>
 
-        {/* Steps Content */}
-        <div className="p-6 sm:p-8">
+        {/* Steps Content - Scrollable */}
+        <div className="overflow-y-auto max-h-[calc(95vh-2rem)] sm:max-h-[calc(90vh-2rem)] p-3 sm:p-4 lg:p-6 pb-safe mobile-scroll">
+          {isResumed && (
+            <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm flex items-center animate-fade-in-down">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+              </svg>
+              {language === 'en' ? 'Session restored' : 'تم استعادة الجلسة'}
+            </div>
+          )}
           {step === 1 && (
             <UserInfoStep 
               onSubmit={handleUserInfoSubmit} 

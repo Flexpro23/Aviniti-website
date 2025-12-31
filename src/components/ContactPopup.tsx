@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useLanguage } from '@/lib/context/LanguageContext';
 
 interface ContactPopupProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ContactPopupProps {
 }
 
 export default function ContactPopup({ isOpen, onClose, initialSubject = '', initialData }: ContactPopupProps) {
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     email: initialData?.email || '',
@@ -80,7 +82,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
       setSubmitError(
         error instanceof Error 
           ? `Failed to send message: ${error.message}` 
-          : 'Failed to send message. Please try again.'
+          : t.contactPopup.errorMessage
       );
     } finally {
       setIsSubmitting(false);
@@ -95,11 +97,11 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
       
       {/* Popup Content */}
-      <div className="relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl">
+      <div className={`relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl ${language === 'ar' ? 'text-right' : 'text-left'}`}>
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-neutral-500 hover:text-neutral-700 transition-colors"
+          className={`absolute top-4 ${language === 'ar' ? 'left-4' : 'right-4'} text-neutral-500 hover:text-neutral-700 transition-colors`}
           disabled={isSubmitting}
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +110,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
         </button>
 
         <div className="p-8">
-          <h2 className="heading-lg mb-6 text-center">Contact Us</h2>
+          <h2 className="heading-lg mb-6 text-center">{t.contactPopup.title}</h2>
           
           {/* Status Messages */}
           {submitSuccess && (
@@ -120,8 +122,8 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium">Thank you for your message!</h3>
-                  <p className="mt-1 text-sm">We will get back to you soon.</p>
+                  <h3 className="text-sm font-medium">{t.contactPopup.successTitle}</h3>
+                  <p className="mt-1 text-sm">{t.contactPopup.successMessage}</p>
                 </div>
               </div>
             </div>
@@ -147,6 +149,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
             <a 
               href="tel:+962790685302"
               className="flex items-center gap-3 text-neutral-700 hover:text-primary-600 transition-colors"
+              dir="ltr"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -156,6 +159,7 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
             <a 
               href="mailto:aliodat@aviniti.app"
               className="flex items-center gap-3 text-neutral-700 hover:text-primary-600 transition-colors"
+              dir="ltr"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -168,64 +172,77 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">
-                  Your Name *
+                <label htmlFor="contact-name" className="block text-sm font-medium text-neutral-700 mb-1">
+                  {t.contactPopup.nameLabel}
                 </label>
                 <input
                   type="text"
-                  id="name"
+                  id="contact-name"
+                  name="name"
+                  autoComplete="name"
                   required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder="John Doe"
+                  className="w-full px-4 py-2 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors"
+                  placeholder={t.contactPopup.namePlaceholder}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
+                  aria-required="true"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
-                  Your Email *
+                <label htmlFor="contact-email" className="block text-sm font-medium text-neutral-700 mb-1">
+                  {t.contactPopup.emailLabel}
                 </label>
                 <input
                   type="email"
-                  id="email"
+                  id="contact-email"
+                  name="email"
+                  autoComplete="email"
                   required
-                  className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder="john@example.com"
+                  className="w-full px-4 py-2 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors"
+                  placeholder={t.contactPopup.emailPlaceholder}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={isSubmitting}
+                  aria-required="true"
                 />
               </div>
             </div>
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-neutral-700 mb-1">
-                Subject
+              <label htmlFor="contact-subject" className="block text-sm font-medium text-neutral-700 mb-1">
+                {t.contactPopup.subjectLabel}
               </label>
               <input
                 type="text"
-                id="subject"
-                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                placeholder="How can we help you?"
+                id="contact-subject"
+                name="subject"
+                autoComplete="off"
+                className="w-full px-4 py-2 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors"
+                placeholder={t.contactPopup.subjectPlaceholder}
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">
-                Message *
+              <label htmlFor="contact-message" className="block text-sm font-medium text-neutral-700 mb-1">
+                {t.contactPopup.messageLabel}
               </label>
               <textarea
-                id="message"
+                id="contact-message"
+                name="message"
                 required
-                rows={4}
-                className="w-full px-4 py-2 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
-                placeholder="Tell us about your project..."
+                rows={6}
+                className="w-full px-4 py-2 text-base rounded-lg border border-neutral-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500 transition-colors resize-y min-h-[120px]"
+                placeholder={t.contactPopup.messagePlaceholder}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 disabled={isSubmitting}
+                aria-required="true"
               ></textarea>
+              <p className="mt-1 text-xs text-slate-blue-500">
+                {language === 'ar' ? 'يرجى أن تكون مفصلاً قدر الإمكان للحصول على استجابة أسرع.' : 'Be as detailed as possible for a faster response.'}
+              </p>
             </div>
             <div className="flex justify-center">
               <button 
@@ -239,12 +256,12 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Sending...
+                    {t.contactPopup.sendingButton}
                   </>
                 ) : (
                   <>
-                    Send Message
-                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {t.contactPopup.sendButton}
+                    <svg className={`w-5 h-5 ${language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </>
@@ -256,4 +273,4 @@ export default function ContactPopup({ isOpen, onClose, initialSubject = '', ini
       </div>
     </div>
   );
-} 
+}
