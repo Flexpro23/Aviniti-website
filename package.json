@@ -15,7 +15,6 @@
     "@google-cloud/speech": "^6.7.0",
     "@google-cloud/storage": "^7.15.1",
     "@google/generative-ai": "^0.21.0",
-    "@next/swc-darwin-arm64": "^14.1.0",
     "@types/pdfkit": "^0.13.9",
     "@types/pdfmake": "^0.2.11",
     "firebase": "^11.3.1",
