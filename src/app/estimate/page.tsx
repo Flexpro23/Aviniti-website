@@ -128,7 +128,7 @@ export default function AIEstimatePage() {
         console.log('💾 Saving user info and complete report to Firebase...');
         
         // Create/update user document
-        await createUserDocument(details.emailAddress, details);
+        await createUserDocument(details);
         
         console.log('✅ Complete report saved to Firebase successfully');
       }
@@ -187,7 +187,7 @@ export default function AIEstimatePage() {
     setIsProcessing(true);
     
     try {
-      const selectedFeatures = features.filter((f: Feature) => f.selected);
+      const selectedFeatures = features.filter((f: Feature) => f.isSelected);
       
       const extractCostRange = (costEstimate: string) => {
         const costString = costEstimate.replace(/[^0-9,-]/g, '');

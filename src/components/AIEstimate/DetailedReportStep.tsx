@@ -13,6 +13,7 @@ import TimelineVisualization from './TimelineVisualization';
 import HowWeCalculate from './HowWeCalculate';
 import ComparisonBenchmark from './ComparisonBenchmark';
 import SocialProofTestimonial from './SocialProofTestimonial';
+import { generateClientSidePDF } from '@/services/pdfService';
 
 interface DetailedReportStepProps {
   report: DetailedReport;
@@ -531,11 +532,12 @@ export default function DetailedReportStep({
               </div>
             </div>
           </motion.div>
+          </motion.div>
         </motion.div>
 
         {/* Loading State */}
         {isGeneratingServerReport && !reportError && (
-        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -554,13 +556,13 @@ export default function DetailedReportStep({
               </p>
             </div>
           </div>
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Buttons Section */}
-      <div className="flex flex-col items-center gap-4 mt-8">
-        {/* Main action buttons row */}
-        <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
+        {/* Buttons Section */}
+        <div className="flex flex-col items-center gap-4 mt-8">
+          {/* Main action buttons row */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
           {/* Schedule Consultation Button */}
           <a
             href={process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/aviniti/consultation'}
@@ -671,7 +673,7 @@ export default function DetailedReportStep({
           )}
         </div>
       </div>
-
+      
       <div className="flex justify-center mt-8 pt-6 border-t border-gray-200">
         <button
           type="button"

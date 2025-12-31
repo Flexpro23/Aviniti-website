@@ -2,7 +2,7 @@
 
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import { PersonalDetails } from './AIEstimateModal';
+import { PersonalDetails } from '@/types/estimate';
 
 interface SaveAndAccessStepProps {
   onSubmit: (data: PersonalDetails) => void;

@@ -49,6 +49,14 @@ const nextConfig = {
       });
     }
     
+    // Handle @react-pdf/renderer - it uses canvas which needs special handling
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        canvas: false,
+      };
+    }
+    
     return config;
   },
 }

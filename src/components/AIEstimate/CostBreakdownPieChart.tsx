@@ -12,6 +12,7 @@ interface CostBreakdownPieChartProps {
 
 export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPieChartProps) {
   const { language } = useLanguage();
+  const totalCost = Object.values(costBreakdown).reduce((a, b) => a + b, 0);
   const data = Object.entries(costBreakdown).map(([name, value]) => ({
     name,
     value,

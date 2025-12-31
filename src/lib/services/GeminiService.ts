@@ -295,7 +295,13 @@ REFER EXACTLY to the pricing schedule in the system instructions - do not invent
       throw new Error('Empty response from Gemini API');
     }
 
-    const result = await response.json();
+    // Parse JSON from text response
+    let cleanedResponse = textResponse
+      .replace(/```json\n?/g, '')
+      .replace(/```\n?/g, '')
+      .trim();
+    
+    const result = JSON.parse(cleanedResponse);
     
     // Process the result to match the frontend types if needed
     // The API should return { appOverview, essentialFeatures, enhancementFeatures }
