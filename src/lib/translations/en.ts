@@ -11,7 +11,7 @@ export const en = {
     about: 'About',
     services: 'Services',
     readyMadeSolutions: 'Ready-Made Solutions',
-    aiIdeaLab: 'AI Idea Lab',
+    ideaLab: 'Idea Lab',
     blog: 'Blog',
     faq: 'FAQ',
     contact: 'Contact Us'
@@ -231,7 +231,74 @@ export const en = {
     callUs: 'Call Us Directly'
   },
   footer: {
-    rights: 'All rights reserved'
+    rights: 'All rights reserved',
+    quickLinks: 'Quick Links',
+    support: 'Support',
+    description: 'Transforming innovative ideas into premium digital solutions. We specialize in AI-powered applications, custom software development, and cutting-edge mobile apps.',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Terms of Service'
+  },
+  contactPage: {
+    title: 'Contact Us',
+    subtitle: 'Ready to transform your ideas into reality? Get in touch with our expert team and let\'s discuss your next project.',
+    getInTouch: 'Get In Touch',
+    getInTouchDescription: 'We\'re here to help you bring your vision to life. Whether you need AI integration, mobile app development, or custom software solutions, our team is ready to assist you.',
+    phone: 'Phone',
+    email: 'Email',
+    location: 'Location',
+    website: 'Website',
+    businessHours: 'Business Hours',
+    sundayThursday: 'Sunday - Thursday',
+    fridaySaturday: 'Friday - Saturday',
+    closed: 'Closed',
+    timeNote: '*Times are in Jordan Standard Time (GMT+3)',
+    sendMessage: 'Send us a Message',
+    yourName: 'Your Name',
+    yourEmail: 'Your Email',
+    phoneNumber: 'Phone Number',
+    companyOptional: 'Company (Optional)',
+    subject: 'Subject',
+    selectSubject: 'Select a subject',
+    message: 'Message',
+    messagePlaceholder: 'Tell us about your project or inquiry...',
+    sendButton: 'Send Message',
+    sending: 'Sending...',
+    successMessage: 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.',
+    errorMessage: 'There was an error sending your message. Please try again.',
+    required: '*',
+    subjectOptions: {
+      generalInquiry: 'General Inquiry',
+      aiDevelopment: 'AI Development Project',
+      mobileApp: 'Mobile App Development',
+      webDevelopment: 'Web Development',
+      readyMade: 'Ready-Made Solutions',
+      freeConsultation: 'Free Consultation Request',
+      technicalSupport: 'Technical Support',
+      partnership: 'Partnership Inquiry',
+      other: 'Other'
+    },
+    ctaTitle: 'Ready to Start Your Project?',
+    ctaDescription: 'Don\'t wait! Get your free AI-powered project estimate in minutes and discover how we can transform your ideas into reality.',
+    ctaButton: 'Get Instant AI Estimate'
+  },
+  blogPage: {
+    title: 'Aviniti Tech Blog',
+    subtitle: 'Insights, tutorials, and industry updates from our team of AI and app development experts',
+    allArticles: 'All Articles',
+    aiCategory: 'AI & Machine Learning',
+    mobileCategory: 'Mobile Development',
+    webCategory: 'Web Development',
+    securityCategory: 'Security',
+    featuredArticle: 'Featured Article',
+    latestArticles: 'Latest Articles',
+    articles: 'Articles',
+    readFullArticle: 'Read Full Article',
+    readMore: 'Read More',
+    stayUpdated: 'Stay Updated',
+    newsletterDescription: 'Subscribe to our newsletter to get the latest insights on AI, app development, and technology trends delivered to your inbox.',
+    emailPlaceholder: 'Enter your email',
+    subscribe: 'Subscribe',
+    minRead: 'min read'
   },
   faq: {
     title: 'Frequently Asked Questions',
@@ -326,6 +393,14 @@ export const en = {
       examples: {
         question: 'Can you provide examples of previous projects, especially those involving AI implementations?',
         answer: 'Certainly, here are some of our notable projects: Flex Pro: A comprehensive package delivery system streamlining operations for sellers, drivers, and administrators. Secretary: An office management system simplifying appointment booking and client management for various businesses. Farm House: An Airbnb-style platform connecting users with unique farm stays and experiences. Let\'s Play: An app connecting sports enthusiasts to book courts, create games, and find players. Nay Nursery: A nursery management system empowering parents to stay connected with their child\'s daily activities and progress. Wear & Share: A clothing marketplace connecting users to buy and sell pre-owned fashion items, promoting sustainable style. Skinverse: An AI-powered skincare app delivering personalized skin reports and product recommendations based on facial analysis.'
+      },
+      portfolio: {
+        question: 'Can I view Aviniti\'s portfolio?',
+        answer: 'Yes, our portfolio showcasing our previous projects and case studies can be viewed on our website.'
+      },
+      casestudies: {
+        question: 'Do you have case studies for similar projects?',
+        answer: 'Yes, we have detailed case studies highlighting the challenges, solutions, and outcomes for projects across various sectors, demonstrating our expertise and capabilities.'
       }
     },
     cta: {
@@ -408,6 +483,85 @@ export const en = {
       }
     }
   },
+  ideaLab: {
+    // Page title and intro
+    title: "Idea Lab",
+    subtitle: "Discover Your Perfect App Idea",
+    description: "Answer a few simple questions and get personalized ideas with instant cost and timeline estimates",
+    // Steps
+    step1: "Answer a Few Questions",
+    step1Desc: "6-8 simple questions to understand your vision and goals",
+    step2: "Discover Ideas",
+    step2Desc: "Get 5-6 personalized ideas with instant estimates",
+    step3: "Choose the Best Fit",
+    step3Desc: "Select your favorite idea and get a detailed estimate",
+    step4: "Get Your Blueprint",
+    step4Desc: "Receive a complete executive blueprint ready to download",
+    // Benefits
+    benefit1: "Discover ideas tailored to your needs",
+    benefit2: "Get instant cost & timeline estimates",
+    benefit3: "Downloadable executive blueprint",
+    // CTA
+    startNow: "Start Now",
+    noAccountRequired: "No account required • Instant estimate",
+    onlyMinutes: "Only 3-5 minutes",
+    completelyFree: "Completely free",
+    uniqueIdeas: "Unique ideas",
+    // Testimonial
+    testimonial: "The Idea Lab helped me discover an opportunity I never expected - and the estimate was spot on!",
+    testimonialAuthor: "— Startup Founder",
+    // Questions
+    questionOf: "Question {current} of {total}",
+    previous: "Previous",
+    next: "Next",
+    discoverIdeas: "Discover Ideas",
+    selectMultiple: "You can select multiple options",
+    minCharacters: "Minimum 10 characters",
+    // Generating
+    analyzingAnswers: "Analyzing Your Answers",
+    analyzingDesc: "Understanding your needs and goals",
+    researchingMarket: "Researching Market",
+    researchingDesc: "Finding opportunities and trends",
+    designingSolutions: "Designing Solutions",
+    designingDesc: "Crafting ideas tailored for you",
+    calculatingEstimates: "Calculating Estimates",
+    calculatingDesc: "Estimating cost and timeline",
+    finalizing: "Finalizing",
+    finalizingDesc: "Adding finishing touches",
+    analyzingFact: "We analyze thousands of successful apps to bring you unique ideas tailored to your needs",
+    // Ideas grid
+    personalizedIdeas: "Your Personalized Ideas",
+    basedOnAnswers: "Based on your answers, here are ideas tailored just for you",
+    estCost: "Est. Cost",
+    estTimeline: "Est. Timeline",
+    moreDetails: "More Details",
+    lessDetails: "Less Details",
+    chooseThis: "Choose This",
+    selected: "Selected",
+    keyFeatures: "Key Features",
+    differentiators: "Differentiators",
+    businessModel: "Business Model",
+    // Generate more
+    discoverMoreIdeas: "Discover More Ideas",
+    notFound: "Didn't find what you're looking for? Let's explore more",
+    generateNew: "Generate New Ideas",
+    generating: "Generating...",
+    findingMore: "Finding more great ideas for you",
+    // Action bar
+    readyToProceed: "Ready to proceed with this idea?",
+    cancel: "Cancel",
+    getDetailedEstimate: "Get Detailed Estimate",
+    backToQuestions: "Back to Questions",
+    // Complexity
+    simple: "Simple",
+    moderate: "Moderate",
+    complex: "Complex",
+    // Market potential
+    low: "Low",
+    medium: "Medium",
+    high: "High"
+  },
+  // Keep old key for backward compatibility
   aiIdeaLab: {
     heading: "Don't Have an App Idea Yet?",
     subheading: "Let Our AI Strategist Help You Brainstorm.",
@@ -416,6 +570,67 @@ export const en = {
     benefit2: "Engage in a Natural Conversation",
     benefit3: "Receive a Custom Idea Blueprint",
     ctaEnglish: "Start in English",
-    ctaArabic: "ابدأ باللغة العربية"
+    ctaArabic: "ابدأ باللغة العربية",
+    // New keys for enhanced AI Lab
+    whatYouGet: "What You'll Get",
+    describeAndGet: "Describe your app idea and receive:",
+    benefits: {
+      feasibility: "Feasibility analysis",
+      features: "Feature recommendations",
+      techStack: "Technology stack suggestions",
+      timeline: "Rough timeline estimate",
+      challenges: "Potential challenges identified"
+    },
+    averageTime: "Average session: 3-5 minutes",
+    testimonial: "The AI helped me realize I needed to simplify my MVP scope",
+    startExploring: "Start Exploring Your Idea →",
+    rememberChoice: "Remember my choice",
+    quickPrompts: {
+      title: "Not sure where to start? Try:",
+      uber: "I want to build an app like Uber but for...",
+      ai: "I need an AI that can analyze...",
+      mobile: "My business needs a mobile app to..."
+    },
+    thinking: "Analyzing your idea...",
+    exportPdf: "Export PDF"
+  },
+  // Accessibility
+  a11y: {
+    skipToContent: "Skip to main content",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    selectLanguage: "Select language",
+    toggleTheme: "Toggle theme"
+  },
+  // Theme
+  theme: {
+    light: "Light",
+    dark: "Dark",
+    system: "System"
+  },
+  // Estimate tool trust section
+  estimate: {
+    howWeCalculate: "How We Calculate Your Estimate",
+    basedOn: "Our estimates are based on:",
+    projectsCompleted: "50+ completed projects in our portfolio",
+    actualHours: "Actual development hours from similar apps",
+    currentRates: "Current 2025 market rates",
+    monthlyUpdates: "Updated monthly based on real project costs",
+    accuracyRate: "Accuracy Rate",
+    accuracyNote: "Final costs within 15% of estimate for 87% of projects completed in 2024-2025",
+    comparison: {
+      title: "How This Compares",
+      usAgencies: "US Agencies",
+      euAgencies: "European Agencies",
+      aviniti: "Aviniti (Jordan)",
+      offshore: "Offshore (Higher Risk)",
+      savings: "You save 50-70% vs US/EU agencies",
+      directComm: "Direct communication with founder (no middlemen)",
+      timezone: "Same timezone as Europe/Middle East"
+    },
+    testimonial: {
+      quote: "Aviniti quoted $28K, final cost was $31K. Very close to estimate and the quality exceeded expectations.",
+      author: "Marcus R., FinTech Startup Founder"
+    }
   }
 }; 

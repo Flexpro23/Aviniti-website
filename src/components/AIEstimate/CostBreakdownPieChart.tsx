@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/context/LanguageContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 interface CostBreakdownPieChartProps {
@@ -10,6 +11,7 @@ interface CostBreakdownPieChartProps {
 }
 
 export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPieChartProps) {
+  const { language } = useLanguage();
   const data = Object.entries(costBreakdown).map(([name, value]) => ({
     name,
     value,
@@ -64,11 +66,15 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
       transition={{ duration: 0.5, delay: 0.4 }}
     >
       <div className="mb-6">
-        <div className="flex items-center mb-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mr-3"></div>
-          <h3 className="text-lg font-bold text-gray-900">Cost Breakdown</h3>
+        <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <div className={`w-3 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full ${language === 'ar' ? 'ml-3' : 'mr-3'}`}></div>
+          <h3 className="text-lg font-bold text-gray-900">
+            {language === 'ar' ? 'تفاصيل التكلفة' : 'Cost Breakdown'}
+          </h3>
         </div>
-        <p className="text-sm text-gray-600">Investment allocation by development phase</p>
+        <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
+          {language === 'ar' ? 'توزيع الاستثمار حسب مرحلة التطوير' : 'Investment allocation by development phase'}
+        </p>
       </div>
 
       <div className="h-64">
@@ -103,8 +109,10 @@ export default function CostBreakdownPieChart({ costBreakdown }: CostBreakdownPi
       }))} />
 
       <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">Total Investment:</span>
+        <div className={`flex justify-between items-center ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <span className="text-sm font-medium text-gray-700">
+            {language === 'ar' ? 'إجمالي الاستثمار:' : 'Total Investment:'}
+          </span>
           <span className="text-lg font-bold text-gray-900">
             ${Object.values(costBreakdown).reduce((a, b) => a + b, 0).toLocaleString()}
           </span>

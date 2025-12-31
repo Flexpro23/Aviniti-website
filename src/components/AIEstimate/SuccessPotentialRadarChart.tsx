@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/context/LanguageContext';
 import { 
   RadarChart, 
   PolarGrid, 
@@ -20,24 +21,33 @@ interface SuccessPotentialRadarChartProps {
 }
 
 export default function SuccessPotentialRadarChart({ successScores }: SuccessPotentialRadarChartProps) {
+  const { language } = useLanguage();
+  
+  const labels = {
+    innovation: language === 'ar' ? 'الابتكار' : 'Innovation',
+    marketViability: language === 'ar' ? 'جدوى السوق' : 'Market Viability',
+    monetization: language === 'ar' ? 'التحقيق المالي' : 'Monetization',
+    technicalFeasibility: language === 'ar' ? 'الجدوى التقنية' : 'Technical Feasibility',
+  };
+  
   const data = [
     {
-      subject: 'Innovation',
+      subject: labels.innovation,
       score: successScores.innovation,
       fullMark: 10,
     },
     {
-      subject: 'Market Viability',
+      subject: labels.marketViability,
       score: successScores.marketViability,
       fullMark: 10,
     },
     {
-      subject: 'Monetization',
+      subject: labels.monetization,
       score: successScores.monetization,
       fullMark: 10,
     },
     {
-      subject: 'Technical Feasibility',
+      subject: labels.technicalFeasibility,
       score: successScores.technicalFeasibility,
       fullMark: 10,
     },
@@ -56,11 +66,15 @@ export default function SuccessPotentialRadarChart({ successScores }: SuccessPot
       transition={{ duration: 0.5, delay: 0.2 }}
     >
       <div className="mb-6">
-        <div className="flex items-center mb-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full mr-3"></div>
-          <h3 className="text-lg font-bold text-gray-900">Success Potential Analysis</h3>
+        <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <div className={`w-3 h-3 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full ${language === 'ar' ? 'ml-3' : 'mr-3'}`}></div>
+          <h3 className="text-lg font-bold text-gray-900">
+            {language === 'ar' ? 'تحليل إمكانية النجاح' : 'Success Potential Analysis'}
+          </h3>
         </div>
-        <p className="text-sm text-gray-600">AI assessment across key business factors</p>
+        <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
+          {language === 'ar' ? 'تقييم الذكاء الاصطناعي عبر عوامل الأعمال الرئيسية' : 'AI assessment across key business factors'}
+        </p>
       </div>
 
       <div className="relative h-64 mb-6">
@@ -94,11 +108,17 @@ export default function SuccessPotentialRadarChart({ successScores }: SuccessPot
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full mb-3">
           <span className="text-2xl font-bold text-purple-700">{averageScore}</span>
         </div>
-        <p className="text-sm text-gray-600">Overall Success Score</p>
+        <p className="text-sm text-gray-600">
+          {language === 'ar' ? 'درجة النجاح الإجمالية' : 'Overall Success Score'}
+        </p>
         <p className="text-xs text-gray-500 mt-1">
-          {parseFloat(averageScore) >= 8 ? 'Excellent potential' : 
-           parseFloat(averageScore) >= 6.5 ? 'Strong potential' : 
-           parseFloat(averageScore) >= 5 ? 'Moderate potential' : 'Needs improvement'}
+          {parseFloat(averageScore) >= 8 
+            ? (language === 'ar' ? 'إمكانية ممتازة' : 'Excellent potential') 
+            : parseFloat(averageScore) >= 6.5 
+              ? (language === 'ar' ? 'إمكانية قوية' : 'Strong potential') 
+              : parseFloat(averageScore) >= 5 
+                ? (language === 'ar' ? 'إمكانية متوسطة' : 'Moderate potential') 
+                : (language === 'ar' ? 'يحتاج إلى تحسين' : 'Needs improvement')}
         </p>
       </div>
     </motion.div>

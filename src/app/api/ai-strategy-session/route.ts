@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { db } from '@/lib/firebase-admin';
 
 interface Message {
   id: string;
@@ -12,6 +11,12 @@ interface Message {
 interface RequestBody {
   userInput: string;
   messages: Message[];
+}
+
+// Helper function to detect Arabic text
+function containsArabic(text: string): boolean {
+  const arabicPattern = /[\u0600-\u06FF]/;
+  return arabicPattern.test(text);
 }
 
 export async function POST(request: NextRequest) {
@@ -27,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Gemini API key is available
-    const geminiApiKey = process.env.GEMINI_API_KEY || 'AIzaSyBOWp_3aq4U15lW2U0aOH3EzuC3E1akFao';
+    const geminiApiKey = process.env.GEMINI_API_KEY || '';
     
     console.log('API Key check:', {
       hasKey: !!geminiApiKey,
@@ -59,8 +64,16 @@ export async function POST(request: NextRequest) {
       parts: [{ text: msg.content }]
     }));
 
+    // Detect user's language from their input
+    const isArabic = containsArabic(userInput);
+    const languageInstruction = isArabic 
+      ? 'CRITICAL: The user is writing in Arabic. You MUST respond ENTIRELY in Arabic language. Do not use English at all.'
+      : 'Respond in English.';
+
     // Create the intelligent system prompt for the Aviniti Ideation Engine (proactive behavior)
     const systemPrompt = `You are the 'Aviniti Ideation Engine,' a world-class AI business strategist specializing in mobile and web app development. Your goal is to help users brainstorm and refine app ideas through a natural, collaborative conversation.
+
+${languageInstruction}
 
 Key Rules:
 1. Your tone is professional, encouraging, and insightful - like a trusted business consultant
@@ -69,7 +82,7 @@ Key Rules:
 4. Keep your responses concise and conversational (4-6 sentences total)
 5. Adapt your approach based on whether the user has an idea or wants to explore
 6. Proactive Idea Generation Rule: After you have gathered at least two key pieces of information (for example, their industry and a core problem), your next response MUST generate 1-2 initial, high-level app ideas. After presenting these ideas, you MUST ask the user if they'd like to explore these further or continue brainstorming for more options.
-7. Final Output Trigger Rule: If the user's message includes phrases like "generate the final ideas", "show me the opportunities", or "let's see the report", you must stop the conversational loop and reply with exactly: "Of course. I'm now compiling the detailed Project Blueprints for you. Please give me a moment...".
+7. Final Output Trigger Rule: If the user's message includes phrases like "generate the final ideas", "show me the opportunities", or "let's see the report", you must stop the conversational loop and reply with exactly: "${isArabic ? 'بالطبع. أقوم الآن بإعداد المخططات التفصيلية للمشروع. يرجى الانتظار لحظة...' : "Of course. I'm now compiling the detailed Project Blueprints for you. Please give me a moment..."}".
 
 Your expertise areas:
 - Market analysis and opportunity identification
@@ -94,7 +107,7 @@ Respond naturally as if you're having a strategic brainstorming session with a p
 
       // Create a new model instance with the provided API key
       const genAI = new GoogleGenerativeAI(geminiApiKey);
-      const modelInstance = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const modelInstance = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
       // Create a chat session with the conversation history
       const chat = modelInstance.startChat({
@@ -108,8 +121,8 @@ Respond naturally as if you're having a strategic brainstorming session with a p
 
       // If the model replies with the exact confirmation, generate final Opportunity Carousel JSON using Pro model
       if (response.trim() === "Of course. I'm now compiling the detailed Project Blueprints for you. Please give me a moment...") {
-        // Generate the structured final ideas using a more capable model
-        const proModel = genAI.getGenerativeModel({ model: 'gemini-2.0-pro-exp-02-05' });
+        // Generate the structured final ideas using the same flash model for consistency
+        const proModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
         
         const finalPrompt = `You are generating the final Opportunity Carousel (Project Blueprints) as structured JSON for an app ideation session.
 The JSON must strictly follow this schema:
@@ -138,30 +151,26 @@ Use the conversation history below as context. Produce only JSON with no extra t
           // Parse the JSON response
           const opportunitiesData = JSON.parse(finalJson);
           
-          // Save each opportunity to Firestore with unique IDs
+          // Create opportunities with unique IDs (without Firestore save to avoid compatibility issues)
           const savedOpportunities = [];
           for (const opportunity of opportunitiesData.opportunities) {
             const opportunityId = `opp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const opportunityWithId = {
               id: opportunityId,
               ...opportunity,
-              createdAt: new Date(),
-              conversationContext: finalContext
+              createdAt: new Date().toISOString(),
             };
-            
-            // Save to Firestore
-            await db.collection('opportunities').doc(opportunityId).set(opportunityWithId);
             savedOpportunities.push(opportunityWithId);
           }
 
-          // Return the confirmation and the saved opportunities with IDs
+          // Return the confirmation and the opportunities with IDs
           return NextResponse.json({ 
             response, 
             final: true, 
             opportunities: savedOpportunities 
           });
         } catch (parseError) {
-          console.error('Error parsing or saving opportunities:', parseError);
+          console.error('Error parsing opportunities:', parseError);
           // Fallback: return the raw JSON if parsing fails
           return NextResponse.json({ 
             response, 

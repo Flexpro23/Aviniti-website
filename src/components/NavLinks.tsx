@@ -30,10 +30,10 @@ export default function NavLinks({ isScrolled }: NavLinksProps) {
         {t.navigation.blog}
       </Link>
       <Link 
-        href="/ai-lab"
+        href="/idea-lab"
         className={`px-8 py-4 bg-transparent text-white border-2 border-slate-blue-300 rounded-xl font-semibold shadow-lg hover:bg-white hover:text-slate-blue-700 transition-colors duration-300 whitespace-nowrap`}
       >
-        {t.navigation.aiIdeaLab}
+        {t.navigation.ideaLab}
       </Link>
     </div>
   );

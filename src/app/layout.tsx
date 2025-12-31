@@ -1,10 +1,23 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
 
-const inter = Inter({ subsets: ['latin'] })
+// Body font - Plus Jakarta Sans for modern, clean look
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-body',
+  weight: ['400', '500', '600', '700'],
+})
+
+// Display font for headings
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -78,7 +91,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <head>
         {/* Google Analytics */}
         <Script
@@ -155,8 +168,17 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${plusJakartaSans.className} font-body`}>
         <LanguageProvider>
+          {/* Skip to main content link for accessibility */}
+          <a 
+            href="#main-content" 
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
+                       bg-bronze-500 text-white px-4 py-2 rounded-lg z-[9999] font-medium
+                       focus:outline-none focus:ring-2 focus:ring-bronze-300 focus:ring-offset-2"
+          >
+            Skip to main content
+          </a>
           {children}
         </LanguageProvider>
       </body>

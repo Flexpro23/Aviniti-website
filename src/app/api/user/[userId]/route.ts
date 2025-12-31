@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFirestoreAdmin } from '@/lib/firebase-admin';
 
+// Force dynamic rendering to avoid build-time issues with native modules
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { userId: string } }

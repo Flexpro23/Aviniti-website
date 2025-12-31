@@ -210,7 +210,9 @@ export default function ReadyMadeSolutions({ onContactClick }: ReadyMadeSolution
     e.preventDefault();
     const x = e.pageX - carouselRef.current.offsetLeft;
     const walk = (x - startX) * 2; // Adjust the multiplier for speed sensitivity
-    carouselRef.current.scrollLeft = startScrollPosition - walk;
+    // Adjust for RTL - invert the walk direction
+    const adjustedWalk = dir === 'rtl' ? -walk : walk;
+    carouselRef.current.scrollLeft = startScrollPosition - adjustedWalk;
   };
   
   const handleMouseUp = () => {

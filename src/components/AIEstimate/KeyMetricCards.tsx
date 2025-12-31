@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/context/LanguageContext';
 
 interface KeyMetricCardsProps {
   totalCost: string;
@@ -15,6 +16,7 @@ export default function KeyMetricCards({
   successScore,
   featuresCount 
 }: KeyMetricCardsProps) {
+  const { language } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -36,7 +38,7 @@ export default function KeyMetricCards({
 
   const cards = [
     {
-      title: 'Total Investment',
+      title: language === 'ar' ? 'إجمالي الاستثمار' : 'Total Investment',
       value: totalCost,
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +49,7 @@ export default function KeyMetricCards({
       bgGradient: 'from-green-50 to-green-100'
     },
     {
-      title: 'Development Time', 
+      title: language === 'ar' ? 'وقت التطوير' : 'Development Time', 
       value: totalTime,
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +60,7 @@ export default function KeyMetricCards({
       bgGradient: 'from-blue-50 to-blue-100'
     },
     {
-      title: 'Success Potential',
+      title: language === 'ar' ? 'إمكانية النجاح' : 'Success Potential',
       value: `${successScore}/10`,
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +71,7 @@ export default function KeyMetricCards({
       bgGradient: 'from-purple-50 to-purple-100'
     },
     {
-      title: 'Features Selected',
+      title: language === 'ar' ? 'الميزات المختارة' : 'Features Selected',
       value: featuresCount.toString(),
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

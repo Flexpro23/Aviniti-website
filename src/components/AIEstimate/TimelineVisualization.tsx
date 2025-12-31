@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/context/LanguageContext';
 
 interface TimelinePhase {
   phase: string;
@@ -13,6 +14,7 @@ interface TimelineVisualizationProps {
 }
 
 export default function TimelineVisualization({ timelinePhases }: TimelineVisualizationProps) {
+  const { language } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -52,11 +54,15 @@ export default function TimelineVisualization({ timelinePhases }: TimelineVisual
       transition={{ duration: 0.5, delay: 0.6 }}
     >
       <div className="mb-6">
-        <div className="flex items-center mb-2">
-          <div className="w-3 h-3 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full mr-3"></div>
-          <h3 className="text-lg font-bold text-gray-900">Development Timeline</h3>
+        <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <div className={`w-3 h-3 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full ${language === 'ar' ? 'ml-3' : 'mr-3'}`}></div>
+          <h3 className="text-lg font-bold text-gray-900">
+            {language === 'ar' ? 'الجدول الزمني للتطوير' : 'Development Timeline'}
+          </h3>
         </div>
-        <p className="text-sm text-gray-600">Project phases and milestones</p>
+        <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
+          {language === 'ar' ? 'مراحل المشروع والمعالم' : 'Project phases and milestones'}
+        </p>
       </div>
 
       <motion.div 
@@ -103,8 +109,10 @@ export default function TimelineVisualization({ timelinePhases }: TimelineVisual
 
       {/* Summary */}
       <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Total Phases:</span>
+        <div className={`flex items-center justify-between text-sm ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+          <span className="text-gray-600">
+            {language === 'ar' ? 'إجمالي المراحل:' : 'Total Phases:'}
+          </span>
           <span className="font-semibold text-gray-900">{timelinePhases.length}</span>
         </div>
       </div>

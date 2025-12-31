@@ -34,6 +34,15 @@ const nextConfig = {
       };
     }
     
+    // Handle native modules that cause build issues
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@google-cloud/speech': 'commonjs @google-cloud/speech',
+        '@google-cloud/storage': 'commonjs @google-cloud/storage',
+      });
+    }
+    
     return config;
   },
 }

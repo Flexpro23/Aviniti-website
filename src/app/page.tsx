@@ -56,7 +56,7 @@ export default function Home() {
         </div>
       </div>
     }>
-    <main dir={dir} className="min-h-screen">
+    <main dir={dir} className="min-h-screen" id="main-content">
       <Navbar />
       {/* Hero section with primary heading */}
       <header role="banner" id="hero-section">
@@ -65,7 +65,7 @@ export default function Home() {
         />
       </header>
       {/* Main content sections */}
-      <div role="main">
+      <div role="main" aria-label="Main content">
         <Projects />
         <div id="services-section">
           <Services />

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -23,16 +24,24 @@ module.exports = {
           dark: '#1e293b', // Additional dark variant
         },
         'bronze': {
-          50: '#faf8f6',
-          100: '#f4f0ec',
-          200: '#e8ddd6',
-          300: '#d8c4b5',
-          400: '#c5a28e',
+          50: '#fdf8f3',
+          100: '#f9ead8',
+          200: '#f2d4b0',
+          300: '#e9b77e',
+          400: '#df944a',
           500: '#c08460', // Primary brand color
           600: '#a6714e',
           700: '#8a5d42',
           800: '#724e39',
           900: '#5e4131',
+          950: '#3d2a1f', // Darkest shade
+          'a11y': '#d17a3d', // High contrast for accessibility
+        },
+        // Tech cyan for AI/tech elements
+        'tech-cyan': {
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
         },
         'off-white': '#f4f4f2',
         
@@ -75,7 +84,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Inter', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         float: 'float 6s ease-in-out infinite',

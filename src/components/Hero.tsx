@@ -183,7 +183,7 @@ export default function Hero({ onConsultationClick }: HeroProps = {}) {
                 className="text-slate-blue-200 hover:text-white font-medium flex items-center justify-center sm:justify-start group py-4 px-2 sm:px-0" // Added padding for better mobile click area
                 title="Get in touch with our team"
               >
-                <span className="mr-2">Contact Us</span>
+                <span className={dir === 'rtl' ? 'ml-2' : 'mr-2'}>{t.navigation.contact}</span>
                 <svg
                   className={`w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1 ${dir === 'rtl' ? 'rotate-180' : ''}`}
                   fill="none"

@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar';
 
 const TermsOfServicePage = () => {
   return (
-    <main className="bg-off-white text-slate-blue-600 min-h-screen">
+    <main className="bg-off-white text-slate-blue-600 min-h-screen" id="main-content">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-4xl font-bold text-slate-blue-600 mb-8 text-center">Terms of Service</h1>

@@ -143,11 +143,11 @@ export default function Navbar() {
                 {t.navigation.blog}
               </Link>
               <Link 
-                href="/ai-lab"
+                href="/idea-lab"
                 onClick={() => setIsMenuOpen(false)}
                 className="block w-full text-left px-4 py-3 text-slate-blue-600 hover:text-bronze-500 transition-colors"
               >
-                {t.navigation.aiIdeaLab}
+                {t.navigation.ideaLab}
               </Link>
               <div className="px-4 py-3">
                 <LanguageSwitcher isScrolled={true} />

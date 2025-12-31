@@ -11,7 +11,7 @@ export const ar = {
     about: 'حول',
     services: 'خدمات',
     readyMadeSolutions: 'حلول مخصصة و جاهزة',
-    aiIdeaLab: 'مختبر الأفكار الذكي',
+    ideaLab: 'مختبر الأفكار',
     blog: 'المدونة',
     faq: 'الأسئلة الشائعة',
     contact: 'اتصل بنا'
@@ -231,7 +231,74 @@ export const ar = {
     callUs: 'اتصل بنا مباشرة'
   },
   footer: {
-    rights: 'جميع الحقوق محفوظة'
+    rights: 'جميع الحقوق محفوظة',
+    quickLinks: 'روابط سريعة',
+    support: 'الدعم',
+    description: 'نحول الأفكار المبتكرة إلى حلول رقمية متميزة. نحن متخصصون في التطبيقات المدعومة بالذكاء الاصطناعي وتطوير البرمجيات المخصصة وتطبيقات الهواتف المتطورة.',
+    privacyPolicy: 'سياسة الخصوصية',
+    termsOfService: 'شروط الخدمة'
+  },
+  contactPage: {
+    title: 'اتصل بنا',
+    subtitle: 'هل أنت مستعد لتحويل أفكارك إلى واقع؟ تواصل مع فريق الخبراء لدينا ودعنا نناقش مشروعك القادم.',
+    getInTouch: 'تواصل معنا',
+    getInTouchDescription: 'نحن هنا لمساعدتك في تحقيق رؤيتك. سواء كنت بحاجة إلى دمج الذكاء الاصطناعي أو تطوير تطبيقات الهواتف أو حلول برمجية مخصصة، فريقنا جاهز لمساعدتك.',
+    phone: 'الهاتف',
+    email: 'البريد الإلكتروني',
+    location: 'الموقع',
+    website: 'الموقع الإلكتروني',
+    businessHours: 'ساعات العمل',
+    sundayThursday: 'الأحد - الخميس',
+    fridaySaturday: 'الجمعة - السبت',
+    closed: 'مغلق',
+    timeNote: '*الأوقات بتوقيت الأردن (GMT+3)',
+    sendMessage: 'أرسل لنا رسالة',
+    yourName: 'اسمك',
+    yourEmail: 'بريدك الإلكتروني',
+    phoneNumber: 'رقم الهاتف',
+    companyOptional: 'الشركة (اختياري)',
+    subject: 'الموضوع',
+    selectSubject: 'اختر موضوعًا',
+    message: 'الرسالة',
+    messagePlaceholder: 'أخبرنا عن مشروعك أو استفسارك...',
+    sendButton: 'إرسال الرسالة',
+    sending: 'جاري الإرسال...',
+    successMessage: 'شكرًا لك! تم إرسال رسالتك بنجاح. سنتواصل معك قريبًا.',
+    errorMessage: 'حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى.',
+    required: '*',
+    subjectOptions: {
+      generalInquiry: 'استفسار عام',
+      aiDevelopment: 'مشروع تطوير الذكاء الاصطناعي',
+      mobileApp: 'تطوير تطبيقات الهواتف',
+      webDevelopment: 'تطوير الويب',
+      readyMade: 'الحلول الجاهزة',
+      freeConsultation: 'طلب استشارة مجانية',
+      technicalSupport: 'الدعم الفني',
+      partnership: 'استفسار شراكة',
+      other: 'أخرى'
+    },
+    ctaTitle: 'هل أنت مستعد لبدء مشروعك؟',
+    ctaDescription: 'لا تنتظر! احصل على تقدير مجاني لمشروعك مدعوم بالذكاء الاصطناعي في دقائق واكتشف كيف يمكننا تحويل أفكارك إلى واقع.',
+    ctaButton: 'احصل على تقدير الذكاء الاصطناعي الفوري'
+  },
+  blogPage: {
+    title: 'مدونة Aviniti التقنية',
+    subtitle: 'رؤى ودروس وتحديثات الصناعة من فريق خبراء الذكاء الاصطناعي وتطوير التطبيقات لدينا',
+    allArticles: 'جميع المقالات',
+    aiCategory: 'الذكاء الاصطناعي وتعلم الآلة',
+    mobileCategory: 'تطوير الهواتف',
+    webCategory: 'تطوير الويب',
+    securityCategory: 'الأمان',
+    featuredArticle: 'المقال المميز',
+    latestArticles: 'أحدث المقالات',
+    articles: 'مقالات',
+    readFullArticle: 'اقرأ المقال كاملاً',
+    readMore: 'اقرأ المزيد',
+    stayUpdated: 'ابق على اطلاع',
+    newsletterDescription: 'اشترك في نشرتنا الإخبارية للحصول على أحدث الرؤى حول الذكاء الاصطناعي وتطوير التطبيقات واتجاهات التكنولوجيا في بريدك الوارد.',
+    emailPlaceholder: 'أدخل بريدك الإلكتروني',
+    subscribe: 'اشترك',
+    minRead: 'دقيقة قراءة'
   },
   faq: {
     title: 'الأسئلة الشائعة',
@@ -416,6 +483,85 @@ export const ar = {
       }
     }
   },
+  ideaLab: {
+    // Page title and intro
+    title: "مختبر الأفكار",
+    subtitle: "اكتشف فكرة تطبيقك المثالية",
+    description: "أجب عن بعض الأسئلة البسيطة واحصل على أفكار مخصصة مع تقديرات فورية للتكلفة والوقت",
+    // Steps
+    step1: "أجب عن بعض الأسئلة",
+    step1Desc: "6-8 أسئلة بسيطة لفهم رؤيتك وأهدافك",
+    step2: "اكتشف الأفكار",
+    step2Desc: "احصل على 5-6 أفكار مخصصة مع تقديرات فورية",
+    step3: "اختر الأفضل",
+    step3Desc: "اختر الفكرة التي تناسبك واحصل على تقدير مفصل",
+    step4: "احصل على التقرير",
+    step4Desc: "احصل على مخطط تنفيذي كامل قابل للتنزيل",
+    // Benefits
+    benefit1: "اكتشف أفكار مخصصة لاحتياجاتك",
+    benefit2: "احصل على تقديرات فورية للتكلفة والوقت",
+    benefit3: "مخطط تنفيذي قابل للتنزيل",
+    // CTA
+    startNow: "ابدأ الآن",
+    noAccountRequired: "لا يتطلب إنشاء حساب • تقدير فوري",
+    onlyMinutes: "5 دقائق فقط",
+    completelyFree: "مجاني بالكامل",
+    uniqueIdeas: "أفكار فريدة",
+    // Testimonial
+    testimonial: "ساعدني مختبر الأفكار على اكتشاف فرصة لم أكن أتوقعها - والتقدير كان دقيقًا جدًا!",
+    testimonialAuthor: "— رائد أعمال",
+    // Questions
+    questionOf: "السؤال {current} من {total}",
+    previous: "السابق",
+    next: "التالي",
+    discoverIdeas: "اكتشف أفكارك",
+    selectMultiple: "يمكنك اختيار أكثر من خيار",
+    minCharacters: "الحد الأدنى 10 أحرف",
+    // Generating
+    analyzingAnswers: "تحليل إجاباتك",
+    analyzingDesc: "نفهم احتياجاتك وأهدافك",
+    researchingMarket: "دراسة السوق",
+    researchingDesc: "نبحث عن الفرص والاتجاهات",
+    designingSolutions: "تصميم الحلول",
+    designingDesc: "نطور أفكار مخصصة لك",
+    calculatingEstimates: "حساب التقديرات",
+    calculatingDesc: "نحسب التكلفة والوقت",
+    finalizing: "جاري الإنهاء",
+    finalizingDesc: "نضع اللمسات الأخيرة",
+    analyzingFact: "نحلل آلاف التطبيقات الناجحة لتقديم أفكار فريدة تناسبك",
+    // Ideas grid
+    personalizedIdeas: "أفكارك الشخصية",
+    basedOnAnswers: "بناءً على إجاباتك، إليك الأفكار التي صممناها خصيصًا لك",
+    estCost: "التكلفة التقديرية",
+    estTimeline: "المدة التقديرية",
+    moreDetails: "عرض التفاصيل",
+    lessDetails: "إخفاء التفاصيل",
+    chooseThis: "اختر هذه الفكرة",
+    selected: "تم الاختيار",
+    keyFeatures: "الميزات الرئيسية",
+    differentiators: "المميزات التنافسية",
+    businessModel: "نموذج العمل",
+    // Generate more
+    discoverMoreIdeas: "اكتشف المزيد من الأفكار",
+    notFound: "ألم تجد ما تبحث عنه؟ دعنا نستكشف المزيد",
+    generateNew: "إنشاء أفكار جديدة",
+    generating: "جاري الإنشاء...",
+    findingMore: "نبحث عن المزيد من الأفكار الرائعة",
+    // Action bar
+    readyToProceed: "مستعد للمتابعة مع هذه الفكرة؟",
+    cancel: "إلغاء",
+    getDetailedEstimate: "الحصول على التقدير التفصيلي",
+    backToQuestions: "العودة للأسئلة",
+    // Complexity
+    simple: "بسيط",
+    moderate: "متوسط",
+    complex: "معقد",
+    // Market potential
+    low: "منخفض",
+    medium: "متوسط",
+    high: "عالي"
+  },
+  // Keep old key for backward compatibility
   aiIdeaLab: {
     heading: "ليس لديك فكرة تطبيق بعد؟",
     subheading: "دع خبيرنا الاستراتيجي في الذكاء الاصطناعي يساعدك في العصف الذهني.",
@@ -424,6 +570,67 @@ export const ar = {
     benefit2: "شارك في محادثة طبيعية",
     benefit3: "احصل على مخطط فكرة مخصص",
     ctaEnglish: "Start in English",
-    ctaArabic: "ابدأ باللغة العربية"
+    ctaArabic: "ابدأ باللغة العربية",
+    // New keys for enhanced AI Lab
+    whatYouGet: "ما ستحصل عليه",
+    describeAndGet: "صف فكرة تطبيقك واحصل على:",
+    benefits: {
+      feasibility: "تحليل الجدوى",
+      features: "توصيات الميزات",
+      techStack: "اقتراحات التكنولوجيا",
+      timeline: "تقدير الجدول الزمني",
+      challenges: "التحديات المحتملة"
+    },
+    averageTime: "متوسط الجلسة: 3-5 دقائق",
+    testimonial: "ساعدني الذكاء الاصطناعي على إدراك أنني بحاجة إلى تبسيط نطاق MVP الخاص بي",
+    startExploring: "← ابدأ استكشاف فكرتك",
+    rememberChoice: "تذكر اختياري",
+    quickPrompts: {
+      title: "لست متأكداً من أين تبدأ؟ جرب:",
+      uber: "أريد بناء تطبيق مثل أوبر ولكن لـ...",
+      ai: "أحتاج ذكاء اصطناعي يمكنه تحليل...",
+      mobile: "يحتاج عملي إلى تطبيق جوال لـ..."
+    },
+    thinking: "تحليل فكرتك...",
+    exportPdf: "تصدير PDF"
+  },
+  // Accessibility
+  a11y: {
+    skipToContent: "انتقل إلى المحتوى الرئيسي",
+    openMenu: "فتح القائمة",
+    closeMenu: "إغلاق القائمة",
+    selectLanguage: "اختر اللغة",
+    toggleTheme: "تبديل المظهر"
+  },
+  // Theme
+  theme: {
+    light: "فاتح",
+    dark: "داكن",
+    system: "النظام"
+  },
+  // Estimate tool trust section
+  estimate: {
+    howWeCalculate: "كيف نحسب تقديرك",
+    basedOn: "تقديراتنا مبنية على:",
+    projectsCompleted: "50+ مشروع مكتمل في محفظتنا",
+    actualHours: "ساعات التطوير الفعلية من تطبيقات مماثلة",
+    currentRates: "أسعار السوق الحالية 2025",
+    monthlyUpdates: "يتم التحديث شهريًا بناءً على تكاليف المشاريع الحقيقية",
+    accuracyRate: "معدل الدقة",
+    accuracyNote: "التكاليف النهائية ضمن 15% من التقدير لـ 87% من المشاريع المكتملة في 2024-2025",
+    comparison: {
+      title: "كيف يقارن هذا",
+      usAgencies: "الوكالات الأمريكية",
+      euAgencies: "الوكالات الأوروبية",
+      aviniti: "أفينيتي (الأردن)",
+      offshore: "الخارجية (مخاطر أعلى)",
+      savings: "توفر 50-70% مقارنة بالوكالات الأمريكية/الأوروبية",
+      directComm: "تواصل مباشر مع المؤسس (بدون وسطاء)",
+      timezone: "نفس المنطقة الزمنية لأوروبا/الشرق الأوسط"
+    },
+    testimonial: {
+      quote: "قدمت أفينيتي عرضًا بـ 28 ألف دولار، وكانت التكلفة النهائية 31 ألف دولار. قريب جدًا من التقدير والجودة تجاوزت التوقعات.",
+      author: "ماركوس ر.، مؤسس شركة ناشئة في التكنولوجيا المالية"
+    }
   }
 }; 

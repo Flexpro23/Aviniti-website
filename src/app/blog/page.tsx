@@ -21,6 +21,9 @@ interface BlogPost {
 export default function BlogPage() {
   const { t, dir } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  
+  // Safe access to blog page translations with fallbacks
+  const blogT = (t as any).blogPage || {};
 
   const blogPosts: BlogPost[] = [
     {
@@ -98,11 +101,11 @@ export default function BlogPage() {
   ];
 
   const categories = [
-    { value: 'all', label: 'All Articles' },
-    { value: 'AI', label: 'AI & Machine Learning' },
-    { value: 'Mobile', label: 'Mobile Development' },
-    { value: 'Web', label: 'Web Development' },
-    { value: 'Security', label: 'Security' }
+    { value: 'all', label: blogT.allArticles || 'All Articles' },
+    { value: 'AI', label: blogT.aiCategory || 'AI & Machine Learning' },
+    { value: 'Mobile', label: blogT.mobileCategory || 'Mobile Development' },
+    { value: 'Web', label: blogT.webCategory || 'Web Development' },
+    { value: 'Security', label: blogT.securityCategory || 'Security' }
   ];
 
   const filteredPosts = selectedCategory === 'all' 
@@ -110,17 +113,17 @@ export default function BlogPage() {
     : blogPosts.filter(post => post.category === selectedCategory);
 
   return (
-    <main dir={dir} className="min-h-screen bg-off-white">
+    <main dir={dir} className="min-h-screen bg-off-white" id="main-content">
       <Navbar />
       
       {/* Hero Section */}
       <div className="bg-off-white py-20 border-b border-slate-blue-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-blue-600 pt-12">
-            Aviniti Tech Blog
+            {blogT.title || 'Aviniti Tech Blog'}
           </h1>
           <p className="text-xl text-slate-blue-500 max-w-3xl mx-auto">
-            Insights, tutorials, and industry updates from our team of AI and app development experts
+            {blogT.subtitle || 'Insights, tutorials, and industry updates from our team of AI and app development experts'}
           </p>
         </div>
       </div>
@@ -150,7 +153,7 @@ export default function BlogPage() {
         {/* Featured Article */}
         {filteredPosts.length > 0 && (
           <div className="mb-16">
-            <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">Featured Article</h2>
+            <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">{blogT.featuredArticle || 'Featured Article'}</h2>
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="md:flex">
                 <div className="md:w-1/3 bg-gradient-to-br from-slate-blue-600 to-slate-blue-700 p-8 flex items-center justify-center">
@@ -179,10 +182,10 @@ export default function BlogPage() {
                   </p>
                   <Link 
                     href={`/blog/${filteredPosts[0].slug}`}
-                    className="inline-flex items-center bg-transparent border-2 border-slate-blue-600 text-slate-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-slate-blue-600 hover:text-white transition-colors duration-300"
+                    className={`inline-flex items-center bg-transparent border-2 border-slate-blue-600 text-slate-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-slate-blue-600 hover:text-white transition-colors duration-300 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}
                   >
-                    Read Full Article
-                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {blogT.readFullArticle || 'Read Full Article'}
+                    <svg className={`w-5 h-5 ${dir === 'rtl' ? 'mr-2 rotate-180' : 'ml-2'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
@@ -195,7 +198,7 @@ export default function BlogPage() {
         {/* Blog Posts Grid */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-slate-blue-600 mb-8">
-            {selectedCategory === 'all' ? 'Latest Articles' : `${categories.find(c => c.value === selectedCategory)?.label} Articles`}
+            {selectedCategory === 'all' ? (blogT.latestArticles || 'Latest Articles') : `${categories.find(c => c.value === selectedCategory)?.label} ${blogT.articles || 'Articles'}`}
           </h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredPosts.slice(1).map((post) => (
@@ -231,7 +234,7 @@ export default function BlogPage() {
                       href={`/blog/${post.slug}`}
                       className="text-bronze-500 font-medium hover:text-bronze-600 transition-colors duration-300"
                     >
-                      Read More →
+                      {blogT.readMore || 'Read More'} {dir === 'rtl' ? '←' : '→'}
                     </Link>
                   </div>
                 </div>
@@ -242,18 +245,18 @@ export default function BlogPage() {
 
         {/* Newsletter Signup */}
         <div className="bg-gradient-to-r from-slate-blue-600 to-slate-blue-700 rounded-2xl p-8 text-center text-white border border-slate-blue-500">
-          <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
+          <h3 className="text-2xl font-bold mb-4">{blogT.stayUpdated || 'Stay Updated'}</h3>
           <p className="text-slate-blue-200 mb-6 max-w-2xl mx-auto">
-            Subscribe to our newsletter to get the latest insights on AI, app development, and technology trends delivered to your inbox.
+            {blogT.newsletterDescription || 'Subscribe to our newsletter to get the latest insights on AI, app development, and technology trends delivered to your inbox.'}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <div className={`flex flex-col sm:flex-row gap-4 max-w-md mx-auto ${dir === 'rtl' ? 'sm:flex-row-reverse' : ''}`}>
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder={blogT.emailPlaceholder || 'Enter your email'}
               className="flex-1 px-4 py-3 rounded-lg text-slate-blue-600 placeholder-slate-blue-400 border border-slate-blue-300 focus:ring-2 focus:ring-bronze-500 focus:border-bronze-500"
             />
             <button className="bg-bronze-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-bronze-600 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Subscribe
+              {blogT.subscribe || 'Subscribe'}
             </button>
           </div>
         </div>

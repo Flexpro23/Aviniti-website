@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/lib/context/LanguageContext';
 
 interface StrategicAnalysisCardsProps {
   strategicAnalysis: {
@@ -11,9 +12,11 @@ interface StrategicAnalysisCardsProps {
 }
 
 export default function StrategicAnalysisCards({ strategicAnalysis }: StrategicAnalysisCardsProps) {
+  const { language } = useLanguage();
+  
   const cards = [
     {
-      title: 'Key Strengths',
+      title: language === 'ar' ? 'نقاط القوة الرئيسية' : 'Key Strengths',
       content: strategicAnalysis.strengths,
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +28,7 @@ export default function StrategicAnalysisCards({ strategicAnalysis }: StrategicA
       borderColor: 'border-green-200'
     },
     {
-      title: 'Potential Challenges',
+      title: language === 'ar' ? 'التحديات المحتملة' : 'Potential Challenges',
       content: strategicAnalysis.challenges,
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +40,7 @@ export default function StrategicAnalysisCards({ strategicAnalysis }: StrategicA
       borderColor: 'border-orange-200'
     },
     {
-      title: 'Monetization Strategy',
+      title: language === 'ar' ? 'استراتيجية تحقيق الدخل' : 'Monetization Strategy',
       content: strategicAnalysis.recommendedMonetization,
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

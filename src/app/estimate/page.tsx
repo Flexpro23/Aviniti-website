@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/context/LanguageContext';
-import UserInfoStep from '@/components/AIEstimate/UserInfoStep';
 import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
+import SaveAndAccessStep from '@/components/AIEstimate/SaveAndAccessStep';
 import WorldClassProcessingAnimation from '@/components/AIEstimate/WorldClassProcessingAnimation';
 
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL, generateExecutiveDashboard } from '@/lib/services/GeminiService';
@@ -87,7 +87,7 @@ export type DetailedReport = {
 export default function AIEstimatePage() {
   const { t, dir, language } = useLanguage();
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     fullName: '',
@@ -105,18 +105,53 @@ export default function AIEstimatePage() {
   const [autoDownloadSuccess, setAutoDownloadSuccess] = useState(false);
   const [currentKeywords, setCurrentKeywords] = useState<string[]>([]);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  
 
-  // Check for URL parameters to pre-fill app description
+  // Check for URL parameters to pre-fill app description and handle Idea Lab flow
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const prefilledDescription = urlParams.get('description');
+      const prefilledPlatforms = urlParams.get('platforms');
+      const fromIdeaLab = urlParams.get('fromIdeaLab') === 'true';
+      const autoAnalyze = urlParams.get('autoAnalyze') === 'true';
       
-      if (prefilledDescription) {
-        setAppDescription(prev => ({
-          ...prev,
-          description: decodeURIComponent(prefilledDescription)
-        }));
+      // Check for Idea Lab data in sessionStorage
+      const ideaLabDataStr = sessionStorage.getItem('ideaLabData');
+      
+      if (fromIdeaLab && ideaLabDataStr) {
+        try {
+          const ideaLabData = JSON.parse(ideaLabDataStr);
+          
+          // Set description and platforms from Idea Lab
+          const newDescription: AppDescription = {
+            description: ideaLabData.idea?.fullDescription || decodeURIComponent(prefilledDescription || ''),
+            selectedPlatforms: ideaLabData.platforms || []
+          };
+          
+          setAppDescription(newDescription);
+          
+          // If autoAnalyze is true, automatically trigger the analysis
+          if (autoAnalyze && newDescription.description && newDescription.selectedPlatforms.length > 0) {
+            // Small delay to ensure state is set
+            setTimeout(() => {
+              handleAppDescriptionSubmit(newDescription);
+            }, 500);
+          }
+          
+          // Clear the sessionStorage after reading
+          sessionStorage.removeItem('ideaLabData');
+          
+        } catch (e) {
+          console.error('Error parsing Idea Lab data:', e);
+        }
+      } else if (prefilledDescription) {
+        // Regular pre-fill without Idea Lab
+        const platforms = prefilledPlatforms ? decodeURIComponent(prefilledPlatforms).split(',') : [];
+        setAppDescription({
+          description: decodeURIComponent(prefilledDescription),
+          selectedPlatforms: platforms
+        });
       }
     }
   }, []);
@@ -126,31 +161,17 @@ export default function AIEstimatePage() {
     setIsProcessing(true);
     
     try {
-      // Test Gemini API connection
-      console.log(`Testing ${GEMINI_MODEL} API connection...`);
-      const isConnected = await testGeminiApiConnection();
-      
-      if (isConnected) {
-        console.log(`${GEMINI_MODEL} API connection successful`);
-      } else {
-        console.warn(`${GEMINI_MODEL} API connection failed, but continuing with the flow`);
+      // Save user info and complete report to Firebase
+      if (db && detailedReport) {
+        console.log('💾 Saving user info and complete report to Firebase...');
+        
+        // Create/update user document
+        await createUserDocument(details.emailAddress, details);
+        
+        console.log('✅ Complete report saved to Firebase successfully');
       }
-      
-      // Move to next step regardless of API status
-      setStep(2);
-      
-      // Try to create user document if needed
-      try {
-        await createUserDocument(details.emailAddress, {
-          fullName: details.fullName,
-          phoneNumber: details.phoneNumber,
-          companyName: details.companyName,
-          emailAddress: details.emailAddress,
-        });
-        console.log('User document created/updated successfully');
-      } catch (dbError) {
-        console.warn('Failed to create/update user document:', dbError);
-      }
+    } catch (error) {
+      console.error('Error saving complete report:', error);
     } finally {
       setIsProcessing(false);
     }
@@ -174,32 +195,12 @@ export default function AIEstimatePage() {
       console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
       console.log('Selected platforms:', description.selectedPlatforms);
       
-      // 🔥 NEW: Save app description to Firebase BEFORE AI analysis
-      try {
-        if (db) {
-          console.log('💾 Saving app description to Firebase...');
-          const userDocRef = doc(db, 'users', personalDetails.emailAddress);
-          await updateDoc(userDocRef, {
-            appDescription: description.description,
-            selectedPlatforms: description.selectedPlatforms,
-            status: 'pending-features',
-            updatedAt: serverTimestamp()
-          });
-          console.log('✅ App description saved to Firebase successfully');
-        } else {
-          console.warn('⚠️ Firebase not initialized, skipping app description save');
-        }
-      } catch (dbError) {
-        console.error('❌ Failed to save app description to Firebase:', dbError);
-        // Continue with AI analysis even if Firebase update fails
-      }
-      
       // Try to get analysis from the Gemini API
       const analysis = await analyzeAppWithGemini(description.description, undefined, description.selectedPlatforms, language);
       console.log(`Successfully received ${GEMINI_MODEL} API response:`, analysis);
       
       setAiAnalysisResult(analysis);
-      setStep(3);
+      setAnalysisComplete(true);
     } catch (error) {
       console.error(`Error submitting app description to ${GEMINI_MODEL}:`, error);
       
@@ -214,7 +215,7 @@ export default function AIEstimatePage() {
       console.warn(`Using mock analysis due to ${GEMINI_MODEL} API failure`);
       const mockAnalysis = generateMockAnalysis(description.description, description.selectedPlatforms);
       setAiAnalysisResult(mockAnalysis);
-      setStep(3);
+      setAnalysisComplete(true);
     } finally {
       setIsProcessing(false);
     }
@@ -224,7 +225,7 @@ export default function AIEstimatePage() {
     setIsProcessing(true);
     
     try {
-      const selectedFeatures = features.filter(f => f.selected);
+      const selectedFeatures = features.filter((f: Feature) => f.selected);
       
       const extractCostRange = (costEstimate: string) => {
         const costString = costEstimate.replace(/[^0-9,-]/g, '');
@@ -268,7 +269,8 @@ export default function AIEstimatePage() {
         selectedFeatures,
         totalCost,
         totalMinTime,
-        totalMaxTime
+        totalMaxTime,
+        language
       );
 
       const report: DetailedReport = {
@@ -286,35 +288,6 @@ export default function AIEstimatePage() {
       };
 
       setDetailedReport(report);
-
-      // 🔥 NEW: Save selected features and report to Firebase
-      try {
-        if (db) {
-          console.log('💾 Saving selected features and report to Firebase...');
-          const userDocRef = doc(db, 'users', personalDetails.emailAddress);
-          await updateDoc(userDocRef, {
-            selectedFeatures,
-            totalCost: `$${totalCost.toLocaleString()}`,
-            totalTime: totalMinTime === totalMaxTime ? `${totalMinTime} days` : `${totalMinTime}-${totalMaxTime} days`,
-            costBreakdown: dashboardReport.costBreakdown,
-            timelinePhases: dashboardReport.timelinePhases,
-            marketComparison: dashboardReport.marketComparison,
-            complexityAnalysis: dashboardReport.complexityAnalysis,
-            successPotentialScores: dashboardReport.successPotentialScores,
-            strategicAnalysis: dashboardReport.strategicAnalysis,
-            status: 'report-generated',
-            updatedAt: serverTimestamp()
-          });
-          console.log('✅ Selected features and report saved to Firebase successfully');
-        } else {
-          console.warn('⚠️ Firebase not initialized, skipping features save');
-        }
-      } catch (dbError) {
-        console.error('❌ Failed to save features to Firebase:', dbError);
-        // Continue to next step even if Firebase update fails
-      }
-
-      setStep(4);
     } catch (error) {
       console.error('Error generating detailed report:', error);
       setError('Failed to generate detailed report. Please try again.');
@@ -324,11 +297,9 @@ export default function AIEstimatePage() {
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      setIsProcessing(false);
-      setError(null);
-    }
+    setAnalysisComplete(false);
+    setIsProcessing(false);
+    setError(null);
   };
 
   const handleContactClick = () => {
@@ -378,80 +349,36 @@ export default function AIEstimatePage() {
     }
   };
 
-  const getStepTitle = () => {
-    switch (step) {
-      case 1: return 'Personal Information';
-      case 2: return 'App Description';
-      case 3: return 'Feature Selection';
-      case 4: return 'Detailed Report';
-      default: return 'AI Estimate';
-    }
-  };
+
 
   return (
-    <main dir={dir} className="min-h-screen bg-off-white">
+    <main dir={dir} className="min-h-screen bg-off-white" id="main-content">
       <Navbar />
       
       {/* Header */}
       <div className="bg-off-white text-slate-blue-600 py-16 border-b border-slate-blue-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-blue-600 pt-12">
-            Get Your AI-Powered App Estimate
+            {language === 'ar' ? 'احصل على تقدير تطبيقك بالذكاء الاصطناعي' : 'Get Your AI-Powered App Estimate'}
           </h1>
           <p className="text-xl text-slate-blue-500 mb-8">
-            Receive an instant, detailed estimate for your app development project powered by advanced AI analysis
+            {language === 'ar' 
+              ? 'احصل على تقدير فوري ومفصل لمشروع تطوير تطبيقك بواسطة تحليل الذكاء الاصطناعي المتقدم'
+              : 'Receive an instant, detailed estimate for your app development project powered by advanced AI analysis'}
           </p>
-          <div className="flex items-center justify-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 1 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
-                1
-              </div>
-              <span className="hidden sm:inline text-slate-blue-600">Personal Info</span>
-            </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 2 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
-                2
-              </div>
-              <span className="hidden sm:inline text-slate-blue-600">App Description</span>
-            </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 3 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
-                3
-              </div>
-              <span className="hidden sm:inline text-slate-blue-600">Features</span>
-            </div>
-            <div className="w-8 h-1 bg-slate-blue-200"></div>
-            <div className="flex items-center space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 4 ? 'bg-bronze-500 text-white' : 'bg-slate-blue-200 text-slate-blue-600'}`}>
-                4
-              </div>
-              <span className="hidden sm:inline text-slate-blue-600">Report</span>
-            </div>
-          </div>
+
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className={`mx-auto px-4 sm:px-6 lg:px-8 py-12 ${detailedReport ? 'max-w-7xl' : 'max-w-4xl'}`}>
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Step Content */}
           <div className="p-6 sm:p-8">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-slate-blue-600 mb-2">
-                Step {step}: {getStepTitle()}
-              </h2>
-              <div className="w-full bg-slate-blue-100 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-bronze-500 to-bronze-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(step / 4) * 100}%` }}
-                ></div>
-              </div>
-            </div>
+
 
             <AnimatePresence mode="wait">
-              {isProcessing && step === 2 && appDescription.description ? (
+              {isProcessing && appDescription.description ? (
                 <motion.div 
                   key="processing"
                   initial={{ opacity: 0 }}
@@ -467,41 +394,28 @@ export default function AIEstimatePage() {
                 </motion.div>
               ) : (
                 <motion.div 
-                  key={`step-${step}`}
+                  key={analysisComplete ? 'save-access' : 'idea-catcher'}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {step === 1 && (
-                    <UserInfoStep 
-                      onSubmit={handleUserInfoSubmit} 
-                      onCancel={() => router.push('/')} 
-                      initialData={personalDetails}
-                      isProcessing={isProcessing}
-                    />
-                  )}
-                  
-                  {step === 2 && (
-                    <AppDescriptionStep 
-                      onSubmit={handleAppDescriptionSubmit} 
-                      onBack={handleBack}
-                      isProcessing={isProcessing}
-                      initialData={appDescription}
-                      onKeywordsChange={setCurrentKeywords}
-                    />
-                  )}
-                  
-                  {step === 3 && aiAnalysisResult && (
+                  {!analysisComplete ? (
+                      <AppDescriptionStep 
+                        onSubmit={handleAppDescriptionSubmit} 
+                        onBack={() => router.push('/')}
+                        isProcessing={isProcessing}
+                        initialData={appDescription}
+                        onKeywordsChange={setCurrentKeywords}
+                      />
+                  ) : aiAnalysisResult && !detailedReport ? (
                     <FeatureSelectionStep 
                       aiAnalysis={aiAnalysisResult}
                       onSubmit={handleFeatureSelectionSubmit}
                       onBack={handleBack}
                       isProcessing={isProcessing}
                     />
-                  )}
-                  
-                  {step === 4 && detailedReport && (
+                  ) : detailedReport ? (
                     <DetailedReportStep 
                       report={detailedReport}
                       userInfo={personalDetails}
@@ -512,6 +426,12 @@ export default function AIEstimatePage() {
                       onUploadPdf={(pdfBlob) => uploadPdfAndCreateReport(pdfBlob, personalDetails.emailAddress)}
                       initialDownloadSuccess={autoDownloadSuccess}
                       onContactClick={handleContactClick}
+                    />
+                  ) : (
+                    <SaveAndAccessStep 
+                      onSubmit={handleUserInfoSubmit}
+                      initialData={personalDetails}
+                      isProcessing={isProcessing}
                     />
                   )}
                 </motion.div>

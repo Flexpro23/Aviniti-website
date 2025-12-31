@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '../../../lib/firebase-admin';
 
+// Force dynamic rendering to avoid build-time issues with native modules
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     console.log('Starting report generation...');

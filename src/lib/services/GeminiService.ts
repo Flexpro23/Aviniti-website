@@ -1,24 +1,52 @@
 /**
  * Service for interacting with Google's Gemini API
+ * SECURE VERSION - All API calls go through server-side proxy
  */
 
 'use client';
 
 import { AIAnalysisResult, Feature } from '@/components/AIEstimate';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-// Update API key handling to be more flexible and secure
-// Get the API key from environment variables if available
-export const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
+// SECURITY: No more direct API key access from client
+// All calls now go through /api/gemini-proxy
 
-// Update the model options for more flexibility - using faster gemini-2.5-flash
-export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+// Update the model options for more flexibility - using newest gemini-2.0-flash
+export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.0-flash';
 
-// Initialize the Google Generative AI with your API key
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+// Note: GEMINI_API_KEY should only be accessed server-side
+// This constant is used for client-side API connection testing status display only
+const GEMINI_API_KEY = 'configured-server-side';
 
-// Get the model
-const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+/**
+ * Secure function to call Gemini API through our server-side proxy
+ * This keeps the API key secure and never exposes it to the client
+ */
+async function callGeminiProxy(prompt: string, model: string = GEMINI_MODEL, systemInstruction?: string): Promise<string> {
+  try {
+    const response = await fetch('/api/gemini-proxy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt,
+        model,
+        systemInstruction
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to generate content');
+    }
+
+    const data = await response.json();
+    return data.text;
+  } catch (error) {
+    console.error('Gemini proxy error:', error);
+    throw error;
+  }
+}
 
 // Interface for the raw feature data returned by Gemini
 interface RawFeature {
@@ -170,20 +198,8 @@ export const analyzeAppWithGemini = async (
   language?: string
 ): Promise<AIAnalysisResult> => {
   try {
-    console.log('Analyzing app with Gemini...');
+    console.log('[SECURE] Analyzing app with Gemini via proxy...');
     console.log('Selected platforms:', selectedPlatforms || []);
-    
-    // Use provided API key or fallback to environment variable
-    const key = apiKey || GEMINI_API_KEY;
-    
-    if (!key || key.trim() === '') {
-      console.error('No Gemini API key provided');
-      throw new Error('API key is required. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment variables.');
-    }
-    
-    // Initialize with the key
-    const tempGenAI = new GoogleGenerativeAI(key);
-    const tempModel = tempGenAI.getGenerativeModel({ model: GEMINI_MODEL });
 
     // Determine the response language
     const isArabic = language === 'ar' || containsArabic(appDescription);
@@ -260,29 +276,17 @@ The JSON must be properly formatted, so I can parse it.
 REFER EXACTLY to the pricing schedule in the system instructions - do not invent your own prices.
 `;
 
-    console.log('Sending request to Gemini API...');
+    console.log('[SECURE] Sending request to Gemini via proxy...');
     console.log('Using model:', GEMINI_MODEL);
     console.log('Language mode:', isArabic ? 'Arabic' : 'English');
 
-    // Create a chat session
-    const chat = tempModel.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: PRICING_SYSTEM_INSTRUCTION }],
-        },
-        {
-          role: "model",
-          parts: [{ text: isArabic 
-            ? "سأستخدم جدول الأسعار هذا لتقدير تكاليف تطوير التطبيقات." 
-            : "I'll use these pricing guidelines for estimating app development costs." }],
-        }
-      ],
-    });
+    // Call secure proxy with system instruction and prompt combined
+    const fullPrompt = `${PRICING_SYSTEM_INSTRUCTION}\n\n${isArabic 
+      ? "سأستخدم جدول الأسعار هذا لتقدير تكاليف تطوير التطبيقات." 
+      : "I'll use these pricing guidelines for estimating app development costs."}\n\n${prompt}`;
 
-    // Generate content
-    const result = await chat.sendMessage(prompt);
-    const textResponse = result.response.text();
+    // Generate content via secure proxy
+    const textResponse = await callGeminiProxy(fullPrompt, GEMINI_MODEL);
     
     if (!textResponse) {
       console.error('Empty response from Gemini API');
@@ -481,10 +485,8 @@ export const testGeminiApiConnection = async (): Promise<{ success: boolean; mes
     // Create a minimal prompt to test the API
     const prompt = "Hello, please respond with 'API is working' if you can read this message.";
     
-    // Use the model instance configured above
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    // Use secure proxy
+    const text = await callGeminiProxy(prompt, GEMINI_MODEL);
     
     console.log(`Gemini API test response: ${text}`);
     
@@ -515,54 +517,76 @@ export const generateConversationalResponse = async (
   userInput: string,
   apiKey?: string
 ): Promise<string> => {
-  try {
-    // Use provided API key or fall back to environment variable
-    const key = apiKey || process.env.GEMINI_API_KEY || GEMINI_API_KEY;
-    
-    if (!key || key.trim() === '') {
-      console.error('No Gemini API key provided for conversational response');
-      throw new Error('API key is required for conversational responses');
-    }
-
-    console.log('Generating conversational response with Gemini...');
-    console.log('Using model:', GEMINI_MODEL);
-
-    // Create a new model instance with the provided API key
-    const genAI = new GoogleGenerativeAI(key);
-    const modelInstance = genAI.getGenerativeModel({ model: GEMINI_MODEL });
-
-    // Create a chat session with the conversation history
-    const chat = modelInstance.startChat({
-      history: conversationHistory,
-    });
-
-    // Send the system prompt and user input
-    const prompt = `${systemPrompt}\n\nUser: ${userInput}`;
-    const result = await chat.sendMessage(prompt);
-    const response = result.response.text();
-
-    if (!response) {
-      console.error('Empty response from Gemini API');
-      throw new Error('Empty response from Gemini API');
-    }
-
-    console.log('Successfully generated conversational response');
-    return response;
-
-  } catch (error) {
-    console.error('Error generating conversational response:', error);
-    throw error;
-  }
+  // This function is deprecated - use secure proxy instead
+  throw new Error('This function should not be called from client-side. Use the secure proxy instead.');
 };
 
 /**
  * Class-based wrapper for GeminiService to support the API route pattern
  */
+// Interface for conversation messages
+interface ConversationMessage {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: number;
+  isFinal: boolean;
+}
+
+/**
+ * Generate AI clarification response for conversational interface
+ * This function reviews the conversation history and asks one insightful clarifying question
+ */
+export const getAIClarification = async (
+  conversationHistory: ConversationMessage[],
+  apiKey?: string
+): Promise<string> => {
+  try {
+    // Create conversation context from history
+    const conversationContext = conversationHistory
+      .map(msg => `${msg.sender === 'user' ? 'User' : 'AI'}: ${msg.text}`)
+      .join('\n');
+
+    // System prompt for conversational AI architect
+    const systemPrompt = `You are an expert AI architect assistant helping users define their app requirements through conversation.
+
+Your role:
+- Review the conversation history carefully
+- Ask ONE insightful, clarifying question to help the user provide more specific details
+- Focus on understanding the core functionality, target audience, or key features
+- Keep responses conversational, friendly, and encouraging
+- Do NOT perform a full analysis or provide estimates
+- Ask questions that will help gather essential information for app development
+
+Guidelines:
+- Keep responses under 2 sentences
+- Be specific in your questions
+- Focus on one aspect at a time
+- Help users think through important details they might have missed
+- If the conversation is just starting, ask about the core problem their app solves
+
+Conversation so far:
+${conversationContext}
+
+Based on this conversation, ask one thoughtful follow-up question to help clarify their app requirements:`;
+
+    // Use secure proxy
+    const text = await callGeminiProxy(systemPrompt, GEMINI_MODEL);
+    
+    return text;
+  } catch (error) {
+    console.error('Error generating follow-up question:', error);
+    throw error;
+  }
+};
+
 export class GeminiService {
   private apiKey: string;
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.GEMINI_API_KEY || GEMINI_API_KEY;
+    // This class is deprecated - use secure proxy instead
+    this.apiKey = '';
+    console.warn('GeminiService class is deprecated. Use the secure proxy instead.');
   }
 
   /**
@@ -595,17 +619,21 @@ export const generateExecutiveDashboard = async (
   selectedFeatures: any[],
   totalCost: number,
   totalMinTime: number,
-  totalMaxTime: number
+  totalMaxTime: number,
+  language: string = 'en'
 ): Promise<any> => {
   try {
-    if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === '') {
-      console.warn('No Gemini API key - using fallback data for executive dashboard');
-      return generateFallbackDashboard(appDescription, selectedFeatures, totalCost, totalMinTime, totalMaxTime);
-    }
-
-    const featureList = selectedFeatures.map(f => `- ${f.name}: ${f.description} (${f.costEstimate})`).join('\n');
+    const featureList = selectedFeatures.map((f) => {
+      return `- ${f.name}: ${f.description} (${f.costEstimate})`;
+    }).join('\n');
+    
+    const languageInstruction = language === 'ar' 
+      ? 'IMPORTANT: You MUST respond ENTIRELY in Arabic language. All text content including appOverview, strengths, challenges, recommendedMonetization, marketComparison, complexityAnalysis, and phase descriptions MUST be in Arabic.'
+      : 'Respond in English.';
     
     const prompt = `
+      ${languageInstruction}
+      
       As a senior technology consultant and venture strategist, create a comprehensive executive dashboard analysis for this app development project.
       
       App Description: "${appDescription}"
@@ -663,9 +691,8 @@ export const generateExecutiveDashboard = async (
       Provide actionable strategic insights suitable for C-level executives.
     `;
 
-    console.log('Generating executive dashboard with Gemini...');
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    console.log('[SECURE] Generating executive dashboard via proxy...');
+    const text = await callGeminiProxy(prompt, GEMINI_MODEL);
 
     // Extract JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -734,4 +761,4 @@ function generateFallbackDashboard(
     marketComparison: "Competitively positioned with modern features and technology stack. Differentiation through user experience and specific feature combinations provides market advantage.",
     complexityAnalysis: `${totalCost > 15000 ? 'High' : totalCost > 8000 ? 'Medium' : 'Low'} complexity project requiring ${selectedFeatures.length > 8 ? 'experienced' : 'intermediate'} development expertise. Technical risks are manageable with proper architecture and testing.`
   };
-} 
+}

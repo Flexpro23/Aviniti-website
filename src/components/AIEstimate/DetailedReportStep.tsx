@@ -11,6 +11,9 @@ import CostBreakdownPieChart from './CostBreakdownPieChart';
 import StrategicAnalysisCards from './StrategicAnalysisCards';
 import TimelineVisualization from './TimelineVisualization';
 import PDFBlueprint from './PDFBlueprint';
+import HowWeCalculate from './HowWeCalculate';
+import ComparisonBenchmark from './ComparisonBenchmark';
+import SocialProofTestimonial from './SocialProofTestimonial';
 
 interface DetailedReportStepProps {
   report: DetailedReport;
@@ -437,7 +440,7 @@ export default function DetailedReportStep({
         </motion.div>
       )}
       
-      <div id="printable-report" ref={reportRef} className="bg-gray-50 min-h-screen p-8">
+      <div id="printable-report" ref={reportRef} className="bg-gray-50 p-8" style={{ colorScheme: 'light' }}>
         {/* Executive Dashboard Header */}
         <motion.div 
           className="text-center mb-12"
@@ -470,6 +473,15 @@ export default function DetailedReportStep({
             featuresCount={report.selectedFeatures.length}
           />
 
+          {/* Trust Building Section - How We Calculate */}
+          <HowWeCalculate />
+
+          {/* Comparison Benchmark */}
+          <ComparisonBenchmark estimatedCost={report.totalCost} />
+
+          {/* Social Proof Testimonial */}
+          <SocialProofTestimonial />
+
           {/* App Overview Section */}
           <motion.div 
             className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg mb-8"
@@ -478,13 +490,17 @@ export default function DetailedReportStep({
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="mb-4">
-              <div className="flex items-center mb-2">
-                <div className="w-3 h-3 bg-gradient-to-r from-slate-blue-400 to-slate-blue-600 rounded-full mr-3"></div>
-                <h3 className="text-xl font-bold text-gray-900">Project Overview</h3>
+              <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-3 h-3 bg-gradient-to-r from-slate-blue-400 to-slate-blue-600 rounded-full ${language === 'ar' ? 'ml-3' : 'mr-3'}`}></div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {language === 'ar' ? 'نظرة عامة على المشروع' : 'Project Overview'}
+                </h3>
               </div>
-              <p className="text-sm text-gray-600">Strategic analysis of your application concept</p>
+              <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
+                {language === 'ar' ? 'تحليل استراتيجي لمفهوم تطبيقك' : 'Strategic analysis of your application concept'}
+              </p>
             </div>
-            <p className="text-gray-700 leading-relaxed text-lg">{report.appOverview}</p>
+            <p className={`text-gray-700 leading-relaxed text-lg ${language === 'ar' ? 'text-right' : ''}`}>{report.appOverview}</p>
           </motion.div>
 
           {/* Strategic Analysis Cards */}
@@ -520,21 +536,33 @@ export default function DetailedReportStep({
             transition={{ duration: 0.5, delay: 0.8 }}
           >
             <div className="mb-6">
-              <div className="flex items-center mb-2">
-                <div className="w-3 h-3 bg-gradient-to-r from-bronze-400 to-bronze-600 rounded-full mr-3"></div>
-                <h3 className="text-xl font-bold text-gray-900">Selected Features Breakdown</h3>
+              <div className={`flex items-center mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-3 h-3 bg-gradient-to-r from-bronze-400 to-bronze-600 rounded-full ${language === 'ar' ? 'ml-3' : 'mr-3'}`}></div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {language === 'ar' ? 'تفاصيل الميزات المختارة' : 'Selected Features Breakdown'}
+                </h3>
               </div>
-              <p className="text-sm text-gray-600">Comprehensive feature specifications and development estimates</p>
+              <p className={`text-sm text-gray-600 ${language === 'ar' ? 'text-right' : ''}`}>
+                {language === 'ar' ? 'مواصفات الميزات الشاملة وتقديرات التطوير' : 'Comprehensive feature specifications and development estimates'}
+              </p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-gray-200 bg-gray-50">
-                    <th className="text-left py-4 px-6 font-semibold text-gray-700">Feature</th>
-                    <th className="text-left py-4 px-6 font-semibold text-gray-700">Purpose</th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">Cost</th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">Time</th>
+                    <th className={`py-4 px-6 font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                      {language === 'ar' ? 'الميزة' : 'Feature'}
+                    </th>
+                    <th className={`py-4 px-6 font-semibold text-gray-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                      {language === 'ar' ? 'الغرض' : 'Purpose'}
+                    </th>
+                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                      {language === 'ar' ? 'التكلفة' : 'Cost'}
+                    </th>
+                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                      {language === 'ar' ? 'الوقت' : 'Time'}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -567,8 +595,8 @@ export default function DetailedReportStep({
                 </tbody>
                 <tfoot>
                   <tr className="bg-slate-blue-50 border-t-2 border-slate-blue-200">
-                    <td className="py-4 px-6 font-bold text-slate-blue-900" colSpan={2}>
-                      Total Project Investment
+                    <td className={`py-4 px-6 font-bold text-slate-blue-900 ${language === 'ar' ? 'text-right' : ''}`} colSpan={2}>
+                      {language === 'ar' ? 'إجمالي استثمار المشروع' : 'Total Project Investment'}
                     </td>
                     <td className="py-4 px-6 text-center font-bold text-slate-blue-900 text-xl">
                       {report.totalCost}
@@ -590,12 +618,16 @@ export default function DetailedReportStep({
             transition={{ duration: 0.5, delay: 1.0 }}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Market Analysis</h3>
+              <div className={language === 'ar' ? 'text-right' : ''}>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  {language === 'ar' ? 'تحليل السوق' : 'Market Analysis'}
+                </h3>
                 <p className="text-gray-700 leading-relaxed">{report.marketComparison}</p>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Technical Complexity</h3>
+              <div className={language === 'ar' ? 'text-right' : ''}>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  {language === 'ar' ? 'التعقيد التقني' : 'Technical Complexity'}
+                </h3>
                 <p className="text-gray-700 leading-relaxed">{report.complexityAnalysis}</p>
               </div>
             </div>

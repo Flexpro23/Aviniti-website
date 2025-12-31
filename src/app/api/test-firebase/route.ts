@@ -5,6 +5,9 @@ import { collection, addDoc } from 'firebase/firestore';
 // Client-side imports are not used in this GET handler, but might be in others
 // import { db, storage } from '../../../lib/firebase';
 
+// Force dynamic rendering to avoid build-time issues with native modules
+export const dynamic = 'force-dynamic';
+
 // Define interfaces for the result structures
 interface TestResultSuccess {
   status: 'success';

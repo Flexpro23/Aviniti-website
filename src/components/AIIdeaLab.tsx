@@ -67,12 +67,12 @@ const AIIdeaLab = () => {
             </div>
             
             <div className={`flex flex-col sm:flex-row gap-4 ${language === 'ar' ? 'sm:flex-row-reverse' : ''}`}>
-              <Link href="/ai-lab" passHref>
+              <Link href="/idea-lab" passHref>
                 <button className="bg-slate-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-slate-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto">
                   {t.aiIdeaLab.ctaEnglish}
                 </button>
               </Link>
-              <Link href="/ar/ai-lab" passHref>
+              <Link href="/idea-lab" passHref>
                 <button className="bg-bronze-500 text-white px-8 py-3 rounded-lg font-medium hover:bg-bronze-600 transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 w-full sm:w-auto">
                   {t.aiIdeaLab.ctaArabic}
                 </button>

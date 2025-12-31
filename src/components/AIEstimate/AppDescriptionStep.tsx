@@ -325,7 +325,7 @@ export default function AppDescriptionStep({
                 >
                   <input
                     type="checkbox"
-                    className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    className="mt-1 h-4 w-4 accent-bronze-500 rounded border-gray-300 focus:ring-bronze-500 cursor-pointer"
                     checked={selectedPlatforms.includes(platform.id)}
                     onChange={(e) => {
                       if (e.target.checked) {
@@ -365,23 +365,26 @@ export default function AppDescriptionStep({
               </svg>
               {t.aiEstimate.steps.appDescription.back}
             </button>
-            <button
-              type="submit"
-              className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-bronze-500 hover:bg-bronze-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${
-                isProcessing ? 'opacity-70 cursor-wait' : ''
-              }`}
-              disabled={isProcessing}
-            >
-              <span className="flex items-center">
-                {t.aiEstimate.steps.appDescription.generate}
-                <svg className={`ml-2 w-5 h-5 ${language === 'ar' ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </span>
-            </button>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="submit"
+                className={`w-full sm:w-auto px-8 py-3 text-sm sm:text-base bg-bronze-500 hover:bg-bronze-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center ${
+                  isProcessing ? 'opacity-70 cursor-wait' : ''
+                }`}
+                disabled={isProcessing}
+              >
+                <span className="flex items-center">
+                  {t.aiEstimate.steps.appDescription.generate}
+                  <svg className={`ml-2 w-5 h-5 ${language === 'ar' ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </form>
       )}
     </div>
   );
-} 
+}

@@ -1,23 +1,31 @@
 import { NextResponse } from 'next/server';
-import { Storage } from '@google-cloud/storage';
-import { SpeechClient } from '@google-cloud/speech';
 
-// Initialize Google Cloud clients with error handling
-let speechClient: SpeechClient;
-try {
-  const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS 
-    ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-    : null;
+// Force dynamic rendering to avoid build-time issues with native modules
+export const dynamic = 'force-dynamic';
 
-  if (!credentials) {
-    console.warn('Google Cloud credentials not found. Speech-to-text functionality will be limited.');
-    speechClient = new SpeechClient();
-  } else {
-    speechClient = new SpeechClient({ credentials });
+// Lazy import to avoid build-time issues with native modules
+let speechClient: any;
+async function getSpeechClient() {
+  if (!speechClient) {
+    try {
+      const { SpeechClient } = await import('@google-cloud/speech');
+      const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS 
+        ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS)
+        : null;
+
+      if (!credentials) {
+        console.warn('Google Cloud credentials not found. Speech-to-text functionality will be limited.');
+        speechClient = new SpeechClient();
+      } else {
+        speechClient = new SpeechClient({ credentials });
+      }
+    } catch (error) {
+      console.error('Error initializing Speech client:', error);
+      const { SpeechClient } = await import('@google-cloud/speech');
+      speechClient = new SpeechClient();
+    }
   }
-} catch (error) {
-  console.error('Error initializing Speech client:', error);
-  speechClient = new SpeechClient();
+  return speechClient;
 }
 
 export async function POST(request: Request) {
@@ -79,8 +87,11 @@ export async function POST(request: Request) {
         languageCode: config.languageCode,
       });
 
+      // Get speech client (lazy loaded)
+      const client = await getSpeechClient();
+      
       // Perform the transcription
-      const [response] = await speechClient.recognize(recognizeRequest);
+      const [response] = await client.recognize(recognizeRequest);
       
       console.log('Received response:', {
         hasResults: !!response.results,
@@ -88,7 +99,7 @@ export async function POST(request: Request) {
       });
 
       const transcription = response.results
-        ?.map(result => result.alternatives?.[0]?.transcript)
+        ?.map((result: any) => result.alternatives?.[0]?.transcript)
         .join('\n');
 
       if (!transcription) {

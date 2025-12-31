@@ -616,9 +616,60 @@ html[lang="ar"] .text-base {
          border-4 border-solid border-neutral-100;
 }
 
-/* Focus Styles */
-:focus-visible {
-  @apply outline-none ring-2 ring-bronze-500 ring-offset-2;
+/* =====================================================
+   ENHANCED FOCUS STATES FOR ACCESSIBILITY
+   ===================================================== */
+
+/* Remove default focus outline */
+*:focus {
+  outline: none;
+}
+
+/* Enhanced focus-visible for all elements */
+*:focus-visible {
+  outline: 2px solid var(--bronze-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* High contrast focus for interactive elements */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid var(--bronze-500);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(192, 132, 96, 0.2);
+}
+
+/* Focus state for form inputs */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  @apply ring-2 ring-bronze-500 border-bronze-500;
+}
+
+/* Skip link styling */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only.focus\:not-sr-only:focus {
+  position: absolute;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
 }
 
 /* Selection Color */
@@ -751,7 +802,11 @@ html[lang="ar"] .text-base {
   }
 }
 
-/* Add RTL support */
+/* =====================================================
+   ENHANCED RTL SUPPORT
+   ===================================================== */
+
+/* Base RTL classes */
 .rtl {
   direction: rtl;
 }
@@ -768,6 +823,80 @@ html[lang="ar"] .text-base {
 
 [dir="rtl"] .text-right {
   text-align: left;
+}
+
+/* RTL-aware flex utilities */
+[dir="rtl"] .rtl\:flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+/* RTL-aware margins and paddings */
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* RTL-aware spacing */
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]),
+[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Prevent icon flipping for certain icons */
+[dir="rtl"] .keep-icon-direction svg,
+[dir="rtl"] svg.keep-direction {
+  transform: none !important;
+}
+
+/* Fix for brand icons that shouldn't flip */
+[dir="rtl"] .brand-icon,
+[dir="rtl"] .logo-icon {
+  transform: none !important;
+}
+
+/* =====================================================
+   DARK MODE SUPPORT
+   ===================================================== */
+
+/* Dark mode base styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  @apply bg-slate-blue-900 text-white;
+}
+
+/* Dark mode component overrides */
+.dark .bg-off-white {
+  @apply bg-slate-blue-900;
+}
+
+.dark .bg-white {
+  @apply bg-slate-blue-800;
+}
+
+.dark .text-slate-blue-600 {
+  @apply text-slate-blue-100;
+}
+
+.dark .text-slate-blue-500 {
+  @apply text-slate-blue-200;
+}
+
+.dark .border-gray-200 {
+  @apply border-slate-blue-700;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
 /* Add smooth scrolling behavior */

@@ -85,7 +85,7 @@ const OpportunityPage: React.FC<PageProps> = ({ params }) => {
             {error || "This opportunity may have been removed or the link is invalid."}
           </p>
           <Link 
-            href="/ai-lab"
+            href="/idea-lab"
             className="bg-bronze text-white px-6 py-3 rounded-lg font-semibold hover:bg-bronze-600 transition-colors"
           >
             Brainstorm Your Own Idea
@@ -102,11 +102,11 @@ const OpportunityPage: React.FC<PageProps> = ({ params }) => {
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link 
-              href="/ai-lab"
+              href="/idea-lab"
               className="flex items-center text-slate-blue hover:text-slate-blue-600 transition-colors"
             >
               <FaArrowLeft className="w-4 h-4 mr-2" />
-              Back to AI Lab
+              Back to Idea Lab
             </Link>
             <div className="flex items-center space-x-4">
               <Image
@@ -201,7 +201,7 @@ const OpportunityPage: React.FC<PageProps> = ({ params }) => {
               Estimate This App's Cost
             </button>
             <Link 
-              href="/ai-lab"
+              href="/idea-lab"
               className="flex-1 bg-slate-blue text-white py-4 px-6 rounded-lg font-semibold hover:bg-slate-blue-600 transition-colors text-center"
             >
               Brainstorm Your Own Idea

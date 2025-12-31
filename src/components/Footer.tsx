@@ -5,15 +5,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
+  
+  // Safe access to footer translations with fallbacks
+  const footerT = (t as any).footer || {};
 
   return (
-    <footer className="bg-slate-blue-800 text-gray-300 py-16">
+    <footer dir={dir} className="bg-slate-blue-800 text-gray-300 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className={`grid grid-cols-1 md:grid-cols-4 gap-8 ${dir === 'rtl' ? 'text-right' : ''}`}>
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-3 mb-4">
+            <div className={`flex items-center ${dir === 'rtl' ? 'space-x-reverse space-x-3' : 'space-x-3'} mb-4`}>
               <div className="relative w-12 h-12">
                 <Image
                   src="/justLogo.png"
@@ -24,14 +27,14 @@ export default function Footer() {
                 />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white">AVINITI</h3>
-                <p className="text-sm text-slate-blue-300">YOUR IDEAS, OUR REALITY</p>
+                <h3 className="text-2xl font-bold text-white">{t.common.brandName}</h3>
+                <p className="text-sm text-slate-blue-300">{t.common.tagline}</p>
               </div>
             </div>
             <p className="text-slate-blue-200 mb-6 max-w-md">
-              Transforming innovative ideas into premium digital solutions. We specialize in AI-powered applications, custom software development, and cutting-edge mobile apps.
+              {footerT.description || 'Transforming innovative ideas into premium digital solutions. We specialize in AI-powered applications, custom software development, and cutting-edge mobile apps.'}
             </p>
-            <div className="flex space-x-4">
+            <div className={`flex ${dir === 'rtl' ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
               <a 
                 href="mailto:info@aviniti.app" 
                 className="text-slate-blue-300 hover:text-bronze-400 transition-colors"
@@ -50,7 +53,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold text-white mb-4">{footerT.quickLinks || 'Quick Links'}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
@@ -82,7 +85,7 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Support</h4>
+            <h4 className="text-lg font-semibold text-white mb-4">{footerT.support || 'Support'}</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/contact" className="text-slate-blue-300 hover:text-bronze-400 transition-colors">
@@ -115,16 +118,16 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="border-t border-slate-blue-700 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className={`flex flex-col md:flex-row justify-between items-center ${dir === 'rtl' ? 'md:flex-row-reverse' : ''}`}>
             <p className="text-slate-blue-400 text-sm">
-              © {new Date().getFullYear()} Aviniti. All rights reserved.
+              © {new Date().getFullYear()} Aviniti. {footerT.rights || 'All rights reserved'}
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+            <div className={`flex ${dir === 'rtl' ? 'space-x-reverse space-x-6' : 'space-x-6'} mt-4 md:mt-0`}>
               <Link href="/privacy-policy" className="text-slate-blue-400 hover:text-bronze-400 text-sm transition-colors">
-                Privacy Policy
+                {footerT.privacyPolicy || 'Privacy Policy'}
               </Link>
               <Link href="/terms-of-service" className="text-slate-blue-400 hover:text-bronze-400 text-sm transition-colors">
-                Terms of Service
+                {footerT.termsOfService || 'Terms of Service'}
               </Link>
             </div>
           </div>

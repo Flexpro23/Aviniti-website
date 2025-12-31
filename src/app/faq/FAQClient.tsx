@@ -226,7 +226,7 @@ export default function FAQClient() {
   // Render with a key based on language to force complete re-render when language changes
   return (
     <div key={`faq-container-${language}-${forceUpdate}`}>
-      <main dir={dir} className={`min-h-screen bg-off-white ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+      <main dir={dir} className={`min-h-screen bg-off-white ${dir === 'rtl' ? 'text-right' : 'text-left'}`} id="main-content">
         <Script
           id="faq-schema"
           type="application/ld+json"

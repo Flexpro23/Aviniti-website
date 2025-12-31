@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { getFirestoreAdmin } from '@/lib/firebase-admin';
+
+// Force dynamic rendering to avoid build-time issues with native modules
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +10,7 @@ export async function GET(
 ) {
   try {
     const opportunityId = params.id;
+    const db = getFirestoreAdmin();
     
     // Fetch the opportunity from Firestore
     const opportunityDoc = await db.collection('opportunities').doc(opportunityId).get();
