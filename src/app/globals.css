@@ -798,6 +798,27 @@ select:focus-visible {
 
 /* Add vendor prefixes for line-clamp */
 @layer utilities {
+  /* Fluid Typography - Responsive text sizing */
+  .text-fluid-xl {
+    font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  }
+  
+  .text-fluid-2xl {
+    font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  }
+  
+  .text-fluid-3xl {
+    font-size: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  }
+  
+  .text-fluid-4xl {
+    font-size: clamp(2rem, 1.7rem + 1.5vw, 2.5rem);
+  }
+  
+  .text-fluid-5xl {
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  }
+  
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;

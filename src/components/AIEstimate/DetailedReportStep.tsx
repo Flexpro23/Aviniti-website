@@ -10,7 +10,6 @@ import SuccessPotentialRadarChart from './SuccessPotentialRadarChart';
 import CostBreakdownPieChart from './CostBreakdownPieChart';
 import StrategicAnalysisCards from './StrategicAnalysisCards';
 import TimelineVisualization from './TimelineVisualization';
-import PDFBlueprint from './PDFBlueprint';
 import HowWeCalculate from './HowWeCalculate';
 import ComparisonBenchmark from './ComparisonBenchmark';
 import SocialProofTestimonial from './SocialProofTestimonial';
@@ -532,14 +531,10 @@ export default function DetailedReportStep({
               </div>
             </div>
           </motion.div>
-
-
-
         </motion.div>
-      </motion.div>
 
-      {/* Loading State */}
-      {isGeneratingServerReport && !reportError && (
+        {/* Loading State */}
+        {isGeneratingServerReport && !reportError && (
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -567,12 +562,11 @@ export default function DetailedReportStep({
         {/* Main action buttons row */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
           {/* Schedule Consultation Button */}
-          <ScheduleButton
-            prefillName={userInfo?.fullName ?? ''}
-            prefillEmail={userInfo?.emailAddress ?? ''}
-            source="detailed-report"
-            variant="primary"
-            className="px-8 py-3"
+          <a
+            href={process.env.NEXT_PUBLIC_CALENDLY_URL || 'https://calendly.com/aviniti/consultation'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 bg-bronze-500 hover:bg-bronze-600 text-white rounded-lg transition-all duration-200 flex items-center justify-center font-semibold"
           >
             <span className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -580,7 +574,7 @@ export default function DetailedReportStep({
               </svg>
               {language === 'en' ? 'Schedule Consultation' : 'حجز استشارة'}
             </span>
-          </ScheduleButton>
+          </a>
 
           <button
             onClick={handleContactClick}
@@ -605,12 +599,13 @@ export default function DetailedReportStep({
           ) : (
             <button
               onClick={handleDownloadClick}
-              className={`px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium ${serverReportUrl
-                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' // Ready state - green
-                : isGeneratingInBackground
-                  ? 'border border-blue-600 text-blue-600 bg-blue-50 cursor-not-allowed' // Preparing state - blue
-                  : 'border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white' // Default state
-                }`}
+              className={
+                serverReportUrl
+                  ? 'px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium bg-green-600 hover:bg-green-700 text-white shadow-lg'
+                  : isGeneratingInBackground
+                    ? 'px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium border border-blue-600 text-blue-600 bg-blue-50 cursor-not-allowed'
+                    : 'px-8 py-3 rounded-lg transition-all duration-200 flex items-center justify-center font-medium border border-slate-blue-600 text-slate-blue-600 hover:bg-slate-blue-600 hover:text-white'
+              }
               disabled={isGeneratingPDF || isGeneratingServerReport}
             >
               {isGeneratingPDF ? (
@@ -646,34 +641,35 @@ export default function DetailedReportStep({
               )}
             </button>
           )}
+          </div>
+
+          {/* Loading helper text - shows different messages based on state */}
+          {(isGeneratingPDF || isGeneratingInBackground) && (
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                {isGeneratingInBackground
+                  ? (language === 'en'
+                    ? 'Preparing your report in the background for instant access...'
+                    : 'إعداد تقريرك في الخلفية للوصول الفوري...')
+                  : (language === 'en'
+                    ? 'This may take a moment. Please wait...'
+                    : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...')
+                }
+              </p>
+            </div>
+          )}
+
+          {/* Success indicator when report is ready */}
+          {serverReportUrl && !isGeneratingInBackground && (
+            <div className="text-center">
+              <p className="text-sm text-green-600 font-medium">
+                {language === 'en'
+                  ? '✅ Your report is ready for instant download!'
+                  : '✅ تقريرك جاهز للتحميل الفوري!'}
+              </p>
+            </div>
+          )}
         </div>
-
-        {/* Loading helper text - shows different messages based on state */}
-        {(isGeneratingPDF || isGeneratingInBackground) && (
-          <div className="text-center">
-            <p className="text-sm text-gray-500">
-              {isGeneratingInBackground
-                ? (language === 'en'
-                  ? 'Preparing your report in the background for instant access...'
-                  : 'إعداد تقريرك في الخلفية للوصول الفوري...')
-                : (language === 'en'
-                  ? 'This may take a moment. Please wait...'
-                  : 'قد يستغرق هذا بضع لحظات. يرجى الانتظار...')
-              }
-            </p>
-          </div>
-        )}
-
-        {/* Success indicator when report is ready */}
-        {serverReportUrl && !isGeneratingInBackground && (
-          <div className="text-center">
-            <p className="text-sm text-green-600 font-medium">
-              {language === 'en'
-                ? '✅ Your report is ready for instant download!'
-                : '✅ تقريرك جاهز للتحميل الفوري!'}
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="flex justify-center mt-8 pt-6 border-t border-gray-200">

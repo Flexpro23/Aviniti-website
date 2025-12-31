@@ -27,6 +27,9 @@ const nextConfig = {
     optimizeServerReact: true,
   },
   poweredByHeader: false,
+  // Turbopack config (Next.js 16 default)
+  turbopack: {},
+  // Webpack config for compatibility (used when --webpack flag is passed)
   webpack: (config, { isServer }) => {
     // Add fs mock for client-side
     if (!isServer) {
