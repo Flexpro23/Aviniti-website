@@ -203,22 +203,31 @@ export default function DetailedReportStep({
           : 'User';
         const fileName = `${userName}-Aviniti-Project-Blueprint.pdf`;
 
-        // Fetch the PDF blob from the server URL and force download
-        const response = await fetch(serverReportUrl);
-        const pdfBlob = await response.blob();
+        // Attempt to fetch the PDF blob from the server URL
+        // If fetch fails (CORS, network), fallback to window.open
+        try {
+          const response = await fetch(serverReportUrl);
+          if (!response.ok) throw new Error('Network response was not ok');
+          
+          const pdfBlob = await response.blob();
 
-        // Create a blob URL and trigger download
-        const blobUrl = URL.createObjectURL(pdfBlob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = fileName;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          // Create a blob URL and trigger download
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        // Clean up the blob URL
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+          // Clean up the blob URL
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        } catch (fetchError) {
+          console.warn('Direct fetch failed, falling back to window.open:', fetchError);
+          // Fallback: Open in new tab which usually triggers download for PDFs
+          window.open(serverReportUrl, '_blank');
+        }
 
         // Show success message
         setDownloadSuccess(true);
