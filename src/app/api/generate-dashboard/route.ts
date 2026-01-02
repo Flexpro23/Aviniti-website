@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 import rateLimit from '@/lib/rate-limit';
 import { PRICING_SCHEDULE } from '@/config/pricing';
 
+// Configure route segment options
+export const maxDuration = 60; // Allow up to 60 seconds for API processing
+export const dynamic = 'force-dynamic';
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '../../../lib/firebase-admin';
 
+// Configure route segment options
+export const maxDuration = 60; // Allow up to 60 seconds for API processing
 // Force dynamic rendering to avoid build-time issues with native modules
 export const dynamic = 'force-dynamic';
 

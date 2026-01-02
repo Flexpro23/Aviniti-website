@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+// Configure route segment options
+export const maxDuration = 60; // Allow up to 60 seconds for API processing
 // Force dynamic rendering to avoid build-time issues with native modules
 export const dynamic = 'force-dynamic';
 

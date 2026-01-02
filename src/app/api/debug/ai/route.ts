@@ -2,6 +2,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from 'next/server';
 
+// Configure route segment options
+export const maxDuration = 60; // Allow up to 60 seconds for API processing
 export const dynamic = 'force-dynamic'; // Ensure this is not cached
 
 export async function GET() {

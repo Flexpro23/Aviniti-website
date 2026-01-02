@@ -8,7 +8,7 @@ import AppDescriptionStep from '@/components/AIEstimate/AppDescriptionStep';
 import FeatureSelectionStep from '@/components/AIEstimate/FeatureSelectionStep';
 import DetailedReportStep from '@/components/AIEstimate/DetailedReportStep';
 import SaveAndAccessStep from '@/components/AIEstimate/SaveAndAccessStep';
-import WorldClassProcessingAnimation from '@/components/AIEstimate/WorldClassProcessingAnimation';
+import AIProcessingVisualizer from '@/components/AIEstimate/AIProcessingVisualizer';
 
 import { analyzeAppWithGemini, generateMockAnalysis, testGeminiApiConnection, GEMINI_MODEL, generateExecutiveDashboard } from '@/lib/services/GeminiService';
 import { collection, addDoc, getDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -152,6 +152,7 @@ export default function AIEstimatePage() {
 
     setAppDescription(description);
     setIsProcessing(true);
+    const startTime = Date.now();
     
     try {
       console.log(`Submitting app description to ${GEMINI_MODEL} (length: ${description.description.length})`, description.description.substring(0, 100) + '...');
@@ -179,6 +180,12 @@ export default function AIEstimatePage() {
       setAiAnalysisResult(mockAnalysis);
       setAnalysisComplete(true);
     } finally {
+      // Ensure animation plays for at least 7 seconds to show the full sequence
+      const elapsedTime = Date.now() - startTime;
+      const minDuration = 7000;
+      if (elapsedTime < minDuration) {
+        await new Promise(resolve => setTimeout(resolve, minDuration - elapsedTime));
+      }
       setIsProcessing(false);
     }
   };
@@ -349,9 +356,9 @@ export default function AIEstimatePage() {
                   transition={{ duration: 0.3 }}
                   className="fixed inset-0 z-[9999]"
                 >
-                  <WorldClassProcessingAnimation 
+                  <AIProcessingVisualizer 
                     userDescription={appDescription.description}
-                    keywords={currentKeywords}
+                    mode={analysisComplete ? 'report' : 'analysis'}
                   />
                 </motion.div>
               ) : (
