@@ -4,7 +4,7 @@ import rateLimit from '@/lib/rate-limit';
 import { PRICING_SCHEDULE } from '@/config/pricing';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL_NAME = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 
 const limiter = rateLimit({
   interval: 60 * 1000,

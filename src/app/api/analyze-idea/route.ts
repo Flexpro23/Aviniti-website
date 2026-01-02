@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Get model from env or default to the requested 2.5-flash
-const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 const FALLBACK_MODEL = 'gemini-1.5-flash';
 
 // Rate limiter: 20 requests per minute per IP to prevent 429s during testing/demos

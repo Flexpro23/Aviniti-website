@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+const PRIMARY_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 const FALLBACK_MODEL = 'gemini-1.5-flash';
 
 const getSystemPrompt = (language: string) => `You are an expert in mobile and web app development cost estimation.

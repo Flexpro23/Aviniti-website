@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'; // Ensure this is not cached
 
 export async function GET() {
   const apiKey = process.env.GEMINI_API_KEY;
-  const modelName = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+  const modelName = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
   
   const status = {
     env: {

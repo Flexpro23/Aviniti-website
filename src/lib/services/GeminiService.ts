@@ -12,7 +12,7 @@ import { AIAnalysisResult, Feature } from '@/components/AIEstimate';
 // All calls now go through /api/gemini-proxy
 
 // Update the model options for more flexibility - using newest gemini-2.0-flash
-export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.0-flash';
+export const GEMINI_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 
 // Note: GEMINI_API_KEY should only be accessed server-side
 // This constant is used for client-side API connection testing status display only

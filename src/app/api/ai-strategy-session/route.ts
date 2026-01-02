@@ -107,7 +107,7 @@ Respond naturally as if you're having a strategic brainstorming session with a p
 
       // Create a new model instance with the provided API key
       const genAI = new GoogleGenerativeAI(geminiApiKey);
-      const modelInstance = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const modelInstance = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
       // Create a chat session with the conversation history
       const chat = modelInstance.startChat({
@@ -122,7 +122,7 @@ Respond naturally as if you're having a strategic brainstorming session with a p
       // If the model replies with the exact confirmation, generate final Opportunity Carousel JSON using Pro model
       if (response.trim() === "Of course. I'm now compiling the detailed Project Blueprints for you. Please give me a moment...") {
         // Generate the structured final ideas using the same flash model for consistency
-        const proModel = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const proModel = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
         
         const finalPrompt = `You are generating the final Opportunity Carousel (Project Blueprints) as structured JSON for an app ideation session.
 The JSON must strictly follow this schema:

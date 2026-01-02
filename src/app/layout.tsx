@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { LanguageProvider } from '@/lib/context/LanguageContext'
 import Script from 'next/script'
+import ServiceWorkerUnregister from '@/components/ServiceWorkerUnregister'
 
 // Body font - Plus Jakarta Sans for modern, clean look
 const plusJakartaSans = Plus_Jakarta_Sans({ 
@@ -181,6 +182,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${plusJakartaSans.className} font-body`}>
+        <ServiceWorkerUnregister />
         <LanguageProvider>
           {/* Skip to main content link for accessibility */}
           <a 
