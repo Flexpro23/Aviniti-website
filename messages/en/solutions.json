@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "title": "Ready-Made Solutions - Launch Faster | Aviniti",
+    "description": "Pre-built app solutions ready to deploy in 35 days. Delivery apps, e-commerce, booking systems, and more."
+  },
+  "page": {
+    "title": "Ready-Made Solutions",
+    "subtitle": "Launch faster with our pre-built, customizable app solutions",
+    "filter_all": "All Solutions",
+    "filter_delivery": "Delivery & Logistics",
+    "filter_education": "Education",
+    "filter_booking": "Booking & Reservations",
+    "filter_ecommerce": "E-commerce",
+    "filter_restaurant": "Food & Restaurant",
+    "filter_operations": "Business Operations",
+    "filter_social": "Social & Community"
+  },
+  "solutions": {
+    "delivery_app": {
+      "name": "Delivery App System",
+      "tagline": "Complete multi-vendor delivery platform",
+      "description": "Full-featured delivery management system with customer app, driver app, and vendor dashboard",
+      "starting_price": "$10,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "Customer mobile app (iOS & Android)",
+        "feature_2": "Driver mobile app with real-time tracking",
+        "feature_3": "Vendor/restaurant dashboard",
+        "feature_4": "Admin control panel",
+        "feature_5": "Real-time order tracking",
+        "feature_6": "Payment gateway integration",
+        "feature_7": "Push notifications",
+        "feature_8": "Rating and reviews system"
+      }
+    },
+    "kindergarten_management": {
+      "name": "Kindergarten Management System",
+      "tagline": "All-in-one childcare management",
+      "description": "Comprehensive solution for managing students, parents, staff, and operations",
+      "starting_price": "$8,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "Student enrollment and profiles",
+        "feature_2": "Parent communication portal",
+        "feature_3": "Staff management and scheduling",
+        "feature_4": "Attendance tracking",
+        "feature_5": "Fee management and billing",
+        "feature_6": "Activity and progress reporting",
+        "feature_7": "Photo and video sharing",
+        "feature_8": "Meal planning and nutrition tracking"
+      }
+    },
+    "hypermarket_system": {
+      "name": "Hypermarket Management System",
+      "tagline": "Complete retail operations platform",
+      "description": "End-to-end solution for inventory, POS, and customer management",
+      "starting_price": "$15,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "Point of Sale (POS) system",
+        "feature_2": "Inventory management",
+        "feature_3": "Customer loyalty program",
+        "feature_4": "Supplier management",
+        "feature_5": "Multi-location support",
+        "feature_6": "Real-time reporting and analytics",
+        "feature_7": "E-commerce integration",
+        "feature_8": "Barcode scanning"
+      }
+    },
+    "office_suite": {
+      "name": "Office Management Suite",
+      "tagline": "Streamline your office operations",
+      "description": "All-in-one platform for HR, projects, and team collaboration",
+      "starting_price": "$8,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "Employee directory and profiles",
+        "feature_2": "Leave and attendance management",
+        "feature_3": "Project and task tracking",
+        "feature_4": "Document management",
+        "feature_5": "Team chat and collaboration",
+        "feature_6": "Time tracking and timesheets",
+        "feature_7": "Expense reporting",
+        "feature_8": "Performance reviews"
+      }
+    },
+    "gym_management": {
+      "name": "Gym & Fitness Management",
+      "tagline": "Smart fitness center operations",
+      "description": "Complete gym management with member app, trainer scheduling, and billing",
+      "starting_price": "$25,000",
+      "timeline": "60 days",
+      "features": {
+        "feature_1": "Member mobile app",
+        "feature_2": "Membership and subscription management",
+        "feature_3": "Class scheduling and booking",
+        "feature_4": "Personal trainer management",
+        "feature_5": "Workout tracking and progress",
+        "feature_6": "Nutrition planning",
+        "feature_7": "Payment processing",
+        "feature_8": "Access control integration"
+      }
+    },
+    "airbnb_clone": {
+      "name": "Property Rental Platform",
+      "tagline": "Your own Airbnb-style marketplace",
+      "description": "Complete rental marketplace with host and guest apps",
+      "starting_price": "$15,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "Property listing and management",
+        "feature_2": "Booking and reservation system",
+        "feature_3": "Payment processing with escrow",
+        "feature_4": "Review and rating system",
+        "feature_5": "Host and guest profiles",
+        "feature_6": "Calendar and availability",
+        "feature_7": "Messaging system",
+        "feature_8": "Map-based search"
+      }
+    },
+    "hair_transplant_ai": {
+      "name": "Hair Transplant AI Analyzer",
+      "tagline": "AI-powered hair analysis and consultation",
+      "description": "Smart solution for hair clinics with AI analysis and patient management",
+      "starting_price": "$18,000",
+      "timeline": "35 days",
+      "features": {
+        "feature_1": "AI hair density analysis",
+        "feature_2": "Before/after visualization",
+        "feature_3": "Patient management system",
+        "feature_4": "Consultation booking",
+        "feature_5": "Treatment planning",
+        "feature_6": "Cost estimation",
+        "feature_7": "Progress tracking with photos",
+        "feature_8": "Payment and invoicing"
+      }
+    }
+  },
+  "detail": {
+    "key_features": "Key Features",
+    "pricing": "Pricing",
+    "timeline": "Timeline",
+    "whats_included": "What's Included",
+    "included_items": {
+      "item_1": "Full source code",
+      "item_2": "Cloud deployment setup",
+      "item_3": "Admin training",
+      "item_4": "30 days of support",
+      "item_5": "Documentation",
+      "item_6": "Regular updates"
+    },
+    "customization": "Customization Available",
+    "customization_desc": "This solution can be customized to match your brand and specific needs",
+    "cta_primary": "Get This Solution",
+    "cta_secondary": "Customize & Get Estimate",
+    "cta_demo": "Request Demo"
+  }
+}

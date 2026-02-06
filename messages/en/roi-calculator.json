@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "title": "AI ROI Calculator - Calculate Your App's Return on Investment | Aviniti",
+    "description": "Calculate the potential ROI of building an app to replace manual processes and improve efficiency"
+  },
+  "hero": {
+    "title": "Calculate Your App's ROI",
+    "subtitle": "Discover how much time and money you could save by automating your processes"
+  },
+  "steps": {
+    "step_1": "Process Type",
+    "step_2": "Time & Cost",
+    "step_3": "Pain Points",
+    "step_4": "Growth Impact",
+    "step_5": "Retention Impact",
+    "step_6": "Get Results"
+  },
+  "step1": {
+    "title": "What process do you want to improve?",
+    "description": "Select the manual process you want to replace or automate",
+    "process_type": {
+      "data_entry": "Data Entry",
+      "data_entry_desc": "Manual data input and processing",
+      "customer_service": "Customer Service",
+      "customer_service_desc": "Support tickets and inquiries",
+      "inventory_tracking": "Inventory Tracking",
+      "inventory_tracking_desc": "Stock management and tracking",
+      "order_processing": "Order Processing",
+      "order_processing_desc": "Order fulfillment and management",
+      "report_generation": "Report Generation",
+      "report_generation_desc": "Creating reports and analytics",
+      "scheduling": "Scheduling & Booking",
+      "scheduling_desc": "Appointments and reservations",
+      "invoice_processing": "Invoice Processing",
+      "invoice_processing_desc": "Billing and invoicing",
+      "quality_checks": "Quality Checks",
+      "quality_checks_desc": "Inspection and quality control",
+      "other": "Other",
+      "other_desc": "Custom process"
+    },
+    "custom_process_label": "Describe your process",
+    "custom_process_placeholder": "Tell us about the manual process..."
+  },
+  "step2": {
+    "title": "How much time and money does this process cost?",
+    "description": "Help us calculate your current spending",
+    "hours_per_week_label": "Hours spent per week",
+    "hours_per_week_desc": "Total hours across all employees",
+    "employees_label": "Number of employees involved",
+    "employees_desc": "How many people work on this process?",
+    "hourly_cost_label": "Average hourly cost per employee",
+    "hourly_cost_desc": "Include salary + overhead (typically salary × 1.4)",
+    "currency_label": "Currency",
+    "currencies": {
+      "usd": "US Dollar (USD)",
+      "jod": "Jordanian Dinar (JOD)",
+      "aed": "UAE Dirham (AED)",
+      "sar": "Saudi Riyal (SAR)"
+    }
+  },
+  "step3": {
+    "title": "What issues are you experiencing?",
+    "description": "Select all that apply",
+    "issues": {
+      "errors_rework": "Errors requiring rework",
+      "errors_rework_desc": "Manual mistakes that need correction",
+      "missed_opportunities": "Missed opportunities",
+      "missed_opportunities_desc": "Lost sales or customers due to delays",
+      "customer_complaints": "Customer complaints",
+      "customer_complaints_desc": "Frustration with slow processes",
+      "delayed_deliveries": "Delayed deliveries/service",
+      "delayed_deliveries_desc": "Late fulfillment or responses",
+      "data_entry_mistakes": "Data entry mistakes",
+      "data_entry_mistakes_desc": "Incorrect information in systems",
+      "compliance_gaps": "Compliance or audit gaps",
+      "compliance_gaps_desc": "Risk of regulatory issues"
+    }
+  },
+  "step4": {
+    "title": "Could an app help you serve more customers?",
+    "description": "Would automation allow you to handle more volume?",
+    "options": {
+      "yes": "Yes",
+      "yes_desc": "We could grow our customer base",
+      "no": "No",
+      "no_desc": "Volume is not an issue",
+      "unsure": "Not Sure",
+      "unsure_desc": "Need help evaluating"
+    },
+    "percentage_label": "Estimated increase in customers",
+    "percentage_desc": "How much could you grow? (e.g., 20%)"
+  },
+  "step5": {
+    "title": "Could an app improve customer retention?",
+    "description": "Would better service keep more customers?",
+    "options": {
+      "yes": "Yes",
+      "yes_desc": "Better experience = more loyalty",
+      "no": "No",
+      "no_desc": "Retention is already strong",
+      "unsure": "Not Sure",
+      "unsure_desc": "Need help evaluating"
+    },
+    "percentage_label": "Estimated retention increase",
+    "percentage_desc": "Reduction in churn (e.g., 15%)",
+    "monthly_revenue_label": "Approximate monthly revenue (optional)",
+    "monthly_revenue_desc": "Helps calculate revenue impact"
+  },
+  "step6": {
+    "title": "Get your ROI report",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "name_label": "Name (optional)",
+    "name_placeholder": "Your name",
+    "company_label": "Company (optional)",
+    "company_placeholder": "Your company",
+    "whatsapp_label": "Also send via WhatsApp",
+    "submit": "Calculate My ROI",
+    "submitting": "Calculating..."
+  },
+  "results": {
+    "title": "Your ROI Analysis",
+    "subtitle": "Based on {{process}} for {{employees}} employees",
+    "annual_roi": "Total Annual ROI",
+    "roi_percentage": "{{percentage}}% Return",
+    "payback_period": "Payback Period",
+    "payback_months": "{{months}} months",
+    "breakdown": {
+      "title": "Savings Breakdown",
+      "labor_savings": "Annual Labor Savings",
+      "labor_savings_desc": "{{hours}} hours recovered annually",
+      "error_reduction": "Error Reduction Savings",
+      "error_reduction_desc": "Less rework and mistakes",
+      "revenue_increase": "Potential Revenue Increase",
+      "revenue_increase_desc": "From growth and retention",
+      "time_recovered": "Total Time Recovered",
+      "time_recovered_hours": "{{hours}} hours/year"
+    },
+    "cost_vs_return": {
+      "title": "Investment vs. Return",
+      "app_cost": "Est. App Development Cost",
+      "year_1_return": "Year 1 Return",
+      "year_3_return": "3-Year Return"
+    },
+    "projection": {
+      "title": "12-Month Projection",
+      "month": "Month {{number}}",
+      "cumulative_savings": "Cumulative Savings",
+      "cumulative_cost": "Cumulative Cost",
+      "net_roi": "Net ROI"
+    },
+    "ai_insight": "AI Insight",
+    "next_steps": {
+      "title": "Next Steps",
+      "cta_estimate": "Get Detailed Estimate",
+      "cta_call": "Book ROI Discussion",
+      "cta_download": "Download Full Report"
+    }
+  },
+  "loading": {
+    "calculating_savings": "Calculating potential savings...",
+    "analyzing_revenue": "Analyzing revenue impact...",
+    "generating_report": "Generating your ROI report..."
+  },
+  "errors": {
+    "select_process": "Please select a process type",
+    "hours_required": "Please enter hours per week (1-200)",
+    "employees_required": "Please enter number of employees (1-100)",
+    "hourly_cost_required": "Please enter hourly cost",
+    "select_currency": "Please select a currency",
+    "customer_growth_required": "Please indicate if app could help grow customers",
+    "retention_required": "Please indicate if app could improve retention",
+    "email_required": "Please enter a valid email address",
+    "calculation_failed": "Failed to calculate ROI. Please try again."
+  },
+  "whatsapp": {
+    "message": "Hi, I'd like to discuss the ROI analysis"
+  }
+}

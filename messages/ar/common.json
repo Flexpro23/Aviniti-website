@@ -1,0 +1,44 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "solutions": "الحلول",
+    "idea_lab": "مختبر الأفكار",
+    "ai_analyzer": "محلل الذكاء الاصطناعي",
+    "get_estimate": "احصل على تقدير",
+    "roi_calculator": "حاسبة العائد",
+    "blog": "المدونة",
+    "case_studies": "دراسات الحالة",
+    "faq": "الأسئلة الشائعة",
+    "contact": "اتصل بنا"
+  },
+  "cta": {
+    "get_estimate": "احصل على تقدير بالذكاء الاصطناعي",
+    "start_discovery": "ابدأ الاستكشاف",
+    "book_call": "احجز مكالمة",
+    "view_solutions": "عرض الحلول",
+    "learn_more": "اعرف المزيد",
+    "contact_us": "اتصل بنا",
+    "send_message": "أرسل رسالة",
+    "whatsapp": "تواصل عبر واتساب"
+  },
+  "footer": {
+    "tagline": "أفكارك، واقعنا",
+    "quick_links": "روابط سريعة",
+    "ai_tools": "أدوات الذكاء الاصطناعي",
+    "contact": "التواصل",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "copyright": "جميع الحقوق محفوظة."
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية",
+    "switch": "تغيير اللغة"
+  },
+  "whatsapp": {
+    "general_message": "مرحباً، أنا مهتم بخدمات أفينيتي",
+    "estimate_message": "مرحباً، أود مناقشة تقدير مشروعي",
+    "roi_message": "مرحباً، أود مناقشة تحليل العائد على الاستثمار",
+    "support_message": "مرحباً، أحتاج مساعدة في..."
+  }
+}

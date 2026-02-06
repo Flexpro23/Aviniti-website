@@ -1,0 +1,83 @@
+{
+  "hero": {
+    "label": "AI-POWERED APP DEVELOPMENT",
+    "title": "Turn Your Ideas Into Powerful Apps",
+    "subtitle": "We build custom mobile and web applications powered by AI. From concept to launch, we make it happen.",
+    "cta_primary": "Get Instant AI Estimate",
+    "cta_secondary": "Ready-Made Solutions"
+  },
+  "trust": {
+    "projects": "Projects Delivered",
+    "countries": "Countries Served",
+    "satisfaction": "Client Satisfaction"
+  },
+  "services": {
+    "label": "WHAT WE BUILD",
+    "title": "Full-Stack Development, Powered by AI",
+    "mobile": {
+      "title": "Mobile Apps",
+      "description": "Native and cross-platform mobile applications for iOS and Android."
+    },
+    "web": {
+      "title": "Web Applications",
+      "description": "Scalable web apps with modern frameworks and cloud infrastructure."
+    },
+    "ai": {
+      "title": "AI Solutions",
+      "description": "Custom AI integrations, chatbots, and machine learning models."
+    },
+    "design": {
+      "title": "UI/UX Design",
+      "description": "Beautiful, intuitive interfaces designed for conversion and engagement."
+    }
+  },
+  "ai_tools": {
+    "label": "AI-POWERED TOOLS",
+    "title": "AI-Powered Tools to Get You Started",
+    "subtitle": "Try our free AI tools to explore ideas, analyze viability, get estimates, and calculate ROI."
+  },
+  "solutions": {
+    "label": "READY-MADE SOLUTIONS",
+    "title": "Launch Faster with Ready-Made Solutions",
+    "subtitle": "Pre-built app solutions customized for your business. Launch in weeks, not months.",
+    "starting_from": "Starting from",
+    "delivery": "days delivery",
+    "view_all": "View All Solutions"
+  },
+  "live_apps": {
+    "label": "OUR PORTFOLIO",
+    "title": "Apps We've Built — Live in Stores",
+    "subtitle": "Real apps serving real users. Download and experience our work."
+  },
+  "why_us": {
+    "label": "WHY CHOOSE US",
+    "title": "Why Companies Choose Aviniti",
+    "speed": {
+      "title": "Lightning Fast Delivery",
+      "description": "From idea to app store in weeks, not months. Our streamlined process gets you to market faster."
+    },
+    "ai_native": {
+      "title": "AI-Native Development",
+      "description": "We don't just build apps — we infuse them with AI from day one."
+    },
+    "transparent": {
+      "title": "Transparent Pricing",
+      "description": "No hidden fees, no surprises. Get your AI-powered estimate before we start."
+    },
+    "support": {
+      "title": "Ongoing Support",
+      "description": "We don't disappear after launch. Continuous support and updates."
+    }
+  },
+  "case_studies": {
+    "label": "SUCCESS STORIES",
+    "title": "Real Results, Real Impact",
+    "view_all": "View All Case Studies"
+  },
+  "final_cta": {
+    "title": "Ready to Build Something Great?",
+    "subtitle": "Get a free AI-powered estimate for your project in under 2 minutes.",
+    "cta_primary": "Get AI Estimate",
+    "cta_secondary": "Book a Call"
+  }
+}

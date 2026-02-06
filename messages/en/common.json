@@ -1,0 +1,67 @@
+{
+  "nav": {
+    "home": "Home",
+    "solutions": "Solutions",
+    "idea_lab": "Idea Lab",
+    "ai_analyzer": "AI Analyzer",
+    "get_estimate": "Get AI Estimate",
+    "roi_calculator": "ROI Calculator",
+    "blog": "Blog",
+    "case_studies": "Case Studies",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "ai_tools": "AI Tools",
+    "caseStudies": "Case Studies",
+    "aiTools": {
+      "ideaLab": "Idea Lab",
+      "analyzer": "AI Analyzer",
+      "estimate": "Get AI Estimate",
+      "roiCalculator": "ROI Calculator"
+    }
+  },
+  "cta": {
+    "get_estimate": "Get AI Estimate",
+    "start_discovery": "Start Discovery",
+    "book_call": "Book a Call",
+    "view_solutions": "View Solutions",
+    "learn_more": "Learn More",
+    "contact_us": "Contact Us",
+    "send_message": "Send Message",
+    "whatsapp": "Chat on WhatsApp"
+  },
+  "footer": {
+    "tagline": "YOUR IDEAS, OUR REALITY",
+    "quick_links": "Quick Links",
+    "ai_tools": "AI Tools",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "All rights reserved.",
+    "aboutUs": "About Us",
+    "solutions": "Solutions",
+    "caseStudies": "Case Studies",
+    "blog": "Blog",
+    "ideaLab": "Idea Lab",
+    "analyzer": "AI Analyzer",
+    "estimate": "Get AI Estimate",
+    "roiCalculator": "ROI Calculator",
+    "faq": "FAQ",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "resources": "Resources"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية",
+    "switch": "Switch language"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to main content"
+  },
+  "whatsapp": {
+    "general_message": "Hi, I'm interested in Aviniti's services",
+    "estimate_message": "Hi, I'd like to discuss my project estimate",
+    "roi_message": "Hi, I'd like to discuss the ROI analysis",
+    "support_message": "Hi, I need help with..."
+  }
+}

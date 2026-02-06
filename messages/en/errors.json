@@ -1,0 +1,37 @@
+{
+  "404": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved. Let's get you back on track.",
+    "or_try": "Or Try One of These",
+    "cta": {
+      "home": "Go to Homepage",
+      "estimate": "Get AI Estimate"
+    },
+    "links": {
+      "ai_tools": "Our AI Tools",
+      "solutions": "Ready-Made Solutions",
+      "blog": "Blog",
+      "contact": "Contact Us"
+    }
+  },
+  "generic": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Our team has been notified and we're working on it.",
+    "cta": {
+      "try_again": "Try Again",
+      "home": "Go to Homepage"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "min_length": "Must be at least {min} characters",
+    "max_length": "Must be no more than {max} characters"
+  },
+  "api": {
+    "rate_limit": "You've reached the daily limit. Please try again tomorrow.",
+    "server_error": "Something went wrong. Please try again later.",
+    "network_error": "Please check your internet connection and try again."
+  }
+}

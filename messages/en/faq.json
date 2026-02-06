@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "title": "Frequently Asked Questions - Aviniti",
+    "description": "Get answers to common questions about our app development services, pricing, process, and technology"
+  },
+  "page": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about working with Aviniti",
+    "search_placeholder": "Search questions...",
+    "categories": {
+      "all": "All Questions",
+      "general": "General",
+      "pricing": "Pricing & Costs",
+      "process": "Process & Timeline",
+      "technology": "Technology & Features",
+      "support": "Support & Maintenance"
+    }
+  },
+  "general": {
+    "q1": {
+      "question": "What does Aviniti specialize in?",
+      "answer": "Aviniti is an AI and app development company based in Amman, Jordan. We specialize in building custom mobile apps, web applications, and AI-powered solutions for businesses across the Middle East and globally. We also offer ready-made solutions that can be deployed quickly."
+    },
+    "q2": {
+      "question": "Do you work with startups or only established businesses?",
+      "answer": "We work with both! Whether you're a startup with a great idea or an established business looking to digitalize, we have solutions for you. Our AI tools help startups validate ideas and get estimates, while our custom development serves businesses of all sizes."
+    },
+    "q3": {
+      "question": "What industries do you serve?",
+      "answer": "We've built apps for healthcare, e-commerce, education, logistics, food & dining, real estate, finance, fitness, travel, and more. Our team has cross-industry experience and can adapt to your specific sector needs."
+    },
+    "q4": {
+      "question": "Can you sign an NDA before we discuss my idea?",
+      "answer": "Absolutely. We take confidentiality seriously and are happy to sign an NDA before any detailed discussions about your project."
+    }
+  },
+  "pricing": {
+    "q1": {
+      "question": "How much does it cost to build an app?",
+      "answer": "App development costs vary based on complexity, features, and platform. Simple apps start around $5,000-$15,000, while complex apps with AI features can range from $25,000-$60,000+. Use our Get AI Estimate tool for an instant personalized quote."
+    },
+    "q2": {
+      "question": "What's included in the price?",
+      "answer": "Our pricing includes design, development, testing, deployment, admin training, and 30 days of post-launch support. Ongoing maintenance and updates are available separately. You'll receive full source code ownership."
+    },
+    "q3": {
+      "question": "Do you offer payment plans or financing?",
+      "answer": "Yes! We offer flexible payment milestones tied to project phases. Typically: 30% at project start, 40% at development completion, and 30% at final delivery. We can discuss custom payment terms based on your needs."
+    },
+    "q4": {
+      "question": "What's the difference between custom development and ready-made solutions?",
+      "answer": "Ready-made solutions are pre-built apps that can be customized with your branding and deployed in 35 days, starting at $8,000. Custom development is built from scratch to your exact specifications and typically takes 2-6 months. Our AI Estimate tool will recommend the best approach for your project."
+    },
+    "q5": {
+      "question": "Are there any hidden costs?",
+      "answer": "No hidden costs. Our estimates include all development work. The only additional costs are optional services like ongoing maintenance, hosting fees (if you prefer managed hosting), or third-party service fees (like payment gateways or SMS services)."
+    }
+  },
+  "process": {
+    "q1": {
+      "question": "What is your development process?",
+      "answer": "We follow an agile development process: 1) Discovery & Planning, 2) UI/UX Design, 3) Development, 4) Testing & QA, 5) Deployment & Launch. You'll have visibility throughout and regular check-ins at each phase."
+    },
+    "q2": {
+      "question": "How long does it take to build an app?",
+      "answer": "Timelines vary by complexity. Ready-made solutions: 35 days. Simple custom apps: 8-12 weeks. Complex apps: 3-6 months. Our Get AI Estimate tool provides a timeline estimate based on your specific project."
+    },
+    "q3": {
+      "question": "Will I own the source code?",
+      "answer": "Yes, absolutely. You will receive full ownership of the source code and all project deliverables upon final payment."
+    },
+    "q4": {
+      "question": "Can I request changes during development?",
+      "answer": "Yes, we welcome feedback at each phase. Minor adjustments are part of the process. Major scope changes may affect timeline and cost, which we'll discuss transparently."
+    },
+    "q5": {
+      "question": "Do you provide post-launch support?",
+      "answer": "Yes, every project includes 30 days of free support after launch for bug fixes and technical issues. We also offer ongoing maintenance packages for continuous updates, feature additions, and support."
+    }
+  },
+  "technology": {
+    "q1": {
+      "question": "What technologies do you use?",
+      "answer": "We use modern, scalable technologies: React Native/Flutter for mobile, React/Next.js for web, Node.js/Python for backend, and Firebase/AWS for cloud. We choose the best stack for your specific project needs."
+    },
+    "q2": {
+      "question": "Will my app work on both iOS and Android?",
+      "answer": "Yes! We build cross-platform apps using React Native or Flutter, so your app works seamlessly on both iOS and Android from a single codebase, saving time and cost."
+    },
+    "q3": {
+      "question": "Can you integrate AI features into my app?",
+      "answer": "Absolutely. We specialize in AI integration including chatbots, recommendation engines, image recognition, natural language processing, and predictive analytics. Our team works with OpenAI, Google Gemini, and custom ML models."
+    },
+    "q4": {
+      "question": "What about security and data protection?",
+      "answer": "Security is a top priority. We implement industry-standard encryption, secure authentication, GDPR compliance measures, regular security audits, and follow best practices for data protection."
+    }
+  },
+  "support": {
+    "q1": {
+      "question": "What if something breaks after launch?",
+      "answer": "All projects include 30 days of free bug fixes after launch. If an issue arises later, our support team is available via email, WhatsApp, or scheduled calls. We also offer maintenance packages for ongoing peace of mind."
+    },
+    "q2": {
+      "question": "Can you help with App Store submission?",
+      "answer": "Yes! We handle the entire App Store (iOS) and Google Play (Android) submission process, including creating store listings, preparing screenshots, and ensuring compliance with all guidelines."
+    },
+    "q3": {
+      "question": "Do you provide training for my team?",
+      "answer": "Yes, we provide admin dashboard training and comprehensive documentation so your team can manage the app confidently. Additional training sessions can be arranged if needed."
+    },
+    "q4": {
+      "question": "How do I get started?",
+      "answer": "Start by using our Get AI Estimate tool for an instant quote, or book a free consultation call. We'll discuss your idea, provide a detailed proposal, and outline the next steps."
+    }
+  }
+}

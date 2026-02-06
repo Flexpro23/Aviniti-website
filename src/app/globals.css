@@ -1,26 +1,418 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   AVINITI DESIGN SYSTEM - TAILWIND CSS v4 CONFIGURATION
+   Dark Theme Only | Next.js 16 | TypeScript
+   ============================================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ─── COLOR PALETTE ───────────────────────────────────── */
+
+  /* Background Colors */
+  --color-navy: #0F1419;
+  --color-navy-light: #1A2332;
+  --color-navy-lighter: #243044;
+  --color-navy-dark: #0D1117;
+  --color-slate-blue: #1A2332;
+  --color-slate-blue-light: #243044;
+  --color-slate-dark: #0D1117;
+
+  /* Bronze Accent Family */
+  --color-bronze: #C08460;
+  --color-bronze-hover: #A6714E;
+  --color-bronze-light: #D4A583;
+  --color-bronze-muted: #8B6344;
+
+  /* Text Colors */
+  --color-white: #FFFFFF;
+  --color-off-white: #F4F4F2;
+  --color-muted: #9CA3AF;
+  --color-muted-light: #6B7280;
+
+  /* Semantic Colors */
+  --color-success: #34D399;
+  --color-success-dark: #065F46;
+  --color-warning: #FBBF24;
+  --color-warning-dark: #78350F;
+  --color-error: #F87171;
+  --color-error-dark: #7F1D1D;
+  --color-info: #60A5FA;
+  --color-info-dark: #1E3A5F;
+
+  /* AI Tool Accent Colors */
+  --color-tool-orange: #F97316;
+  --color-tool-orange-dark: #431407;
+  --color-tool-orange-light: #FDBA74;
+
+  --color-tool-blue: #3B82F6;
+  --color-tool-blue-dark: #172554;
+  --color-tool-blue-light: #93C5FD;
+
+  --color-tool-green: #22C55E;
+  --color-tool-green-dark: #052E16;
+  --color-tool-green-light: #86EFAC;
+
+  --color-tool-purple: #A855F7;
+  --color-tool-purple-dark: #3B0764;
+  --color-tool-purple-light: #D8B4FE;
+
+  /* ─── FONT FAMILIES ───────────────────────────────────── */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-arabic: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ─── BORDER RADIUS ───────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* ─── Z-INDEX SCALE ───────────────────────────────────── */
+  --z-10: 10;    /* Dropdowns, select menus */
+  --z-20: 20;    /* Sticky elements */
+  --z-30: 30;    /* Fixed elements */
+  --z-40: 40;    /* Floating widgets (WhatsApp, Avi bubble) */
+  --z-45: 45;    /* Floating widget expanded (Avi chat window) */
+  --z-50: 50;    /* Navigation bar, mobile drawer, tooltips */
+  --z-60: 60;    /* Overlays, modals, exit intent popup */
+  --z-70: 70;    /* Reserved */
+  --z-80: 80;    /* Reserved */
+  --z-90: 90;    /* Reserved */
+  --z-99: 99;    /* Page progress bar */
+  --z-100: 100;  /* Toast notifications, skip-to-content */
 }
 
-@media (prefers-color-scheme: dark) {
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+@layer base {
+  /* ─── CSS VARIABLES FOR RESPONSIVE HEADINGS ─────────── */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Fluid typography using clamp() */
+    --heading-display: clamp(2.25rem, 5vw + 1rem, 4.5rem);
+    --heading-h1: clamp(1.875rem, 4vw + 0.5rem, 3.75rem);
+    --heading-h2: clamp(1.5rem, 3vw + 0.25rem, 2.625rem);
+    --heading-h3: clamp(1.25rem, 2vw + 0.25rem, 1.875rem);
+    --heading-h4: clamp(1.125rem, 1.5vw + 0.25rem, 1.5rem);
+    --heading-h5: clamp(1rem, 1vw + 0.25rem, 1.25rem);
+    --heading-h6: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+  }
+
+  /* ─── ROOT AND BODY ─────────────────────────────────── */
+  * {
+    @apply border-slate-blue-light;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-navy text-off-white font-sans;
+    font-size: 16px;
+    line-height: 1.625;
+  }
+
+  /* ─── TEXT SELECTION ────────────────────────────────── */
+  ::selection {
+    @apply bg-bronze text-navy;
+  }
+
+  ::-moz-selection {
+    @apply bg-bronze text-navy;
+  }
+
+  /* ─── FOCUS VISIBLE ─────────────────────────────────── */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-bronze ring-offset-2 ring-offset-navy;
+  }
+
+  /* ─── HEADING STYLES ────────────────────────────────── */
+  .heading-display {
+    font-size: var(--heading-display);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    @apply text-white;
+  }
+
+  .heading-h1 {
+    font-size: var(--heading-h1);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    @apply text-white;
+  }
+
+  .heading-h2 {
+    font-size: var(--heading-h2);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    @apply text-white;
+  }
+
+  .heading-h3 {
+    font-size: var(--heading-h3);
+    line-height: 1.267;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    @apply text-white;
+  }
+
+  .heading-h4 {
+    font-size: var(--heading-h4);
+    line-height: 1.333;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    @apply text-white;
+  }
+
+  .heading-h5 {
+    font-size: var(--heading-h5);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    @apply text-off-white;
+  }
+
+  .heading-h6 {
+    font-size: var(--heading-h6);
+    line-height: 1.5;
+    letter-spacing: 0em;
+    font-weight: 600;
+    @apply text-off-white;
+  }
+
+  /* Map HTML heading elements to heading sizes */
+  h1 { font-size: var(--heading-h1); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; color: var(--color-off-white); }
+  h2 { font-size: var(--heading-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 700; color: var(--color-off-white); }
+  h3 { font-size: var(--heading-h3); line-height: 1.2; letter-spacing: -0.01em; font-weight: 600; color: var(--color-off-white); }
+  h4 { font-size: var(--heading-h4); line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; color: var(--color-off-white); }
+  h5 { font-size: var(--heading-h5); line-height: 1.3; font-weight: 600; color: var(--color-off-white); }
+  h6 { font-size: var(--heading-h6); line-height: 1.35; font-weight: 600; color: var(--color-off-white); }
+
+  /* ─── ARABIC TYPOGRAPHY OVERRIDES ──────────────────── */
+  [dir="rtl"] {
+    letter-spacing: 0 !important;
+  }
+
+  [dir="rtl"] body {
+    font-family: var(--font-arabic);
+    font-weight: 500;
+    line-height: 1.75;
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4,
+  [dir="rtl"] h5,
+  [dir="rtl"] h6,
+  [dir="rtl"] .heading-display,
+  [dir="rtl"] .heading-h1,
+  [dir="rtl"] .heading-h2,
+  [dir="rtl"] .heading-h3,
+  [dir="rtl"] .heading-h4,
+  [dir="rtl"] .heading-h5,
+  [dir="rtl"] .heading-h6 {
+    letter-spacing: 0 !important;
+    line-height: calc(1.08 * var(--line-height, 1.2));
+  }
+
+  /* ─── LINK STYLES ───────────────────────────────────── */
+  a {
+    @apply text-bronze underline-offset-4 transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-bronze-light underline;
+  }
+
+  /* ─── CODE STYLES ───────────────────────────────────── */
+  code {
+    @apply font-mono text-sm bg-slate-blue-light px-1.5 py-0.5 rounded text-bronze-light;
+  }
+
+  pre {
+    @apply font-mono text-sm bg-slate-dark p-4 rounded-lg text-off-white overflow-x-auto;
+  }
+
+  pre code {
+    @apply bg-transparent p-0 text-off-white;
+  }
+
+  /* ─── BLOCKQUOTE ────────────────────────────────────── */
+  blockquote {
+    @apply text-lg italic text-off-white border-l-2 border-bronze pl-6 my-4;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   COMPONENT LAYER
+   ============================================================ */
+
+@layer components {
+  /* ─── GLOW EFFECTS ──────────────────────────────────── */
+  .glow-bronze {
+    box-shadow: 0 0 20px rgba(192, 132, 96, 0.25), 0 0 40px rgba(192, 132, 96, 0.1);
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+  }
+
+  /* ─── GRADIENTS ─────────────────────────────────────── */
+  .gradient-bronze {
+    background: linear-gradient(135deg, #C08460 0%, #A6714E 100%);
+  }
+
+  .gradient-hero-fade {
+    background: linear-gradient(180deg, #0F1419 0%, #1A2332 100%);
+  }
+
+  .gradient-bronze-shine {
+    background: linear-gradient(135deg, #C08460 0%, #D4A583 50%, #C08460 100%);
+  }
+
+  .gradient-card-glow {
+    background: radial-gradient(ellipse at top, rgba(192, 132, 96, 0.08) 0%, transparent 70%);
+  }
+
+  .gradient-vignette {
+    background: radial-gradient(ellipse at center, #1A2332 0%, #0F1419 70%);
+  }
+
+  /* Tool-specific gradients */
+  .gradient-tool-orange {
+    background: linear-gradient(135deg, #431407 0%, #1A2332 100%);
+  }
+
+  .gradient-tool-blue {
+    background: linear-gradient(135deg, #172554 0%, #1A2332 100%);
+  }
+
+  .gradient-tool-green {
+    background: linear-gradient(135deg, #052E16 0%, #1A2332 100%);
+  }
+
+  .gradient-tool-purple {
+    background: linear-gradient(135deg, #3B0764 0%, #1A2332 100%);
+  }
+
+  /* ─── SECTION DIVIDER ───────────────────────────────── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #243044 50%, transparent 100%);
+  }
+
+  /* ─── SPECIAL TEXT STYLES ───────────────────────────── */
+  .section-label {
+    @apply text-sm font-semibold uppercase tracking-[0.1em] text-bronze;
+  }
+
+  .stat-number {
+    @apply text-5xl font-extrabold text-white tabular-nums;
+  }
+
+  .stat-label {
+    @apply text-sm font-medium text-muted;
+  }
+
+  /* ─── CONTAINER ─────────────────────────────────────── */
+  .container-aviniti {
+    @apply mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-narrow {
+    @apply mx-auto w-full max-w-[768px] px-4 sm:px-6;
+  }
+}
+
+/* ============================================================
+   UTILITIES LAYER
+   ============================================================ */
+
+@layer utilities {
+  /* ─── TEXT UTILITIES ────────────────────────────────── */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ─── ANIMATIONS ────────────────────────────────────── */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-spin-slow {
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(192, 132, 96, 0.15);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(192, 132, 96, 0.3);
+    }
+  }
+
+  /* ─── REDUCED MOTION ────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .animate-float,
+    .animate-spin-slow,
+    .animate-pulse-glow {
+      animation: none !important;
+    }
+  }
 }

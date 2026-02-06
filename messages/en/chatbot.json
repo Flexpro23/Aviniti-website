@@ -1,0 +1,63 @@
+{
+  "title": "Chat with Avi",
+  "subtitle": "Your AI assistant",
+  "greeting": {
+    "first_visit": "Hi! I'm Avi, Aviniti's AI assistant. I can help you explore our services, get estimates, or answer questions. What brings you here today?",
+    "returning": "Welcome back! How can I help you today?",
+    "default": "Hello! How can I assist you?"
+  },
+  "quick_replies": {
+    "build_app": "I want to build an app",
+    "get_pricing": "How much does it cost?",
+    "view_portfolio": "Show me examples",
+    "talk_human": "Talk to a human",
+    "idea_validation": "I have an idea to validate",
+    "ready_solutions": "Show ready-made solutions",
+    "calculate_roi": "Calculate ROI"
+  },
+  "input": {
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "typing": "Avi is typing..."
+  },
+  "handoff": {
+    "message": "I'll connect you with our team. How would you like to be reached?",
+    "email": "Email me",
+    "whatsapp": "WhatsApp",
+    "calendly": "Book a call",
+    "success": "Great! Someone from our team will reach out to you soon."
+  },
+  "errors": {
+    "connection_failed": "I'm having trouble connecting. Please try again in a moment, or contact us directly.",
+    "rate_limited": "I'm getting a lot of questions! For detailed discussions, please book a call or message us on WhatsApp.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "actions": {
+    "minimize": "Minimize chat",
+    "close": "Close chat",
+    "restart": "Start new conversation",
+    "clear_history": "Clear chat history"
+  },
+  "suggestions": {
+    "get_estimate": "Get AI Estimate",
+    "idea_lab": "Try Idea Lab",
+    "ai_analyzer": "Analyze an Idea",
+    "roi_calculator": "Calculate ROI",
+    "view_solutions": "Browse Solutions",
+    "book_call": "Book a Call"
+  },
+  "context": {
+    "on_homepage": "I see you're on our homepage. Are you looking to build a new app or explore our services?",
+    "on_estimate": "Need help with the estimate tool? I'm here to guide you!",
+    "on_solutions": "Interested in our ready-made solutions? I can help you choose the right one.",
+    "on_idea_lab": "Using the Idea Lab? I can help you refine your ideas!",
+    "on_analyzer": "Validating an idea? I can provide additional insights!",
+    "on_roi": "Calculating ROI? Let me know if you need help with the numbers.",
+    "on_contact": "Have questions before reaching out? Ask me anything!"
+  },
+  "responses": {
+    "thanks": "You're welcome! Anything else I can help with?",
+    "goodbye": "Goodbye! Feel free to reach out anytime. Have a great day!",
+    "unclear": "I'm not sure I understand. Could you rephrase that, or would you like to speak with our team directly?"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "title": "AI Idea Analyzer - Validate Your App Concept | Aviniti",
+    "description": "Get a comprehensive AI-powered analysis of your app idea's market potential, feasibility, and viability"
+  },
+  "hero": {
+    "title": "Validate Your App Idea with AI",
+    "subtitle": "Get a comprehensive viability analysis in under 2 minutes"
+  },
+  "steps": {
+    "step_1": "Describe Idea",
+    "step_2": "Get Results"
+  },
+  "step1": {
+    "title": "Describe your app idea",
+    "description": "The more detail you provide, the better our analysis will be",
+    "idea_label": "Your App Idea",
+    "idea_placeholder": "Example: An app that connects busy professionals with vetted meal prep chefs who deliver healthy, customized meals based on dietary preferences and health goals...",
+    "min_chars": "At least 30 characters for meaningful analysis",
+    "target_audience_label": "Target Audience (optional)",
+    "target_audience_placeholder": "Who is this app for?",
+    "industry_label": "Industry (optional)",
+    "revenue_model_label": "Revenue Model (optional)",
+    "revenue_models": {
+      "subscription": "Subscription (monthly/annual)",
+      "freemium": "Freemium (free + premium)",
+      "one_time": "One-time Purchase",
+      "in_app": "In-app Purchases",
+      "advertising": "Advertising",
+      "commission": "Marketplace Commission",
+      "enterprise": "Enterprise Licensing",
+      "unsure": "Not sure yet"
+    }
+  },
+  "step2": {
+    "title": "Get your analysis",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "Also send via WhatsApp",
+    "submit": "Analyze My Idea",
+    "submitting": "Analyzing..."
+  },
+  "results": {
+    "title": "Idea Analysis Report",
+    "idea_name": "{{name}}",
+    "overall_score": "Overall Viability Score",
+    "score_interpretation": {
+      "excellent": "Excellent - Strong market, clear differentiation",
+      "good": "Good - Promising with some areas to refine",
+      "possible": "Possible - Significant challenges to overcome",
+      "reconsider": "Reconsider - Fundamental viability issues"
+    },
+    "executive_summary": "Executive Summary",
+    "categories": {
+      "market": {
+        "title": "Market Potential",
+        "description": "Market size, growth trends, and demand signals"
+      },
+      "technical": {
+        "title": "Technical Feasibility",
+        "description": "Complexity, tech stack, and development challenges",
+        "complexity": "Complexity",
+        "complexity_low": "Low",
+        "complexity_medium": "Medium",
+        "complexity_high": "High",
+        "tech_stack": "Suggested Tech Stack",
+        "challenges": "Key Technical Challenges"
+      },
+      "monetization": {
+        "title": "Monetization Strategies",
+        "description": "Revenue models and pricing strategies",
+        "revenue_models": "Recommended Revenue Models",
+        "pros": "Advantages",
+        "cons": "Challenges"
+      },
+      "competition": {
+        "title": "Competition Overview",
+        "description": "Competitive landscape and differentiation",
+        "intensity": "Competition Intensity",
+        "intensity_low": "Low - Wide open market",
+        "intensity_moderate": "Moderate - Manageable competition",
+        "intensity_high": "High - Crowded market",
+        "intensity_very_high": "Very High - Extremely competitive",
+        "competitors": "Known Competitors",
+        "competitor_direct": "Direct",
+        "competitor_indirect": "Indirect",
+        "competitor_potential": "Potential"
+      }
+    },
+    "analysis": "Analysis",
+    "findings": "Key Findings",
+    "recommendations": "Recommendations",
+    "next_steps": {
+      "title": "Recommended Next Steps",
+      "cta_estimate": "Get Project Estimate",
+      "cta_refine": "Refine & Re-analyze",
+      "cta_call": "Discuss with Our Team"
+    }
+  },
+  "loading": {
+    "analyzing_market": "Analyzing market potential...",
+    "evaluating_technical": "Evaluating technical feasibility...",
+    "assessing_competition": "Assessing competitive landscape...",
+    "generating_report": "Generating your analysis report..."
+  },
+  "errors": {
+    "idea_too_short": "Please describe your idea in at least 30 characters for meaningful analysis",
+    "email_required": "Please enter a valid email address",
+    "analysis_failed": "Failed to analyze idea. Please try again or contact us."
+  }
+}

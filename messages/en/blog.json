@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "title": "Blog - Aviniti",
+    "description": "Insights on AI, app development, technology trends, and digital transformation"
+  },
+  "page": {
+    "title": "Blog & Insights",
+    "subtitle": "Expert insights on AI, app development, and digital transformation",
+    "search_placeholder": "Search articles...",
+    "categories": {
+      "all": "All Articles",
+      "ai": "AI & Machine Learning",
+      "mobile": "Mobile Development",
+      "web": "Web Development",
+      "case_study": "Case Studies",
+      "industry": "Industry Insights",
+      "tutorial": "Tutorials & Guides"
+    }
+  },
+  "post": {
+    "read_more": "Read More",
+    "reading_time": "{{minutes}} min read",
+    "published_on": "Published on {{date}}",
+    "by_author": "By {{author}}",
+    "share": "Share this article",
+    "related_posts": "Related Articles",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "filters": {
+    "sort_by": "Sort by",
+    "newest": "Newest First",
+    "oldest": "Oldest First",
+    "most_popular": "Most Popular",
+    "filter_by_category": "Filter by Category",
+    "clear_filters": "Clear Filters"
+  },
+  "empty": {
+    "title": "No articles found",
+    "description": "Try adjusting your search or filters",
+    "cta": "View All Articles"
+  },
+  "newsletter": {
+    "title": "Subscribe to our newsletter",
+    "description": "Get the latest articles and insights delivered to your inbox",
+    "email_placeholder": "your@email.com",
+    "submit": "Subscribe",
+    "success": "Thank you for subscribing!",
+    "error": "Failed to subscribe. Please try again."
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "title": "Idea Lab - AI App Idea Generator | Aviniti",
+    "description": "Out of ideas? Our AI will generate 5-6 personalized app concepts tailored to your industry and background"
+  },
+  "hero": {
+    "title": "Discover Your Next Big App Idea",
+    "subtitle": "Answer 3 quick questions and get AI-generated app concepts tailored to you"
+  },
+  "steps": {
+    "step_1": "Your Background",
+    "step_2": "Industry Focus",
+    "step_3": "Problem/Goal",
+    "step_4": "Get Results"
+  },
+  "step1": {
+    "title": "What's your background?",
+    "description": "This helps us generate ideas that match your expertise",
+    "background": {
+      "entrepreneur": "Entrepreneur / Business Owner",
+      "entrepreneur_desc": "Running or starting a business",
+      "professional": "Professional / Employee",
+      "professional_desc": "Working in a corporate environment",
+      "student": "Student / Academic",
+      "student_desc": "Studying or researching",
+      "creative": "Creative / Freelancer",
+      "creative_desc": "Designer, developer, or independent worker",
+      "other": "Other",
+      "other_desc": "Something else"
+    }
+  },
+  "step2": {
+    "title": "Which industry interests you?",
+    "description": "Choose the area where you want to make an impact",
+    "industry": {
+      "health_wellness": "Health and Wellness",
+      "finance_banking": "Finance and Banking",
+      "education_learning": "Education and Learning",
+      "ecommerce_retail": "E-commerce and Retail",
+      "logistics_delivery": "Logistics and Delivery",
+      "entertainment_media": "Entertainment and Media",
+      "travel_hospitality": "Travel and Hospitality",
+      "real_estate": "Real Estate",
+      "food_restaurant": "Food and Restaurant",
+      "social_community": "Social and Community",
+      "other": "Other / Multiple"
+    }
+  },
+  "step3": {
+    "title": "What problem do you want to solve?",
+    "description": "Describe the challenge or opportunity you see",
+    "placeholder": "Example: Restaurants struggle with managing delivery orders from multiple platforms...",
+    "min_chars": "At least 10 characters",
+    "examples": {
+      "title": "Need inspiration? Try these:",
+      "example_1": "Small businesses can't afford expensive CRM systems",
+      "example_2": "Parents struggle to find trustworthy babysitters",
+      "example_3": "Fitness trainers waste time on manual scheduling"
+    }
+  },
+  "step4": {
+    "title": "Where should we send your ideas?",
+    "description": "We'll email you 5-6 personalized app concepts instantly",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "Also send summary via WhatsApp",
+    "phone_placeholder": "+962 79 123 4567",
+    "submit": "Generate My Ideas",
+    "submitting": "Generating Ideas..."
+  },
+  "results": {
+    "title": "Your Personalized App Ideas",
+    "subtitle": "Based on {{background}} in {{industry}}",
+    "ideas_count": "{{count}} AI-Generated Concepts",
+    "idea_card": {
+      "estimated_cost": "Est. Cost",
+      "estimated_timeline": "Est. Timeline",
+      "features": "Key Features",
+      "matched_solution": "We have a ready-made solution for this!",
+      "solution_price": "Starting at {{price}}",
+      "solution_timeline": "{{timeline}} delivery",
+      "cta_analyze": "Analyze This Idea",
+      "cta_estimate": "Get Detailed Estimate",
+      "cta_solution": "View Ready-Made Solution"
+    },
+    "next_steps": {
+      "title": "What's Next?",
+      "step_1": "Pick your favorite idea",
+      "step_2": "Get it analyzed for viability (free)",
+      "step_3": "Receive a detailed project estimate",
+      "cta_analyze": "Analyze an Idea",
+      "cta_call": "Book a Brainstorming Call"
+    }
+  },
+  "loading": {
+    "analyzing": "Understanding your background and industry...",
+    "generating": "Generating personalized app ideas...",
+    "finalizing": "Finalizing your concepts..."
+  },
+  "errors": {
+    "select_background": "Please select your background",
+    "select_industry": "Please select an industry",
+    "problem_too_short": "Please describe the problem in at least 10 characters",
+    "email_required": "Please enter a valid email address",
+    "generation_failed": "Failed to generate ideas. Please try again or contact us."
+  }
+}

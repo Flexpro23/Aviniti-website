@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "title": "حاسبة العائد على الاستثمار بالذكاء الاصطناعي - احسب عائد استثمار تطبيقك | Aviniti",
+    "description": "احسب العائد المحتمل على الاستثمار من بناء تطبيق لاستبدال العمليات اليدوية وتحسين الكفاءة"
+  },
+  "hero": {
+    "title": "احسب العائد على الاستثمار لتطبيقك",
+    "subtitle": "اكتشف مقدار الوقت والمال الذي يمكنك توفيره من خلال أتمتة عملياتك"
+  },
+  "steps": {
+    "step_1": "نوع العملية",
+    "step_2": "الوقت والتكلفة",
+    "step_3": "نقاط الألم",
+    "step_4": "تأثير النمو",
+    "step_5": "تأثير الاحتفاظ",
+    "step_6": "احصل على النتائج"
+  },
+  "step1": {
+    "title": "ما العملية التي تريد تحسينها؟",
+    "description": "اختر العملية اليدوية التي تريد استبدالها أو أتمتتها",
+    "process_type": {
+      "data_entry": "إدخال البيانات",
+      "data_entry_desc": "إدخال ومعالجة البيانات يدوياً",
+      "customer_service": "خدمة العملاء",
+      "customer_service_desc": "تذاكر الدعم والاستفسارات",
+      "inventory_tracking": "تتبع المخزون",
+      "inventory_tracking_desc": "إدارة وتتبع المخزون",
+      "order_processing": "معالجة الطلبات",
+      "order_processing_desc": "تنفيذ وإدارة الطلبات",
+      "report_generation": "إنشاء التقارير",
+      "report_generation_desc": "إنشاء التقارير والتحليلات",
+      "scheduling": "الجدولة والحجز",
+      "scheduling_desc": "المواعيد والحجوزات",
+      "invoice_processing": "معالجة الفواتير",
+      "invoice_processing_desc": "الفوترة والمحاسبة",
+      "quality_checks": "فحوصات الجودة",
+      "quality_checks_desc": "الفحص ومراقبة الجودة",
+      "other": "أخرى",
+      "other_desc": "عملية مخصصة"
+    },
+    "custom_process_label": "صف عمليتك",
+    "custom_process_placeholder": "أخبرنا عن العملية اليدوية..."
+  },
+  "step2": {
+    "title": "كم من الوقت والمال تكلف هذه العملية؟",
+    "description": "ساعدنا في حساب إنفاقك الحالي",
+    "hours_per_week_label": "ساعات العمل في الأسبوع",
+    "hours_per_week_desc": "إجمالي الساعات عبر جميع الموظفين",
+    "employees_label": "عدد الموظفين المعنيين",
+    "employees_desc": "كم عدد الأشخاص الذين يعملون على هذه العملية؟",
+    "hourly_cost_label": "متوسط التكلفة بالساعة لكل موظف",
+    "hourly_cost_desc": "شامل الراتب + التكاليف الإضافية (عادة الراتب × 1.4)",
+    "currency_label": "العملة",
+    "currencies": {
+      "usd": "دولار أمريكي (USD)",
+      "jod": "دينار أردني (JOD)",
+      "aed": "درهم إماراتي (AED)",
+      "sar": "ريال سعودي (SAR)"
+    }
+  },
+  "step3": {
+    "title": "ما هي المشاكل التي تواجهها؟",
+    "description": "اختر كل ما ينطبق",
+    "issues": {
+      "errors_rework": "أخطاء تتطلب إعادة العمل",
+      "errors_rework_desc": "أخطاء يدوية تحتاج إلى تصحيح",
+      "missed_opportunities": "فرص ضائعة",
+      "missed_opportunities_desc": "خسارة مبيعات أو عملاء بسبب التأخير",
+      "customer_complaints": "شكاوى العملاء",
+      "customer_complaints_desc": "إحباط من العمليات البطيئة",
+      "delayed_deliveries": "تأخير التسليم/الخدمة",
+      "delayed_deliveries_desc": "تأخر في التنفيذ أو الردود",
+      "data_entry_mistakes": "أخطاء إدخال البيانات",
+      "data_entry_mistakes_desc": "معلومات غير صحيحة في الأنظمة",
+      "compliance_gaps": "ثغرات الامتثال أو التدقيق",
+      "compliance_gaps_desc": "مخاطر المشاكل التنظيمية"
+    }
+  },
+  "step4": {
+    "title": "هل يمكن لتطبيق مساعدتك على خدمة المزيد من العملاء؟",
+    "description": "هل ستسمح لك الأتمتة بمعالجة حجم أكبر؟",
+    "options": {
+      "yes": "نعم",
+      "yes_desc": "يمكننا توسيع قاعدة عملائنا",
+      "no": "لا",
+      "no_desc": "الحجم ليس مشكلة",
+      "unsure": "غير متأكد",
+      "unsure_desc": "أحتاج مساعدة في التقييم"
+    },
+    "percentage_label": "الزيادة المقدرة في العملاء",
+    "percentage_desc": "كم يمكنك أن تنمو؟ (مثال: 20%)"
+  },
+  "step5": {
+    "title": "هل يمكن لتطبيق تحسين الاحتفاظ بالعملاء؟",
+    "description": "هل ستحافظ الخدمة الأفضل على المزيد من العملاء؟",
+    "options": {
+      "yes": "نعم",
+      "yes_desc": "تجربة أفضل = ولاء أكثر",
+      "no": "لا",
+      "no_desc": "الاحتفاظ قوي بالفعل",
+      "unsure": "غير متأكد",
+      "unsure_desc": "أحتاج مساعدة في التقييم"
+    },
+    "percentage_label": "الزيادة المقدرة في الاحتفاظ",
+    "percentage_desc": "الانخفاض في فقدان العملاء (مثال: 15%)",
+    "monthly_revenue_label": "الإيرادات الشهرية التقريبية (اختياري)",
+    "monthly_revenue_desc": "يساعد في حساب تأثير الإيرادات"
+  },
+  "step6": {
+    "title": "احصل على تقرير العائد على الاستثمار",
+    "email_label": "عنوان البريد الإلكتروني",
+    "email_placeholder": "your@email.com",
+    "name_label": "الاسم (اختياري)",
+    "name_placeholder": "اسمك",
+    "company_label": "الشركة (اختياري)",
+    "company_placeholder": "شركتك",
+    "whatsapp_label": "أرسل أيضاً عبر واتساب",
+    "submit": "احسب العائد على استثماري",
+    "submitting": "جارٍ الحساب..."
+  },
+  "results": {
+    "title": "تحليل العائد على الاستثمار",
+    "subtitle": "بناءً على {{process}} لـ {{employees}} موظفين",
+    "annual_roi": "إجمالي العائد السنوي على الاستثمار",
+    "roi_percentage": "عائد {{percentage}}%",
+    "payback_period": "فترة استرداد التكلفة",
+    "payback_months": "{{months}} شهر",
+    "breakdown": {
+      "title": "تفصيل التوفير",
+      "labor_savings": "التوفير السنوي في العمالة",
+      "labor_savings_desc": "{{hours}} ساعة مستردة سنوياً",
+      "error_reduction": "توفير من تقليل الأخطاء",
+      "error_reduction_desc": "أقل إعادة عمل وأخطاء",
+      "revenue_increase": "الزيادة المحتملة في الإيرادات",
+      "revenue_increase_desc": "من النمو والاحتفاظ",
+      "time_recovered": "إجمالي الوقت المسترد",
+      "time_recovered_hours": "{{hours}} ساعة/سنة"
+    },
+    "cost_vs_return": {
+      "title": "الاستثمار مقابل العائد",
+      "app_cost": "تكلفة تطوير التطبيق المقدرة",
+      "year_1_return": "عائد السنة الأولى",
+      "year_3_return": "عائد 3 سنوات"
+    },
+    "projection": {
+      "title": "توقعات 12 شهراً",
+      "month": "الشهر {{number}}",
+      "cumulative_savings": "التوفير التراكمي",
+      "cumulative_cost": "التكلفة التراكمية",
+      "net_roi": "صافي العائد على الاستثمار"
+    },
+    "ai_insight": "رؤية الذكاء الاصطناعي",
+    "next_steps": {
+      "title": "الخطوات التالية",
+      "cta_estimate": "احصل على تقدير تفصيلي",
+      "cta_call": "احجز نقاش حول العائد على الاستثمار",
+      "cta_download": "تنزيل التقرير الكامل"
+    }
+  },
+  "loading": {
+    "calculating_savings": "جارٍ حساب التوفير المحتمل...",
+    "analyzing_revenue": "جارٍ تحليل تأثير الإيرادات...",
+    "generating_report": "جارٍ إنشاء تقرير العائد على الاستثمار..."
+  },
+  "errors": {
+    "select_process": "يرجى اختيار نوع العملية",
+    "hours_required": "يرجى إدخال ساعات العمل في الأسبوع (1-200)",
+    "employees_required": "يرجى إدخال عدد الموظفين (1-100)",
+    "hourly_cost_required": "يرجى إدخال التكلفة بالساعة",
+    "select_currency": "يرجى اختيار العملة",
+    "customer_growth_required": "يرجى تحديد ما إذا كان التطبيق يمكن أن يساعد في نمو العملاء",
+    "retention_required": "يرجى تحديد ما إذا كان التطبيق يمكن أن يحسن الاحتفاظ",
+    "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "calculation_failed": "فشل حساب العائد على الاستثمار. يرجى المحاولة مرة أخرى."
+  },
+  "whatsapp": {
+    "message": "مرحباً، أود مناقشة تحليل العائد على الاستثمار"
+  }
+}

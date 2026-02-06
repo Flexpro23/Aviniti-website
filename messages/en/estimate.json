@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "title": "Get AI Estimate - Aviniti",
+    "description": "Get an instant AI-powered cost and timeline estimate for your app project in under 2 minutes"
+  },
+  "hero": {
+    "title": "Get Your AI-Powered Project Estimate",
+    "subtitle": "Answer 4 simple questions and get an instant cost and timeline estimate for your app"
+  },
+  "steps": {
+    "step_1": "Project Type",
+    "step_2": "Features",
+    "step_3": "Timeline",
+    "step_4": "Contact Info"
+  },
+  "step1": {
+    "title": "What type of project do you want to build?",
+    "description": "Select the platform that best describes your project",
+    "project_type": {
+      "mobile": "Mobile App",
+      "mobile_desc": "iOS, Android, or Cross-platform",
+      "web": "Web Application",
+      "web_desc": "Progressive web app or dashboard",
+      "both": "Mobile + Web",
+      "both_desc": "Unified experience across platforms",
+      "ecommerce": "E-commerce Platform",
+      "ecommerce_desc": "Online store with payment processing",
+      "ai_ml": "AI/ML Solution",
+      "ai_ml_desc": "Intelligent app with AI capabilities",
+      "other": "Other/Not Sure",
+      "other_desc": "Let us help you define it"
+    }
+  },
+  "step2": {
+    "title": "Which features do you need?",
+    "description": "Select all that apply. The more you select, the more accurate your estimate.",
+    "select_all": "Select all that apply",
+    "features": {
+      "user_auth": "User Authentication",
+      "user_auth_desc": "Sign up, login, password recovery",
+      "push_notifications": "Push Notifications",
+      "push_notifications_desc": "Real-time alerts and messages",
+      "payment_integration": "Payment Processing",
+      "payment_integration_desc": "Credit cards, wallets, subscriptions",
+      "social_login": "Social Login",
+      "social_login_desc": "Login with Google, Facebook, Apple",
+      "admin_dashboard": "Admin Dashboard",
+      "admin_dashboard_desc": "Management panel for admins",
+      "analytics": "Analytics & Reporting",
+      "analytics_desc": "User insights and data reports",
+      "chat_messaging": "Chat/Messaging",
+      "chat_messaging_desc": "In-app chat or messaging system",
+      "maps_location": "Maps & Location",
+      "maps_location_desc": "GPS, maps, geolocation services",
+      "camera_media": "Camera & Media",
+      "camera_media_desc": "Photo/video capture and upload",
+      "ai_features": "AI Features",
+      "ai_features_desc": "Machine learning, recommendations, chatbots",
+      "multi_language": "Multi-language",
+      "multi_language_desc": "Support for multiple languages",
+      "offline_mode": "Offline Mode",
+      "offline_mode_desc": "Work without internet connection",
+      "search_filters": "Search & Filters",
+      "search_filters_desc": "Advanced search and filtering",
+      "reviews_ratings": "Reviews & Ratings",
+      "reviews_ratings_desc": "User reviews and rating system",
+      "booking_scheduling": "Booking/Scheduling",
+      "booking_scheduling_desc": "Appointment or reservation system",
+      "ecommerce_cart": "Shopping Cart",
+      "ecommerce_cart_desc": "Product cart and checkout",
+      "inventory_management": "Inventory Management",
+      "inventory_management_desc": "Stock tracking and management",
+      "notifications_system": "Notifications System",
+      "notifications_system_desc": "Email and SMS notifications",
+      "crm_integration": "CRM Integration",
+      "crm_integration_desc": "Connect with Salesforce, HubSpot, etc.",
+      "api_integration": "Third-party APIs",
+      "api_integration_desc": "Connect with external services",
+      "file_upload": "File Upload/Download",
+      "file_upload_desc": "Document and file management",
+      "video_audio_streaming": "Video/Audio Streaming",
+      "video_audio_streaming_desc": "Media streaming capabilities",
+      "geofencing": "Geofencing",
+      "geofencing_desc": "Location-based triggers",
+      "blockchain": "Blockchain Integration",
+      "blockchain_desc": "Crypto payments or smart contracts"
+    },
+    "custom_features_label": "Other features not listed above",
+    "custom_features_placeholder": "Describe any additional features you need..."
+  },
+  "step3": {
+    "title": "What's your preferred timeline?",
+    "description": "This helps us prioritize your project needs",
+    "timeline": {
+      "asap": "ASAP (Rush)",
+      "asap_desc": "Need it as fast as possible",
+      "1_2_months": "1-2 Months",
+      "1_2_months_desc": "Standard fast-track timeline",
+      "3_4_months": "3-4 Months",
+      "3_4_months_desc": "Balanced timeline",
+      "6_months_plus": "6+ Months",
+      "6_months_plus_desc": "Flexible, quality-focused",
+      "not_sure": "Not Sure",
+      "not_sure_desc": "Help me decide"
+    }
+  },
+  "step4": {
+    "title": "Where should we send your estimate?",
+    "description": "We'll email you a detailed breakdown instantly",
+    "form": {
+      "name_label": "Your Name",
+      "name_placeholder": "John Smith",
+      "email_label": "Email Address",
+      "email_placeholder": "john@company.com",
+      "company_label": "Company (optional)",
+      "company_placeholder": "Your Company Name",
+      "phone_label": "Phone Number (optional)",
+      "phone_placeholder": "+962 79 123 4567",
+      "whatsapp_label": "Also send via WhatsApp",
+      "description_label": "Tell us more about your project (optional)",
+      "description_placeholder": "Any additional details about your project...",
+      "submit": "Get My Estimate",
+      "submitting": "Generating Estimate..."
+    }
+  },
+  "results": {
+    "title": "Your Project Estimate",
+    "subtitle": "Based on the information you provided",
+    "estimated_cost": "Estimated Cost",
+    "estimated_timeline": "Estimated Timeline",
+    "cost_range": "{{min}} - {{max}}",
+    "timeline_weeks": "{{weeks}} weeks",
+    "breakdown_title": "Cost Breakdown by Phase",
+    "phase": "Phase {{number}}",
+    "approach_title": "Recommended Approach",
+    "approach_custom": "Custom Development",
+    "approach_custom_desc": "Built from scratch to match your exact requirements",
+    "approach_ready_made": "Ready-Made Solution",
+    "approach_ready_made_desc": "We have a pre-built solution that matches your needs",
+    "approach_hybrid": "Hybrid Approach",
+    "approach_hybrid_desc": "Start with a ready-made solution and customize it",
+    "matched_solution": "Matched Solution",
+    "solution_price": "Starting from {{price}}",
+    "solution_timeline": "{{timeline}} delivery",
+    "solution_match": "{{percentage}}% feature match",
+    "key_insights": "Key Insights",
+    "next_steps": "Next Steps",
+    "next_step_1": "Review your detailed estimate PDF",
+    "next_step_2": "Book a free 30-minute consultation",
+    "next_step_3": "We'll prepare a detailed proposal",
+    "cta": {
+      "book_call": "Book a Free Call",
+      "download_pdf": "Download PDF",
+      "explore_solutions": "Explore Ready-Made Solutions",
+      "whatsapp": "Discuss on WhatsApp"
+    }
+  },
+  "loading": {
+    "analyzing": "Analyzing your project requirements...",
+    "calculating": "Calculating cost estimates...",
+    "generating": "Generating your estimate..."
+  },
+  "errors": {
+    "select_project_type": "Please select a project type",
+    "select_features": "Please select at least one feature",
+    "select_timeline": "Please select a timeline preference",
+    "name_required": "Please enter your name",
+    "email_required": "Please enter a valid email address",
+    "generation_failed": "Failed to generate estimate. Please try again or contact us directly."
+  },
+  "whatsapp": {
+    "message": "Hi, I'd like to discuss my project estimate"
+  }
+}

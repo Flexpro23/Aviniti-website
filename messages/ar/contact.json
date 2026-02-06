@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "title": "اتصل بنا - Aviniti",
+    "description": "تواصل مع Aviniti. احجز استشارة مجانية أو أرسل لنا رسالة حول مشروعك."
+  },
+  "page": {
+    "title": "تواصل معنا",
+    "subtitle": "لديك مشروع في ذهنك؟ دعنا نناقش كيف يمكننا المساعدة في تحقيقه.",
+    "form_title": "أرسل لنا رسالة",
+    "calendly_title": "أو احجز استشارة مجانية",
+    "calendly_description": "حدد موعد مكالمة لمدة 30 دقيقة لمناقشة مشروعك",
+    "calendly_cta": "احجز مكالمة"
+  },
+  "form": {
+    "name_label": "اسمك",
+    "name_placeholder": "أحمد محمد",
+    "email_label": "عنوان البريد الإلكتروني",
+    "email_placeholder": "ahmad@company.com",
+    "company_label": "الشركة (اختياري)",
+    "company_placeholder": "اسم شركتك",
+    "phone_label": "رقم الهاتف (اختياري)",
+    "phone_placeholder": "+962 79 123 4567",
+    "country_code_label": "رمز الدولة",
+    "topic_label": "ما الموضوع؟",
+    "topics": {
+      "general": "استفسار عام",
+      "project": "مناقشة مشروع جديد",
+      "estimate": "تقدير المشروع",
+      "support": "دعم لمشروع قائم",
+      "partnership": "فرصة شراكة",
+      "other": "أخرى"
+    },
+    "message_label": "رسالتك",
+    "message_placeholder": "أخبرنا عن مشروعك أو سؤالك...",
+    "whatsapp_label": "اتصل بي أيضاً عبر واتساب",
+    "submit": "إرسال الرسالة",
+    "submitting": "جارٍ الإرسال..."
+  },
+  "success": {
+    "title": "تم إرسال الرسالة!",
+    "message": "شكراً لتواصلك معنا. سنعود إليك خلال 24 ساعة.",
+    "ticket_id": "رقم المرجع الخاص بك: {{ticketId}}"
+  },
+  "errors": {
+    "name_required": "يرجى إدخال اسمك",
+    "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "topic_required": "يرجى اختيار موضوع",
+    "message_required": "يرجى إدخال رسالة (10 أحرف على الأقل)",
+    "message_too_short": "يجب أن تكون الرسالة 10 أحرف على الأقل",
+    "send_failed": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى أو التواصل معنا عبر واتساب."
+  },
+  "info": {
+    "email": "البريد الإلكتروني",
+    "email_value": "hello@aviniti.com",
+    "whatsapp": "واتساب",
+    "whatsapp_value": "+962 79 068 5302",
+    "location": "الموقع",
+    "location_value": "عمّان، الأردن",
+    "hours": "ساعات العمل",
+    "hours_value": "الأحد - الخميس، 9 صباحاً - 6 مساءً (GMT+3)"
+  },
+  "whatsapp": {
+    "general_message": "مرحباً، أنا مهتم بخدمات أفينيتي",
+    "estimate_message": "مرحباً، أود مناقشة تقدير مشروعي",
+    "roi_message": "مرحباً، أود مناقشة تحليل العائد على الاستثمار",
+    "support_message": "مرحباً، أحتاج مساعدة في..."
+  }
+}

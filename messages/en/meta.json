@@ -1,0 +1,42 @@
+{
+  "home": {
+    "title": "Aviniti — AI-Powered App Development",
+    "description": "Custom mobile and web applications powered by AI. Get an instant AI estimate for your project."
+  },
+  "idea_lab": {
+    "title": "AI Idea Lab — Generate App Ideas | Aviniti",
+    "description": "Use AI to discover your next app idea. Answer 3 questions and get personalized app concepts."
+  },
+  "ai_analyzer": {
+    "title": "AI Idea Analyzer — Validate Your App Idea | Aviniti",
+    "description": "Get an AI-powered analysis of your app idea including market potential, feasibility, and competition."
+  },
+  "get_estimate": {
+    "title": "Get AI Estimate — Instant Project Pricing | Aviniti",
+    "description": "Get a free AI-powered cost estimate for your app project in under 2 minutes."
+  },
+  "roi_calculator": {
+    "title": "AI ROI Calculator — Calculate Your App ROI | Aviniti",
+    "description": "Calculate the potential ROI of building a custom app for your business."
+  },
+  "solutions": {
+    "title": "Ready-Made Solutions — Launch Fast | Aviniti",
+    "description": "Pre-built app solutions starting from $8,000. Customize and launch in weeks."
+  },
+  "blog": {
+    "title": "Blog — AI & App Development Insights | Aviniti",
+    "description": "Latest insights on AI, mobile development, and digital transformation."
+  },
+  "case_studies": {
+    "title": "Case Studies — Real Results | Aviniti",
+    "description": "See how we've helped businesses transform with custom AI-powered applications."
+  },
+  "faq": {
+    "title": "FAQ — Frequently Asked Questions | Aviniti",
+    "description": "Common questions about our app development process, pricing, and timeline."
+  },
+  "contact": {
+    "title": "Contact Us — Get in Touch | Aviniti",
+    "description": "Ready to build your app? Contact us for a free consultation."
+  }
+}
