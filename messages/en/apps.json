@@ -1,0 +1,26 @@
+{
+  "skinverse": {
+    "description": "AI-powered skin analysis and hair transplant consultation platform."
+  },
+  "caliberos": {
+    "description": "Smart barbershop and salon management with online booking."
+  },
+  "quickdeliver": {
+    "description": "On-demand delivery management for restaurants and local businesses."
+  },
+  "edutrack": {
+    "description": "Comprehensive kindergarten and school management system."
+  },
+  "shopsmart": {
+    "description": "Hypermarket inventory and point-of-sale management solution."
+  },
+  "fithubpro": {
+    "description": "Complete gym management with membership tracking and class scheduling."
+  },
+  "staybook": {
+    "description": "Airbnb-style vacation rental marketplace and property management."
+  },
+  "restopos": {
+    "description": "Restaurant POS and kitchen management with online ordering."
+  }
+}

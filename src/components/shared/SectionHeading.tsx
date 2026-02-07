@@ -33,7 +33,12 @@ export function SectionHeading({
         </SectionLabel>
       )}
       <h2 className="text-h2 text-white mt-3">{title}</h2>
-      {subtitle && <p className="text-lg text-muted mt-4 max-w-2xl mx-auto">{subtitle}</p>}
+      {subtitle && <p className="text-lg text-muted mt-4 max-w-2xl mx-auto leading-relaxed">{subtitle}</p>}
+      {/* Decorative accent */}
+      <div className={cn(
+        'mt-6 h-0.5 w-12 rounded-full bg-bronze',
+        align === 'center' ? 'mx-auto' : ''
+      )} aria-hidden="true" />
     </div>
   );
 }

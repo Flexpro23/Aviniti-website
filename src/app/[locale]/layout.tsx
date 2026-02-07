@@ -1,14 +1,24 @@
 import type { ReactNode } from 'react';
-import { Inter } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { routing } from '@/lib/i18n/routing';
+import { LocaleUpdater } from '@/components/layout/LocaleUpdater';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import '../globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-jakarta',
   display: 'swap',
 });
 
@@ -26,17 +36,17 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} className="dark">
-      <body
-        className={`${inter.variable} bg-navy font-sans text-off-white antialiased`}
-      >
-        <NextIntlClientProvider messages={messages}>
+    <div className={`${inter.variable} ${plusJakartaSans.variable} font-sans`}>
+      <NextIntlClientProvider messages={messages}>
+        <LocaleUpdater />
+        <Navbar />
+        <div className="pt-16">
           {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
+        </div>
+        <Footer />
+      </NextIntlClientProvider>
+    </div>
   );
 }

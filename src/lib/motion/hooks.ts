@@ -409,3 +409,301 @@ export function useIntersectionRatio() {
 
   return { ref, ratio };
 }
+
+/* ============================================================
+   IN VIEW COUNT HOOK
+   ============================================================ */
+
+/**
+ * Triggers count-up animation when element enters viewport.
+ * Combines useScrollReveal and useCountUp for convenience.
+ *
+ * @param target - Target number to count to
+ * @param options - Configuration options
+ * @returns Object with ref, inView, and count value
+ *
+ * @example
+ * ```tsx
+ * const { ref, inView, count } = useInViewCount(250, { duration: 2000 });
+ *
+ * return (
+ *   <div ref={ref}>
+ *     <span className="stat-number">{Math.round(count)}+</span>
+ *     <span className="stat-label">Projects Delivered</span>
+ *   </div>
+ * );
+ * ```
+ */
+export function useInViewCount(
+  target: number,
+  options?: {
+    duration?: number;
+    start?: number;
+    decimals?: number;
+    delay?: number;
+    once?: boolean;
+  }
+) {
+  const { once = true } = options || {};
+  const { ref, inView } = useScrollReveal({ once });
+  const count = useCountUp(inView ? target : 0, options);
+
+  return { ref, inView, count };
+}
+
+/* ============================================================
+   PARALLAX HOOK
+   ============================================================ */
+
+/**
+ * Applies parallax transform based on scroll position.
+ * Element moves at different speed than scroll for depth effect.
+ *
+ * @param speed - Parallax speed multiplier (default: 0.5, negative for reverse)
+ * @returns Object with ref and style object
+ *
+ * @example
+ * ```tsx
+ * const { ref, style } = useParallax(-0.3);
+ *
+ * return (
+ *   <motion.div ref={ref} style={style}>
+ *     Parallax Background
+ *   </motion.div>
+ * );
+ * ```
+ */
+export function useParallax(speed: number = 0.5) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const handleScroll = () => {
+      const rect = element.getBoundingClientRect();
+      const scrolled = window.pageYOffset || document.documentElement.scrollTop;
+      const elementTop = rect.top + scrolled;
+      const viewportHeight = window.innerHeight;
+
+      // Calculate parallax offset
+      const distanceFromTop = scrolled - elementTop + viewportHeight;
+      const parallaxOffset = distanceFromTop * speed;
+
+      setOffset(parallaxOffset);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [speed]);
+
+  return {
+    ref,
+    style: {
+      transform: `translateY(${offset}px)`,
+      willChange: 'transform',
+    },
+  };
+}
+
+/* ============================================================
+   MAGNETIC HOVER HOOK
+   ============================================================ */
+
+/**
+ * Makes element subtly follow cursor on hover.
+ * Creates magnetic attraction effect for interactive elements.
+ *
+ * @param strength - Magnetic strength (default: 0.3, range: 0-1)
+ * @returns Object with ref and event handlers
+ *
+ * @example
+ * ```tsx
+ * const magneticProps = useMagneticHover(0.4);
+ *
+ * return (
+ *   <motion.button {...magneticProps}>
+ *     Magnetic Button
+ *   </motion.button>
+ * );
+ * ```
+ */
+export function useMagneticHover(strength: number = 0.3) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const element = ref.current;
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const x = (event.clientX - centerX) * strength;
+    const y = (event.clientY - centerY) * strength;
+
+    setPosition({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
+  return {
+    ref,
+    onMouseMove: handleMouseMove,
+    onMouseLeave: handleMouseLeave,
+    style: {
+      transform: `translate(${position.x}px, ${position.y}px)`,
+      transition: 'transform 0.2s ease-out',
+    },
+  };
+}
+
+/* ============================================================
+   VIEWPORT SIZE HOOK
+   ============================================================ */
+
+/**
+ * Tracks viewport width and height.
+ * Useful for responsive animations and calculations.
+ *
+ * @returns Object with width and height
+ *
+ * @example
+ * ```tsx
+ * const { width, height } = useViewportSize();
+ *
+ * return (
+ *   <div>
+ *     Viewport: {width}x{height}
+ *   </div>
+ * );
+ * ```
+ */
+export function useViewportSize() {
+  const [size, setSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}
+
+/* ============================================================
+   ELEMENT SIZE HOOK
+   ============================================================ */
+
+/**
+ * Tracks element width and height using ResizeObserver.
+ * Useful for responsive animations and dynamic layouts.
+ *
+ * @returns Object with ref, width, and height
+ *
+ * @example
+ * ```tsx
+ * const { ref, width, height } = useElementSize();
+ *
+ * return (
+ *   <div ref={ref}>
+ *     Element size: {width}x{height}
+ *   </div>
+ * );
+ * ```
+ */
+export function useElementSize() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        setSize({ width, height });
+      }
+    });
+
+    resizeObserver.observe(element);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  return { ref, ...size };
+}
+
+/* ============================================================
+   MOUSE DIRECTION HOOK
+   ============================================================ */
+
+/**
+ * Tracks mouse movement direction within an element.
+ * Returns 'up', 'down', 'left', 'right' based on entry/exit direction.
+ *
+ * @returns Object with ref and direction
+ *
+ * @example
+ * ```tsx
+ * const { ref, direction } = useMouseDirection();
+ *
+ * return (
+ *   <div ref={ref}>
+ *     Mouse entered from: {direction}
+ *   </div>
+ * );
+ * ```
+ */
+export function useMouseDirection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [direction, setDirection] = useState<'up' | 'down' | 'left' | 'right' | null>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const handleMouseEnter = (event: MouseEvent) => {
+      const rect = element.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const w = rect.width;
+      const h = rect.height;
+
+      // Determine which edge the mouse entered from
+      const top = y;
+      const bottom = h - y;
+      const left = x;
+      const right = w - x;
+
+      const min = Math.min(top, bottom, left, right);
+
+      if (min === top) setDirection('up');
+      else if (min === bottom) setDirection('down');
+      else if (min === left) setDirection('left');
+      else if (min === right) setDirection('right');
+    };
+
+    element.addEventListener('mouseenter', handleMouseEnter);
+    return () => element.removeEventListener('mouseenter', handleMouseEnter);
+  }, []);
+
+  return { ref, direction };
+}

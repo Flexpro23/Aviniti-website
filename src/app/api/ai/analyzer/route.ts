@@ -74,41 +74,43 @@ export async function POST(request: NextRequest) {
 
     const processingTimeMs = Date.now() - startTime;
 
-    // 4. Save to Firestore
-    const metadata = extractRequestMetadata(request);
+    // 4. Save to Firestore (non-blocking — don't fail the request if save fails)
+    try {
+      const metadata = extractRequestMetadata(request);
 
-    // Save lead
-    const leadId = await saveLeadToFirestore({
-      email: validatedData.email,
-      phone: validatedData.phone || null,
-      whatsapp: validatedData.whatsapp,
-      source: 'analyzer',
-      locale: locale,
-      idea: validatedData.idea,
-      targetAudience: validatedData.targetAudience,
-      industry: validatedData.industry,
-      metadata: {
-        ...metadata,
-        ipCountry: undefined,
-      },
-    });
-
-    // Save AI submission
-    await saveAISubmission({
-      tool: 'analyzer',
-      leadId,
-      request: {
+      const leadId = await saveLeadToFirestore({
+        email: validatedData.email,
+        phone: validatedData.phone || null,
+        whatsapp: validatedData.whatsapp,
+        source: 'analyzer',
+        locale: locale,
         idea: validatedData.idea,
         targetAudience: validatedData.targetAudience,
         industry: validatedData.industry,
-        revenueModel: validatedData.revenueModel,
-      },
-      response: result.data as unknown as Record<string, unknown>,
-      processingTimeMs,
-      model: 'gemini-1.5-flash',
-      locale: locale,
-      status: 'completed',
-    });
+        metadata: {
+          ...metadata,
+          ipCountry: undefined,
+        },
+      });
+
+      await saveAISubmission({
+        tool: 'analyzer',
+        leadId,
+        request: {
+          idea: validatedData.idea,
+          targetAudience: validatedData.targetAudience,
+          industry: validatedData.industry,
+          revenueModel: validatedData.revenueModel,
+        },
+        response: result.data as unknown as Record<string, unknown>,
+        processingTimeMs,
+        model: 'gemini-3-flash-preview',
+        locale: locale,
+        status: 'completed',
+      });
+    } catch (saveError) {
+      console.error('[Analyzer API] Failed to save to Firestore (non-fatal):', saveError);
+    }
 
     // 5. Return success response
     const response = createSuccessResponse(result.data);

@@ -3,6 +3,11 @@
     "title": "AI Idea Analyzer - Validate Your App Concept | Aviniti",
     "description": "Get a comprehensive AI-powered analysis of your app idea's market potential, feasibility, and viability"
   },
+  "hero_title": "Validate Your App Idea with AI",
+  "hero_description": "Describe your app idea and our AI will analyze its market potential, technical feasibility, monetization strategies, and competition.",
+  "hero_cta": "Analyze My Idea",
+  "step1_title": "Describe your app idea",
+  "step1_helper": "The more detail you provide, the better our AI can analyze your idea. Include what problem it solves, who it is for, and what makes it unique.",
   "hero": {
     "title": "Validate Your App Idea with AI",
     "subtitle": "Get a comprehensive viability analysis in under 2 minutes"
@@ -107,5 +112,6 @@
     "idea_too_short": "Please describe your idea in at least 30 characters for meaningful analysis",
     "email_required": "Please enter a valid email address",
     "analysis_failed": "Failed to analyze idea. Please try again or contact us."
-  }
+  },
+  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {{name}}"
 }

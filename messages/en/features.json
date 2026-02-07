@@ -1,0 +1,998 @@
+{
+  "auth-email-password": {
+    "name": "Email & Password Authentication",
+    "description": "Registration, login, password reset, email verification"
+  },
+  "auth-social-google": {
+    "name": "Social Login — Google",
+    "description": "OAuth 2.0 integration, account linking"
+  },
+  "auth-social-facebook": {
+    "name": "Social Login — Facebook",
+    "description": "Facebook SDK, account linking"
+  },
+  "auth-social-apple": {
+    "name": "Social Login — Apple",
+    "description": "Sign in with Apple, required for iOS App Store"
+  },
+  "auth-social-twitter": {
+    "name": "Social Login — Twitter/X",
+    "description": "OAuth integration"
+  },
+  "auth-phone-otp": {
+    "name": "Phone Number Authentication (OTP/SMS)",
+    "description": "Twilio/Firebase SMS verification, OTP flow"
+  },
+  "auth-biometric": {
+    "name": "Biometric Login (Fingerprint / Face ID)",
+    "description": "Native device biometric APIs"
+  },
+  "auth-2fa": {
+    "name": "Two-Factor Authentication (2FA)",
+    "description": "TOTP authenticator app or SMS-based 2FA"
+  },
+  "auth-magic-link": {
+    "name": "Magic Link Authentication",
+    "description": "Passwordless email link login"
+  },
+  "auth-multi-tenant": {
+    "name": "Multi-Tenant / Organization Accounts",
+    "description": "Org creation, team invites, role switching"
+  },
+  "auth-session-management": {
+    "name": "Session Management & Device Tracking",
+    "description": "Active sessions list, remote logout, device history"
+  },
+  "auth-account-deletion": {
+    "name": "Account Deletion (GDPR/App Store)",
+    "description": "Full data deletion flow with confirmation"
+  },
+  "auth-guest-access": {
+    "name": "Guest/Anonymous Access",
+    "description": "Limited access without registration"
+  },
+  "profile-basic": {
+    "name": "Basic User Profile",
+    "description": "Edit profile, upload photo, view others' profiles"
+  },
+  "profile-extended-fields": {
+    "name": "Extended Profile Fields",
+    "description": "Dynamic custom fields, form builder for profile"
+  },
+  "profile-verification": {
+    "name": "Profile Verification / Badges",
+    "description": "ID verification flow, verified badge system"
+  },
+  "profile-account-settings": {
+    "name": "Account Settings Page",
+    "description": "Email, password, language, notification preferences"
+  },
+  "profile-preferences": {
+    "name": "Preferences & App Customization",
+    "description": "Theme, language, units, layout preferences"
+  },
+  "profile-dark-mode": {
+    "name": "Dark Mode / Theme Toggle",
+    "description": "System-aware dark/light mode"
+  },
+  "profile-address-book": {
+    "name": "Address Book / Saved Addresses",
+    "description": "Add, edit, delete, set default addresses"
+  },
+  "profile-onboarding": {
+    "name": "User Onboarding Flow",
+    "description": "Multi-step tutorial, tooltips, skip option"
+  },
+  "nav-bottom-tabs": {
+    "name": "Bottom Tab Navigation",
+    "description": "Standard 3-5 tab bottom bar with icons"
+  },
+  "nav-side-drawer": {
+    "name": "Side Drawer / Hamburger Menu",
+    "description": "Slide-out navigation menu"
+  },
+  "nav-splash-screen": {
+    "name": "Custom Splash Screen",
+    "description": "Branded loading/splash screen"
+  },
+  "nav-app-icon": {
+    "name": "Custom App Icon Design",
+    "description": "Icon design for iOS & Android"
+  },
+  "nav-search-filters": {
+    "name": "Search Bar with Filters",
+    "description": "Global search, autocomplete, filter chips"
+  },
+  "nav-dashboard": {
+    "name": "Dynamic Home Screen / Dashboard",
+    "description": "Widgets, sections, personalized content"
+  },
+  "nav-pull-refresh": {
+    "name": "Pull-to-Refresh",
+    "description": "Refresh content with pull gesture"
+  },
+  "nav-infinite-scroll": {
+    "name": "Infinite Scroll / Pagination",
+    "description": "Lazy loading lists with pagination"
+  },
+  "nav-skeleton-loading": {
+    "name": "Skeleton Loading Screens",
+    "description": "Placeholder loading animations"
+  },
+  "nav-fab": {
+    "name": "Floating Action Button (FAB)",
+    "description": "Material design FAB with actions"
+  },
+  "nav-deep-linking": {
+    "name": "Deep Linking / Universal Links",
+    "description": "Open specific screens from URLs"
+  },
+  "content-image-upload": {
+    "name": "Image Upload & Cropping",
+    "description": "Camera/gallery, crop, compress, upload"
+  },
+  "content-multi-image": {
+    "name": "Multi-Image Upload (Gallery)",
+    "description": "Upload multiple images, reorder, delete"
+  },
+  "content-video-upload": {
+    "name": "Video Upload & Playback",
+    "description": "Record/upload video, streaming playback, compression"
+  },
+  "content-video-editing": {
+    "name": "Video Trimming / Basic Editing",
+    "description": "Trim, crop, basic filters on video"
+  },
+  "content-audio": {
+    "name": "Audio Recording & Playback",
+    "description": "Voice recorder, audio player, waveform display"
+  },
+  "content-document-upload": {
+    "name": "Document Upload (PDF, DOC)",
+    "description": "File picker, upload, preview"
+  },
+  "content-pdf-viewer": {
+    "name": "PDF Viewer (In-App)",
+    "description": "View PDFs without leaving the app"
+  },
+  "content-rich-text": {
+    "name": "Rich Text Editor",
+    "description": "WYSIWYG editor with formatting, images, links"
+  },
+  "content-image-gallery": {
+    "name": "Image Gallery / Carousel",
+    "description": "Swipeable image gallery with zoom"
+  },
+  "content-stories": {
+    "name": "Stories / Reels Feature",
+    "description": "Ephemeral content, camera, stickers, text overlay"
+  },
+  "content-qr-scanner": {
+    "name": "QR Code Scanner",
+    "description": "Camera-based QR/barcode scanning"
+  },
+  "content-qr-generator": {
+    "name": "QR Code Generator",
+    "description": "Generate QR codes for sharing/linking"
+  },
+  "content-file-manager": {
+    "name": "File Manager / Downloads",
+    "description": "Download, organize, view files within app"
+  },
+  "comm-chat-1to1": {
+    "name": "1-to-1 Real-Time Chat",
+    "description": "Text messaging, typing indicators, read receipts"
+  },
+  "comm-group-chat": {
+    "name": "Group Chat",
+    "description": "Group creation, admin controls, member management"
+  },
+  "comm-chat-media": {
+    "name": "Chat Media Sharing",
+    "description": "Send images, documents, voice notes in chat"
+  },
+  "comm-chat-reactions": {
+    "name": "Chat Reactions & Replies",
+    "description": "React with emoji, reply to specific messages"
+  },
+  "comm-voice-call": {
+    "name": "Voice Calling (VoIP)",
+    "description": "In-app voice calls, WebRTC or Twilio"
+  },
+  "comm-video-call": {
+    "name": "Video Calling",
+    "description": "1-on-1 or group video calls"
+  },
+  "comm-inbox": {
+    "name": "In-App Inbox / Notifications Center",
+    "description": "Message center for system & user notifications"
+  },
+  "comm-contact-list": {
+    "name": "Contact List / User Directory",
+    "description": "Search, browse, filter users"
+  },
+  "comm-chatbot": {
+    "name": "Chatbot / Automated Responses",
+    "description": "Rule-based or AI chatbot for support"
+  },
+  "comm-email-transactional": {
+    "name": "Email Notifications (Transactional)",
+    "description": "SendGrid/SES for verification, receipts, alerts"
+  },
+  "notif-basic-push": {
+    "name": "Basic Push Notifications",
+    "description": "Firebase Cloud Messaging, APNs setup"
+  },
+  "notif-preferences": {
+    "name": "Notification Preferences / Settings",
+    "description": "User controls for notification categories"
+  },
+  "notif-scheduled": {
+    "name": "Scheduled / Timed Notifications",
+    "description": "Send notifications at specific times"
+  },
+  "notif-rich": {
+    "name": "Rich Notifications",
+    "description": "Images, action buttons in notifications"
+  },
+  "notif-segmented": {
+    "name": "Topic-Based / Segmented Notifications",
+    "description": "Target users by segment, topic subscription"
+  },
+  "notif-badge": {
+    "name": "In-App Notification Badge",
+    "description": "Unread count badges on tabs/icons"
+  },
+  "notif-silent": {
+    "name": "Silent / Background Notifications",
+    "description": "Background data sync triggers"
+  },
+  "pay-stripe": {
+    "name": "Stripe Payment Integration",
+    "description": "Card payments, payment intents, webhooks"
+  },
+  "pay-paypal": {
+    "name": "PayPal Integration",
+    "description": "PayPal checkout flow"
+  },
+  "pay-apple-google": {
+    "name": "Apple Pay / Google Pay",
+    "description": "Native wallet payment methods"
+  },
+  "pay-iap": {
+    "name": "In-App Purchases (IAP)",
+    "description": "Consumable & non-consumable items"
+  },
+  "pay-subscriptions": {
+    "name": "Subscription Management",
+    "description": "Plans, billing cycles, upgrades, cancellation"
+  },
+  "pay-wallet": {
+    "name": "Wallet / Credits System",
+    "description": "In-app wallet, top-up, spend tracking"
+  },
+  "pay-promo-codes": {
+    "name": "Promo Codes / Coupons",
+    "description": "Create, validate, apply discount codes"
+  },
+  "pay-invoices": {
+    "name": "Invoice Generation",
+    "description": "Auto-generate PDF invoices"
+  },
+  "pay-multi-currency": {
+    "name": "Multi-Currency Support",
+    "description": "Display & process multiple currencies"
+  },
+  "pay-payouts": {
+    "name": "Payout / Withdrawal System",
+    "description": "User earnings, payout requests, bank transfer"
+  },
+  "pay-tipping": {
+    "name": "Tipping / Donation Feature",
+    "description": "Send tips to users or content creators"
+  },
+  "pay-ads": {
+    "name": "Ad Monetization (AdMob)",
+    "description": "Google AdMob integration, ad placements"
+  },
+  "pay-refunds": {
+    "name": "Refund Management",
+    "description": "Refund requests, processing, status tracking"
+  },
+  "ecom-product-listing": {
+    "name": "Product Listing / Catalog",
+    "description": "Product cards, categories, images, descriptions"
+  },
+  "ecom-product-detail": {
+    "name": "Product Detail Page",
+    "description": "Full product view, gallery, specs, reviews"
+  },
+  "ecom-cart": {
+    "name": "Shopping Cart",
+    "description": "Add/remove items, quantity, subtotal"
+  },
+  "ecom-checkout": {
+    "name": "Checkout Flow",
+    "description": "Address, shipping, payment, confirmation"
+  },
+  "ecom-orders-user": {
+    "name": "Order Management (User)",
+    "description": "Order history, status tracking, reorder"
+  },
+  "ecom-orders-admin": {
+    "name": "Order Management (Admin)",
+    "description": "Process, fulfill, cancel, refund orders"
+  },
+  "ecom-wishlist": {
+    "name": "Wishlist / Favorites",
+    "description": "Save products, share wishlist"
+  },
+  "ecom-reviews": {
+    "name": "Product Reviews & Ratings",
+    "description": "Star rating, written reviews, photo reviews"
+  },
+  "ecom-inventory": {
+    "name": "Inventory Management",
+    "description": "Stock levels, low stock alerts, variants"
+  },
+  "ecom-shipping": {
+    "name": "Shipping & Delivery Tracking",
+    "description": "Carrier integration, tracking updates, ETA"
+  },
+  "ecom-vendor-dashboard": {
+    "name": "Vendor / Seller Dashboard",
+    "description": "Multi-vendor support, seller analytics, payouts"
+  },
+  "ecom-comparison": {
+    "name": "Product Comparison",
+    "description": "Compare features side-by-side"
+  },
+  "ecom-barcode": {
+    "name": "Barcode / SKU Scanner",
+    "description": "Scan products to add/lookup inventory"
+  },
+  "booking-calendar": {
+    "name": "Calendar View",
+    "description": "Interactive calendar with events"
+  },
+  "booking-appointment": {
+    "name": "Appointment Booking System",
+    "description": "Time slots, availability, booking confirmation"
+  },
+  "booking-provider-scheduling": {
+    "name": "Service Provider Scheduling",
+    "description": "Provider sets availability, manages bookings"
+  },
+  "booking-modifications": {
+    "name": "Booking Modifications & Cancellation",
+    "description": "Reschedule, cancel with policy enforcement"
+  },
+  "booking-recurring": {
+    "name": "Recurring Appointments",
+    "description": "Weekly/monthly recurring booking support"
+  },
+  "booking-waitlist": {
+    "name": "Waitlist Management",
+    "description": "Join waitlist, auto-notify when slot opens"
+  },
+  "booking-calendar-sync": {
+    "name": "Calendar Sync (Google/Apple)",
+    "description": "Sync bookings to native calendar apps"
+  },
+  "booking-reminders": {
+    "name": "Booking Reminders",
+    "description": "SMS/push reminders before appointment"
+  },
+  "maps-view": {
+    "name": "Map View (Google Maps / Mapbox)",
+    "description": "Embedded map with markers and interaction"
+  },
+  "maps-user-location": {
+    "name": "User Location Detection (GPS)",
+    "description": "Get current location, permission handling"
+  },
+  "maps-search": {
+    "name": "Location Search / Autocomplete",
+    "description": "Search places with Google Places API"
+  },
+  "maps-geofencing": {
+    "name": "Geofencing",
+    "description": "Trigger actions when entering/leaving areas"
+  },
+  "maps-directions": {
+    "name": "Route / Directions Display",
+    "description": "Show driving/walking routes on map"
+  },
+  "maps-live-tracking": {
+    "name": "Real-Time Location Tracking",
+    "description": "Live GPS tracking of delivery/driver"
+  },
+  "maps-store-locator": {
+    "name": "Store / Branch Locator",
+    "description": "Find nearest locations, hours, contact"
+  },
+  "maps-heatmap": {
+    "name": "Heatmap / Density Visualization",
+    "description": "Visual data overlay on maps"
+  },
+  "maps-nearby": {
+    "name": "Nearby Places / POI Discovery",
+    "description": "Discover points of interest near user"
+  },
+  "social-feed": {
+    "name": "News Feed / Activity Feed",
+    "description": "Scrollable feed of posts/updates"
+  },
+  "social-post-creation": {
+    "name": "Post Creation",
+    "description": "Compose posts with media attachments"
+  },
+  "social-likes": {
+    "name": "Like / React System",
+    "description": "Like, love, laugh reactions on content"
+  },
+  "social-comments": {
+    "name": "Comment System (Threaded)",
+    "description": "Comments with replies, mentions, moderation"
+  },
+  "social-share": {
+    "name": "Share / Repost Feature",
+    "description": "Share content within app or externally"
+  },
+  "social-follow": {
+    "name": "Follow / Friend System",
+    "description": "Follow users, friend requests, mutual connections"
+  },
+  "social-blocking": {
+    "name": "User Blocking & Reporting",
+    "description": "Block users, report content, moderation queue"
+  },
+  "social-hashtags": {
+    "name": "Hashtags & Trending Topics",
+    "description": "Taggable hashtags, trending discovery"
+  },
+  "social-groups": {
+    "name": "Groups / Communities",
+    "description": "Create/join groups, group posts, admin controls"
+  },
+  "social-events": {
+    "name": "Events Feature",
+    "description": "Create events, RSVP, reminders, attendee list"
+  },
+  "social-polls": {
+    "name": "Polls & Surveys",
+    "description": "Create polls, vote, view results"
+  },
+  "social-gamification": {
+    "name": "Leaderboard / Gamification",
+    "description": "Points, ranks, badges, achievements"
+  },
+  "admin-dashboard": {
+    "name": "Basic Admin Dashboard",
+    "description": "Overview stats, charts, quick actions"
+  },
+  "admin-user-management": {
+    "name": "User Management (Admin)",
+    "description": "View, edit, ban, delete users"
+  },
+  "admin-content-management": {
+    "name": "Content Management (CRUD)",
+    "description": "Create, read, update, delete app content"
+  },
+  "admin-rbac": {
+    "name": "Role-Based Access Control (RBAC)",
+    "description": "Admin, moderator, editor, viewer roles"
+  },
+  "admin-analytics": {
+    "name": "Analytics Dashboard",
+    "description": "User metrics, revenue, engagement charts"
+  },
+  "admin-push-sender": {
+    "name": "Push Notification Sender",
+    "description": "Compose & send push from admin panel"
+  },
+  "admin-reports-export": {
+    "name": "Report & Export (CSV, PDF)",
+    "description": "Export data tables to CSV or PDF"
+  },
+  "admin-audit-log": {
+    "name": "Audit Log / Activity Log",
+    "description": "Track admin actions and changes"
+  },
+  "admin-support-tickets": {
+    "name": "Support Ticket System",
+    "description": "Users submit tickets, admin responds"
+  },
+  "admin-cms-dynamic": {
+    "name": "CMS for Dynamic Content",
+    "description": "Manage banners, FAQs, pages from admin"
+  },
+  "admin-remote-config": {
+    "name": "App Configuration (Remote Config)",
+    "description": "Toggle features, change settings remotely"
+  },
+  "analytics-firebase": {
+    "name": "Firebase Analytics Integration",
+    "description": "Screen views, events, user properties"
+  },
+  "analytics-crash-reporting": {
+    "name": "Crash Reporting (Crashlytics/Sentry)",
+    "description": "Crash logs, error tracking, alerts"
+  },
+  "analytics-custom-events": {
+    "name": "Custom Event Tracking",
+    "description": "Track specific user actions and funnels"
+  },
+  "analytics-ab-testing": {
+    "name": "A/B Testing Framework",
+    "description": "Feature flags, experiment variants, results"
+  },
+  "analytics-behavior": {
+    "name": "User Behavior Analytics",
+    "description": "Tap heatmaps, session recordings"
+  },
+  "analytics-attribution": {
+    "name": "Attribution / UTM Tracking",
+    "description": "Track install sources and campaigns"
+  },
+  "analytics-performance": {
+    "name": "Performance Monitoring",
+    "description": "App load times, API response times"
+  },
+  "security-ssl": {
+    "name": "SSL / HTTPS Enforcement",
+    "description": "SSL certificate, force HTTPS"
+  },
+  "security-encryption": {
+    "name": "Data Encryption",
+    "description": "AES-256 encryption, TLS 1.3"
+  },
+  "security-gdpr": {
+    "name": "GDPR Compliance Module",
+    "description": "Consent management, data export, right to delete"
+  },
+  "security-legal-pages": {
+    "name": "Terms of Service & Privacy Policy",
+    "description": "In-app legal pages with acceptance flow"
+  },
+  "security-rate-limiting": {
+    "name": "Rate Limiting & Brute Force Protection",
+    "description": "API rate limiting, account lockout"
+  },
+  "security-content-moderation": {
+    "name": "Content Moderation (AI-based)",
+    "description": "Auto-flag inappropriate content"
+  },
+  "security-e2ee": {
+    "name": "End-to-End Encryption (E2EE)",
+    "description": "Encrypted messaging, key exchange"
+  },
+  "security-backup": {
+    "name": "Data Backup & Recovery",
+    "description": "Automated backups, disaster recovery plan"
+  },
+  "security-ip-blocking": {
+    "name": "IP Blocking / Geo-Restriction",
+    "description": "Block access by IP or country"
+  },
+  "security-audit-trail": {
+    "name": "Audit Trail / Compliance Logging",
+    "description": "Log all sensitive operations for compliance"
+  },
+  "l10n-multi-language": {
+    "name": "Multi-Language Support (i18n)",
+    "description": "Per-language string files, language switcher"
+  },
+  "l10n-rtl": {
+    "name": "RTL Language Support",
+    "description": "Right-to-left layout mirroring"
+  },
+  "l10n-accessibility": {
+    "name": "Accessibility (WCAG Compliance)",
+    "description": "Screen reader, contrast, font scaling"
+  },
+  "l10n-dynamic-font": {
+    "name": "Dynamic Font Sizing",
+    "description": "Respect system font size settings"
+  },
+  "l10n-voiceover": {
+    "name": "Voice-Over / TalkBack Support",
+    "description": "Full screen reader compatibility"
+  },
+  "l10n-auto-translation": {
+    "name": "Auto-Translation (API-based)",
+    "description": "Google Translate API for dynamic content"
+  },
+  "ai-chatbot": {
+    "name": "AI Chatbot Integration",
+    "description": "Conversational AI for support or content"
+  },
+  "ai-recommendations": {
+    "name": "AI-Powered Recommendations",
+    "description": "Personalized content/product recommendations"
+  },
+  "ai-image-recognition": {
+    "name": "Image Recognition / Classification",
+    "description": "Identify objects, categorize images"
+  },
+  "ai-nlp": {
+    "name": "Natural Language Processing (NLP)",
+    "description": "Text analysis, sentiment, entity extraction"
+  },
+  "ai-speech-to-text": {
+    "name": "Voice-to-Text / Speech Recognition",
+    "description": "Transcribe voice input to text"
+  },
+  "ai-text-to-speech": {
+    "name": "Text-to-Speech",
+    "description": "Read content aloud, accessibility"
+  },
+  "ai-content-generation": {
+    "name": "AI Content Generation",
+    "description": "Generate text, summaries, descriptions"
+  },
+  "ai-smart-search": {
+    "name": "Smart Search (Semantic/AI)",
+    "description": "AI-powered search with context understanding"
+  },
+  "ai-facial-recognition": {
+    "name": "Facial Recognition",
+    "description": "Face detection and recognition features"
+  },
+  "ai-ocr": {
+    "name": "OCR (Optical Character Recognition)",
+    "description": "Extract text from images/documents"
+  },
+  "ai-custom-model": {
+    "name": "Custom AI Model Training & Deployment",
+    "description": "Train custom ML models on client data, deploy to production with API endpoints"
+  },
+  "ai-custom-nlp": {
+    "name": "Custom NLP Model (Domain-Specific)",
+    "description": "Fine-tuned language model for industry-specific terminology and tasks"
+  },
+  "ai-custom-vision": {
+    "name": "Custom Computer Vision Model",
+    "description": "Train object detection, classification, or segmentation on custom datasets"
+  },
+  "ai-document-pipeline": {
+    "name": "AI-Powered Document Processing Pipeline",
+    "description": "Extract, classify, and process documents with custom-trained models"
+  },
+  "ai-predictive-analytics": {
+    "name": "Predictive Analytics Engine",
+    "description": "Custom prediction models for sales, demand, churn, or risk scoring"
+  },
+  "ai-recommendation-engine": {
+    "name": "AI Recommendation Engine (Custom)",
+    "description": "Collaborative/content-based filtering trained on client's user behavior data"
+  },
+  "ai-conversational-agent": {
+    "name": "Conversational AI Agent (Custom)",
+    "description": "Domain-specific AI assistant with RAG, knowledge base, and fine-tuned responses"
+  },
+  "ai-data-extraction": {
+    "name": "AI Data Extraction & Structuring",
+    "description": "Extract structured data from unstructured sources"
+  },
+  "ai-sentiment-analysis": {
+    "name": "Sentiment Analysis & Brand Monitoring",
+    "description": "Custom sentiment model for reviews, social media, customer feedback"
+  },
+  "ai-anomaly-detection": {
+    "name": "AI-Powered Anomaly Detection",
+    "description": "Detect fraud, defects, or unusual patterns in business data"
+  },
+  "ai-image-generation": {
+    "name": "Custom Image Generation / Style Transfer",
+    "description": "Generate or transform images based on brand style and custom training"
+  },
+  "ai-workflow-automation": {
+    "name": "AI Workflow Automation (Multi-Agent)",
+    "description": "Multi-step AI agents that automate complex business workflows end-to-end"
+  },
+  "ai-pricing-optimization": {
+    "name": "AI-Powered Pricing Optimization",
+    "description": "Dynamic pricing models based on demand, competition, and market data"
+  },
+  "ai-voice-assistant": {
+    "name": "Voice AI / Custom Voice Assistant",
+    "description": "Custom voice agent with domain-specific understanding and responses"
+  },
+  "ai-translation-model": {
+    "name": "AI Translation Model (Custom)",
+    "description": "Fine-tuned translation for industry jargon, Arabic dialects, technical terms"
+  },
+  "ai-quality-control": {
+    "name": "AI Quality Control / Inspection System",
+    "description": "Visual inspection AI for manufacturing, construction, or agriculture"
+  },
+  "ai-knowledge-graph": {
+    "name": "Knowledge Graph & Semantic Search Engine",
+    "description": "Build domain knowledge graph with AI-powered semantic querying"
+  },
+  "ai-rag-system": {
+    "name": "RAG System (Retrieval-Augmented Generation)",
+    "description": "Custom RAG pipeline with vector DB, embeddings, and contextual retrieval"
+  },
+  "ai-model-monitoring": {
+    "name": "AI Model Monitoring & Retraining Pipeline",
+    "description": "MLOps dashboard, model drift detection, automated retraining triggers"
+  },
+  "ai-custom-api": {
+    "name": "Custom AI API Development",
+    "description": "Standalone AI microservice with REST API, documentation, and rate limiting"
+  },
+  "backend-rest-api": {
+    "name": "REST API Development",
+    "description": "Custom backend API with authentication"
+  },
+  "backend-database": {
+    "name": "Database Design & Setup",
+    "description": "Schema design, indexing, optimization"
+  },
+  "backend-cloud-hosting": {
+    "name": "Cloud Hosting Setup",
+    "description": "Server setup, deployment pipeline"
+  },
+  "backend-cdn": {
+    "name": "CDN Setup",
+    "description": "CloudFront/Cloudflare for fast delivery"
+  },
+  "backend-rate-limiting": {
+    "name": "API Rate Limiting & Caching",
+    "description": "Redis caching, rate limit middleware"
+  },
+  "backend-websocket": {
+    "name": "WebSocket / Real-Time Engine",
+    "description": "Socket.io or Firebase Realtime for live updates"
+  },
+  "backend-background-jobs": {
+    "name": "Background Jobs / Task Queue",
+    "description": "Cron jobs, queued processing"
+  },
+  "backend-file-storage": {
+    "name": "File Storage (S3/Firebase)",
+    "description": "Scalable file storage with CDN"
+  },
+  "backend-email-service": {
+    "name": "Email Service (SendGrid/SES)",
+    "description": "Transactional & marketing emails"
+  },
+  "backend-sms-service": {
+    "name": "SMS Service (Twilio)",
+    "description": "OTP, notifications via SMS"
+  },
+  "backend-cicd": {
+    "name": "CI/CD Pipeline",
+    "description": "Automated build, test, deploy"
+  },
+  "backend-staging": {
+    "name": "Staging / QA Environment",
+    "description": "Separate environment for testing"
+  },
+  "backend-migrations": {
+    "name": "Database Migration System",
+    "description": "Version-controlled schema changes"
+  },
+  "backend-api-docs": {
+    "name": "API Documentation (Swagger/Postman)",
+    "description": "Auto-generated API docs"
+  },
+  "backend-microservices": {
+    "name": "Microservices Architecture",
+    "description": "Distributed services, service mesh, API gateway"
+  },
+  "backend-serverless": {
+    "name": "Serverless Functions",
+    "description": "AWS Lambda / Cloud Functions for specific tasks"
+  },
+  "testing-unit": {
+    "name": "Unit Testing Suite",
+    "description": "Jest/Mocha/Pytest for core logic"
+  },
+  "testing-integration": {
+    "name": "Integration Testing",
+    "description": "API endpoint and workflow testing"
+  },
+  "testing-ui-manual": {
+    "name": "UI/UX Testing (Manual)",
+    "description": "Manual testing on devices, usability review"
+  },
+  "testing-e2e": {
+    "name": "Automated E2E Testing",
+    "description": "Detox/Appium end-to-end test suite"
+  },
+  "testing-performance": {
+    "name": "Performance / Load Testing",
+    "description": "Stress test APIs and app performance"
+  },
+  "testing-security": {
+    "name": "Security Penetration Testing",
+    "description": "Vulnerability scanning, OWASP checks"
+  },
+  "testing-beta": {
+    "name": "Beta Testing Program",
+    "description": "Beta distribution, feedback collection"
+  },
+  "testing-bug-tracking": {
+    "name": "Bug Tracking Integration",
+    "description": "Bug reporting workflow setup"
+  },
+  "deploy-ios": {
+    "name": "iOS App Store Submission",
+    "description": "Screenshots, descriptions, review compliance"
+  },
+  "deploy-android": {
+    "name": "Google Play Store Submission",
+    "description": "Listing, content rating, review"
+  },
+  "deploy-aso": {
+    "name": "App Store Optimization (ASO)",
+    "description": "Keywords, screenshots, descriptions optimization"
+  },
+  "deploy-ota-updates": {
+    "name": "Over-the-Air Updates (CodePush)",
+    "description": "Push JS updates without app store review"
+  },
+  "deploy-feature-flags": {
+    "name": "Feature Flags / Remote Toggle",
+    "description": "Enable/disable features without deploy"
+  },
+  "deploy-versioning": {
+    "name": "App Versioning & Update Prompt",
+    "description": "Force update, soft update prompt"
+  },
+  "deploy-pwa": {
+    "name": "Web App (PWA) Deployment",
+    "description": "Progressive Web App with offline support"
+  },
+  "integ-google-maps": {
+    "name": "Google Maps API",
+    "description": "Maps, places, directions, geocoding"
+  },
+  "integ-firebase": {
+    "name": "Firebase Suite",
+    "description": "Full Firebase backend-as-a-service"
+  },
+  "integ-twilio": {
+    "name": "Twilio (SMS, Voice, Video)",
+    "description": "Communication APIs integration"
+  },
+  "integ-sendgrid": {
+    "name": "SendGrid / Mailchimp (Email)",
+    "description": "Email delivery and marketing"
+  },
+  "integ-algolia": {
+    "name": "Algolia / ElasticSearch",
+    "description": "Advanced search integration"
+  },
+  "integ-stripe-connect": {
+    "name": "Stripe Connect (Marketplace)",
+    "description": "Multi-party payments, escrow"
+  },
+  "integ-social-sharing": {
+    "name": "Social Media Sharing SDK",
+    "description": "Share to Facebook, Twitter, WhatsApp"
+  },
+  "integ-calendar": {
+    "name": "Calendar API (Google/Outlook)",
+    "description": "Sync with external calendars"
+  },
+  "integ-crm": {
+    "name": "CRM Integration (Salesforce/HubSpot)",
+    "description": "Sync user data with CRM"
+  },
+  "integ-zapier": {
+    "name": "Zapier / Webhook Integration",
+    "description": "Connect app to 3000+ services"
+  },
+  "integ-whatsapp": {
+    "name": "WhatsApp Business API",
+    "description": "Send notifications via WhatsApp"
+  },
+  "integ-custom-api": {
+    "name": "Custom API Integration",
+    "description": "Connect to any third-party REST API"
+  },
+  "offline-basic": {
+    "name": "Offline Mode (Basic Caching)",
+    "description": "Cache key data for offline viewing"
+  },
+  "offline-sync": {
+    "name": "Offline Sync (Read/Write)",
+    "description": "Full offline CRUD with conflict resolution"
+  },
+  "offline-image-cache": {
+    "name": "Image/Asset Caching",
+    "description": "Cache images for faster loading"
+  },
+  "offline-optimization": {
+    "name": "App Performance Optimization",
+    "description": "Lazy loading, code splitting, memory optimization"
+  },
+  "offline-background-sync": {
+    "name": "Background Sync & Data Refresh",
+    "description": "Sync data periodically in background"
+  },
+  "misc-animations": {
+    "name": "Custom Animations & Transitions",
+    "description": "Lottie animations, page transitions, micro-interactions"
+  },
+  "misc-haptic": {
+    "name": "Haptic Feedback",
+    "description": "Vibration feedback on interactions"
+  },
+  "misc-rating-prompt": {
+    "name": "App Rating Prompt",
+    "description": "Smart prompt to rate app on store"
+  },
+  "misc-referral": {
+    "name": "Referral / Invite System",
+    "description": "Referral codes, rewards, tracking"
+  },
+  "misc-loyalty": {
+    "name": "Loyalty / Rewards Program",
+    "description": "Points accumulation, rewards catalog, redemption"
+  },
+  "misc-multi-platform": {
+    "name": "Multi-Platform Sync",
+    "description": "Seamless data sync across iOS/Android/Web"
+  },
+  "misc-print": {
+    "name": "Print Functionality",
+    "description": "Print receipts, reports, content from app"
+  },
+  "misc-ar": {
+    "name": "Augmented Reality (AR) Feature",
+    "description": "AR camera overlay, 3D object placement"
+  },
+  "misc-bluetooth": {
+    "name": "Bluetooth / IoT Integration",
+    "description": "Connect to BLE devices, data exchange"
+  },
+  "misc-nfc": {
+    "name": "NFC (Near Field Communication)",
+    "description": "Tap-to-pay, tap-to-connect features"
+  },
+  "misc-wearable": {
+    "name": "Wearable App (Apple Watch/WearOS)",
+    "description": "Companion app for smartwatches"
+  },
+  "misc-widget": {
+    "name": "Widget (iOS/Android Home Screen)",
+    "description": "Home screen widget showing app data"
+  },
+  "misc-clipboard": {
+    "name": "Clipboard & Share Extension",
+    "description": "Share to app from other apps"
+  },
+  "misc-custom-keyboard": {
+    "name": "Custom Keyboard Extension",
+    "description": "Custom keyboard for messaging"
+  },
+  "categories": {
+    "auth": "Authentication & Login",
+    "profile": "User Profile & Settings",
+    "navigation": "Navigation & UI",
+    "content": "Content & Media",
+    "communication": "Communication & Messaging",
+    "notifications": "Notifications & Alerts",
+    "payments": "Payments & Billing",
+    "ecommerce": "E-Commerce & Shopping",
+    "booking": "Booking & Scheduling",
+    "maps": "Maps & Location",
+    "social": "Social & Community",
+    "admin": "Admin & Management",
+    "analytics": "Analytics & Reporting",
+    "security": "Security & Compliance",
+    "localization": "Localization & Accessibility",
+    "ai": "AI & Machine Learning",
+    "backend": "Backend & Infrastructure",
+    "testing": "Testing & QA",
+    "deployment": "Deployment & DevOps",
+    "integrations": "Integrations & APIs",
+    "offline": "Offline & Sync",
+    "misc": "Miscellaneous"
+  }
+}

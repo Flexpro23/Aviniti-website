@@ -28,10 +28,10 @@ export function TrustIndicators() {
   const { ref, inView } = useScrollReveal({ once: true });
 
   const metrics: TrustMetric[] = [
-    { value: 50, suffix: '+', labelKey: 'metric_1_label' },
-    { value: 12, suffix: '+', labelKey: 'metric_2_label' },
-    { value: 98, suffix: '%', labelKey: 'metric_3_label' },
-    { value: 2, suffix: 'x', labelKey: 'metric_4_label' },
+    { value: 50, suffix: '+', labelKey: 'metric_1_label' }, // 50+ Apps Delivered
+    { value: 7, suffix: '', labelKey: 'metric_2_label' }, // 7 Ready-Made Solutions
+    { value: 98, suffix: '%', labelKey: 'metric_3_label' }, // 98% Client Satisfaction
+    { value: 35, suffix: '', labelKey: 'metric_4_label' }, // 35-Day Average Delivery
   ];
 
   const badges: TrustBadge[] = [
@@ -41,7 +41,9 @@ export function TrustIndicators() {
   ];
 
   return (
-    <section className="py-16 lg:py-20 bg-navy">
+    <section className="relative py-16 lg:py-20 bg-navy-dark">
+      {/* Top gradient border */}
+      <div className="absolute top-0 inset-x-0 h-px section-divider" aria-hidden="true" />
       <Container>
         <div ref={ref}>
           {/* Metrics Row */}
@@ -90,12 +92,19 @@ function MetricCard({ value, suffix, label, inView, delay = 0 }: MetricCardProps
   const count = useCountUp(inView ? value : 0, { duration: 2000, delay });
 
   return (
-    <div className="text-center">
-      <div className="text-4xl lg:text-5xl font-bold text-white mb-2">
-        {Math.round(count)}
-        <span className="text-bronze">{suffix}</span>
+    <div className="text-center group">
+      <div className="relative inline-block">
+        <div className="text-4xl lg:text-5xl font-bold text-white mb-2 relative z-10">
+          {Math.round(count)}
+          <span className="text-bronze">{suffix}</span>
+        </div>
+        {/* Bronze glow underline effect */}
+        <div
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-1 bg-bronze/40 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          aria-hidden="true"
+        />
       </div>
-      <div className="text-sm font-medium text-muted uppercase tracking-widest">{label}</div>
+      <div className="text-sm font-medium text-muted uppercase tracking-widest mt-3">{label}</div>
     </div>
   );
 }

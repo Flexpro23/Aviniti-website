@@ -35,7 +35,8 @@ export function ToolResults({
       animate="visible"
       className={cn(
         'bg-slate-blue rounded-xl p-6 md:p-8',
-        'border border-slate-blue-light',
+        'border border-slate-blue-light/80',
+        'shadow-lg shadow-black/20',
         className
       )}
     >

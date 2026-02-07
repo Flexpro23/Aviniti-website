@@ -9,20 +9,16 @@ import { SectionHeading } from '@/components/shared/SectionHeading';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
-/** Slug-to-translation-key mapping */
+/** Slug-to-translation-key mapping (slugs match JSON keys directly) */
 const slugToKey: Record<string, string> = {
-  'delivery-app-system': 'delivery_app',
-  'kindergarten-management': 'kindergarten_management',
-  'hypermarket-management': 'hypermarket_system',
-  'office-management': 'office_suite',
-  'gym-management': 'gym_management',
-  'airbnb-marketplace': 'airbnb_clone',
-  'hair-transplant-ai': 'hair_transplant_ai',
+  'delivery-app-system': 'delivery-app-system',
+  'kindergarten-management': 'kindergarten-management',
+  'hypermarket-management': 'hypermarket-management',
+  'office-management': 'office-management',
+  'gym-management': 'gym-management',
+  'airbnb-marketplace': 'airbnb-marketplace',
+  'hair-transplant-ai': 'hair-transplant-ai',
 };
-
-export function generateStaticParams() {
-  return solutions.map((s) => ({ slug: s.slug }));
-}
 
 export async function generateMetadata({
   params,

@@ -105,6 +105,22 @@
     "medium": "متوسط",
     "high": "مرتفع"
   },
+  "pricing": {
+    "running_total_features": "{count} ميزة",
+    "running_total_separator": "\u00b7",
+    "discount_hint": "+{needed} أخرى للحصول على خصم {percent}%",
+    "discount_applied": "تم تطبيق خصم الحزمة {percent}%!",
+    "table_title": "الميزات والأسعار",
+    "table_feature": "الميزة",
+    "table_category": "الفئة",
+    "table_price": "السعر",
+    "subtotal": "المجموع الفرعي",
+    "design_surcharge": "التصميم وتجربة المستخدم (+20%)",
+    "bundle_discount": "خصم الحزمة (-{percent}%)",
+    "total": "الإجمالي",
+    "features_count": "{count} ميزة",
+    "days": "{count} يوم"
+  },
   "results": {
     "title": "مخطط المشروع جاهز",
     "subtitle": "بناءً على المعلومات التي قدمتها",
@@ -142,6 +158,7 @@
     "save_results": "حفظ النتائج",
     "nav": {
       "summary": "الملخص",
+      "features": "الميزات",
       "breakdown": "التفصيل",
       "cost_chart": "مخطط التكلفة",
       "timeline": "الجدول الزمني",

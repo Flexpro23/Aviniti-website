@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, ArrowLeft, Briefcase, User, GraduationCap, Palette, MoreHorizontal, Heart, DollarSign, BookOpen, ShoppingCart, Truck, Film, Plane, Home, UtensilsCrossed, Users, Check, Star } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Briefcase, User, GraduationCap, Palette, MoreHorizontal, Heart, DollarSign, BookOpen, ShoppingCart, Truck, Film, Plane, Home, UtensilsCrossed, Users, Check, Star, Link2, CheckCircle2, RefreshCw } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
@@ -10,6 +10,7 @@ import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
+import { useResultPersistence } from '@/hooks/useResultPersistence';
 import type { Background, Industry } from '@/types/api';
 import type { IdeaLabResponse, IdeaLabIdea } from '@/types/api';
 
@@ -66,6 +67,8 @@ export default function IdeaLabPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<IdeaLabResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState(1);
+  const [rateLimitRemaining, setRateLimitRemaining] = useState<number>(3);
 
   // ============================================================
   // Navigation helpers
@@ -107,8 +110,59 @@ export default function IdeaLabPage() {
 
       if (data.success) {
         setResults(data.data);
+        // Extract rate limit info from headers if available
+        const remaining = res.headers.get('X-RateLimit-Remaining');
+        if (remaining) {
+          setRateLimitRemaining(parseInt(remaining, 10));
+        }
       } else {
         setError(data.error?.message || 'Failed to generate ideas. Please try again.');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ============================================================
+  // Generate More Ideas Handler
+  // ============================================================
+  const handleGenerateMore = async () => {
+    if (!results || rateLimitRemaining <= 0) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const existingIdeaNames = results.ideas.map(idea => idea.name);
+
+      const res = await fetch('/api/ai/idea-lab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          background: formData.background,
+          industry: formData.industry,
+          problem: formData.problem,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          locale: 'en',
+          existingIdeas: existingIdeaNames,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setResults(data.data);
+        setGenerationCount(prev => prev + 1);
+        // Update rate limit
+        const remaining = res.headers.get('X-RateLimit-Remaining');
+        if (remaining) {
+          setRateLimitRemaining(parseInt(remaining, 10));
+        }
+      } else {
+        setError(data.error?.message || 'Failed to generate more ideas. Please try again.');
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -134,9 +188,10 @@ export default function IdeaLabPage() {
           <AIThinkingState
             toolColor="orange"
             messages={[
-              'Analyzing your industry and background...',
-              'Exploring market opportunities...',
-              'Generating creative app concepts...',
+              'Exploring your interests...',
+              'Researching market opportunities...',
+              'Generating innovative concepts...',
+              'Refining your ideas...',
             ]}
           />
         </div>
@@ -144,10 +199,30 @@ export default function IdeaLabPage() {
     );
   }
 
+  // Result persistence state
+  const [isCopied, setIsCopied] = useState(false);
+  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('idea-lab');
+
+  // Save result when it changes
+  useEffect(() => {
+    if (results && !savedId) {
+      saveResult(results);
+    }
+  }, [results, savedId, saveResult]);
+
   // ============================================================
   // Results state
   // ============================================================
   if (results) {
+
+    const handleCopyLink = async () => {
+      const success = await copyShareableUrl();
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }
+    };
+
     return (
       <main className="min-h-screen bg-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -166,6 +241,26 @@ export default function IdeaLabPage() {
             </p>
           </div>
 
+          {/* Save Results Button */}
+          <div className="flex justify-center mb-10">
+            <button
+              onClick={handleCopyLink}
+              className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
+            >
+              {isCopied ? (
+                <>
+                  <CheckCircle2 className="h-5 w-5 text-success" />
+                  Link Copied!
+                </>
+              ) : (
+                <>
+                  <Link2 className="h-5 w-5" />
+                  Save & Share Ideas
+                </>
+              )}
+            </button>
+          </div>
+
           {/* Idea Cards */}
           <ToolResults toolColor="orange" className="space-y-6 bg-transparent border-0 p-0">
             {results.ideas.map((idea: IdeaLabIdea, index: number) => (
@@ -173,16 +268,30 @@ export default function IdeaLabPage() {
                 <article className="bg-slate-blue border border-slate-blue-light rounded-xl p-6 md:p-8 hover:border-orange-500/30 transition-all duration-300 group">
                   {/* Card header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">
-                        Idea {index + 1}
-                      </span>
-                      <h3 className="text-xl md:text-2xl font-bold text-white mt-1">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">
+                          Idea {index + 1}
+                        </span>
+                        {/* Complexity Badge */}
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          idea.complexity === 'simple'
+                            ? 'bg-green-500/15 text-green-400 border border-green-500/30'
+                            : idea.complexity === 'moderate'
+                            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                            : 'bg-red-500/15 text-red-400 border border-red-500/30'
+                        }`}>
+                          {idea.complexity === 'simple' ? t('complexity_simple') || 'Simple' :
+                           idea.complexity === 'moderate' ? t('complexity_moderate') || 'Moderate' :
+                           t('complexity_complex') || 'Complex'}
+                        </span>
+                      </div>
+                      <h3 className="text-xl md:text-2xl font-bold text-white">
                         {idea.name}
                       </h3>
                     </div>
                     <button
-                      className="h-9 w-9 rounded-lg flex items-center justify-center text-muted hover:text-orange-400 hover:bg-orange-500/10 transition-colors duration-200"
+                      className="h-9 w-9 rounded-lg flex items-center justify-center text-muted hover:text-orange-400 hover:bg-orange-500/10 transition-colors duration-200 flex-shrink-0"
                       aria-label={`Bookmark ${idea.name}`}
                     >
                       <Star className="h-5 w-5" />
@@ -225,17 +334,36 @@ export default function IdeaLabPage() {
                     </div>
                   </div>
 
+                  {/* Tech Stack */}
+                  {idea.techStack && idea.techStack.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
+                        {t('tech_stack') || 'Tech Stack'}
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {idea.techStack.map((tech: string, techIdx: number) => (
+                          <span
+                            key={techIdx}
+                            className="px-2.5 py-1 rounded-md bg-slate-blue-light/50 text-xs text-off-white border border-slate-blue-light"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Card actions */}
                   <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <a
-                      href={`/ai-analyzer?idea=${encodeURIComponent(idea.description)}`}
+                      href={`/ai-analyzer?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}`}
                       className="h-11 px-5 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
                     >
                       Explore This Idea
                       <ArrowRight className="h-4 w-4" />
                     </a>
                     <a
-                      href={`/get-estimate?idea=${encodeURIComponent(idea.name)}`}
+                      href={`/get-estimate?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}&ideaFeatures=${encodeURIComponent(idea.features.join(','))}`}
                       className="h-11 px-5 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
                     >
                       Get Estimate
@@ -245,6 +373,23 @@ export default function IdeaLabPage() {
               </ToolResultItem>
             ))}
           </ToolResults>
+
+          {/* Generate More Ideas Button */}
+          {rateLimitRemaining > 0 && (
+            <div className="flex flex-col items-center gap-3 mt-8">
+              <button
+                onClick={handleGenerateMore}
+                disabled={isLoading}
+                className="h-11 px-6 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {t('generate_more') || 'Generate More Ideas'}
+              </button>
+              <span className="text-xs text-muted">
+                {t('generation_counter', { current: generationCount, total: 3 }) || `Generation ${generationCount} of 3`}
+              </span>
+            </div>
+          )}
 
           {/* Cross-sell */}
           <div className="mt-10 space-y-4">

@@ -64,7 +64,7 @@ export function getExitIntentCapturesCollection() {
 // ============================================================
 
 export interface LeadData {
-  email: string;
+  email?: string | null;
   name?: string | null;
   company?: string | null;
   phone?: string | null;
@@ -174,15 +174,19 @@ export async function saveLeadToFirestore(
 ): Promise<string> {
   const leadsCollection = getLeadsCollection();
 
-  // Check for existing lead with same email
-  const existingLeadsSnapshot = await leadsCollection
-    .where('email', '==', leadData.email)
-    .limit(1)
-    .get();
-
   const now = new Date();
 
-  if (!existingLeadsSnapshot.empty) {
+  // Check for existing lead with same email (only if email is provided)
+  let existingLeadsSnapshot: FirebaseFirestore.QuerySnapshot | null = null;
+
+  if (leadData.email) {
+    existingLeadsSnapshot = await leadsCollection
+      .where('email', '==', leadData.email)
+      .limit(1)
+      .get();
+  }
+
+  if (existingLeadsSnapshot && !existingLeadsSnapshot.empty) {
     // Update existing lead
     const existingLead = existingLeadsSnapshot.docs[0];
     const existingData = existingLead.data();

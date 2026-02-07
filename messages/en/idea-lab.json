@@ -3,6 +3,16 @@
     "title": "Idea Lab - AI App Idea Generator | Aviniti",
     "description": "Out of ideas? Our AI will generate 5-6 personalized app concepts tailored to your industry and background"
   },
+  "hero_title": "Don't Have an App Idea? Let's Discover One Together.",
+  "hero_description": "Answer 3 quick questions and our AI will generate personalized app ideas tailored to your background, industry, and vision.",
+  "hero_cta": "Start Discovery",
+  "step1_title": "Tell me about yourself -- what's your background?",
+  "step1_helper": "This helps us match ideas to your strengths and experience.",
+  "step2_title": "What industry or area interests you most?",
+  "step2_helper": "Pick the area where you see the most opportunity.",
+  "step3_title": "What problem do you want to solve or what opportunity do you see?",
+  "step3_helper": "Be as specific as you can -- the more detail you give, the better your ideas will be.",
+  "results_title": "Here Are Your Personalized App Ideas",
   "hero": {
     "title": "Discover Your Next Big App Idea",
     "subtitle": "Answer 3 quick questions and get AI-generated app concepts tailored to you"
@@ -103,5 +113,12 @@
     "problem_too_short": "Please describe the problem in at least 10 characters",
     "email_required": "Please enter a valid email address",
     "generation_failed": "Failed to generate ideas. Please try again or contact us."
-  }
+  },
+  "generate_more": "Generate More Ideas",
+  "generation_counter": "Generation {{current}} of {{total}}",
+  "complexity_simple": "Simple",
+  "complexity_moderate": "Moderate",
+  "complexity_complex": "Complex",
+  "tech_stack": "Tech Stack",
+  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {{name}}"
 }

@@ -60,8 +60,8 @@ export function Footer() {
         </div>
 
         {/* Link Columns Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-8">
-          {/* Quick Links Column */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10 mb-8">
+          {/* Quick Links, AI Tools, Resources Columns */}
           {footerSections.map((section) => (
             <nav
               key={section.titleKey}
@@ -94,12 +94,12 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="mailto:hello@aviniti.com"
+                  href="mailto:aliodat@aviniti.app"
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
-                  aria-label="Email: hello@aviniti.com"
+                  aria-label="Email: aliodat@aviniti.app"
                 >
-                  <Mail className="h-4 w-4" aria-hidden="true" />
-                  hello@aviniti.com
+                  <Mail className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                  aliodat@aviniti.app
                 </a>
               </li>
               <li>
@@ -108,7 +108,7 @@ export function Footer() {
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
                   aria-label="Phone: +962 79 068 5302"
                 >
-                  <Phone className="h-4 w-4" aria-hidden="true" />
+                  <Phone className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                   +962 79 068 5302
                 </a>
               </li>
@@ -120,12 +120,12 @@ export function Footer() {
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
                   aria-label="WhatsApp: +962 79 068 5302"
                 >
-                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                  <MessageCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                   WhatsApp
                 </a>
               </li>
               <li className="text-sm text-muted flex items-center gap-2">
-                <MapPin className="h-4 w-4" aria-hidden="true" />
+                <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                 Amman, Jordan
               </li>
             </ul>

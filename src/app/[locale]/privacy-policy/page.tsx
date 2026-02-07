@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
                 <p>
                   Aviniti (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy.
                   This Privacy Policy explains how we collect, use, disclose, and safeguard
-                  your information when you visit our website aviniti.com, use our services,
+                  your information when you visit our website aviniti.app, use our services,
                   or interact with us in any way.
                 </p>
                 <p className="mt-3">
@@ -199,10 +199,10 @@ export default function PrivacyPolicyPage() {
                 <p className="mt-3">
                   To exercise any of these rights, please contact us at{' '}
                   <a
-                    href="mailto:privacy@aviniti.com"
+                    href="mailto:aliodat@aviniti.app"
                     className="text-bronze hover:text-bronze-light transition-colors"
                   >
-                    privacy@aviniti.com
+                    aliodat@aviniti.app
                   </a>
                   .
                 </p>
@@ -262,19 +262,19 @@ export default function PrivacyPolicyPage() {
                   <p className="mt-1">
                     Email:{' '}
                     <a
-                      href="mailto:privacy@aviniti.com"
+                      href="mailto:aliodat@aviniti.app"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
-                      privacy@aviniti.com
+                      aliodat@aviniti.app
                     </a>
                   </p>
                   <p className="mt-1">
                     Website:{' '}
                     <a
-                      href="https://aviniti.com"
+                      href="https://aviniti.app"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
-                      aviniti.com
+                      aviniti.app
                     </a>
                   </p>
                 </div>

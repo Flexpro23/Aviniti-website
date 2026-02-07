@@ -41,6 +41,7 @@ import { TechStackToggle } from '@/components/ai-tools/TechStackToggle';
 import { EstimateHeroVisual } from '@/components/ai-tools/EstimateHeroVisual';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+import { getNextDiscountThreshold } from '@/lib/pricing/calculator';
 import type {
   ProjectType,
   EstimateResponse,
@@ -49,6 +50,7 @@ import type {
   AIFeature,
   AnalyzeIdeaResponse,
   GenerateFeaturesResponse,
+  PricingBreakdown,
 } from '@/types/api';
 
 // ============================================================
@@ -359,6 +361,7 @@ export default function GetEstimatePage() {
             Object.entries(answers).map(([k, v]) => [k, v ?? false])
           ),
           questions,
+          selectedFeatureIds: getSelectedFeatures().map(f => f.catalogId).filter(Boolean),
           selectedFeatures: getSelectedFeatures(),
           name: contactInfo.name,
           email: contactInfo.email || undefined,
@@ -455,6 +458,7 @@ export default function GetEstimatePage() {
   // ============================================================
   const navSections = [
     { id: 'results-summary', label: t('results.nav.summary') },
+    ...(results?.pricing ? [{ id: 'results-features', label: t('results.nav.features') }] : []),
     { id: 'results-breakdown', label: t('results.nav.breakdown') },
     { id: 'results-cost-chart', label: t('results.nav.cost_chart') },
     { id: 'results-timeline', label: t('results.nav.timeline') },
@@ -466,7 +470,10 @@ export default function GetEstimatePage() {
   // Results state (Step 6 complete)
   // ============================================================
   if (step === 6 && results) {
-    const costDisplay = `$${results.estimatedCost.min.toLocaleString()}–$${results.estimatedCost.max.toLocaleString()}`;
+    const isSingleTotal = results.estimatedCost.min === results.estimatedCost.max;
+    const costDisplay = isSingleTotal
+      ? `$${results.estimatedCost.min.toLocaleString()}`
+      : `$${results.estimatedCost.min.toLocaleString()}–$${results.estimatedCost.max.toLocaleString()}`;
 
     return (
       <main className="min-h-screen bg-navy">
@@ -513,8 +520,7 @@ export default function GetEstimatePage() {
                 </div>
                 <p className="text-sm text-muted">{t('results.estimated_cost') || 'Estimated Cost'}</p>
                 <p className="text-2xl font-bold text-white mt-1">
-                  ${results.estimatedCost.min.toLocaleString()} - $
-                  {results.estimatedCost.max.toLocaleString()}
+                  {costDisplay}
                 </p>
               </ToolResultItem>
             </ToolResults>
@@ -548,6 +554,64 @@ export default function GetEstimatePage() {
           {results.techStack && results.techStack.length > 0 && (
             <div className="mb-8">
               <TechStackToggle techStack={results.techStack} />
+            </div>
+          )}
+
+          {/* Features & Pricing Table */}
+          {results.pricing && results.pricing.features.length > 0 && (
+            <div id="results-features" className="mb-8">
+              <ToolResults toolColor="orange" className="p-0 overflow-hidden">
+                <ToolResultItem>
+                  <div className="px-6 py-4 border-b border-slate-blue-light flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-white">{t('pricing.table_title')}</h3>
+                    <span className="text-sm text-bronze-light font-medium">
+                      {t('pricing.features_count', { count: results.pricing.features.length })}
+                    </span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-blue-light">
+                          <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">{t('pricing.table_feature')}</th>
+                          <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">{t('pricing.table_category')}</th>
+                          <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">{t('pricing.table_price')}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-blue-light/50">
+                        {results.pricing.features.map((f, i) => (
+                          <tr key={i} className="hover:bg-navy/50 transition-colors">
+                            <td className="px-6 py-3 text-sm text-off-white">{f.catalogId}</td>
+                            <td className="px-6 py-3 text-xs text-muted capitalize">{f.categoryId}</td>
+                            <td className="px-6 py-3 text-sm font-medium text-off-white text-right">${f.price.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t border-slate-blue-light">
+                          <td colSpan={2} className="px-6 py-3 text-sm text-muted">{t('pricing.subtotal')}</td>
+                          <td className="px-6 py-3 text-sm font-medium text-off-white text-right">${results.pricing.subtotal.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                          <td colSpan={2} className="px-6 py-2 text-sm text-muted">{t('pricing.design_surcharge')}</td>
+                          <td className="px-6 py-2 text-sm text-off-white text-right">+${results.pricing.designSurcharge.toLocaleString()}</td>
+                        </tr>
+                        {results.pricing.bundleDiscount > 0 && (
+                          <tr>
+                            <td colSpan={2} className="px-6 py-2 text-sm text-tool-green-light">
+                              {t('pricing.bundle_discount', { percent: Math.round(results.pricing.bundleDiscountPercent * 100) })}
+                            </td>
+                            <td className="px-6 py-2 text-sm text-tool-green-light text-right">-${results.pricing.bundleDiscount.toLocaleString()}</td>
+                          </tr>
+                        )}
+                        <tr className="border-t-2 border-bronze">
+                          <td colSpan={2} className="px-6 py-3 text-base font-bold text-white">{t('pricing.total')}</td>
+                          <td className="px-6 py-3 text-base font-bold text-bronze-light text-right">${results.pricing.total.toLocaleString()}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </ToolResultItem>
+              </ToolResults>
             </div>
           )}
 
@@ -714,7 +778,7 @@ export default function GetEstimatePage() {
               targetTool="roi-calculator"
               message={t('cross_sell.roi', {
                 projectName: displayName || results.projectName,
-                cost: `${results.estimatedCost.min.toLocaleString()}–$${results.estimatedCost.max.toLocaleString()}`,
+                cost: costDisplay,
               })}
             />
             <CrossSellCTA
@@ -1133,31 +1197,25 @@ export default function GetEstimatePage() {
                                   onChange={() => toggleFeature(feature.id)}
                                   className="mt-0.5 h-5 w-5 rounded border-2 border-slate-blue-light bg-transparent checked:bg-tool-green checked:border-tool-green transition-colors duration-200"
                                 />
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                   <span className="block text-base font-medium text-off-white">
                                     {feature.name}
                                   </span>
                                   <span className="block text-xs text-muted mt-1 leading-relaxed">
                                     {feature.description}
                                   </span>
-                                  {/* Cost/Time Impact Badges */}
-                                  {(feature.costImpact || feature.timeImpact) && (
-                                    <div className="flex gap-2 mt-2">
-                                      {feature.costImpact && (
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${IMPACT_COLORS[feature.costImpact]}`}>
-                                          <DollarSign className="h-2.5 w-2.5" />
-                                          {t(`feature_impact.${feature.costImpact}`)}
-                                        </span>
-                                      )}
-                                      {feature.timeImpact && (
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${IMPACT_COLORS[feature.timeImpact]}`}>
-                                          <Clock className="h-2.5 w-2.5" />
-                                          {t(`feature_impact.${feature.timeImpact}`)}
-                                        </span>
-                                      )}
-                                    </div>
+                                  {feature.timelineDays && (
+                                    <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-muted">
+                                      <Clock className="h-2.5 w-2.5" />
+                                      {feature.timelineDays} days
+                                    </span>
                                   )}
                                 </div>
+                                {feature.price != null && (
+                                  <span className="text-sm font-bold text-tool-green-light whitespace-nowrap">
+                                    ${feature.price.toLocaleString()}
+                                  </span>
+                                )}
                               </label>
                             );
                           })}
@@ -1197,31 +1255,25 @@ export default function GetEstimatePage() {
                                   onChange={() => toggleFeature(feature.id)}
                                   className="mt-0.5 h-5 w-5 rounded border-2 border-slate-blue-light bg-transparent checked:bg-tool-purple checked:border-tool-purple transition-colors duration-200"
                                 />
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                   <span className="block text-base font-medium text-off-white">
                                     {feature.name}
                                   </span>
                                   <span className="block text-xs text-muted mt-1 leading-relaxed">
                                     {feature.description}
                                   </span>
-                                  {/* Cost/Time Impact Badges */}
-                                  {(feature.costImpact || feature.timeImpact) && (
-                                    <div className="flex gap-2 mt-2">
-                                      {feature.costImpact && (
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${IMPACT_COLORS[feature.costImpact]}`}>
-                                          <DollarSign className="h-2.5 w-2.5" />
-                                          {t(`feature_impact.${feature.costImpact}`)}
-                                        </span>
-                                      )}
-                                      {feature.timeImpact && (
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium border ${IMPACT_COLORS[feature.timeImpact]}`}>
-                                          <Clock className="h-2.5 w-2.5" />
-                                          {t(`feature_impact.${feature.timeImpact}`)}
-                                        </span>
-                                      )}
-                                    </div>
+                                  {feature.timelineDays && (
+                                    <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-muted">
+                                      <Clock className="h-2.5 w-2.5" />
+                                      {feature.timelineDays} days
+                                    </span>
                                   )}
                                 </div>
+                                {feature.price != null && (
+                                  <span className="text-sm font-bold text-tool-purple-light whitespace-nowrap">
+                                    ${feature.price.toLocaleString()}
+                                  </span>
+                                )}
                               </label>
                             );
                           })}
@@ -1229,9 +1281,37 @@ export default function GetEstimatePage() {
                       </div>
                     )}
 
-                    <p className="text-sm text-tool-green-light">
-                      {selectedFeatureIds.size} features selected
-                    </p>
+                    {/* Running Total Bar */}
+                    {(() => {
+                      const selected = getSelectedFeatures();
+                      const runningTotal = selected.reduce((sum, f) => sum + (f.price || 0), 0);
+                      const discountInfo = getNextDiscountThreshold(selected.length);
+                      return (
+                        <div className="sticky bottom-0 z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-navy/95 backdrop-blur-sm border-t border-slate-blue-light">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-sm font-medium text-off-white">
+                                {t('pricing.running_total_features', { count: selected.length })}
+                              </span>
+                              <span className="text-sm text-muted mx-2">&middot;</span>
+                              <span className="text-sm font-bold text-bronze-light">
+                                ${runningTotal.toLocaleString()}
+                              </span>
+                            </div>
+                            {discountInfo && (
+                              <span className="text-xs text-tool-green-light">
+                                {t('pricing.discount_hint', { needed: discountInfo.needed, percent: discountInfo.nextPercent })}
+                              </span>
+                            )}
+                            {!discountInfo && selected.length >= 30 && (
+                              <span className="text-xs text-tool-green-light font-medium">
+                                {t('pricing.discount_applied', { percent: 20 })}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     <div className="flex justify-between mt-8">
                       <button

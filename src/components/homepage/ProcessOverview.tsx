@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Process Overview Section
  *

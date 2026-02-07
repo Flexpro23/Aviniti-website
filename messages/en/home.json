@@ -2,18 +2,81 @@
   "hero": {
     "label": "AI-POWERED APP DEVELOPMENT",
     "title": "Turn Your Ideas Into Powerful Apps",
+    "title_line1": "Turn Your Ideas Into",
+    "title_accent": "Powerful Apps",
     "subtitle": "We build custom mobile and web applications powered by AI. From concept to launch, we make it happen.",
     "cta_primary": "Get Instant AI Estimate",
-    "cta_secondary": "Ready-Made Solutions"
+    "cta_secondary": "Ready-Made Solutions",
+    "cta_tertiary": "Schedule a free consultation",
+    "journey_idea_title": "Dream It",
+    "journey_idea_desc": "AI-powered idea discovery",
+    "journey_analyze_title": "Analyze It",
+    "journey_analyze_desc": "Instant feasibility validation",
+    "journey_estimate_title": "Price It",
+    "journey_estimate_desc": "Get cost & timeline instantly",
+    "journey_launch_title": "Launch It",
+    "journey_launch_desc": "Go live in app stores",
+    "metric_apps": "50+ Apps Delivered",
+    "metric_speed": "60% Faster Launch",
+    "metric_ai": "AI-Powered"
   },
   "trust": {
     "projects": "Projects Delivered",
     "countries": "Countries Served",
-    "satisfaction": "Client Satisfaction"
+    "satisfaction": "Client Satisfaction",
+    "metric_1_label": "Apps Delivered",
+    "metric_2_label": "Ready-Made Solutions",
+    "metric_3_label": "Client Satisfaction",
+    "metric_4_label": "Day Average Delivery",
+    "badge_1": "SOC 2 Certified",
+    "badge_2": "Data Encrypted",
+    "badge_3": "GDPR Compliant"
+  },
+  "company_logos": {
+    "title": "Trusted by Growing Businesses",
+    "subtitle": "Join the companies that have transformed their operations with our custom applications"
+  },
+  "testimonials": {
+    "label": "CLIENT SUCCESS STORIES",
+    "title": "What Our Clients Say",
+    "subtitle": "Real feedback from real clients who have launched successful applications with Aviniti",
+    "testimonial_1_quote": "Aviniti delivered our gym management app ahead of schedule and exceeded all expectations. The AI-powered features have revolutionized how we manage member engagement and retention.",
+    "testimonial_1_name": "Ahmad Al-Rashidi",
+    "testimonial_1_role": "CEO",
+    "testimonial_1_company": "FlexPro Fitness",
+    "testimonial_2_quote": "The office management solution from Aviniti has saved us countless hours every week. Their attention to detail and commitment to quality is unmatched in the industry.",
+    "testimonial_2_name": "Sarah Mansour",
+    "testimonial_2_role": "Founder",
+    "testimonial_2_company": "SecretaryApp",
+    "testimonial_3_quote": "Our delivery app has been a game-changer for our business. Aviniti's team was professional, responsive, and delivered a product that our customers absolutely love.",
+    "testimonial_3_name": "Omar Haddad",
+    "testimonial_3_role": "Operations Manager",
+    "testimonial_3_company": "FarmHouse",
+    "testimonial_4_quote": "Working with Aviniti on our kindergarten management app was seamless. They understood our needs perfectly and created an intuitive platform that parents and teachers both love.",
+    "testimonial_4_name": "Layla Khouri",
+    "testimonial_4_role": "Director",
+    "testimonial_4_company": "Let's Play"
   },
   "services": {
     "label": "WHAT WE BUILD",
     "title": "Full-Stack Development, Powered by AI",
+    "subtitle": "From mobile apps to AI integrations, we build complete digital solutions tailored to your business needs.",
+    "mobile-apps": {
+      "name": "Mobile Apps",
+      "description": "Native and cross-platform mobile applications for iOS and Android."
+    },
+    "web-applications": {
+      "name": "Web Applications",
+      "description": "Scalable web apps with modern frameworks and cloud infrastructure."
+    },
+    "ai-solutions": {
+      "name": "AI Solutions",
+      "description": "Custom AI integrations, chatbots, and machine learning models."
+    },
+    "ui-ux-design": {
+      "name": "UI/UX Design",
+      "description": "Beautiful, intuitive interfaces designed for conversion and engagement."
+    },
     "mobile": {
       "title": "Mobile Apps",
       "description": "Native and cross-platform mobile applications for iOS and Android."
@@ -34,7 +97,27 @@
   "ai_tools": {
     "label": "AI-POWERED TOOLS",
     "title": "AI-Powered Tools to Get You Started",
-    "subtitle": "Try our free AI tools to explore ideas, analyze viability, get estimates, and calculate ROI."
+    "subtitle": "Try our free AI tools to explore ideas, analyze viability, get estimates, and calculate ROI.",
+    "idea-lab": {
+      "name": "Idea Lab",
+      "description": "Transform your concepts into structured app ideas with AI-powered brainstorming and validation.",
+      "cta": "Launch Idea Lab"
+    },
+    "ai-analyzer": {
+      "name": "AI Analyzer",
+      "description": "Get instant feasibility analysis and technical recommendations for your app idea.",
+      "cta": "Analyze Your Idea"
+    },
+    "get-estimate": {
+      "name": "Get Estimate",
+      "description": "Receive a detailed project estimate with timeline and cost breakdown in minutes.",
+      "cta": "Get Your Estimate"
+    },
+    "roi-calculator": {
+      "name": "ROI Calculator",
+      "description": "Calculate the potential return on investment for your app development project.",
+      "cta": "Calculate ROI"
+    }
   },
   "solutions": {
     "label": "READY-MADE SOLUTIONS",
@@ -44,40 +127,76 @@
     "delivery": "days delivery",
     "view_all": "View All Solutions"
   },
-  "live_apps": {
+  "apps": {
     "label": "OUR PORTFOLIO",
     "title": "Apps We've Built — Live in Stores",
     "subtitle": "Real apps serving real users. Download and experience our work."
   },
-  "why_us": {
-    "label": "WHY CHOOSE US",
+  "why_choose": {
     "title": "Why Companies Choose Aviniti",
-    "speed": {
-      "title": "Lightning Fast Delivery",
-      "description": "From idea to app store in weeks, not months. Our streamlined process gets you to market faster."
-    },
-    "ai_native": {
-      "title": "AI-Native Development",
-      "description": "We don't just build apps — we infuse them with AI from day one."
-    },
-    "transparent": {
-      "title": "Transparent Pricing",
-      "description": "No hidden fees, no surprises. Get your AI-powered estimate before we start."
-    },
-    "support": {
-      "title": "Ongoing Support",
-      "description": "We don't disappear after launch. Continuous support and updates."
-    }
+    "subtitle": "We combine speed, AI expertise, transparent pricing, and dedicated support.",
+    "reason_1_title": "Lightning Fast Delivery",
+    "reason_1_description": "From idea to app store in weeks, not months. Our streamlined process gets you to market faster.",
+    "reason_2_title": "AI-Native Development",
+    "reason_2_description": "We don't just build apps — we infuse them with AI from day one.",
+    "reason_3_title": "Transparent Pricing",
+    "reason_3_description": "No hidden fees, no surprises. Get your AI-powered estimate before we start.",
+    "reason_4_title": "Ongoing Support",
+    "reason_4_description": "We don't disappear after launch. Continuous support and updates."
   },
   "case_studies": {
     "label": "SUCCESS STORIES",
     "title": "Real Results, Real Impact",
-    "view_all": "View All Case Studies"
+    "subtitle": "Discover how we've helped businesses transform their operations and achieve measurable success.",
+    "view_all": "View All Case Studies",
+    "case_1_headline": "Revolutionizing E-Commerce with AI-Powered Recommendations",
+    "case_1_excerpt": "Built a custom mobile app with intelligent product recommendations that tripled conversion rates and increased average order value by 45%.",
+    "case_2_headline": "Streamlining Healthcare Operations with Smart Scheduling",
+    "case_2_excerpt": "Developed an AI-driven scheduling platform that reduced appointment no-shows by 65% and saved 20+ hours of administrative work weekly.",
+    "case_3_headline": "Optimizing Last-Mile Delivery with Route Intelligence",
+    "case_3_excerpt": "Created a logistics platform with AI-powered route optimization that cut delivery times by 40% and reduced fuel costs by 30%."
   },
   "final_cta": {
     "title": "Ready to Build Something Great?",
     "subtitle": "Get a free AI-powered estimate for your project in under 2 minutes.",
     "cta_primary": "Get AI Estimate",
-    "cta_secondary": "Book a Call"
+    "cta_secondary": "Book a Call",
+    "whatsapp_label": "Prefer WhatsApp?",
+    "whatsapp_cta": "Chat with us now"
+  },
+  "blog": {
+    "title": "Latest from Our Blog",
+    "subtitle": "Insights, tutorials, and updates from the Aviniti team.",
+    "post_1_title": "How AI is Transforming Mobile App Development",
+    "post_1_excerpt": "Discover how artificial intelligence is revolutionizing the way we build mobile applications, from design to deployment.",
+    "post_2_title": "App Development Trends to Watch in 2026",
+    "post_2_excerpt": "Stay ahead of the curve with the latest trends in app development, from cross-platform frameworks to edge computing.",
+    "post_3_title": "Choosing the Right Tech Stack for Your App",
+    "post_3_excerpt": "A comprehensive guide to selecting the best technologies for your next mobile or web application project.",
+    "view_all": "View All Posts"
+  },
+  "process": {
+    "title": "How We Work",
+    "subtitle": "Our streamlined 6-step process takes you from idea to live app.",
+    "step_1_title": "Discovery",
+    "step_1_description": "We understand your vision, goals, and target audience.",
+    "step_2_title": "Design",
+    "step_2_description": "UI/UX design that delights users and drives engagement.",
+    "step_3_title": "Development",
+    "step_3_description": "Clean, scalable code built with modern frameworks.",
+    "step_4_title": "Testing",
+    "step_4_description": "Rigorous QA to ensure a bug-free, polished experience.",
+    "step_5_title": "Launch",
+    "step_5_description": "Smooth deployment to app stores and cloud infrastructure.",
+    "step_6_title": "Support",
+    "step_6_description": "Ongoing maintenance, updates, and dedicated assistance."
+  },
+  "meta": {
+    "title": "Aviniti — AI-Powered App Development",
+    "description": "Custom mobile and web applications powered by AI. From concept to launch, we build apps that transform businesses.",
+    "og_title": "Aviniti — Your Ideas, Our Reality",
+    "og_description": "AI-powered app development company based in Amman, Jordan. Get instant estimates, explore ideas, and launch faster.",
+    "twitter_title": "Aviniti — AI-Powered App Development",
+    "twitter_description": "Transform your ideas into powerful apps with AI. Custom mobile & web development from concept to launch."
   }
 }

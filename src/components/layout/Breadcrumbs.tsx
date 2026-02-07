@@ -30,8 +30,10 @@ export function Breadcrumbs() {
     return null;
   }
 
-  // Generate breadcrumb items from pathname
-  const pathSegments = pathname.split('/').filter(Boolean);
+  // Generate breadcrumb items from pathname, skipping locale prefix
+  const allSegments = pathname.split('/').filter(Boolean);
+  const locales = ['en', 'ar'];
+  const pathSegments = allSegments.filter((s) => !locales.includes(s));
 
   const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -41,25 +43,34 @@ export function Breadcrumbs() {
     },
   ];
 
+  // Known segment-to-translation-key mapping
+  const segmentKeys: Record<string, string> = {
+    solutions: 'nav.solutions',
+    'case-studies': 'nav.case_studies',
+    blog: 'nav.blog',
+    faq: 'nav.faq',
+    contact: 'nav.contact',
+    'idea-lab': 'nav.idea_lab',
+    'ai-analyzer': 'nav.ai_analyzer',
+    'get-estimate': 'nav.get_estimate',
+    'roi-calculator': 'nav.roi_calculator',
+    'privacy-policy': 'footer.privacyPolicy',
+    'terms-of-service': 'footer.termsOfService',
+  };
+
   // Build breadcrumb path progressively
   let accumulatedPath = '';
   pathSegments.forEach((segment, index) => {
     accumulatedPath += `/${segment}`;
     const isLast = index === pathSegments.length - 1;
 
-    // Try to get translation, fallback to formatted segment
-    const labelKey = `nav.${segment.replace(/-/g, '_')}`;
-    let label: string;
-
-    try {
-      label = t(labelKey);
-    } catch {
-      // Fallback: capitalize and replace hyphens with spaces
-      label = segment
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
+    const translationKey = segmentKeys[segment];
+    const label = translationKey
+      ? t(translationKey)
+      : segment
+          .split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
 
     breadcrumbItems.push({
       label,
@@ -76,7 +87,7 @@ export function Breadcrumbs() {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      ...(item.href && { item: `https://aviniti.com${item.href}` }),
+      ...(item.href && { item: `https://aviniti.app${item.href}` }),
     })),
   };
 

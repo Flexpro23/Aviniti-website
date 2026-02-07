@@ -27,11 +27,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
         'bg-slate-blue border border-bronze/30 border-t-2 border-t-bronze shadow-lg hover:shadow-glow-bronze',
       tool: toolColor
         ? {
-            orange: 'bg-gradient-to-br from-tool-orange-dark to-slate-blue border border-tool-orange/20',
-            blue: 'bg-gradient-to-br from-tool-blue-dark to-slate-blue border border-tool-blue/20',
-            green: 'bg-gradient-to-br from-tool-green-dark to-slate-blue border border-tool-green/20',
+            orange: 'bg-gradient-to-br from-tool-orange-dark/40 to-navy-light border border-tool-orange/8',
+            blue: 'bg-gradient-to-br from-tool-blue-dark/40 to-navy-light border border-tool-blue/8',
+            green: 'bg-gradient-to-br from-tool-green-dark/40 to-navy-light border border-tool-green/8',
             purple:
-              'bg-gradient-to-br from-tool-purple-dark to-slate-blue border border-tool-purple/20',
+              'bg-gradient-to-br from-tool-purple-dark/40 to-navy-light border border-tool-purple/8',
           }[toolColor]
         : 'bg-slate-blue border border-slate-blue-light',
     };

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Live Apps Showcase Section
  *
@@ -22,7 +24,7 @@ export function LiveAppsShowcase() {
   const at = useTranslations('apps');
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy-dark">
       <Container>
         <ScrollReveal>
           <SectionHeading

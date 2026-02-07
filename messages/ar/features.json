@@ -1,0 +1,998 @@
+{
+  "auth-email-password": {
+    "name": "المصادقة بالبريد الإلكتروني وكلمة المرور",
+    "description": "التسجيل، تسجيل الدخول، إعادة تعيين كلمة المرور، التحقق من البريد الإلكتروني"
+  },
+  "auth-social-google": {
+    "name": "تسجيل الدخول عبر Google",
+    "description": "تكامل OAuth 2.0، ربط الحسابات"
+  },
+  "auth-social-facebook": {
+    "name": "تسجيل الدخول عبر Facebook",
+    "description": "تكامل Facebook SDK، ربط الحسابات"
+  },
+  "auth-social-apple": {
+    "name": "تسجيل الدخول عبر Apple",
+    "description": "تسجيل الدخول باستخدام Apple، مطلوب لمتجر تطبيقات iOS"
+  },
+  "auth-social-twitter": {
+    "name": "تسجيل الدخول عبر Twitter/X",
+    "description": "تكامل مصادقة OAuth"
+  },
+  "auth-phone-otp": {
+    "name": "المصادقة برقم الهاتف (OTP/SMS)",
+    "description": "التحقق عبر Twilio/Firebase SMS، تدفق رمز التحقق لمرة واحدة"
+  },
+  "auth-biometric": {
+    "name": "تسجيل الدخول البيومتري (البصمة / Face ID)",
+    "description": "واجهات برمجة التطبيقات البيومترية الأصلية للجهاز"
+  },
+  "auth-2fa": {
+    "name": "المصادقة الثنائية (2FA)",
+    "description": "تطبيق مصادقة TOTP أو رسالة نصية للتحقق الثنائي"
+  },
+  "auth-magic-link": {
+    "name": "المصادقة بالرابط السحري",
+    "description": "تسجيل الدخول بدون كلمة مرور عبر رابط البريد الإلكتروني"
+  },
+  "auth-multi-tenant": {
+    "name": "حسابات متعددة المستأجرين / حسابات المؤسسات",
+    "description": "إنشاء المؤسسات، دعوات الفريق، التبديل بين الأدوار"
+  },
+  "auth-session-management": {
+    "name": "إدارة الجلسات وتتبع الأجهزة",
+    "description": "قائمة الجلسات النشطة، تسجيل الخروج عن بُعد، سجل الأجهزة"
+  },
+  "auth-account-deletion": {
+    "name": "حذف الحساب (GDPR/متجر التطبيقات)",
+    "description": "تدفق حذف البيانات الكامل مع التأكيد"
+  },
+  "auth-guest-access": {
+    "name": "وصول الضيف / الوصول المجهول",
+    "description": "وصول محدود بدون تسجيل"
+  },
+  "profile-basic": {
+    "name": "الملف الشخصي الأساسي",
+    "description": "تعديل الملف الشخصي، رفع الصورة، عرض ملفات الآخرين"
+  },
+  "profile-extended-fields": {
+    "name": "حقول الملف الشخصي الموسّعة",
+    "description": "حقول مخصصة ديناميكية، منشئ نماذج للملف الشخصي"
+  },
+  "profile-verification": {
+    "name": "توثيق الملف الشخصي / الشارات",
+    "description": "تدفق التحقق من الهوية، نظام شارة التوثيق"
+  },
+  "profile-account-settings": {
+    "name": "صفحة إعدادات الحساب",
+    "description": "البريد الإلكتروني، كلمة المرور، اللغة، تفضيلات الإشعارات"
+  },
+  "profile-preferences": {
+    "name": "التفضيلات وتخصيص التطبيق",
+    "description": "المظهر، اللغة، الوحدات، تفضيلات التخطيط"
+  },
+  "profile-dark-mode": {
+    "name": "الوضع الداكن / تبديل المظهر",
+    "description": "الوضع الداكن/الفاتح المتوافق مع إعدادات النظام"
+  },
+  "profile-address-book": {
+    "name": "دفتر العناوين / العناوين المحفوظة",
+    "description": "إضافة وتعديل وحذف وتعيين العناوين الافتراضية"
+  },
+  "profile-onboarding": {
+    "name": "تدفق تأهيل المستخدم الجديد",
+    "description": "دليل إرشادي متعدد الخطوات، تلميحات، خيار التخطي"
+  },
+  "nav-bottom-tabs": {
+    "name": "شريط التنقل السفلي",
+    "description": "شريط سفلي قياسي من 3-5 علامات تبويب مع أيقونات"
+  },
+  "nav-side-drawer": {
+    "name": "القائمة الجانبية المنسدلة",
+    "description": "قائمة تنقل منزلقة جانبية"
+  },
+  "nav-splash-screen": {
+    "name": "شاشة البداية المخصصة",
+    "description": "شاشة تحميل/بداية تحمل هوية العلامة التجارية"
+  },
+  "nav-app-icon": {
+    "name": "تصميم أيقونة التطبيق المخصصة",
+    "description": "تصميم الأيقونة لنظامي iOS و Android"
+  },
+  "nav-search-filters": {
+    "name": "شريط البحث مع الفلاتر",
+    "description": "بحث شامل، إكمال تلقائي، شرائح الفلترة"
+  },
+  "nav-dashboard": {
+    "name": "الشاشة الرئيسية الديناميكية / لوحة المعلومات",
+    "description": "عناصر واجهة، أقسام، محتوى مخصص"
+  },
+  "nav-pull-refresh": {
+    "name": "السحب للتحديث",
+    "description": "تحديث المحتوى بإيماءة السحب"
+  },
+  "nav-infinite-scroll": {
+    "name": "التمرير اللانهائي / ترقيم الصفحات",
+    "description": "تحميل القوائم بشكل تدريجي مع ترقيم الصفحات"
+  },
+  "nav-skeleton-loading": {
+    "name": "شاشات التحميل الهيكلية",
+    "description": "رسوم متحركة بعناصر نائبة أثناء التحميل"
+  },
+  "nav-fab": {
+    "name": "زر الإجراء العائم (FAB)",
+    "description": "زر إجراء عائم بتصميم Material مع إجراءات"
+  },
+  "nav-deep-linking": {
+    "name": "الروابط العميقة / الروابط العامة",
+    "description": "فتح شاشات محددة من عناوين URL"
+  },
+  "content-image-upload": {
+    "name": "رفع الصور والقص",
+    "description": "الكاميرا/المعرض، قص، ضغط، رفع"
+  },
+  "content-multi-image": {
+    "name": "رفع صور متعددة (معرض)",
+    "description": "رفع صور متعددة، إعادة الترتيب، حذف"
+  },
+  "content-video-upload": {
+    "name": "رفع الفيديو والتشغيل",
+    "description": "تسجيل/رفع فيديو، تشغيل متدفق، ضغط"
+  },
+  "content-video-editing": {
+    "name": "قص الفيديو / تحرير أساسي",
+    "description": "قص، اقتصاص، فلاتر أساسية على الفيديو"
+  },
+  "content-audio": {
+    "name": "تسجيل الصوت والتشغيل",
+    "description": "مسجل صوت، مشغل صوت، عرض الموجة الصوتية"
+  },
+  "content-document-upload": {
+    "name": "رفع المستندات (PDF, DOC)",
+    "description": "منتقي الملفات، الرفع، المعاينة"
+  },
+  "content-pdf-viewer": {
+    "name": "عارض PDF (داخل التطبيق)",
+    "description": "عرض ملفات PDF دون مغادرة التطبيق"
+  },
+  "content-rich-text": {
+    "name": "محرر النصوص الغنية",
+    "description": "محرر WYSIWYG مع التنسيق والصور والروابط"
+  },
+  "content-image-gallery": {
+    "name": "معرض الصور / العرض الدوّار",
+    "description": "معرض صور قابل للتمرير مع التكبير"
+  },
+  "content-stories": {
+    "name": "ميزة القصص / الريلز",
+    "description": "محتوى مؤقت، كاميرا، ملصقات، تراكب النصوص"
+  },
+  "content-qr-scanner": {
+    "name": "ماسح رمز QR",
+    "description": "مسح رموز QR/الباركود عبر الكاميرا"
+  },
+  "content-qr-generator": {
+    "name": "مولّد رمز QR",
+    "description": "إنشاء رموز QR للمشاركة والربط"
+  },
+  "content-file-manager": {
+    "name": "مدير الملفات / التنزيلات",
+    "description": "تنزيل وتنظيم وعرض الملفات داخل التطبيق"
+  },
+  "comm-chat-1to1": {
+    "name": "محادثة فردية فورية",
+    "description": "رسائل نصية، مؤشرات الكتابة، إيصالات القراءة"
+  },
+  "comm-group-chat": {
+    "name": "محادثة جماعية",
+    "description": "إنشاء مجموعات، صلاحيات المشرف، إدارة الأعضاء"
+  },
+  "comm-chat-media": {
+    "name": "مشاركة الوسائط في المحادثة",
+    "description": "إرسال صور ومستندات ورسائل صوتية في المحادثة"
+  },
+  "comm-chat-reactions": {
+    "name": "التفاعلات والردود في المحادثة",
+    "description": "التفاعل بالرموز التعبيرية، الرد على رسائل محددة"
+  },
+  "comm-voice-call": {
+    "name": "المكالمات الصوتية (VoIP)",
+    "description": "مكالمات صوتية داخل التطبيق عبر WebRTC أو Twilio"
+  },
+  "comm-video-call": {
+    "name": "مكالمات الفيديو",
+    "description": "مكالمات فيديو فردية أو جماعية"
+  },
+  "comm-inbox": {
+    "name": "صندوق الوارد / مركز الإشعارات داخل التطبيق",
+    "description": "مركز رسائل لإشعارات النظام والمستخدم"
+  },
+  "comm-contact-list": {
+    "name": "قائمة جهات الاتصال / دليل المستخدمين",
+    "description": "بحث وتصفح وفلترة المستخدمين"
+  },
+  "comm-chatbot": {
+    "name": "روبوت المحادثة / الردود الآلية",
+    "description": "روبوت محادثة قائم على القواعد أو الذكاء الاصطناعي للدعم"
+  },
+  "comm-email-transactional": {
+    "name": "إشعارات البريد الإلكتروني (المعاملات)",
+    "description": "SendGrid/SES للتحقق والإيصالات والتنبيهات"
+  },
+  "notif-basic-push": {
+    "name": "الإشعارات الفورية الأساسية",
+    "description": "إعداد Firebase Cloud Messaging و APNs"
+  },
+  "notif-preferences": {
+    "name": "تفضيلات الإشعارات / الإعدادات",
+    "description": "تحكم المستخدم في فئات الإشعارات"
+  },
+  "notif-scheduled": {
+    "name": "الإشعارات المجدولة / المؤقتة",
+    "description": "إرسال إشعارات في أوقات محددة"
+  },
+  "notif-rich": {
+    "name": "الإشعارات الغنية",
+    "description": "صور وأزرار إجراءات في الإشعارات"
+  },
+  "notif-segmented": {
+    "name": "الإشعارات حسب الموضوع / الشريحة",
+    "description": "استهداف المستخدمين حسب الشريحة، الاشتراك في المواضيع"
+  },
+  "notif-badge": {
+    "name": "شارة الإشعارات داخل التطبيق",
+    "description": "شارات عدد غير المقروء على التبويبات/الأيقونات"
+  },
+  "notif-silent": {
+    "name": "الإشعارات الصامتة / في الخلفية",
+    "description": "محفّزات مزامنة البيانات في الخلفية"
+  },
+  "pay-stripe": {
+    "name": "تكامل Stripe للدفع",
+    "description": "الدفع بالبطاقة، نوايا الدفع، خطافات الويب"
+  },
+  "pay-paypal": {
+    "name": "تكامل PayPal",
+    "description": "تدفق الدفع عبر PayPal"
+  },
+  "pay-apple-google": {
+    "name": "Apple Pay / Google Pay",
+    "description": "طرق الدفع عبر المحفظة الرقمية الأصلية"
+  },
+  "pay-iap": {
+    "name": "المشتريات داخل التطبيق (IAP)",
+    "description": "عناصر قابلة للاستهلاك وغير قابلة للاستهلاك"
+  },
+  "pay-subscriptions": {
+    "name": "إدارة الاشتراكات",
+    "description": "الخطط، دورات الفوترة، الترقيات، الإلغاء"
+  },
+  "pay-wallet": {
+    "name": "نظام المحفظة / الرصيد",
+    "description": "محفظة داخل التطبيق، شحن الرصيد، تتبع الإنفاق"
+  },
+  "pay-promo-codes": {
+    "name": "الأكواد الترويجية / القسائم",
+    "description": "إنشاء وتحقق وتطبيق أكواد الخصم"
+  },
+  "pay-invoices": {
+    "name": "إنشاء الفواتير",
+    "description": "إنشاء فواتير PDF تلقائياً"
+  },
+  "pay-multi-currency": {
+    "name": "دعم العملات المتعددة",
+    "description": "عرض ومعالجة عملات متعددة"
+  },
+  "pay-payouts": {
+    "name": "نظام صرف الأرباح / السحب",
+    "description": "أرباح المستخدم، طلبات الصرف، التحويل البنكي"
+  },
+  "pay-tipping": {
+    "name": "ميزة الإكرامية / التبرع",
+    "description": "إرسال إكراميات للمستخدمين أو صناع المحتوى"
+  },
+  "pay-ads": {
+    "name": "تحقيق الدخل عبر الإعلانات (AdMob)",
+    "description": "تكامل Google AdMob، مواضع الإعلانات"
+  },
+  "pay-refunds": {
+    "name": "إدارة الاسترداد",
+    "description": "طلبات الاسترداد، المعالجة، تتبع الحالة"
+  },
+  "ecom-product-listing": {
+    "name": "قائمة المنتجات / الكتالوج",
+    "description": "بطاقات المنتجات، الفئات، الصور، الأوصاف"
+  },
+  "ecom-product-detail": {
+    "name": "صفحة تفاصيل المنتج",
+    "description": "عرض المنتج الكامل، المعرض، المواصفات، المراجعات"
+  },
+  "ecom-cart": {
+    "name": "سلة التسوق",
+    "description": "إضافة/إزالة العناصر، الكمية، المجموع الفرعي"
+  },
+  "ecom-checkout": {
+    "name": "تدفق إتمام الشراء",
+    "description": "العنوان، الشحن، الدفع، التأكيد"
+  },
+  "ecom-orders-user": {
+    "name": "إدارة الطلبات (المستخدم)",
+    "description": "سجل الطلبات، تتبع الحالة، إعادة الطلب"
+  },
+  "ecom-orders-admin": {
+    "name": "إدارة الطلبات (المشرف)",
+    "description": "معالجة الطلبات، التنفيذ، الإلغاء، الاسترداد"
+  },
+  "ecom-wishlist": {
+    "name": "قائمة الأمنيات / المفضلة",
+    "description": "حفظ المنتجات، مشاركة قائمة الأمنيات"
+  },
+  "ecom-reviews": {
+    "name": "مراجعات وتقييمات المنتجات",
+    "description": "تقييم بالنجوم، مراجعات مكتوبة، مراجعات بالصور"
+  },
+  "ecom-inventory": {
+    "name": "إدارة المخزون",
+    "description": "مستويات المخزون، تنبيهات المخزون المنخفض، المتغيرات"
+  },
+  "ecom-shipping": {
+    "name": "الشحن وتتبع التوصيل",
+    "description": "تكامل شركات الشحن، تحديثات التتبع، وقت الوصول المتوقع"
+  },
+  "ecom-vendor-dashboard": {
+    "name": "لوحة تحكم البائع / المورّد",
+    "description": "دعم تعدد البائعين، تحليلات البائع، المدفوعات"
+  },
+  "ecom-comparison": {
+    "name": "مقارنة المنتجات",
+    "description": "مقارنة المميزات جنباً إلى جنب"
+  },
+  "ecom-barcode": {
+    "name": "ماسح الباركود / SKU",
+    "description": "مسح المنتجات لإضافتها/البحث في المخزون"
+  },
+  "booking-calendar": {
+    "name": "عرض التقويم",
+    "description": "تقويم تفاعلي مع الأحداث"
+  },
+  "booking-appointment": {
+    "name": "نظام حجز المواعيد",
+    "description": "فترات زمنية، التوافر، تأكيد الحجز"
+  },
+  "booking-provider-scheduling": {
+    "name": "جدولة مقدّم الخدمة",
+    "description": "يحدد مقدّم الخدمة التوافر ويدير الحجوزات"
+  },
+  "booking-modifications": {
+    "name": "تعديلات الحجز والإلغاء",
+    "description": "إعادة الجدولة، الإلغاء مع تطبيق السياسات"
+  },
+  "booking-recurring": {
+    "name": "المواعيد المتكررة",
+    "description": "دعم الحجز المتكرر أسبوعياً/شهرياً"
+  },
+  "booking-waitlist": {
+    "name": "إدارة قائمة الانتظار",
+    "description": "الانضمام لقائمة الانتظار، إشعار تلقائي عند توفر موعد"
+  },
+  "booking-calendar-sync": {
+    "name": "مزامنة التقويم (Google/Apple)",
+    "description": "مزامنة الحجوزات مع تطبيقات التقويم الأصلية"
+  },
+  "booking-reminders": {
+    "name": "تذكيرات الحجز",
+    "description": "تذكيرات عبر SMS/الإشعارات الفورية قبل الموعد"
+  },
+  "maps-view": {
+    "name": "عرض الخريطة (Google Maps / Mapbox)",
+    "description": "خريطة مدمجة مع علامات وتفاعل"
+  },
+  "maps-user-location": {
+    "name": "تحديد موقع المستخدم (GPS)",
+    "description": "الحصول على الموقع الحالي، إدارة الأذونات"
+  },
+  "maps-search": {
+    "name": "البحث عن الموقع / الإكمال التلقائي",
+    "description": "البحث عن الأماكن باستخدام Google Places API"
+  },
+  "maps-geofencing": {
+    "name": "السياج الجغرافي",
+    "description": "تشغيل إجراءات عند الدخول/الخروج من مناطق محددة"
+  },
+  "maps-directions": {
+    "name": "عرض المسار / الاتجاهات",
+    "description": "عرض مسارات القيادة/المشي على الخريطة"
+  },
+  "maps-live-tracking": {
+    "name": "تتبع الموقع في الوقت الفعلي",
+    "description": "تتبع GPS مباشر للتوصيل/السائق"
+  },
+  "maps-store-locator": {
+    "name": "محدد المتاجر / الفروع",
+    "description": "العثور على أقرب الفروع، ساعات العمل، معلومات الاتصال"
+  },
+  "maps-heatmap": {
+    "name": "خريطة حرارية / تصور الكثافة",
+    "description": "طبقة بيانات مرئية على الخرائط"
+  },
+  "maps-nearby": {
+    "name": "الأماكن القريبة / اكتشاف نقاط الاهتمام",
+    "description": "اكتشاف نقاط الاهتمام القريبة من المستخدم"
+  },
+  "social-feed": {
+    "name": "موجز الأخبار / موجز النشاط",
+    "description": "موجز قابل للتمرير من المنشورات/التحديثات"
+  },
+  "social-post-creation": {
+    "name": "إنشاء المنشورات",
+    "description": "تأليف منشورات مع مرفقات وسائط"
+  },
+  "social-likes": {
+    "name": "نظام الإعجاب / التفاعل",
+    "description": "تفاعلات الإعجاب والحب والضحك على المحتوى"
+  },
+  "social-comments": {
+    "name": "نظام التعليقات (متداخل)",
+    "description": "تعليقات مع ردود، إشارات، إشراف"
+  },
+  "social-share": {
+    "name": "ميزة المشاركة / إعادة النشر",
+    "description": "مشاركة المحتوى داخل التطبيق أو خارجياً"
+  },
+  "social-follow": {
+    "name": "نظام المتابعة / الصداقة",
+    "description": "متابعة المستخدمين، طلبات الصداقة، الصلات المشتركة"
+  },
+  "social-blocking": {
+    "name": "حظر المستخدمين والإبلاغ",
+    "description": "حظر المستخدمين، الإبلاغ عن المحتوى، قائمة الإشراف"
+  },
+  "social-hashtags": {
+    "name": "الهاشتاقات والمواضيع الرائجة",
+    "description": "هاشتاقات قابلة للوسم، اكتشاف المواضيع الرائجة"
+  },
+  "social-groups": {
+    "name": "المجموعات / المجتمعات",
+    "description": "إنشاء/الانضمام للمجموعات، منشورات المجموعة، صلاحيات المشرف"
+  },
+  "social-events": {
+    "name": "ميزة الفعاليات",
+    "description": "إنشاء الفعاليات، تأكيد الحضور، التذكيرات، قائمة الحضور"
+  },
+  "social-polls": {
+    "name": "استطلاعات الرأي والاستبيانات",
+    "description": "إنشاء استطلاعات، التصويت، عرض النتائج"
+  },
+  "social-gamification": {
+    "name": "لوحة المتصدرين / التلعيب",
+    "description": "النقاط، الرتب، الشارات، الإنجازات"
+  },
+  "admin-dashboard": {
+    "name": "لوحة تحكم المشرف الأساسية",
+    "description": "إحصائيات عامة، رسوم بيانية، إجراءات سريعة"
+  },
+  "admin-user-management": {
+    "name": "إدارة المستخدمين (المشرف)",
+    "description": "عرض وتعديل وحظر وحذف المستخدمين"
+  },
+  "admin-content-management": {
+    "name": "إدارة المحتوى (CRUD)",
+    "description": "إنشاء وقراءة وتحديث وحذف محتوى التطبيق"
+  },
+  "admin-rbac": {
+    "name": "التحكم في الوصول القائم على الأدوار (RBAC)",
+    "description": "أدوار المشرف والمُراقب والمحرر والمُشاهد"
+  },
+  "admin-analytics": {
+    "name": "لوحة تحكم التحليلات",
+    "description": "مقاييس المستخدمين، الإيرادات، رسوم بيانية للتفاعل"
+  },
+  "admin-push-sender": {
+    "name": "مُرسل الإشعارات الفورية",
+    "description": "تأليف وإرسال الإشعارات من لوحة التحكم"
+  },
+  "admin-reports-export": {
+    "name": "التقارير والتصدير (CSV, PDF)",
+    "description": "تصدير جداول البيانات إلى CSV أو PDF"
+  },
+  "admin-audit-log": {
+    "name": "سجل المراجعة / سجل النشاط",
+    "description": "تتبع إجراءات المشرف والتغييرات"
+  },
+  "admin-support-tickets": {
+    "name": "نظام تذاكر الدعم",
+    "description": "يرسل المستخدمون تذاكر ويرد عليها المشرف"
+  },
+  "admin-cms-dynamic": {
+    "name": "نظام إدارة المحتوى الديناميكي",
+    "description": "إدارة البانرات والأسئلة الشائعة والصفحات من لوحة التحكم"
+  },
+  "admin-remote-config": {
+    "name": "إعدادات التطبيق (التحكم عن بُعد)",
+    "description": "تفعيل/تعطيل الميزات وتغيير الإعدادات عن بُعد"
+  },
+  "analytics-firebase": {
+    "name": "تكامل Firebase Analytics",
+    "description": "مشاهدات الشاشات، الأحداث، خصائص المستخدم"
+  },
+  "analytics-crash-reporting": {
+    "name": "تقارير الأعطال (Crashlytics/Sentry)",
+    "description": "سجلات الأعطال، تتبع الأخطاء، التنبيهات"
+  },
+  "analytics-custom-events": {
+    "name": "تتبع الأحداث المخصصة",
+    "description": "تتبع إجراءات مستخدم محددة ومسارات التحويل"
+  },
+  "analytics-ab-testing": {
+    "name": "إطار اختبار A/B",
+    "description": "أعلام الميزات، متغيرات التجربة، النتائج"
+  },
+  "analytics-behavior": {
+    "name": "تحليلات سلوك المستخدم",
+    "description": "خرائط حرارية للنقر، تسجيلات الجلسات"
+  },
+  "analytics-attribution": {
+    "name": "تتبع الإسناد / UTM",
+    "description": "تتبع مصادر التثبيت والحملات"
+  },
+  "analytics-performance": {
+    "name": "مراقبة الأداء",
+    "description": "أوقات تحميل التطبيق، أوقات استجابة واجهة البرمجة"
+  },
+  "security-ssl": {
+    "name": "فرض SSL / HTTPS",
+    "description": "شهادة SSL، فرض HTTPS"
+  },
+  "security-encryption": {
+    "name": "تشفير البيانات",
+    "description": "تشفير AES-256، بروتوكول TLS 1.3"
+  },
+  "security-gdpr": {
+    "name": "وحدة الامتثال لـ GDPR",
+    "description": "إدارة الموافقات، تصدير البيانات، الحق في الحذف"
+  },
+  "security-legal-pages": {
+    "name": "شروط الخدمة وسياسة الخصوصية",
+    "description": "صفحات قانونية داخل التطبيق مع تدفق القبول"
+  },
+  "security-rate-limiting": {
+    "name": "تحديد معدل الطلبات وحماية القوة الغاشمة",
+    "description": "تحديد معدل واجهة البرمجة، قفل الحساب"
+  },
+  "security-content-moderation": {
+    "name": "إشراف على المحتوى (بالذكاء الاصطناعي)",
+    "description": "وسم تلقائي للمحتوى غير المناسب"
+  },
+  "security-e2ee": {
+    "name": "التشفير من طرف إلى طرف (E2EE)",
+    "description": "رسائل مشفرة، تبادل المفاتيح"
+  },
+  "security-backup": {
+    "name": "النسخ الاحتياطي واستعادة البيانات",
+    "description": "نسخ احتياطي آلي، خطة التعافي من الكوارث"
+  },
+  "security-ip-blocking": {
+    "name": "حظر IP / التقييد الجغرافي",
+    "description": "حظر الوصول حسب عنوان IP أو البلد"
+  },
+  "security-audit-trail": {
+    "name": "مسار المراجعة / سجل الامتثال",
+    "description": "تسجيل جميع العمليات الحساسة للامتثال"
+  },
+  "l10n-multi-language": {
+    "name": "دعم اللغات المتعددة (i18n)",
+    "description": "ملفات نصوص لكل لغة، مبدّل اللغات"
+  },
+  "l10n-rtl": {
+    "name": "دعم اللغات من اليمين لليسار (RTL)",
+    "description": "عكس التخطيط للغات من اليمين لليسار"
+  },
+  "l10n-accessibility": {
+    "name": "إمكانية الوصول (امتثال WCAG)",
+    "description": "قارئ الشاشة، التباين، تكبير الخط"
+  },
+  "l10n-dynamic-font": {
+    "name": "حجم الخط الديناميكي",
+    "description": "احترام إعدادات حجم الخط في النظام"
+  },
+  "l10n-voiceover": {
+    "name": "دعم VoiceOver / TalkBack",
+    "description": "توافق كامل مع قارئ الشاشة"
+  },
+  "l10n-auto-translation": {
+    "name": "الترجمة التلقائية (عبر API)",
+    "description": "Google Translate API للمحتوى الديناميكي"
+  },
+  "ai-chatbot": {
+    "name": "تكامل روبوت محادثة ذكي",
+    "description": "ذكاء اصطناعي محادثاتي للدعم أو المحتوى"
+  },
+  "ai-recommendations": {
+    "name": "توصيات مدعومة بالذكاء الاصطناعي",
+    "description": "توصيات محتوى/منتجات مخصصة"
+  },
+  "ai-image-recognition": {
+    "name": "التعرف على الصور / التصنيف",
+    "description": "تحديد الأشياء، تصنيف الصور"
+  },
+  "ai-nlp": {
+    "name": "معالجة اللغة الطبيعية (NLP)",
+    "description": "تحليل النصوص، تحليل المشاعر، استخراج الكيانات"
+  },
+  "ai-speech-to-text": {
+    "name": "تحويل الصوت إلى نص / التعرف على الكلام",
+    "description": "نسخ المدخلات الصوتية إلى نص"
+  },
+  "ai-text-to-speech": {
+    "name": "تحويل النص إلى كلام",
+    "description": "قراءة المحتوى بصوت عالٍ، إمكانية الوصول"
+  },
+  "ai-content-generation": {
+    "name": "توليد المحتوى بالذكاء الاصطناعي",
+    "description": "توليد نصوص وملخصات وأوصاف"
+  },
+  "ai-smart-search": {
+    "name": "البحث الذكي (دلالي/ذكاء اصطناعي)",
+    "description": "بحث مدعوم بالذكاء الاصطناعي مع فهم السياق"
+  },
+  "ai-facial-recognition": {
+    "name": "التعرف على الوجه",
+    "description": "ميزات كشف الوجه والتعرف عليه"
+  },
+  "ai-ocr": {
+    "name": "التعرف البصري على الأحرف (OCR)",
+    "description": "استخراج النصوص من الصور/المستندات"
+  },
+  "ai-custom-model": {
+    "name": "تدريب ونشر نموذج ذكاء اصطناعي مخصص",
+    "description": "تدريب نماذج تعلم آلي مخصصة على بيانات العميل، نشرها في الإنتاج مع نقاط نهاية API"
+  },
+  "ai-custom-nlp": {
+    "name": "نموذج NLP مخصص (متخصص بالمجال)",
+    "description": "نموذج لغوي مُحسَّن للمصطلحات والمهام الخاصة بالقطاع"
+  },
+  "ai-custom-vision": {
+    "name": "نموذج رؤية حاسوبية مخصص",
+    "description": "تدريب كشف الأشياء أو التصنيف أو التجزئة على مجموعات بيانات مخصصة"
+  },
+  "ai-document-pipeline": {
+    "name": "خط معالجة المستندات بالذكاء الاصطناعي",
+    "description": "استخراج وتصنيف ومعالجة المستندات بنماذج مدربة مخصصة"
+  },
+  "ai-predictive-analytics": {
+    "name": "محرك التحليلات التنبؤية",
+    "description": "نماذج تنبؤ مخصصة للمبيعات والطلب ومعدل التسرب أو تقييم المخاطر"
+  },
+  "ai-recommendation-engine": {
+    "name": "محرك التوصيات الذكي (مخصص)",
+    "description": "فلترة تعاونية/محتوى مدرّب على بيانات سلوك مستخدمي العميل"
+  },
+  "ai-conversational-agent": {
+    "name": "وكيل محادثة ذكي (مخصص)",
+    "description": "مساعد ذكي متخصص بالمجال مع RAG وقاعدة معرفية واستجابات مُحسَّنة"
+  },
+  "ai-data-extraction": {
+    "name": "استخراج البيانات وهيكلتها بالذكاء الاصطناعي",
+    "description": "استخراج بيانات منظمة من مصادر غير منظمة"
+  },
+  "ai-sentiment-analysis": {
+    "name": "تحليل المشاعر ومراقبة العلامة التجارية",
+    "description": "نموذج مشاعر مخصص للمراجعات ووسائل التواصل وملاحظات العملاء"
+  },
+  "ai-anomaly-detection": {
+    "name": "كشف الشذوذ بالذكاء الاصطناعي",
+    "description": "كشف الاحتيال أو العيوب أو الأنماط غير الطبيعية في بيانات الأعمال"
+  },
+  "ai-image-generation": {
+    "name": "توليد الصور / نقل الأسلوب المخصص",
+    "description": "توليد أو تحويل الصور بناءً على أسلوب العلامة التجارية والتدريب المخصص"
+  },
+  "ai-workflow-automation": {
+    "name": "أتمتة سير العمل بالذكاء الاصطناعي (متعدد الوكلاء)",
+    "description": "وكلاء ذكاء اصطناعي متعددة الخطوات تؤتمت سير العمل التجاري المعقد بالكامل"
+  },
+  "ai-pricing-optimization": {
+    "name": "تحسين التسعير بالذكاء الاصطناعي",
+    "description": "نماذج تسعير ديناميكية تعتمد على الطلب والمنافسة وبيانات السوق"
+  },
+  "ai-voice-assistant": {
+    "name": "الذكاء الصوتي / مساعد صوتي مخصص",
+    "description": "وكيل صوتي مخصص مع فهم واستجابات متخصصة بالمجال"
+  },
+  "ai-translation-model": {
+    "name": "نموذج ترجمة ذكي (مخصص)",
+    "description": "ترجمة مُحسَّنة للمصطلحات المتخصصة واللهجات العربية والمصطلحات التقنية"
+  },
+  "ai-quality-control": {
+    "name": "نظام مراقبة الجودة / الفحص بالذكاء الاصطناعي",
+    "description": "ذكاء اصطناعي للفحص البصري في التصنيع أو البناء أو الزراعة"
+  },
+  "ai-knowledge-graph": {
+    "name": "رسم بياني معرفي ومحرك بحث دلالي",
+    "description": "بناء رسم بياني معرفي للمجال مع استعلام دلالي مدعوم بالذكاء الاصطناعي"
+  },
+  "ai-rag-system": {
+    "name": "نظام RAG (التوليد المعزز بالاسترجاع)",
+    "description": "خط أنابيب RAG مخصص مع قاعدة بيانات متجهية وتضمينات واسترجاع سياقي"
+  },
+  "ai-model-monitoring": {
+    "name": "مراقبة نموذج الذكاء الاصطناعي وخط إعادة التدريب",
+    "description": "لوحة تحكم MLOps، كشف انحراف النموذج، محفزات إعادة التدريب الآلي"
+  },
+  "ai-custom-api": {
+    "name": "تطوير API ذكاء اصطناعي مخصص",
+    "description": "خدمة ذكاء اصطناعي مصغرة مستقلة مع REST API وتوثيق وتحديد معدل الطلبات"
+  },
+  "backend-rest-api": {
+    "name": "تطوير REST API",
+    "description": "واجهة برمجة تطبيقات خلفية مخصصة مع المصادقة"
+  },
+  "backend-database": {
+    "name": "تصميم وإعداد قاعدة البيانات",
+    "description": "تصميم المخطط، الفهرسة، التحسين"
+  },
+  "backend-cloud-hosting": {
+    "name": "إعداد الاستضافة السحابية",
+    "description": "إعداد الخادم، خط أنابيب النشر"
+  },
+  "backend-cdn": {
+    "name": "إعداد شبكة توصيل المحتوى (CDN)",
+    "description": "CloudFront/Cloudflare لتوصيل سريع"
+  },
+  "backend-rate-limiting": {
+    "name": "تحديد معدل API والتخزين المؤقت",
+    "description": "تخزين Redis المؤقت، برمجيات وسيطة لتحديد المعدل"
+  },
+  "backend-websocket": {
+    "name": "WebSocket / محرك الوقت الفعلي",
+    "description": "Socket.io أو Firebase Realtime للتحديثات المباشرة"
+  },
+  "backend-background-jobs": {
+    "name": "المهام الخلفية / قائمة المهام",
+    "description": "مهام مجدولة، معالجة بالطابور"
+  },
+  "backend-file-storage": {
+    "name": "تخزين الملفات (S3/Firebase)",
+    "description": "تخزين ملفات قابل للتوسع مع CDN"
+  },
+  "backend-email-service": {
+    "name": "خدمة البريد الإلكتروني (SendGrid/SES)",
+    "description": "رسائل بريد المعاملات والتسويق"
+  },
+  "backend-sms-service": {
+    "name": "خدمة الرسائل القصيرة (Twilio)",
+    "description": "رمز التحقق والإشعارات عبر SMS"
+  },
+  "backend-cicd": {
+    "name": "خط أنابيب CI/CD",
+    "description": "بناء واختبار ونشر آلي"
+  },
+  "backend-staging": {
+    "name": "بيئة التجربة / ضمان الجودة",
+    "description": "بيئة منفصلة للاختبار"
+  },
+  "backend-migrations": {
+    "name": "نظام ترحيل قاعدة البيانات",
+    "description": "تغييرات المخطط المتحكم بها بالإصدارات"
+  },
+  "backend-api-docs": {
+    "name": "توثيق API (Swagger/Postman)",
+    "description": "توثيق API مولّد تلقائياً"
+  },
+  "backend-microservices": {
+    "name": "بنية الخدمات المصغرة",
+    "description": "خدمات موزعة، شبكة خدمات، بوابة API"
+  },
+  "backend-serverless": {
+    "name": "الدوال بدون خادم",
+    "description": "AWS Lambda / Cloud Functions لمهام محددة"
+  },
+  "testing-unit": {
+    "name": "مجموعة اختبارات الوحدة",
+    "description": "Jest/Mocha/Pytest للمنطق الأساسي"
+  },
+  "testing-integration": {
+    "name": "اختبارات التكامل",
+    "description": "اختبار نقاط النهاية وسير العمل"
+  },
+  "testing-ui-manual": {
+    "name": "اختبار واجهة المستخدم/تجربة المستخدم (يدوي)",
+    "description": "اختبار يدوي على الأجهزة، مراجعة قابلية الاستخدام"
+  },
+  "testing-e2e": {
+    "name": "اختبار شامل آلي (E2E)",
+    "description": "مجموعة اختبارات Detox/Appium الشاملة"
+  },
+  "testing-performance": {
+    "name": "اختبار الأداء / الحمل",
+    "description": "اختبار إجهاد واجهات البرمجة وأداء التطبيق"
+  },
+  "testing-security": {
+    "name": "اختبار الاختراق الأمني",
+    "description": "فحص الثغرات، فحوصات OWASP"
+  },
+  "testing-beta": {
+    "name": "برنامج الاختبار التجريبي",
+    "description": "توزيع النسخة التجريبية، جمع الملاحظات"
+  },
+  "testing-bug-tracking": {
+    "name": "تكامل تتبع الأخطاء",
+    "description": "إعداد سير عمل الإبلاغ عن الأخطاء"
+  },
+  "deploy-ios": {
+    "name": "نشر تطبيق iOS على App Store",
+    "description": "لقطات الشاشة، الأوصاف، الامتثال للمراجعة"
+  },
+  "deploy-android": {
+    "name": "نشر تطبيق Android على Google Play",
+    "description": "القائمة، تصنيف المحتوى، المراجعة"
+  },
+  "deploy-aso": {
+    "name": "تحسين متجر التطبيقات (ASO)",
+    "description": "تحسين الكلمات المفتاحية ولقطات الشاشة والأوصاف"
+  },
+  "deploy-ota-updates": {
+    "name": "التحديثات عبر الهواء (CodePush)",
+    "description": "دفع تحديثات JS بدون مراجعة متجر التطبيقات"
+  },
+  "deploy-feature-flags": {
+    "name": "أعلام الميزات / التبديل عن بُعد",
+    "description": "تفعيل/تعطيل الميزات بدون نشر"
+  },
+  "deploy-versioning": {
+    "name": "إصدار التطبيق ورسالة التحديث",
+    "description": "تحديث إجباري، رسالة تحديث اختيارية"
+  },
+  "deploy-pwa": {
+    "name": "نشر تطبيق الويب (PWA)",
+    "description": "تطبيق ويب تقدمي مع دعم العمل دون اتصال"
+  },
+  "integ-google-maps": {
+    "name": "واجهة Google Maps API",
+    "description": "الخرائط، الأماكن، الاتجاهات، الترميز الجغرافي"
+  },
+  "integ-firebase": {
+    "name": "مجموعة Firebase",
+    "description": "Firebase كخدمة خلفية متكاملة"
+  },
+  "integ-twilio": {
+    "name": "Twilio (SMS, صوت, فيديو)",
+    "description": "تكامل واجهات الاتصال البرمجية"
+  },
+  "integ-sendgrid": {
+    "name": "SendGrid / Mailchimp (بريد إلكتروني)",
+    "description": "إرسال البريد الإلكتروني والتسويق"
+  },
+  "integ-algolia": {
+    "name": "Algolia / ElasticSearch",
+    "description": "تكامل البحث المتقدم"
+  },
+  "integ-stripe-connect": {
+    "name": "Stripe Connect (السوق الإلكتروني)",
+    "description": "مدفوعات متعددة الأطراف، ضمان"
+  },
+  "integ-social-sharing": {
+    "name": "أدوات المشاركة على وسائل التواصل الاجتماعي",
+    "description": "المشاركة على Facebook و Twitter و WhatsApp"
+  },
+  "integ-calendar": {
+    "name": "واجهة التقويم (Google/Outlook)",
+    "description": "المزامنة مع التقويمات الخارجية"
+  },
+  "integ-crm": {
+    "name": "تكامل CRM (Salesforce/HubSpot)",
+    "description": "مزامنة بيانات المستخدم مع نظام إدارة علاقات العملاء"
+  },
+  "integ-zapier": {
+    "name": "تكامل Zapier / Webhook",
+    "description": "ربط التطبيق بأكثر من 3000 خدمة"
+  },
+  "integ-whatsapp": {
+    "name": "واجهة WhatsApp Business API",
+    "description": "إرسال الإشعارات عبر WhatsApp"
+  },
+  "integ-custom-api": {
+    "name": "تكامل API مخصص",
+    "description": "الاتصال بأي واجهة REST API لطرف ثالث"
+  },
+  "offline-basic": {
+    "name": "وضع عدم الاتصال (تخزين مؤقت أساسي)",
+    "description": "تخزين البيانات الرئيسية مؤقتاً للعرض دون اتصال"
+  },
+  "offline-sync": {
+    "name": "المزامنة دون اتصال (قراءة/كتابة)",
+    "description": "عمليات CRUD كاملة دون اتصال مع حل التعارضات"
+  },
+  "offline-image-cache": {
+    "name": "تخزين الصور/الأصول مؤقتاً",
+    "description": "تخزين الصور مؤقتاً لتحميل أسرع"
+  },
+  "offline-optimization": {
+    "name": "تحسين أداء التطبيق",
+    "description": "التحميل الكسول، تقسيم الشيفرة، تحسين الذاكرة"
+  },
+  "offline-background-sync": {
+    "name": "المزامنة في الخلفية وتحديث البيانات",
+    "description": "مزامنة البيانات دورياً في الخلفية"
+  },
+  "misc-animations": {
+    "name": "رسوم متحركة وانتقالات مخصصة",
+    "description": "رسوم Lottie المتحركة، انتقالات الصفحات، التفاعلات الدقيقة"
+  },
+  "misc-haptic": {
+    "name": "ردود الفعل اللمسية",
+    "description": "استجابة اهتزاز عند التفاعلات"
+  },
+  "misc-rating-prompt": {
+    "name": "طلب تقييم التطبيق",
+    "description": "رسالة ذكية لتقييم التطبيق على المتجر"
+  },
+  "misc-referral": {
+    "name": "نظام الإحالة / الدعوة",
+    "description": "أكواد الإحالة، المكافآت، التتبع"
+  },
+  "misc-loyalty": {
+    "name": "برنامج الولاء / المكافآت",
+    "description": "تراكم النقاط، كتالوج المكافآت، الاستبدال"
+  },
+  "misc-multi-platform": {
+    "name": "المزامنة عبر المنصات المتعددة",
+    "description": "مزامنة سلسة للبيانات عبر iOS/Android/الويب"
+  },
+  "misc-print": {
+    "name": "وظيفة الطباعة",
+    "description": "طباعة الإيصالات والتقارير والمحتوى من التطبيق"
+  },
+  "misc-ar": {
+    "name": "ميزة الواقع المعزز (AR)",
+    "description": "تراكب كاميرا AR، وضع الأشياء ثلاثية الأبعاد"
+  },
+  "misc-bluetooth": {
+    "name": "تكامل Bluetooth / إنترنت الأشياء",
+    "description": "الاتصال بأجهزة BLE، تبادل البيانات"
+  },
+  "misc-nfc": {
+    "name": "الاتصال قريب المدى (NFC)",
+    "description": "ميزات النقر للدفع والنقر للاتصال"
+  },
+  "misc-wearable": {
+    "name": "تطبيق الأجهزة القابلة للارتداء (Apple Watch/WearOS)",
+    "description": "تطبيق مرافق للساعات الذكية"
+  },
+  "misc-widget": {
+    "name": "ودجت الشاشة الرئيسية (iOS/Android)",
+    "description": "ودجت الشاشة الرئيسية يعرض بيانات التطبيق"
+  },
+  "misc-clipboard": {
+    "name": "الحافظة وإضافة المشاركة",
+    "description": "المشاركة إلى التطبيق من تطبيقات أخرى"
+  },
+  "misc-custom-keyboard": {
+    "name": "إضافة لوحة مفاتيح مخصصة",
+    "description": "لوحة مفاتيح مخصصة للمراسلة"
+  },
+  "categories": {
+    "auth": "المصادقة وتسجيل الدخول",
+    "profile": "الملف الشخصي والإعدادات",
+    "navigation": "التنقل وواجهة المستخدم",
+    "content": "المحتوى والوسائط",
+    "communication": "التواصل والمراسلة",
+    "notifications": "الإشعارات والتنبيهات",
+    "payments": "المدفوعات والفوترة",
+    "ecommerce": "التجارة الإلكترونية والتسوق",
+    "booking": "الحجز والجدولة",
+    "maps": "الخرائط والموقع",
+    "social": "التواصل الاجتماعي والمجتمع",
+    "admin": "الإدارة والتحكم",
+    "analytics": "التحليلات والتقارير",
+    "security": "الأمان والامتثال",
+    "localization": "التعريب وإمكانية الوصول",
+    "ai": "الذكاء الاصطناعي وتعلم الآلة",
+    "backend": "البنية التحتية والخلفية",
+    "testing": "الاختبار وضمان الجودة",
+    "deployment": "النشر وعمليات التطوير",
+    "integrations": "التكاملات وواجهات البرمجة",
+    "offline": "العمل دون اتصال والمزامنة",
+    "misc": "متنوع"
+  }
+}

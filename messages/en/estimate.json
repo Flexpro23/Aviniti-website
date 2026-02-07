@@ -105,6 +105,22 @@
     "medium": "Medium",
     "high": "High"
   },
+  "pricing": {
+    "running_total_features": "{count} features",
+    "running_total_separator": "\u00b7",
+    "discount_hint": "+{needed} more for {percent}% discount",
+    "discount_applied": "{percent}% bundle discount applied!",
+    "table_title": "Features & Pricing",
+    "table_feature": "Feature",
+    "table_category": "Category",
+    "table_price": "Price",
+    "subtotal": "Subtotal",
+    "design_surcharge": "Design & UX (+20%)",
+    "bundle_discount": "Bundle Discount (-{percent}%)",
+    "total": "Total",
+    "features_count": "{count} features",
+    "days": "{count} days"
+  },
   "results": {
     "title": "Project Blueprint Ready",
     "subtitle": "Based on the information you provided",
@@ -142,6 +158,7 @@
     "save_results": "Save Results",
     "nav": {
       "summary": "Summary",
+      "features": "Features",
       "breakdown": "Breakdown",
       "cost_chart": "Cost Chart",
       "timeline": "Timeline",

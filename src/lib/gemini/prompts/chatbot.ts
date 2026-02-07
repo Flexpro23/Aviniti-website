@@ -44,7 +44,7 @@ AVINITI INFORMATION:
   5. Gym Management ($25,000 / 60 days) - Fitness center management
   6. Airbnb Clone ($15,000 / 35 days) - Property rental marketplace
   7. Hair Transplant AI ($18,000 / 35 days) - AI-powered medical imaging
-- Contact: hello@aviniti.com, WhatsApp available
+- Contact: aliodat@aviniti.app, WhatsApp available
 - Booking: Users can book a free consultation via /contact
 
 INTENT ROUTING:

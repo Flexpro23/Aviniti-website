@@ -16,6 +16,9 @@
  * All values are calibrated for "polished but not heavy" feel.
  */
 export const duration = {
+  /** 100ms - Instant feedback (ultra-fast micro-interactions) */
+  instant: 0.1,
+
   /** 150ms - Fastest micro-interactions (opacity, color changes) */
   fastest: 0.15,
 
@@ -34,6 +37,9 @@ export const duration = {
   /** 700ms - Complex reveals, hero element stagger */
   slower: 0.7,
 
+  /** 800ms - Dramatic reveals and transitions */
+  dramatic: 0.8,
+
   /** 1000ms - Circular progress fills, complex animations */
   slowest: 1.0,
 
@@ -42,6 +48,9 @@ export const duration = {
 
   /** 2000ms - Skeleton pulse cycle */
   skeleton: 2.0,
+
+  /** 3000ms - Orbit animations */
+  orbit: 3.0,
 
   /** 6000ms - Decorative float loop */
   float: 6.0,
@@ -77,9 +86,33 @@ export const easing = {
   easeIn: [0.4, 0, 1, 1] as const,
 
   /**
+   * Ease-in-out - balanced transitions
+   * cubic-bezier(0.45, 0, 0.55, 1)
+   */
+  easeInOut: [0.45, 0, 0.55, 1] as const,
+
+  /**
+   * Ease-in-out quart - snappy but smooth
+   * cubic-bezier(0.76, 0, 0.24, 1)
+   */
+  easeInOutQuart: [0.76, 0, 0.24, 1] as const,
+
+  /**
+   * Ease-out back - slight overshoot
+   * cubic-bezier(0.34, 1.56, 0.64, 1)
+   */
+  easeOutBack: [0.34, 1.56, 0.64, 1] as const,
+
+  /**
+   * Ease-out expo - dramatic deceleration
+   * cubic-bezier(0.19, 1, 0.22, 1)
+   */
+  easeOutExpo: [0.19, 1, 0.22, 1] as const,
+
+  /**
    * Spring with overshoot - playful attention-grabbing
    * Used for counters, CTA attention, chatbot bounce
-   * cubic-bezier(0.34, 1.56, 0.64, 1)
+   * cubic-bezier(0.175, 0.885, 0.32, 1.275)
    */
   spring: [0.175, 0.885, 0.32, 1.275] as const,
 
@@ -134,6 +167,27 @@ export const springConfig = {
     stiffness: 400,
     damping: 30,
   },
+
+  /** Wobbly spring with high bounciness */
+  wobbly: {
+    type: 'spring' as const,
+    stiffness: 300,
+    damping: 10,
+  },
+
+  /** Very stiff for instant snappy feedback */
+  veryStiff: {
+    type: 'spring' as const,
+    stiffness: 500,
+    damping: 35,
+  },
+
+  /** Slow and smooth spring */
+  slow: {
+    type: 'spring' as const,
+    stiffness: 100,
+    damping: 20,
+  },
 } as const;
 
 /* ============================================================
@@ -145,17 +199,23 @@ export const springConfig = {
  * Based on design system's 4px base unit.
  */
 export const motionDistance = {
+  /** 4px - Extra subtle (micro-interactions) */
+  xs: 4,
+
   /** 8px - Subtle shift (badges, subheadlines) */
   sm: 8,
 
-  /** 20px - Standard entrance (cards, sections, body elements) */
-  md: 20,
+  /** 16px - Medium shift (buttons, small cards) */
+  md: 16,
+
+  /** 24px - Standard entrance (cards, sections, body elements) */
+  lg: 24,
 
   /** 40px - Dramatic entrance (hero device, large panels) */
-  lg: 40,
+  xl: 40,
 
-  /** 60px - Extra dramatic (full-screen modals on mobile) */
-  xl: 60,
+  /** 64px - Extra dramatic (full-screen modals on mobile) */
+  '2xl': 64,
 
   /** 100% - Slide animations (drawers, toasts, modals) */
   full: '100%',

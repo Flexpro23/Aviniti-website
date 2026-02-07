@@ -28,7 +28,7 @@ export function FinalCTA() {
           variants={scaleIn}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-blue via-slate-blue-light to-slate-blue p-12 lg:p-16 text-center"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-blue via-slate-blue-light/80 to-slate-blue border border-slate-blue-light/50 p-12 lg:p-16 text-center"
         >
           {/* Decorative Gradient Overlay */}
           <div

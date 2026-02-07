@@ -91,6 +91,22 @@ export const analyzerResponseSchema = z.object({
 export type AnalyzerGeminiResponse = z.infer<typeof analyzerResponseSchema>;
 
 // ============================================================
+// Generate Features AI Response Schema (catalog-based)
+// ============================================================
+
+const catalogFeatureSelectionSchema = z.object({
+  catalogId: z.string().min(1),
+  reason: z.string().min(1).max(300),
+});
+
+export const generateFeaturesAISchema = z.object({
+  mustHave: z.array(catalogFeatureSelectionSchema).min(3).max(15),
+  enhancements: z.array(catalogFeatureSelectionSchema).min(1).max(10),
+});
+
+export type GenerateFeaturesAIResponse = z.infer<typeof generateFeaturesAISchema>;
+
+// ============================================================
 // Get AI Estimate Response Schema
 // ============================================================
 
@@ -102,7 +118,25 @@ const estimatePhaseSchema = z.object({
   duration: z.string().min(3).max(50),
 });
 
+/** Phase schema for the new catalog-based flow (no cost field from AI) */
+const estimatePhaseNoCostSchema = z.object({
+  phase: z.number().int().positive(),
+  name: z.string().min(3).max(100),
+  description: z.string().min(10).max(300),
+  duration: z.string().min(3).max(50),
+});
+
+const strategicInsightSchema = z.object({
+  type: z.enum(['strength', 'challenge', 'recommendation']),
+  title: z.string().min(3).max(100),
+  description: z.string().min(10).max(500),
+});
+
+/** Legacy estimate response schema (AI provides costs) */
 export const estimateResponseSchema = z.object({
+  projectName: z.string().min(1).max(100).optional(),
+  alternativeNames: z.array(z.string().min(1).max(50)).min(2).max(4).optional(),
+  projectSummary: z.string().min(10).max(500).optional(),
   estimatedCost: z.object({
     min: z.number().positive(),
     max: z.number().positive(),
@@ -113,11 +147,31 @@ export const estimateResponseSchema = z.object({
   }),
   approach: z.enum(['custom', 'ready-made', 'hybrid']),
   matchedSolution: matchedSolutionSchema.nullable(),
-  keyInsights: z.array(z.string().min(20).max(500)).min(3).max(5),
+  techStack: z.array(z.string()).optional(),
+  keyInsights: z.array(z.string().min(10).max(500)).min(3).max(5),
+  strategicInsights: z.array(strategicInsightSchema).optional(),
   breakdown: z.array(estimatePhaseSchema).min(5).max(7),
 });
 
 export type EstimateGeminiResponse = z.infer<typeof estimateResponseSchema>;
+
+/** New catalog-based estimate response schema (AI provides creative content only) */
+export const estimateCreativeSchema = z.object({
+  projectName: z.string().min(1).max(100),
+  alternativeNames: z.array(z.string().min(1).max(50)).min(2).max(4).optional(),
+  projectSummary: z.string().min(10).max(500),
+  estimatedTimeline: z.object({
+    weeks: z.number().int().positive().max(104),
+    phases: z.array(estimatePhaseNoCostSchema).min(5).max(7),
+  }),
+  approach: z.enum(['custom', 'ready-made', 'hybrid']),
+  matchedSolution: matchedSolutionSchema.nullable(),
+  techStack: z.array(z.string()).min(2).max(8).optional(),
+  keyInsights: z.array(z.string().min(10).max(500)).min(3).max(5),
+  strategicInsights: z.array(strategicInsightSchema).min(2).max(4).optional(),
+});
+
+export type EstimateCreativeResponse = z.infer<typeof estimateCreativeSchema>;
 
 // ============================================================
 // ROI Calculator Response Schema

@@ -80,38 +80,17 @@ export async function POST(request: NextRequest) {
 
     const processingTimeMs = Date.now() - startTime;
 
-    // 4. Save to Firestore
-    const metadata = extractRequestMetadata(request);
+    // 4. Save to Firestore (non-blocking — don't fail the request if save fails)
+    try {
+      const metadata = extractRequestMetadata(request);
 
-    // Save lead
-    const leadId = await saveLeadToFirestore({
-      email: validatedData.email,
-      name: validatedData.name || null,
-      company: validatedData.company || null,
-      whatsapp: validatedData.whatsapp,
-      source: 'roi-calculator',
-      locale: locale,
-      processType: validatedData.processType,
-      customProcess: validatedData.customProcess,
-      hoursPerWeek: validatedData.hoursPerWeek,
-      employees: validatedData.employees,
-      hourlyCost: validatedData.hourlyCost,
-      currency: validatedData.currency,
-      issues: validatedData.issues,
-      customerGrowth: validatedData.customerGrowth,
-      retentionImprovement: validatedData.retentionImprovement,
-      monthlyRevenue: validatedData.monthlyRevenue,
-      metadata: {
-        ...metadata,
-        ipCountry: undefined,
-      },
-    });
-
-    // Save AI submission
-    await saveAISubmission({
-      tool: 'roi-calculator',
-      leadId,
-      request: {
+      const leadId = await saveLeadToFirestore({
+        email: validatedData.email,
+        name: validatedData.name || null,
+        company: validatedData.company || null,
+        whatsapp: validatedData.whatsapp,
+        source: 'roi-calculator',
+        locale: locale,
         processType: validatedData.processType,
         customProcess: validatedData.customProcess,
         hoursPerWeek: validatedData.hoursPerWeek,
@@ -122,13 +101,36 @@ export async function POST(request: NextRequest) {
         customerGrowth: validatedData.customerGrowth,
         retentionImprovement: validatedData.retentionImprovement,
         monthlyRevenue: validatedData.monthlyRevenue,
-      },
-      response: result.data as unknown as Record<string, unknown>,
-      processingTimeMs,
-      model: 'gemini-1.5-flash',
-      locale: locale,
-      status: 'completed',
-    });
+        metadata: {
+          ...metadata,
+          ipCountry: undefined,
+        },
+      });
+
+      await saveAISubmission({
+        tool: 'roi-calculator',
+        leadId,
+        request: {
+          processType: validatedData.processType,
+          customProcess: validatedData.customProcess,
+          hoursPerWeek: validatedData.hoursPerWeek,
+          employees: validatedData.employees,
+          hourlyCost: validatedData.hourlyCost,
+          currency: validatedData.currency,
+          issues: validatedData.issues,
+          customerGrowth: validatedData.customerGrowth,
+          retentionImprovement: validatedData.retentionImprovement,
+          monthlyRevenue: validatedData.monthlyRevenue,
+        },
+        response: result.data as unknown as Record<string, unknown>,
+        processingTimeMs,
+        model: 'gemini-3-flash-preview',
+        locale: locale,
+        status: 'completed',
+      });
+    } catch (saveError) {
+      console.error('[ROI Calculator API] Failed to save to Firestore (non-fatal):', saveError);
+    }
 
     // 5. Return success response
     const response = createSuccessResponse(result.data);

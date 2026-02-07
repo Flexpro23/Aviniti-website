@@ -256,6 +256,36 @@ export interface AIFeature {
   category: 'must-have' | 'enhancement';
   costImpact?: 'low' | 'medium' | 'high';
   timeImpact?: 'low' | 'medium' | 'high';
+  /** Catalog feature ID when matched to the pricing catalog */
+  catalogId?: string;
+  /** Exact price from the catalog (USD) */
+  price?: number;
+  /** Timeline in business days from the catalog */
+  timelineDays?: number;
+  /** Reason AI selected this feature */
+  reason?: string;
+}
+
+/** A feature with resolved pricing from the catalog */
+export interface PricedFeature {
+  catalogId: string;
+  name: string;
+  categoryId: string;
+  price: number;
+  timelineDays: number;
+  complexity: string;
+}
+
+/** Deterministic pricing breakdown computed from the catalog */
+export interface PricingBreakdown {
+  features: PricedFeature[];
+  subtotal: number;
+  designSurcharge: number;
+  bundleDiscount: number;
+  bundleDiscountPercent: number;
+  total: number;
+  totalTimelineDays: number;
+  currency: 'USD';
 }
 
 /** Request to generate features based on description + answers */
@@ -271,6 +301,8 @@ export interface GenerateFeaturesRequest {
 export interface GenerateFeaturesResponse {
   mustHave: AIFeature[];
   enhancements: AIFeature[];
+  /** Total count of features that matched the catalog */
+  catalogMatchCount?: number;
 }
 
 /** Updated estimate request for the new AI-powered flow */
@@ -279,7 +311,10 @@ export interface EstimateRequest {
   description: string;
   answers: Record<string, boolean>;
   questions: SmartQuestion[];
-  selectedFeatures: AIFeature[];
+  /** Catalog feature IDs selected by the user */
+  selectedFeatureIds: string[];
+  /** @deprecated Use selectedFeatureIds instead */
+  selectedFeatures?: AIFeature[];
   name: string;
   email?: string;
   phone: string;
@@ -320,6 +355,8 @@ export interface EstimateResponse {
   keyInsights: string[];
   strategicInsights: StrategicInsight[];
   breakdown: EstimatePhase[];
+  /** Deterministic pricing from catalog — present when catalog-based pricing is used */
+  pricing?: PricingBreakdown;
 }
 
 // ============================================================

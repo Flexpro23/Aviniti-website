@@ -32,7 +32,9 @@
   "footer": {
     "tagline": "YOUR IDEAS, OUR REALITY",
     "quick_links": "Quick Links",
+    "quickLinks": "Quick Links",
     "ai_tools": "AI Tools",
+    "aiTools": "AI Tools",
     "contact": "Contact",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",

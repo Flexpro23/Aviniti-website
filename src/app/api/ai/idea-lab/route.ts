@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       industry: validatedData.industry,
       problem: validatedData.problem,
       locale,
+      existingIdeas: validatedData.existingIdeas,
     });
 
     const result = await generateJsonContent<IdeaLabResponse>(prompt, {
@@ -73,40 +74,42 @@ export async function POST(request: NextRequest) {
 
     const processingTimeMs = Date.now() - startTime;
 
-    // 4. Save to Firestore
-    const metadata = extractRequestMetadata(request);
+    // 4. Save to Firestore (non-blocking — don't fail the request if save fails)
+    try {
+      const metadata = extractRequestMetadata(request);
 
-    // Save lead
-    const leadId = await saveLeadToFirestore({
-      email: validatedData.email,
-      phone: validatedData.phone || null,
-      whatsapp: validatedData.whatsapp,
-      source: 'idea-lab',
-      locale: locale,
-      background: validatedData.background,
-      industry: validatedData.industry,
-      problem: validatedData.problem,
-      metadata: {
-        ...metadata,
-        ipCountry: undefined, // Could derive from IP with a GeoIP service
-      },
-    });
-
-    // Save AI submission
-    await saveAISubmission({
-      tool: 'idea-lab',
-      leadId,
-      request: {
+      const leadId = await saveLeadToFirestore({
+        email: validatedData.email,
+        phone: validatedData.phone || null,
+        whatsapp: validatedData.whatsapp,
+        source: 'idea-lab',
+        locale: locale,
         background: validatedData.background,
         industry: validatedData.industry,
         problem: validatedData.problem,
-      },
-      response: result.data as unknown as Record<string, unknown>,
-      processingTimeMs,
-      model: 'gemini-1.5-flash',
-      locale: locale,
-      status: 'completed',
-    });
+        metadata: {
+          ...metadata,
+          ipCountry: undefined,
+        },
+      });
+
+      await saveAISubmission({
+        tool: 'idea-lab',
+        leadId,
+        request: {
+          background: validatedData.background,
+          industry: validatedData.industry,
+          problem: validatedData.problem,
+        },
+        response: result.data as unknown as Record<string, unknown>,
+        processingTimeMs,
+        model: 'gemini-3-flash-preview',
+        locale: locale,
+        status: 'completed',
+      });
+    } catch (saveError) {
+      console.error('[Idea Lab API] Failed to save to Firestore (non-fatal):', saveError);
+    }
 
     // 5. Return success response
     const response = createSuccessResponse(result.data);

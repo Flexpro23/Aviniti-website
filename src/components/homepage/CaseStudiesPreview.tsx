@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Case Studies Preview Section
  *
@@ -59,7 +61,7 @@ export function CaseStudiesPreview() {
   ];
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy-dark">
       <Container>
         <ScrollReveal>
           <SectionHeading

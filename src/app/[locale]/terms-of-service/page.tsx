@@ -330,19 +330,19 @@ export default function TermsOfServicePage() {
                   <p className="mt-1">
                     Email:{' '}
                     <a
-                      href="mailto:legal@aviniti.com"
+                      href="mailto:aliodat@aviniti.app"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
-                      legal@aviniti.com
+                      aliodat@aviniti.app
                     </a>
                   </p>
                   <p className="mt-1">
                     Website:{' '}
                     <a
-                      href="https://aviniti.com"
+                      href="https://aviniti.app"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
-                      aviniti.com
+                      aviniti.app
                     </a>
                   </p>
                 </div>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Elements -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E3F2FD;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#BBDEFB;stop-opacity:0.5" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Abstract Background Shapes -->
+  <circle cx="400" cy="300" r="250" fill="url(#grad1)" opacity="0.5" />
+  <circle cx="400" cy="300" r="200" fill="none" stroke="#2196F3" stroke-width="2" opacity="0.3" />
+  <circle cx="400" cy="300" r="150" fill="none" stroke="#00BCD4" stroke-width="2" opacity="0.3" />
+  
+  <!-- Mobile Device Frame -->
+  <rect x="300" y="150" width="200" height="400" rx="20" fill="#FFF" stroke="#1E88E5" stroke-width="4"/>
+  <rect x="320" y="170" width="160" height="340" rx="10" fill="#F8FAFC"/>
+  
+  <!-- App Interface Elements -->
+  <rect x="340" y="200" width="120" height="20" rx="4" fill="#1E88E5" opacity="0.8"/>
+  <rect x="340" y="240" width="80" height="80" rx="8" fill="#00BCD4" opacity="0.6"/>
+  <rect x="340" y="340" width="120" height="10" rx="2" fill="#90CAF9"/>
+  <rect x="340" y="360" width="100" height="10" rx="2" fill="#90CAF9"/>
+  
+  <!-- AI Elements -->
+  <g transform="translate(500,250)">
+    <path d="M0,0 C30,-20 60,-20 90,0 C120,20 150,20 180,0" 
+          fill="none" stroke="#1E88E5" stroke-width="3"
+          stroke-dasharray="5,5"/>
+    <circle cx="0" cy="0" r="8" fill="#1E88E5"/>
+    <circle cx="90" cy="0" r="8" fill="#00BCD4"/>
+    <circle cx="180" cy="0" r="8" fill="#1E88E5"/>
+  </g>
+  
+  <!-- Floating Icons -->
+  <g transform="translate(250,200)">
+    <circle cx="0" cy="0" r="20" fill="#E3F2FD"/>
+    <path d="M-10,-10 L10,10 M-10,10 L10,-10" 
+          stroke="#1E88E5" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <g transform="translate(550,400)">
+    <circle cx="0" cy="0" r="20" fill="#E3F2FD"/>
+    <path d="M0,-12 L0,12 M-12,0 L12,0" 
+          stroke="#00BCD4" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg> 

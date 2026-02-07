@@ -16,6 +16,15 @@
       "support": "Support & Maintenance"
     }
   },
+  "categories": {
+    "all": "All Questions",
+    "general": "General",
+    "pricing": "Pricing & Costs",
+    "process": "Process & Timeline",
+    "timeline": "Timeline & Delivery",
+    "technology": "Technology & Features",
+    "support": "Support & Maintenance"
+  },
   "general": {
     "q1": {
       "question": "What does Aviniti specialize in?",
@@ -78,6 +87,24 @@
       "answer": "Yes, every project includes 30 days of free support after launch for bug fixes and technical issues. We also offer ongoing maintenance packages for continuous updates, feature additions, and support."
     }
   },
+  "timeline": {
+    "q1": {
+      "question": "How long does it take to build an app?",
+      "answer": "Timelines vary by complexity. Ready-made solutions: 35 days. Simple custom apps: 8-12 weeks. Complex apps: 3-6 months. Our Get AI Estimate tool provides a timeline estimate based on your specific project."
+    },
+    "q2": {
+      "question": "Can you deliver on a tight deadline?",
+      "answer": "Yes, we offer rush delivery options. For ready-made solutions, we can deploy in as little as 2-3 weeks. For custom projects, we can scale our team to accelerate timelines. Rush delivery may affect pricing -- use our AI Estimate tool to see adjusted costs."
+    },
+    "q3": {
+      "question": "What factors affect the project timeline?",
+      "answer": "Key factors include project complexity, number of features, design requirements, third-party integrations, approval processes, and feedback turnaround time. We provide detailed timeline breakdowns during the planning phase."
+    },
+    "q4": {
+      "question": "Do you provide progress updates during development?",
+      "answer": "Absolutely! We provide weekly progress reports, regular demo sessions, and access to a project management dashboard where you can track progress in real-time. Communication is key to our process."
+    }
+  },
   "technology": {
     "q1": {
       "question": "What technologies do you use?",
@@ -112,6 +139,10 @@
     "q4": {
       "question": "How do I get started?",
       "answer": "Start by using our Get AI Estimate tool for an instant quote, or book a free consultation call. We'll discuss your idea, provide a detailed proposal, and outline the next steps."
+    },
+    "q5": {
+      "question": "What are your support hours and response times?",
+      "answer": "Our support team is available Sunday through Thursday, 9 AM to 6 PM (Jordan time). For clients on maintenance packages, we offer priority support with guaranteed response within 4 business hours. Emergency support for critical issues is available 24/7."
     }
   }
 }

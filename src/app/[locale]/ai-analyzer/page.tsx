@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Check, AlertTriangle, TrendingUp, Shield, Coins, Swords } from 'lucide-react';
+import { ArrowLeft, Check, AlertTriangle, TrendingUp, Shield, Coins, Swords, Link2, CheckCircle2, Info, X } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
@@ -11,16 +12,25 @@ import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ScoreGauge } from '@/components/ai-tools/ScoreGauge';
+import { useResultPersistence } from '@/hooks/useResultPersistence';
 import type { AnalyzerResponse } from '@/types/api';
 
 export default function AIAnalyzerPage() {
   const t = useTranslations('ai_analyzer');
+  const searchParams = useSearchParams();
+
+  // Check for pre-fill from Idea Lab
+  const fromIdea = searchParams.get('fromIdea') === 'true';
+  const ideaName = searchParams.get('ideaName') || '';
+  const ideaDescription = searchParams.get('ideaDescription') || '';
+
+  const [showPrefilledBanner, setShowPrefilledBanner] = useState(fromIdea);
 
   // Form state
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [formData, setFormData] = useState({
-    idea: '',
+    idea: fromIdea ? `${ideaName}\n\n${ideaDescription}` : '',
     email: '',
     whatsapp: false,
   });
@@ -89,9 +99,10 @@ export default function AIAnalyzerPage() {
           <AIThinkingState
             toolColor="blue"
             messages={[
-              'Analyzing market potential...',
-              'Evaluating technical feasibility...',
-              'Assessing competition landscape...',
+              'Processing your concept...',
+              'Evaluating feasibility...',
+              'Assessing market fit...',
+              'Compiling analysis...',
             ]}
           />
         </div>
@@ -99,11 +110,30 @@ export default function AIAnalyzerPage() {
     );
   }
 
+  // Result persistence state
+  const [isCopied, setIsCopied] = useState(false);
+  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('ai-analyzer');
+
+  // Save result when it changes
+  useEffect(() => {
+    if (results && !savedId) {
+      saveResult(results);
+    }
+  }, [results, savedId, saveResult]);
+
   // ============================================================
   // Results state
   // ============================================================
   if (results) {
     const { categories } = results;
+
+    const handleCopyLink = async () => {
+      const success = await copyShareableUrl();
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }
+    };
 
     return (
       <main className="min-h-screen bg-navy">
@@ -264,6 +294,26 @@ export default function AIAnalyzerPage() {
             </ToolResultItem>
           </ToolResults>
 
+          {/* Save Results Button */}
+          <div className="flex justify-center mb-10">
+            <button
+              onClick={handleCopyLink}
+              className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
+            >
+              {isCopied ? (
+                <>
+                  <CheckCircle2 className="h-5 w-5 text-success" />
+                  Link Copied!
+                </>
+              ) : (
+                <>
+                  <Link2 className="h-5 w-5" />
+                  Save & Share Analysis
+                </>
+              )}
+            </button>
+          </div>
+
           {/* Cross-sell */}
           <div className="mt-10 space-y-4">
             <CrossSellCTA
@@ -297,6 +347,27 @@ export default function AIAnalyzerPage() {
 
       {/* Form */}
       <section id="analyzer-form" className="py-12 md:py-16">
+        {/* Pre-filled Banner */}
+        {showPrefilledBanner && ideaName && (
+          <div className="max-w-3xl mx-auto px-4 mb-6">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm text-blue-300">
+                  {t('prefilled_from_idea_lab', { name: ideaName }) || `Pre-filled from Idea Lab: ${ideaName}`}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPrefilledBanner(false)}
+                className="text-blue-300 hover:text-white transition-colors"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <ToolForm totalSteps={2} currentStep={step} toolColor="blue">
           <StepTransition currentStep={step} direction={direction}>
             {/* ============================================================ */}

@@ -16,7 +16,7 @@
     "filter_social": "Social & Community"
   },
   "solutions": {
-    "delivery_app": {
+    "delivery-app-system": {
       "name": "Delivery App System",
       "tagline": "Complete multi-vendor delivery platform",
       "description": "Full-featured delivery management system with customer app, driver app, and vendor dashboard",
@@ -33,7 +33,7 @@
         "feature_8": "Rating and reviews system"
       }
     },
-    "kindergarten_management": {
+    "kindergarten-management": {
       "name": "Kindergarten Management System",
       "tagline": "All-in-one childcare management",
       "description": "Comprehensive solution for managing students, parents, staff, and operations",
@@ -50,7 +50,7 @@
         "feature_8": "Meal planning and nutrition tracking"
       }
     },
-    "hypermarket_system": {
+    "hypermarket-management": {
       "name": "Hypermarket Management System",
       "tagline": "Complete retail operations platform",
       "description": "End-to-end solution for inventory, POS, and customer management",
@@ -67,7 +67,7 @@
         "feature_8": "Barcode scanning"
       }
     },
-    "office_suite": {
+    "office-management": {
       "name": "Office Management Suite",
       "tagline": "Streamline your office operations",
       "description": "All-in-one platform for HR, projects, and team collaboration",
@@ -84,7 +84,7 @@
         "feature_8": "Performance reviews"
       }
     },
-    "gym_management": {
+    "gym-management": {
       "name": "Gym & Fitness Management",
       "tagline": "Smart fitness center operations",
       "description": "Complete gym management with member app, trainer scheduling, and billing",
@@ -101,7 +101,7 @@
         "feature_8": "Access control integration"
       }
     },
-    "airbnb_clone": {
+    "airbnb-marketplace": {
       "name": "Property Rental Platform",
       "tagline": "Your own Airbnb-style marketplace",
       "description": "Complete rental marketplace with host and guest apps",
@@ -118,7 +118,7 @@
         "feature_8": "Map-based search"
       }
     },
-    "hair_transplant_ai": {
+    "hair-transplant-ai": {
       "name": "Hair Transplant AI Analyzer",
       "tagline": "AI-powered hair analysis and consultation",
       "description": "Smart solution for hair clinics with AI analysis and patient management",

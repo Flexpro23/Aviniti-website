@@ -8,8 +8,16 @@
     "roi_calculator": "حاسبة العائد",
     "blog": "المدونة",
     "case_studies": "دراسات الحالة",
+    "caseStudies": "دراسات الحالة",
     "faq": "الأسئلة الشائعة",
-    "contact": "اتصل بنا"
+    "contact": "اتصل بنا",
+    "ai_tools": "أدوات الذكاء الاصطناعي",
+    "aiTools": {
+      "ideaLab": "مختبر الأفكار",
+      "analyzer": "محلل الذكاء الاصطناعي",
+      "estimate": "احصل على تقدير",
+      "roiCalculator": "حاسبة العائد"
+    }
   },
   "cta": {
     "get_estimate": "احصل على تقدير بالذكاء الاصطناعي",
@@ -24,16 +32,33 @@
   "footer": {
     "tagline": "أفكارك، واقعنا",
     "quick_links": "روابط سريعة",
+    "quickLinks": "روابط سريعة",
     "ai_tools": "أدوات الذكاء الاصطناعي",
+    "aiTools": "أدوات الذكاء الاصطناعي",
     "contact": "التواصل",
     "privacy": "سياسة الخصوصية",
     "terms": "شروط الخدمة",
-    "copyright": "جميع الحقوق محفوظة."
+    "copyright": "جميع الحقوق محفوظة.",
+    "aboutUs": "من نحن",
+    "solutions": "الحلول",
+    "caseStudies": "دراسات الحالة",
+    "blog": "المدونة",
+    "ideaLab": "مختبر الأفكار",
+    "analyzer": "محلل الذكاء الاصطناعي",
+    "estimate": "احصل على تقدير",
+    "roiCalculator": "حاسبة العائد",
+    "faq": "الأسئلة الشائعة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfService": "شروط الخدمة",
+    "resources": "الموارد"
   },
   "language": {
     "en": "English",
     "ar": "العربية",
     "switch": "تغيير اللغة"
+  },
+  "accessibility": {
+    "skip_to_content": "تخطي إلى المحتوى الرئيسي"
   },
   "whatsapp": {
     "general_message": "مرحباً، أنا مهتم بخدمات أفينيتي",

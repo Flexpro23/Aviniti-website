@@ -84,8 +84,11 @@ export function CTABanner({
           transition={{ delay: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
         >
-          <Button asChild size="lg" rightIcon={<ArrowRight />}>
-            <Link href={primaryCTA.href}>{primaryCTA.label}</Link>
+          <Button asChild size="lg">
+            <Link href={primaryCTA.href}>
+              {primaryCTA.label}
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </Button>
           {secondaryCTA && (
             <Button asChild variant="secondary" size="lg">

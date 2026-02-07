@@ -57,12 +57,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       primary: toolColor
         ? {
             orange:
-              'bg-tool-orange text-white shadow-sm hover:bg-tool-orange/90 hover:shadow-md active:shadow-sm',
-            blue: 'bg-tool-blue text-white shadow-sm hover:bg-tool-blue/90 hover:shadow-md active:shadow-sm',
+              'bg-tool-orange/60 text-off-white shadow-sm hover:bg-tool-orange/80 hover:shadow-md active:shadow-sm',
+            blue: 'bg-tool-blue/60 text-off-white shadow-sm hover:bg-tool-blue/80 hover:shadow-md active:shadow-sm',
             green:
-              'bg-tool-green text-navy shadow-sm hover:bg-tool-green/90 hover:shadow-md active:shadow-sm',
+              'bg-tool-green/60 text-off-white shadow-sm hover:bg-tool-green/80 hover:shadow-md active:shadow-sm',
             purple:
-              'bg-tool-purple text-white shadow-sm hover:bg-tool-purple/90 hover:shadow-md active:shadow-sm',
+              'bg-tool-purple/60 text-off-white shadow-sm hover:bg-tool-purple/80 hover:shadow-md active:shadow-sm',
           }[toolColor]
         : 'bg-bronze text-white shadow-sm hover:bg-bronze-hover hover:shadow-md active:bg-bronze-muted active:shadow-sm',
       secondary:
@@ -105,6 +105,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (asChild) {
+      // When asChild, pass children directly to Slot (not wrapped in fragment)
+      // Slot needs a single child element to merge className onto
       return (
         <Comp
           ref={ref}
@@ -112,7 +114,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           aria-busy={isLoading}
           {...props}
         >
-          {content}
+          {children}
         </Comp>
       );
     }

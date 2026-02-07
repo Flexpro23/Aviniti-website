@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Why Choose Us Section
  *

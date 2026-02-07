@@ -59,7 +59,7 @@ export interface GenerateContentResult {
 // Configuration
 // ============================================================
 
-const DEFAULT_MODEL = 'gemini-1.5-flash';
+const DEFAULT_MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-3-flash-preview';
 const DEFAULT_TEMPERATURE = 0.7;
 const DEFAULT_MAX_OUTPUT_TOKENS = 4096;
 const DEFAULT_MAX_RETRIES = 2;
@@ -234,6 +234,7 @@ export async function generateContent(
 
   // All retries failed
   const processingTimeMs = Date.now() - startTime;
+  console.error('[Gemini Client] All retries failed:', lastError?.message);
 
   return {
     text: '',

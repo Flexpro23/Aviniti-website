@@ -81,13 +81,13 @@ export default function SolutionsPage() {
             {filteredSolutions.map((solution) => {
               // Map slug to translation key
               const slugToKey: Record<string, string> = {
-                'delivery-app-system': 'delivery_app',
-                'kindergarten-management': 'kindergarten_management',
-                'hypermarket-management': 'hypermarket_system',
-                'office-management': 'office_suite',
-                'gym-management': 'gym_management',
-                'airbnb-marketplace': 'airbnb_clone',
-                'hair-transplant-ai': 'hair_transplant_ai',
+                'delivery-app-system': 'delivery-app-system',
+                'kindergarten-management': 'kindergarten-management',
+                'hypermarket-management': 'hypermarket-management',
+                'office-management': 'office-management',
+                'gym-management': 'gym-management',
+                'airbnb-marketplace': 'airbnb-marketplace',
+                'hair-transplant-ai': 'hair-transplant-ai',
               };
               const tKey = slugToKey[solution.slug] || solution.slug;
 
@@ -127,9 +127,10 @@ export default function SolutionsPage() {
                     </CardContent>
 
                     <CardFooter>
-                      <Button asChild variant="link" size="sm" rightIcon={<ArrowRight />}>
+                      <Button asChild variant="link" size="sm">
                         <Link href={`/solutions/${solution.slug}`}>
                           Learn More
+                          <ArrowRight className="w-4 h-4" />
                         </Link>
                       </Button>
                     </CardFooter>

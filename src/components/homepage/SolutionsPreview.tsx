@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Solutions Preview Section
  *

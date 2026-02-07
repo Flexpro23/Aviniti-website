@@ -5,8 +5,6 @@ import type {
   Background,
   Industry,
   ProjectType,
-  FeatureId,
-  TimelinePreference,
   RevenueModel,
   ProcessType,
   ProcessIssue,
@@ -135,6 +133,7 @@ export const ideaLabFormSchema = z
     email: emailSchema,
     phone: phoneSchema.optional(),
     whatsapp: z.boolean().default(false),
+    existingIdeas: z.array(z.string()).optional(),
   })
   .and(whatsappWithPhoneSchema);
 
@@ -191,77 +190,67 @@ export const analyzerFormSchema = z
 export type AnalyzerFormData = z.infer<typeof analyzerFormSchema>;
 
 // ============================================================
-// Get AI Estimate Form Schema (Multi-step)
+// Get AI Estimate - Analyze Idea Schema
 // ============================================================
 
-// Step 1: Project Type
-export const estimateStep1Schema = z.object({
+export const analyzeIdeaSchema = z.object({
   projectType: z.enum(['mobile', 'web', 'ai', 'cloud', 'fullstack'] as const).describe('Please select a project type'),
+  description: z
+    .string()
+    .min(10, 'Please describe your idea in at least 10 characters')
+    .max(2000, 'Description cannot exceed 2000 characters'),
 });
 
-// Step 2: Features
-export const estimateStep2Schema = z.object({
-  features: z
-    .array(
-      z.enum([
-        'user-auth',
-        'user-profiles',
-        'push-notifications',
-        'in-app-messaging',
-        'search-filtering',
-        'admin-dashboard',
-        'payment-processing',
-        'subscription-plans',
-        'shopping-cart',
-        'invoice-generation',
-        'ai-chatbot',
-        'image-recognition',
-        'recommendation-engine',
-        'nlp',
-        'predictive-analytics',
-        'file-upload',
-        'camera-integration',
-        'maps-location',
-        'video-streaming',
-        'api-integration',
-        'social-sharing',
-        'analytics-reporting',
-        'multi-language',
-        'offline-mode',
-      ] as const)
-    )
-    .min(1, 'Please select at least one feature'),
-  customFeatures: z
-    .array(z.string().max(100, 'Custom feature cannot exceed 100 characters'))
-    .max(5, 'You can add up to 5 custom features')
-    .optional(),
+export type AnalyzeIdeaFormData = z.infer<typeof analyzeIdeaSchema>;
+
+// ============================================================
+// Get AI Estimate - Generate Features Schema
+// ============================================================
+
+const smartQuestionSchema = z.object({
+  id: z.string(),
+  question: z.string(),
+  context: z.string(),
 });
 
-// Step 3: Timeline
-export const estimateStep3Schema = z.object({
-  timeline: z.enum(['asap', 'standard', 'flexible', 'unsure'] as const).describe('Please select a timeline preference'),
+export const generateFeaturesSchema = z.object({
+  projectType: z.enum(['mobile', 'web', 'ai', 'cloud', 'fullstack'] as const),
+  description: z.string().min(10).max(2000),
+  answers: z.record(z.string(), z.boolean()),
+  questions: z.array(smartQuestionSchema).min(1).max(10),
 });
 
-// Step 4: Contact Info
-export const estimateStep4Schema = z
+export type GenerateFeaturesFormData = z.infer<typeof generateFeaturesSchema>;
+
+// ============================================================
+// Get AI Estimate Form Schema (New AI-powered flow)
+// ============================================================
+
+const aiFeatureSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  category: z.enum(['must-have', 'enhancement']),
+});
+
+export const estimateFormSchema = z
   .object({
+    projectType: z.enum(['mobile', 'web', 'ai', 'cloud', 'fullstack'] as const),
+    description: z.string().min(10).max(2000),
+    answers: z.record(z.string(), z.boolean()),
+    questions: z.array(smartQuestionSchema),
+    selectedFeatureIds: z.array(z.string()).min(1, 'Please select at least one feature').optional(),
+    selectedFeatures: z.array(aiFeatureSchema).optional(),
     name: nameSchema,
-    email: emailSchema,
-    company: companySchema,
-    phone: phoneSchema.optional(),
-    description: z
-      .string()
-      .max(500, 'Description cannot exceed 500 characters')
-      .optional(),
+    email: emailSchema.optional().or(z.literal('')),
+    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
     whatsapp: z.boolean().default(false),
   })
+  .refine(
+    (data) => (data.selectedFeatureIds && data.selectedFeatureIds.length > 0) || (data.selectedFeatures && data.selectedFeatures.length > 0),
+    { message: 'Please select at least one feature', path: ['selectedFeatureIds'] }
+  )
   .and(whatsappWithPhoneSchema);
-
-// Complete Estimate Form (all steps combined)
-export const estimateFormSchema = estimateStep1Schema
-  .and(estimateStep2Schema)
-  .and(estimateStep3Schema)
-  .and(estimateStep4Schema);
 
 export type EstimateFormData = z.infer<typeof estimateFormSchema>;
 

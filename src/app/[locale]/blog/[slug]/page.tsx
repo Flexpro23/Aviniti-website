@@ -207,10 +207,6 @@ The future of business is AI-powered, and we are here to help you navigate that 
   },
 ];
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -344,7 +340,7 @@ export default async function BlogPostPage({
             {/* Share Buttons */}
             <div className="mt-6 pt-6 border-t border-slate-blue-light">
               <ShareButtons
-                url={`https://aviniti.com/blog/${post.slug}`}
+                url={`https://aviniti.app/blog/${post.slug}`}
                 title={post.title}
                 description={post.excerpt}
               />
@@ -367,7 +363,7 @@ export default async function BlogPostPage({
         <Container>
           <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-slate-blue-light">
             <ShareButtons
-              url={`https://aviniti.com/blog/${post.slug}`}
+              url={`https://aviniti.app/blog/${post.slug}`}
               title={post.title}
               description={post.excerpt}
             />

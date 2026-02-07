@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
-  <!-- Infinity symbol -->
-  <path d="M120 50 C120 30, 140 20, 160 20 C180 20, 200 30, 200 50 C200 70, 180 80, 160 80 C140 80, 120 70, 120 50" 
-        fill="none" 
-        stroke="#1E88E5" 
-        stroke-width="8"/>
-  
-  <!-- Text -->
-  <text x="50" y="65" 
-        font-family="Arial, sans-serif" 
-        font-size="48" 
-        font-weight="bold" 
-        fill="#1E88E5">
+<svg width="300" height="80" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bronze infinity symbol (lemniscate) -->
+  <g transform="translate(15, 22)">
+    <path d="M18 18 C18 8, 28 0, 38 6 C44 10, 48 16, 52 18 C56 20, 60 26, 66 30 C76 36, 86 28, 86 18 C86 8, 76 0, 66 6 C60 10, 56 16, 52 18 C48 20, 44 26, 38 30 C28 36, 18 28, 18 18Z"
+          fill="none"
+          stroke="#C08460"
+          stroke-width="4.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- AVINITI text in off-white -->
+  <text x="120" y="42"
+        font-family="Inter, -apple-system, sans-serif"
+        font-size="32"
+        font-weight="700"
+        letter-spacing="0.08em"
+        fill="#F4F4F2">
     AVINITI
   </text>
-  
-  <!-- Tagline -->
-  <text x="50" y="90" 
-        font-family="Arial, sans-serif" 
-        font-size="14" 
-        fill="#4B5563">
+
+  <!-- Tagline in muted -->
+  <text x="120" y="62"
+        font-family="Inter, -apple-system, sans-serif"
+        font-size="9"
+        font-weight="500"
+        letter-spacing="0.15em"
+        fill="#9CA3AF">
     YOUR IDEAS, OUR REALITY
   </text>
-</svg> 
+</svg>

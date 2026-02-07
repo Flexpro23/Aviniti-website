@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * AI Tools Spotlight Section
  *
@@ -57,7 +59,7 @@ export function AIToolsSpotlight() {
   ];
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy-dark">
       <Container>
         <ScrollReveal>
           <SectionHeading
@@ -77,7 +79,12 @@ export function AIToolsSpotlight() {
         >
           {tools.map((tool) => (
             <motion.div key={tool.slug} variants={fadeInUp}>
-              <Card variant="tool" toolColor={tool.color} hover className="h-full">
+              <Card
+                variant="tool"
+                toolColor={tool.color}
+                hover
+                className="h-full transition-all duration-300 hover:glass-light"
+              >
                 <CardHeader className="space-y-4">
                   {/* Icon with tool color */}
                   <div

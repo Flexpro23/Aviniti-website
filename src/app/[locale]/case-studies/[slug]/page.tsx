@@ -203,10 +203,6 @@ const caseStudies: CaseStudyDetail[] = [
   },
 ];
 
-export function generateStaticParams() {
-  return caseStudies.map((study) => ({ slug: study.slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {

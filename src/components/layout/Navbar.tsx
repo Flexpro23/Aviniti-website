@@ -16,7 +16,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -35,11 +35,12 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   // Track scroll position for background opacity
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', () => {
-      setScrolled(window.scrollY > 10);
-    });
-  }
+  React.useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isHomepage = pathname === '/';
   const showNavbar = scrollDirection === 'up' || !scrolled;
@@ -55,12 +56,12 @@ export function Navbar() {
           'fixed top-0 start-0 end-0 z-50',
           'h-16 w-full',
           'transition-all duration-200',
-          // Background: transparent at top, opaque when scrolled
+          // Background: transparent at top, glassmorphism when scrolled
           scrolled
-            ? 'bg-navy/80 backdrop-blur-md border-b border-slate-blue-light/50'
+            ? 'glass-strong border-b border-slate-blue-light/50'
             : isHomepage
             ? 'bg-transparent'
-            : 'bg-navy/80 backdrop-blur-md border-b border-slate-blue-light/50',
+            : 'glass-strong border-b border-slate-blue-light/50',
           // Hide/show on scroll
           showNavbar ? 'translate-y-0' : '-translate-y-full'
         )}

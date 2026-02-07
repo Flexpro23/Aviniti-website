@@ -3,6 +3,15 @@
     "title": "AI ROI Calculator - Calculate Your App's Return on Investment | Aviniti",
     "description": "Calculate the potential ROI of building an app to replace manual processes and improve efficiency"
   },
+  "hero_title": "Calculate Your App ROI",
+  "hero_description": "Find out how much time and money your business could save by automating manual processes with a custom app.",
+  "hero_cta": "Calculate My ROI",
+  "step1_title": "What manual process would you like to improve?",
+  "step2_title": "How much time does this process take?",
+  "step3_title": "What are the costs involved?",
+  "step4_title": "What issues do you experience with this process?",
+  "step5_title": "Growth potential with an app",
+  "results_title": "Your ROI Analysis Is Ready",
   "hero": {
     "title": "Calculate Your App's ROI",
     "subtitle": "Discover how much time and money you could save by automating your processes"

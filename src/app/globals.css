@@ -39,25 +39,27 @@
   --color-info: #60A5FA;
   --color-info-dark: #1E3A5F;
 
-  /* AI Tool Accent Colors */
-  --color-tool-orange: #F97316;
-  --color-tool-orange-dark: #431407;
-  --color-tool-orange-light: #FDBA74;
+  /* AI Tool Accent Colors (deeply muted, near-navy tones) */
+  --color-tool-orange: #9A6A3C;
+  --color-tool-orange-dark: #1C1611;
+  --color-tool-orange-light: #B8936A;
 
-  --color-tool-blue: #3B82F6;
-  --color-tool-blue-dark: #172554;
-  --color-tool-blue-light: #93C5FD;
+  --color-tool-blue: #5A7A9B;
+  --color-tool-blue-dark: #141A22;
+  --color-tool-blue-light: #7E9AB5;
 
-  --color-tool-green: #22C55E;
-  --color-tool-green-dark: #052E16;
-  --color-tool-green-light: #86EFAC;
+  --color-tool-green: #4A7E62;
+  --color-tool-green-dark: #121C17;
+  --color-tool-green-light: #6F9E82;
 
-  --color-tool-purple: #A855F7;
-  --color-tool-purple-dark: #3B0764;
-  --color-tool-purple-light: #D8B4FE;
+  --color-tool-purple: #7A5E96;
+  --color-tool-purple-dark: #18131F;
+  --color-tool-purple-light: #9B83B2;
 
   /* ─── FONT FAMILIES ───────────────────────────────────── */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-body: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: var(--font-body);
   --font-arabic: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
@@ -116,8 +118,9 @@
 
   body {
     @apply bg-navy text-off-white font-sans;
+    font-family: var(--font-body);
     font-size: 16px;
-    line-height: 1.625;
+    line-height: 1.7;
   }
 
   /* ─── TEXT SELECTION ────────────────────────────────── */
@@ -136,6 +139,7 @@
 
   /* ─── HEADING STYLES ────────────────────────────────── */
   .heading-display {
+    font-family: var(--font-heading);
     font-size: var(--heading-display);
     line-height: 1.1;
     letter-spacing: -0.03em;
@@ -144,6 +148,7 @@
   }
 
   .heading-h1 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h1);
     line-height: 1.1;
     letter-spacing: -0.025em;
@@ -152,6 +157,7 @@
   }
 
   .heading-h2 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h2);
     line-height: 1.2;
     letter-spacing: -0.02em;
@@ -160,6 +166,7 @@
   }
 
   .heading-h3 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h3);
     line-height: 1.267;
     letter-spacing: -0.015em;
@@ -168,6 +175,7 @@
   }
 
   .heading-h4 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h4);
     line-height: 1.333;
     letter-spacing: -0.01em;
@@ -176,6 +184,7 @@
   }
 
   .heading-h5 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h5);
     line-height: 1.4;
     letter-spacing: -0.01em;
@@ -184,6 +193,7 @@
   }
 
   .heading-h6 {
+    font-family: var(--font-heading);
     font-size: var(--heading-h6);
     line-height: 1.5;
     letter-spacing: 0em;
@@ -192,12 +202,12 @@
   }
 
   /* Map HTML heading elements to heading sizes */
-  h1 { font-size: var(--heading-h1); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; color: var(--color-off-white); }
-  h2 { font-size: var(--heading-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 700; color: var(--color-off-white); }
-  h3 { font-size: var(--heading-h3); line-height: 1.2; letter-spacing: -0.01em; font-weight: 600; color: var(--color-off-white); }
-  h4 { font-size: var(--heading-h4); line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; color: var(--color-off-white); }
-  h5 { font-size: var(--heading-h5); line-height: 1.3; font-weight: 600; color: var(--color-off-white); }
-  h6 { font-size: var(--heading-h6); line-height: 1.35; font-weight: 600; color: var(--color-off-white); }
+  h1 { font-family: var(--font-heading); font-size: var(--heading-h1); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; color: var(--color-off-white); }
+  h2 { font-family: var(--font-heading); font-size: var(--heading-h2); line-height: 1.15; letter-spacing: -0.015em; font-weight: 700; color: var(--color-off-white); }
+  h3 { font-family: var(--font-heading); font-size: var(--heading-h3); line-height: 1.2; letter-spacing: -0.01em; font-weight: 600; color: var(--color-off-white); }
+  h4 { font-family: var(--font-heading); font-size: var(--heading-h4); line-height: 1.25; letter-spacing: -0.005em; font-weight: 600; color: var(--color-off-white); }
+  h5 { font-family: var(--font-heading); font-size: var(--heading-h5); line-height: 1.3; font-weight: 600; color: var(--color-off-white); }
+  h6 { font-family: var(--font-heading); font-size: var(--heading-h6); line-height: 1.35; font-weight: 600; color: var(--color-off-white); }
 
   /* ─── ARABIC TYPOGRAPHY OVERRIDES ──────────────────── */
   [dir="rtl"] {
@@ -228,11 +238,18 @@
   }
 
   /* ─── LINK STYLES ───────────────────────────────────── */
+  /* Only style inline/prose links — buttons/nav use their own styles */
   a {
-    @apply text-bronze underline-offset-4 transition-colors duration-200;
+    @apply transition-colors duration-200;
   }
 
-  a:hover {
+  .prose a,
+  article a {
+    @apply text-bronze underline-offset-4;
+  }
+
+  .prose a:hover,
+  article a:hover {
     @apply text-bronze-light underline;
   }
 
@@ -260,6 +277,35 @@
    ============================================================ */
 
 @layer components {
+  /* ─── GLASSMORPHISM EFFECTS ─────────────────────────── */
+  .glass {
+    background: rgba(26, 35, 50, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(192, 132, 96, 0.1);
+  }
+
+  .glass-strong {
+    background: rgba(26, 35, 50, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(192, 132, 96, 0.15);
+  }
+
+  .glass-light {
+    background: rgba(244, 244, 242, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(244, 244, 242, 0.1);
+  }
+
+  .glass-bronze {
+    background: rgba(192, 132, 96, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(192, 132, 96, 0.2);
+  }
+
   /* ─── GLOW EFFECTS ──────────────────────────────────── */
   .glow-bronze {
     box-shadow: 0 0 20px rgba(192, 132, 96, 0.25), 0 0 40px rgba(192, 132, 96, 0.1);
@@ -353,9 +399,58 @@
    ============================================================ */
 
 @layer utilities {
+  /* ─── HEADING SIZE UTILITIES ─────────────────────────── */
+  .text-display { font-size: var(--heading-display); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; }
+  .text-h1 { font-size: var(--heading-h1); line-height: 1.1; letter-spacing: -0.025em; font-weight: 700; }
+  .text-h2 { font-size: var(--heading-h2); line-height: 1.2; letter-spacing: -0.02em; font-weight: 700; }
+  .text-h3 { font-size: var(--heading-h3); line-height: 1.267; letter-spacing: -0.015em; font-weight: 600; }
+  .text-h4 { font-size: var(--heading-h4); line-height: 1.333; letter-spacing: -0.01em; font-weight: 600; }
+  .text-h5 { font-size: var(--heading-h5); line-height: 1.4; letter-spacing: -0.01em; font-weight: 600; }
+  .text-h6 { font-size: var(--heading-h6); line-height: 1.5; font-weight: 600; }
+
+  /* ─── SPACING UTILITIES ──────────────────────────────── */
+  .h-13 { height: 3.25rem; }
+
   /* ─── TEXT UTILITIES ────────────────────────────────── */
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-gradient-bronze {
+    background: linear-gradient(135deg, #C08460 0%, #D4A583 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-bronze-shimmer {
+    background: linear-gradient(
+      110deg,
+      #C08460 30%,
+      #f0d0b8 50%,
+      #C08460 70%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: hero-text-shimmer 4s ease-in-out 2s infinite;
+  }
+
+  @keyframes hero-text-shimmer {
+    0% {
+      background-position: 200% center;
+    }
+    100% {
+      background-position: -200% center;
+    }
+  }
+
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   /* ─── ANIMATIONS ────────────────────────────────────── */
@@ -398,6 +493,239 @@
     }
   }
 
+  .animate-marquee-ltr {
+    animation: marquee-ltr 30s linear infinite;
+  }
+
+  .animate-marquee-rtl {
+    animation: marquee-rtl 30s linear infinite;
+  }
+
+  @keyframes marquee-ltr {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.33%);
+    }
+  }
+
+  @keyframes marquee-rtl {
+    0% {
+      transform: translateX(-33.33%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  /* ─── ADDITIONAL ANIMATIONS ─────────────────────────── */
+
+  .animate-float-delayed {
+    animation: float-delayed 6s ease-in-out infinite;
+  }
+
+  @keyframes float-delayed {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 10px rgba(192, 132, 96, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(192, 132, 96, 0.6));
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-orbit {
+    animation: orbit 3s linear infinite;
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(30px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(30px) rotate(-360deg);
+    }
+  }
+
+  /* Directional slide animations */
+  .animate-slide-in-left {
+    animation: slide-in-left 0.5s ease-out;
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s ease-out;
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-top {
+    animation: slide-in-top 0.5s ease-out;
+  }
+
+  @keyframes slide-in-top {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in-bottom {
+    animation: slide-in-bottom 0.5s ease-out;
+  }
+
+  @keyframes slide-in-bottom {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Text gradient animation */
+  .animate-text-gradient {
+    animation: text-gradient-shift 3s linear infinite;
+    background: linear-gradient(
+      90deg,
+      var(--color-bronze) 0%,
+      var(--color-bronze-light) 50%,
+      var(--color-bronze) 100%
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes text-gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  /* Attention-grabbing animations */
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-10px);
+    }
+    75% {
+      transform: translateX(10px);
+    }
+  }
+
+  .animate-bounce-once {
+    animation: bounce-once 0.6s ease-in-out;
+  }
+
+  @keyframes bounce-once {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  @keyframes wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-5deg);
+    }
+    75% {
+      transform: rotate(5deg);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+  }
+
+  @keyframes scale-in {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
   /* ─── REDUCED MOTION ────────────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -410,8 +738,23 @@
     }
 
     .animate-float,
+    .animate-float-delayed,
     .animate-spin-slow,
-    .animate-pulse-glow {
+    .animate-pulse-glow,
+    .animate-glow-pulse,
+    .animate-shimmer,
+    .animate-orbit,
+    .animate-slide-in-left,
+    .animate-slide-in-right,
+    .animate-slide-in-top,
+    .animate-slide-in-bottom,
+    .animate-text-gradient,
+    .animate-shake,
+    .animate-bounce-once,
+    .animate-wiggle,
+    .animate-scale-in,
+    .animate-marquee-ltr,
+    .animate-marquee-rtl {
       animation: none !important;
     }
   }

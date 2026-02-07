@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Services Overview Section
  *
@@ -16,10 +18,10 @@ import { staggerContainer, fadeInUp } from '@/lib/motion/variants';
 import { motion } from 'framer-motion';
 
 const serviceIcons: Record<string, React.ReactNode> = {
-  Smartphone: <Smartphone className="w-12 h-12" />,
-  Globe: <Globe className="w-12 h-12" />,
-  Brain: <Brain className="w-12 h-12" />,
-  Palette: <Palette className="w-12 h-12" />,
+  Smartphone: <Smartphone className="w-8 h-8" />,
+  Globe: <Globe className="w-8 h-8" />,
+  Brain: <Brain className="w-8 h-8" />,
+  Palette: <Palette className="w-8 h-8" />,
 };
 
 export function ServicesOverview() {

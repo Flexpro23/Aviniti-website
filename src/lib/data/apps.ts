@@ -12,7 +12,7 @@ export interface LiveApp {
 export const liveApps: LiveApp[] = [
   {
     name: 'SkinVerse',
-    descriptionKey: 'apps.skinverse.description',
+    descriptionKey: 'skinverse.description',
     icon: '/images/apps/skinverse-icon.png',
     category: 'Health & Beauty',
     appStore: 'https://apps.apple.com/app/skinverse',
@@ -20,7 +20,7 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'Caliber OS',
-    descriptionKey: 'apps.caliberos.description',
+    descriptionKey: 'caliberos.description',
     icon: '/images/apps/caliberos-icon.png',
     category: 'Beauty & Style',
     appStore: 'https://apps.apple.com/app/caliberos',
@@ -28,7 +28,7 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'QuickDeliver',
-    descriptionKey: 'apps.quickdeliver.description',
+    descriptionKey: 'quickdeliver.description',
     icon: '/images/apps/quickdeliver-icon.png',
     category: 'Business',
     appStore: 'https://apps.apple.com/app/quickdeliver',
@@ -36,7 +36,7 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'EduTrack',
-    descriptionKey: 'apps.edutrack.description',
+    descriptionKey: 'edutrack.description',
     icon: '/images/apps/edutrack-icon.png',
     category: 'Education',
     appStore: 'https://apps.apple.com/app/edutrack',
@@ -44,14 +44,14 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'ShopSmart',
-    descriptionKey: 'apps.shopsmart.description',
+    descriptionKey: 'shopsmart.description',
     icon: '/images/apps/shopsmart-icon.png',
     category: 'Shopping',
     googlePlay: 'https://play.google.com/store/apps/details?id=com.aviniti.shopsmart',
   },
   {
     name: 'FitHub Pro',
-    descriptionKey: 'apps.fithubpro.description',
+    descriptionKey: 'fithubpro.description',
     icon: '/images/apps/fithubpro-icon.png',
     category: 'Health & Fitness',
     appStore: 'https://apps.apple.com/app/fithubpro',
@@ -59,7 +59,7 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'StayBook',
-    descriptionKey: 'apps.staybook.description',
+    descriptionKey: 'staybook.description',
     icon: '/images/apps/staybook-icon.png',
     category: 'Travel',
     appStore: 'https://apps.apple.com/app/staybook',
@@ -67,7 +67,7 @@ export const liveApps: LiveApp[] = [
   },
   {
     name: 'RestoPOS',
-    descriptionKey: 'apps.restopos.description',
+    descriptionKey: 'restopos.description',
     icon: '/images/apps/restopos-icon.png',
     category: 'Business',
     googlePlay: 'https://play.google.com/store/apps/details?id=com.aviniti.restopos',

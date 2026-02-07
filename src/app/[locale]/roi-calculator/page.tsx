@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   ArrowRight,
@@ -15,6 +15,8 @@ import {
   Check,
   DollarSign,
   Clock,
+  Link2,
+  CheckCircle2,
 } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
@@ -25,6 +27,8 @@ import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ROIChart } from '@/components/ai-tools/ROIChart';
 import { ComparisonBars } from '@/components/ai-tools/ComparisonBars';
+import { ROIProjectionChart } from '@/components/ai-tools/charts/ROIProjectionChart';
+import { useResultPersistence } from '@/hooks/useResultPersistence';
 import type { ProcessType, ProcessIssue, Currency, ROICalculatorResponse } from '@/types/api';
 
 // ============================================================
@@ -172,9 +176,10 @@ export default function ROICalculatorPage() {
           <AIThinkingState
             toolColor="purple"
             messages={[
-              'Calculating labor savings...',
-              'Analyzing efficiency gains...',
-              'Generating ROI projection...',
+              'Calculating current costs...',
+              'Modeling automation savings...',
+              'Projecting return on investment...',
+              'Building your ROI report...',
             ]}
           />
         </div>
@@ -182,11 +187,30 @@ export default function ROICalculatorPage() {
     );
   }
 
+  // Result persistence state
+  const [isCopied, setIsCopied] = useState(false);
+  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('roi-calculator');
+
+  // Save result when it changes
+  useEffect(() => {
+    if (results && !savedId) {
+      saveResult(results);
+    }
+  }, [results, savedId, saveResult]);
+
   // ============================================================
   // Results state
   // ============================================================
   if (results) {
     const currencySymbol = CURRENCY_OPTIONS.find((c) => c.value === results.currency)?.symbol || '$';
+
+    const handleCopyLink = async () => {
+      const success = await copyShareableUrl();
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }
+    };
 
     return (
       <main className="min-h-screen bg-navy">
@@ -290,6 +314,18 @@ export default function ROICalculatorPage() {
             </ToolResultItem>
           </ToolResults>
 
+          {/* ROI Projection Chart */}
+          {results.yearlyProjection && results.yearlyProjection.length > 0 && (
+            <ToolResults toolColor="purple" className="mb-8">
+              <ToolResultItem>
+                <ROIProjectionChart
+                  projection={results.yearlyProjection}
+                  currency={results.currency}
+                />
+              </ToolResultItem>
+            </ToolResults>
+          )}
+
           {/* Comparison Bars */}
           <ToolResults toolColor="purple" className="mb-8">
             <ToolResultItem>
@@ -304,6 +340,26 @@ export default function ROICalculatorPage() {
               />
             </ToolResultItem>
           </ToolResults>
+
+          {/* Save Results Button */}
+          <div className="flex justify-center mb-10">
+            <button
+              onClick={handleCopyLink}
+              className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
+            >
+              {isCopied ? (
+                <>
+                  <CheckCircle2 className="h-5 w-5 text-success" />
+                  Link Copied!
+                </>
+              ) : (
+                <>
+                  <Link2 className="h-5 w-5" />
+                  Save & Share Results
+                </>
+              )}
+            </button>
+          </div>
 
           {/* Cross-sell */}
           <div className="mt-10 space-y-4">
