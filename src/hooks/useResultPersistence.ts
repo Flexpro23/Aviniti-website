@@ -92,6 +92,11 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
     if (!resultId) return null;
 
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    // Extract current locale from the URL pathname (e.g. /en/get-estimate → "en")
+    const locale =
+      typeof window !== 'undefined'
+        ? window.location.pathname.split('/')[1] || 'en'
+        : 'en';
     const toolPaths = {
       estimate: '/get-estimate',
       'roi-calculator': '/roi-calculator',
@@ -99,7 +104,7 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
       'idea-lab': '/idea-lab',
     };
 
-    return `${baseUrl}${toolPaths[tool]}?result=${resultId}`;
+    return `${baseUrl}/${locale}${toolPaths[tool]}?result=${resultId}`;
   };
 
   /**
