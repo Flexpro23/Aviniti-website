@@ -1,114 +1,78 @@
 {
   "meta": {
     "title": "Get AI Estimate - Aviniti",
-    "description": "Get an instant AI-powered cost and timeline estimate for your app project in under 2 minutes"
+    "description": "Describe your app idea and get an instant AI-powered Project Blueprint with cost breakdown, timeline, and recommendations"
   },
+  "hero_title": "Get Your AI-Powered Project Estimate",
+  "hero_description": "Describe your idea in plain language and our AI will generate a detailed Project Blueprint with cost breakdown, timeline, and recommendations.",
+  "hero_cta": "Start Estimate",
   "hero": {
     "title": "Get Your AI-Powered Project Estimate",
-    "subtitle": "Answer 4 simple questions and get an instant cost and timeline estimate for your app"
+    "subtitle": "Describe your idea and get an instant Project Blueprint"
   },
+  "hero_visual": {
+    "cost": "Cost Estimate",
+    "cost_range": "$8K–$25K",
+    "timeline": "Timeline",
+    "timeline_range": "6–12 Weeks",
+    "insights": "AI Insights",
+    "insights_count": "5 Recommendations"
+  },
+  "social_proof": "1,200+ estimates generated",
   "steps": {
     "step_1": "Project Type",
-    "step_2": "Features",
-    "step_3": "Timeline",
-    "step_4": "Contact Info"
+    "step_2": "Your Idea",
+    "step_3": "Smart Questions",
+    "step_4": "Features",
+    "step_5": "Contact Info",
+    "step_6": "Blueprint"
   },
   "step1": {
     "title": "What type of project do you want to build?",
     "description": "Select the platform that best describes your project",
     "project_type": {
       "mobile": "Mobile App",
-      "mobile_desc": "iOS, Android, or Cross-platform",
+      "mobile_desc": "iPhone, Android, or both platforms",
       "web": "Web Application",
-      "web_desc": "Progressive web app or dashboard",
-      "both": "Mobile + Web",
-      "both_desc": "Unified experience across platforms",
-      "ecommerce": "E-commerce Platform",
-      "ecommerce_desc": "Online store with payment processing",
+      "web_desc": "Website, online platform, or admin panel",
       "ai_ml": "AI/ML Solution",
-      "ai_ml_desc": "Intelligent app with AI capabilities",
-      "other": "Other/Not Sure",
-      "other_desc": "Let us help you define it"
+      "ai_ml_desc": "Smart features powered by artificial intelligence",
+      "cloud": "Cloud Infrastructure",
+      "cloud_desc": "Server setup that grows with your business",
+      "fullstack": "Multiple / Full Stack",
+      "fullstack_desc": "Complete solution: app + website + everything"
     }
   },
   "step2": {
-    "title": "Which features do you need?",
-    "description": "Select all that apply. The more you select, the more accurate your estimate.",
-    "select_all": "Select all that apply",
-    "features": {
-      "user_auth": "User Authentication",
-      "user_auth_desc": "Sign up, login, password recovery",
-      "push_notifications": "Push Notifications",
-      "push_notifications_desc": "Real-time alerts and messages",
-      "payment_integration": "Payment Processing",
-      "payment_integration_desc": "Credit cards, wallets, subscriptions",
-      "social_login": "Social Login",
-      "social_login_desc": "Login with Google, Facebook, Apple",
-      "admin_dashboard": "Admin Dashboard",
-      "admin_dashboard_desc": "Management panel for admins",
-      "analytics": "Analytics & Reporting",
-      "analytics_desc": "User insights and data reports",
-      "chat_messaging": "Chat/Messaging",
-      "chat_messaging_desc": "In-app chat or messaging system",
-      "maps_location": "Maps & Location",
-      "maps_location_desc": "GPS, maps, geolocation services",
-      "camera_media": "Camera & Media",
-      "camera_media_desc": "Photo/video capture and upload",
-      "ai_features": "AI Features",
-      "ai_features_desc": "Machine learning, recommendations, chatbots",
-      "multi_language": "Multi-language",
-      "multi_language_desc": "Support for multiple languages",
-      "offline_mode": "Offline Mode",
-      "offline_mode_desc": "Work without internet connection",
-      "search_filters": "Search & Filters",
-      "search_filters_desc": "Advanced search and filtering",
-      "reviews_ratings": "Reviews & Ratings",
-      "reviews_ratings_desc": "User reviews and rating system",
-      "booking_scheduling": "Booking/Scheduling",
-      "booking_scheduling_desc": "Appointment or reservation system",
-      "ecommerce_cart": "Shopping Cart",
-      "ecommerce_cart_desc": "Product cart and checkout",
-      "inventory_management": "Inventory Management",
-      "inventory_management_desc": "Stock tracking and management",
-      "notifications_system": "Notifications System",
-      "notifications_system_desc": "Email and SMS notifications",
-      "crm_integration": "CRM Integration",
-      "crm_integration_desc": "Connect with Salesforce, HubSpot, etc.",
-      "api_integration": "Third-party APIs",
-      "api_integration_desc": "Connect with external services",
-      "file_upload": "File Upload/Download",
-      "file_upload_desc": "Document and file management",
-      "video_audio_streaming": "Video/Audio Streaming",
-      "video_audio_streaming_desc": "Media streaming capabilities",
-      "geofencing": "Geofencing",
-      "geofencing_desc": "Location-based triggers",
-      "blockchain": "Blockchain Integration",
-      "blockchain_desc": "Crypto payments or smart contracts"
-    },
-    "custom_features_label": "Other features not listed above",
-    "custom_features_placeholder": "Describe any additional features you need..."
+    "title": "Tell us about your project idea",
+    "description": "Describe what you want to build in your own words. No technical knowledge needed.",
+    "label": "Your Idea",
+    "placeholder": "Example: I want to build a food delivery app where restaurants can list their menus, customers can browse and order food, and delivery drivers can pick up and deliver orders...",
+    "hint": "Be as detailed as you'd like — our AI will ask follow-up questions",
+    "examples_title": "Example ideas our clients describe:",
+    "example_1": "I want an app for my gym where members can book classes and track workouts",
+    "example_2": "A marketplace where people can rent out their apartments like Airbnb",
+    "example_3": "An office management system to handle attendance, tasks, and payroll"
   },
   "step3": {
-    "title": "What's your preferred timeline?",
-    "description": "This helps us prioritize your project needs",
-    "timeline": {
-      "asap": "ASAP (Rush)",
-      "asap_desc": "Need it as fast as possible",
-      "1_2_months": "1-2 Months",
-      "1_2_months_desc": "Standard fast-track timeline",
-      "3_4_months": "3-4 Months",
-      "3_4_months_desc": "Balanced timeline",
-      "6_months_plus": "6+ Months",
-      "6_months_plus_desc": "Flexible, quality-focused",
-      "not_sure": "Not Sure",
-      "not_sure_desc": "Help me decide"
-    }
+    "title": "A few quick questions to refine your estimate",
+    "description": "Answer YES or NO to help us understand exactly what you need.",
+    "ai_summary": "AI Summary",
+    "yes": "Yes",
+    "no": "No",
+    "progress": "{answered} of {total} answered",
+    "all_answered": "All answered!"
   },
   "step4": {
-    "title": "Where should we send your estimate?",
-    "description": "We'll email you a detailed breakdown instantly",
+    "title": "Where should we send your Project Blueprint?",
+    "description": "We'll email you the full report with a downloadable PDF.",
+    "must_have": "Must-Have Features",
+    "must_have_badge": "Essential",
+    "enhancements": "Enhancement Features",
+    "enhancements_badge": "Optional",
+    "features_selected": "{count} features selected",
     "form": {
-      "name_label": "Your Name",
+      "name_label": "Full Name",
       "name_placeholder": "John Smith",
       "email_label": "Email Address",
       "email_placeholder": "john@company.com",
@@ -116,16 +80,35 @@
       "company_placeholder": "Your Company Name",
       "phone_label": "Phone Number (optional)",
       "phone_placeholder": "+962 79 123 4567",
-      "whatsapp_label": "Also send via WhatsApp",
-      "description_label": "Tell us more about your project (optional)",
-      "description_placeholder": "Any additional details about your project...",
-      "submit": "Get My Estimate",
-      "submitting": "Generating Estimate..."
+      "whatsapp_label": "Also send my Project Blueprint via WhatsApp",
+      "submit": "Generate My Blueprint",
+      "submitting": "Generating Blueprint..."
     }
   },
+  "step5": {
+    "deliverables_title": "What You'll Get",
+    "deliverable_cost": "Detailed cost breakdown by phase",
+    "deliverable_timeline": "Week-by-week project timeline",
+    "deliverable_recommendations": "AI-powered strategic recommendations",
+    "deliverable_pdf": "Downloadable PDF report",
+    "deliverables_footer": "Based on your {count} selected features",
+    "review_title": "Review Your Choices",
+    "review_project_type": "Project Type",
+    "review_description": "Description",
+    "review_features": "Features Selected",
+    "review_questions": "Questions Answered"
+  },
+  "feature_impact": {
+    "cost": "Cost",
+    "time": "Time",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
   "results": {
-    "title": "Your Project Estimate",
+    "title": "Project Blueprint Ready",
     "subtitle": "Based on the information you provided",
+    "also_consider": "Also consider:",
     "estimated_cost": "Estimated Cost",
     "estimated_timeline": "Estimated Timeline",
     "cost_range": "{{min}} - {{max}}",
@@ -139,15 +122,32 @@
     "approach_ready_made_desc": "We have a pre-built solution that matches your needs",
     "approach_hybrid": "Hybrid Approach",
     "approach_hybrid_desc": "Start with a ready-made solution and customize it",
+    "tech_stack": "Recommended Tech Stack",
+    "tech_stack_summary": "Technology We'll Use — {count} technologies selected",
     "matched_solution": "Matched Solution",
     "solution_price": "Starting from {{price}}",
     "solution_timeline": "{{timeline}} delivery",
     "solution_match": "{{percentage}}% feature match",
-    "key_insights": "Key Insights",
+    "key_insights": "AI Insights",
+    "timeline_title": "Project Timeline",
+    "strategic_insights_title": "Strategic Insights",
     "next_steps": "Next Steps",
-    "next_step_1": "Review your detailed estimate PDF",
+    "next_step_1": "Review your detailed Project Blueprint PDF",
     "next_step_2": "Book a free 30-minute consultation",
     "next_step_3": "We'll prepare a detailed proposal",
+    "download_pdf": "Download PDF Report",
+    "downloading_pdf": "Generating PDF...",
+    "copy_link": "Copy Shareable Link",
+    "link_copied": "Link Copied!",
+    "save_results": "Save Results",
+    "nav": {
+      "summary": "Summary",
+      "breakdown": "Breakdown",
+      "cost_chart": "Cost Chart",
+      "timeline": "Timeline",
+      "insights": "Insights",
+      "next_steps": "Next Steps"
+    },
     "cta": {
       "book_call": "Book a Free Call",
       "download_pdf": "Download PDF",
@@ -155,20 +155,35 @@
       "whatsapp": "Discuss on WhatsApp"
     }
   },
+  "consultation": {
+    "heading": "Ready to Bring This to Life?",
+    "subtitle": "Let's discuss your {projectName} project and turn this blueprint into reality.",
+    "book_call": "Book a Free 30-Min Call",
+    "whatsapp": "Chat on WhatsApp"
+  },
+  "cross_sell": {
+    "roi": "Your {projectName} estimate is ${cost}. See when you'll earn it back.",
+    "analyzer": "Want to validate {projectName} before building? Get an AI-powered viability analysis."
+  },
+  "processing": {
+    "cancel": "Cancel and go back"
+  },
   "loading": {
-    "analyzing": "Analyzing your project requirements...",
-    "calculating": "Calculating cost estimates...",
+    "analyzing": "Understanding your project...",
+    "calculating": "Calculating costs & timeline...",
     "generating": "Generating your estimate..."
   },
   "errors": {
     "select_project_type": "Please select a project type",
+    "describe_idea": "Please describe your idea in at least 10 characters",
     "select_features": "Please select at least one feature",
-    "select_timeline": "Please select a timeline preference",
     "name_required": "Please enter your name",
     "email_required": "Please enter a valid email address",
     "generation_failed": "Failed to generate estimate. Please try again or contact us directly."
   },
   "whatsapp": {
     "message": "Hi, I'd like to discuss my project estimate"
-  }
+  },
+  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {{name}}",
+  "dismiss": "Dismiss"
 }

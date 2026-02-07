@@ -9,6 +9,8 @@
  * - currentStep: Current active step (1-indexed)
  * - onStepChange: Callback when step changes
  * - toolColor: Accent color for stepper
+ * - stepLabels: Optional labels for each step
+ * - stepIcons: Optional icon components for each step
  * - children: Step content
  */
 
@@ -16,12 +18,15 @@
 
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils/cn';
+import { Check } from 'lucide-react';
 
 interface ToolFormProps {
   totalSteps: number;
   currentStep: number;
   onStepChange?: (step: number) => void;
   toolColor: 'orange' | 'blue' | 'green' | 'purple';
+  stepLabels?: string[];
+  stepIcons?: React.ElementType[];
   children: ReactNode;
   className?: string;
 }
@@ -33,57 +38,105 @@ const colorClasses = {
   purple: 'bg-tool-purple',
 };
 
+const textColorClasses = {
+  orange: 'text-tool-orange-light',
+  blue: 'text-tool-blue-light',
+  green: 'text-tool-green-light',
+  purple: 'text-tool-purple-light',
+};
+
 export function ToolForm({
   totalSteps,
   currentStep,
   toolColor,
+  stepLabels,
+  stepIcons,
   children,
   className,
 }: ToolFormProps) {
   return (
     <div className={cn('max-w-3xl mx-auto px-4 sm:px-6 lg:px-8', className)}>
-      {/* Progress Stepper */}
-      <div className="mb-8">
+      {/* Desktop Stepper (md+) */}
+      <div className="hidden md:block mb-8">
         <div className="flex items-center justify-between">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
-            <div key={step} className="flex items-center flex-1">
-              {/* Step Circle */}
-              <div
-                className={cn(
-                  'h-10 w-10 rounded-full',
-                  'flex items-center justify-center',
-                  'text-sm font-semibold',
-                  'transition-all duration-300',
-                  step < currentStep
-                    ? `${colorClasses[toolColor]} text-white`
-                    : step === currentStep
-                    ? `${colorClasses[toolColor]} text-white ring-4 ring-${toolColor}/20`
-                    : 'bg-slate-blue-light text-muted'
-                )}
-              >
-                {step}
-              </div>
-
-              {/* Connector Line */}
-              {step < totalSteps && (
-                <div
-                  className={cn(
-                    'flex-1 h-1 mx-2',
-                    'transition-all duration-300',
-                    step < currentStep
-                      ? colorClasses[toolColor]
-                      : 'bg-slate-blue-light'
+          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => {
+            const StepIcon = stepIcons?.[step - 1];
+            return (
+              <div key={step} className="flex items-center flex-1">
+                {/* Step Circle + Label */}
+                <div className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={cn(
+                      'h-10 w-10 rounded-full',
+                      'flex items-center justify-center',
+                      'text-sm font-semibold',
+                      'transition-all duration-300',
+                      step < currentStep
+                        ? `${colorClasses[toolColor]} text-white`
+                        : step === currentStep
+                        ? `${colorClasses[toolColor]} text-white ring-4 ring-${toolColor}/20`
+                        : 'bg-slate-blue-light text-muted'
+                    )}
+                  >
+                    {step < currentStep ? (
+                      <Check className="h-4 w-4" />
+                    ) : StepIcon ? (
+                      <StepIcon className="h-4.5 w-4.5" />
+                    ) : (
+                      step
+                    )}
+                  </div>
+                  {stepLabels?.[step - 1] && (
+                    <span
+                      className={cn(
+                        'text-xs font-medium transition-colors duration-300 whitespace-nowrap',
+                        step === currentStep
+                          ? textColorClasses[toolColor]
+                          : 'text-muted'
+                      )}
+                    >
+                      {stepLabels[step - 1]}
+                    </span>
                   )}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+                </div>
 
-        {/* Step Label */}
-        <p className="text-sm text-muted text-center mt-4">
-          Step {currentStep} of {totalSteps}
-        </p>
+                {/* Connector Line */}
+                {step < totalSteps && (
+                  <div
+                    className={cn(
+                      'flex-1 h-1 mx-2 mt-[-1.25rem]',
+                      'transition-all duration-300',
+                      step < currentStep
+                        ? colorClasses[toolColor]
+                        : 'bg-slate-blue-light'
+                    )}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Mobile Progress Bar (<md) */}
+      <div className="md:hidden mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className={cn('text-sm font-medium', textColorClasses[toolColor])}>
+            {stepLabels?.[currentStep - 1] || `Step ${currentStep}`}
+          </span>
+          <span className="text-xs text-muted">
+            {currentStep}/{totalSteps}
+          </span>
+        </div>
+        <div className="w-full h-1.5 bg-slate-blue-light rounded-full overflow-hidden">
+          <div
+            className={cn(
+              'h-full rounded-full transition-all duration-500 ease-out',
+              colorClasses[toolColor]
+            )}
+            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+          />
+        </div>
       </div>
 
       {/* Form Content */}

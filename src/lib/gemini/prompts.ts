@@ -4,8 +4,6 @@ import type {
   Background,
   Industry,
   ProjectType,
-  FeatureId,
-  TimelinePreference,
   ProcessType,
   ProcessIssue,
   Currency,
@@ -77,10 +75,15 @@ export function buildIdeaLabPrompt(data: {
   industry: Industry;
   problem: string;
   locale: 'en' | 'ar';
+  existingIdeas?: string[];
 }): string {
   const locale = data.locale;
   const backgroundLabel = BACKGROUND_LABELS[data.background][locale];
   const industryLabel = INDUSTRY_LABELS[data.industry][locale];
+
+  const existingIdeasNote = data.existingIdeas && data.existingIdeas.length > 0
+    ? `\n\nIMPORTANT: The user has already seen these ideas: ${data.existingIdeas.join(', ')}. DO NOT suggest any of these ideas again. Generate completely different concepts that approach the problem from new angles.`
+    : '';
 
   return `You are a creative AI product strategist for Aviniti, an AI and app development company based in Amman, Jordan.
 
@@ -90,7 +93,7 @@ USER CONTEXT:
 - Background: ${backgroundLabel}
 - Industry: ${industryLabel}
 - Problem/Opportunity: ${data.problem}
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Language: ${locale === 'ar' ? 'Arabic' : 'English'}${existingIdeasNote}
 
 INSTRUCTIONS:
 1. Generate exactly 5-6 app ideas.
@@ -100,9 +103,11 @@ INSTRUCTIONS:
    - 3-5 key features (short phrases)
    - An estimated cost range in USD (realistic for a development company)
    - An estimated timeline (in weeks)
+   - A complexity level: "simple", "moderate", or "complex"
+   - A recommended tech stack (3-5 technologies like "React Native", "Firebase", "Node.js", "AI/ML", etc.)
 3. Ideas should be diverse -- cover different approaches to the problem.
-4. At least one idea should be a simpler MVP (lower cost, faster timeline).
-5. At least one idea should be more ambitious (higher cost, more features).
+4. At least one idea should be a simpler MVP (lower cost, faster timeline, "simple" complexity).
+5. At least one idea should be more ambitious (higher cost, more features, "complex" complexity).
 6. If any idea closely matches one of our Ready-Made Solutions, note the match:
    - Delivery App: $10,000 / 35 days
    - Kindergarten Management: $8,000 / 35 days
@@ -126,7 +131,9 @@ Respond with valid JSON matching this schema:
       "features": ["string"],
       "estimatedCost": { "min": number, "max": number },
       "estimatedTimeline": "string",
-      "matchedSolution": { "slug": "string", "name": "string", "startingPrice": number, "deploymentTimeline": "string", "featureMatchPercentage": number } | null
+      "matchedSolution": { "slug": "string", "name": "string", "startingPrice": number, "deploymentTimeline": "string", "featureMatchPercentage": number } | null,
+      "complexity": "simple" | "moderate" | "complex",
+      "techStack": ["string"]
     }
   ]
 }`;
@@ -229,46 +236,186 @@ Respond with valid JSON matching this exact schema:
 }
 
 // ============================================================
-// Estimate Prompt
+// Analyze Idea Prompt (Step 3: Smart Questions)
 // ============================================================
 
-export function buildEstimatePrompt(data: {
+export function buildAnalyzeIdeaPrompt(data: {
   projectType: ProjectType;
-  features: FeatureId[];
-  customFeatures?: string[];
-  timeline: TimelinePreference;
-  description?: string;
+  description: string;
   locale: 'en' | 'ar';
 }): string {
   const locale = data.locale;
 
+  return `You are an expert project analyst for Aviniti, an AI and app development company based in Amman, Jordan.
+
+A potential client has described their project idea in plain language. They are NOT technical -- they are a regular person who wants to build an app. Your job is to:
+1. Understand what they want to build
+2. Write a brief summary of their idea (2-3 sentences)
+3. Generate 3-5 YES/NO clarifying questions that will help determine the exact scope and features needed
+
+IMPORTANT: The questions must be simple YES/NO questions that a non-technical person can easily answer. Do NOT ask about technical details like "authentication flows" or "API integrations". Instead ask about what the user WANTS, like "Do you want users to be able to sign up and log in?" or "Do you need to accept payments?".
+
+USER INPUT:
+- Project Type: ${data.projectType}
+- Description: ${data.description}
+- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+
+QUESTION GUIDELINES:
+- Ask 3-5 questions maximum
+- Each question must be answerable with YES or NO
+- Questions should cover the most impactful scope decisions:
+  * User accounts and profiles
+  * Payments and transactions
+  * Real-time features (chat, notifications)
+  * Admin/management panel
+  * AI/smart features
+  * Multi-language or multi-platform needs
+- Each question needs a short context (1 sentence) explaining WHY you're asking
+- Questions should be ordered from most important to least important
+- Language: ${locale === 'ar' ? 'Write everything in Arabic' : 'Write everything in English'}
+
+OUTPUT FORMAT:
+Respond with valid JSON matching this exact schema:
+{
+  "summary": "string (2-3 sentence summary of what they want to build)",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "string (the YES/NO question)",
+      "context": "string (1 sentence explaining why this matters)"
+    }
+  ]
+}`;
+}
+
+// ============================================================
+// Generate Features Prompt (Step 4: Feature Selection)
+// ============================================================
+
+export function buildGenerateFeaturesPrompt(data: {
+  projectType: ProjectType;
+  description: string;
+  answers: Record<string, boolean>;
+  questions: { id: string; question: string; context: string }[];
+  locale: 'en' | 'ar';
+}): string {
+  const locale = data.locale;
+
+  const answeredQuestions = data.questions
+    .map((q) => `- ${q.question}: ${data.answers[q.id] ? 'YES' : 'NO'}`)
+    .join('\n');
+
+  return `You are an expert product manager for Aviniti, an AI and app development company based in Amman, Jordan.
+
+Based on the user's project description and their answers to clarifying questions, generate a list of features split into two categories:
+
+1. **Must-Have Features**: Core features that are essential for the project to function. These should be pre-selected.
+2. **Enhancement Features**: Nice-to-have features that would improve the product but aren't strictly necessary. These are optional upgrades.
+
+IMPORTANT: Write feature names and descriptions in simple, non-technical language that a regular person can understand. Instead of "User Authentication System", say "Sign Up & Login". Instead of "Push Notification Service", say "Real-time Alerts & Notifications".
+
+USER INPUT:
+- Project Type: ${data.projectType}
+- Description: ${data.description}
+- Clarifying Questions & Answers:
+${answeredQuestions}
+- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+
+FEATURE GUIDELINES:
+- Generate 5-10 must-have features based on what the user described and confirmed
+- Generate 3-7 enhancement features that would add value
+- Each feature should have:
+  * A simple, clear name (2-5 words)
+  * A 1-sentence description explaining what it does in plain language
+  * A cost impact rating: "low", "medium", or "high" (how much it adds to cost)
+  * A time impact rating: "low", "medium", or "high" (how much it adds to timeline)
+- Features should be realistic and relevant to the project type
+- If the user said NO to a question, do NOT include related features in must-haves (but you can suggest them as enhancements)
+- If the user said YES to a question, include the related features in must-haves
+- Language: ${locale === 'ar' ? 'Write everything in Arabic' : 'Write everything in English'}
+
+OUTPUT FORMAT:
+Respond with valid JSON matching this exact schema:
+{
+  "mustHave": [
+    {
+      "id": "mh-1",
+      "name": "string",
+      "description": "string",
+      "category": "must-have",
+      "costImpact": "low" | "medium" | "high",
+      "timeImpact": "low" | "medium" | "high"
+    }
+  ],
+  "enhancements": [
+    {
+      "id": "en-1",
+      "name": "string",
+      "description": "string",
+      "category": "enhancement",
+      "costImpact": "low" | "medium" | "high",
+      "timeImpact": "low" | "medium" | "high"
+    }
+  ]
+}`;
+}
+
+// ============================================================
+// Estimate Prompt (Step 6: Full Report)
+// ============================================================
+
+export function buildEstimatePrompt(data: {
+  projectType: ProjectType;
+  description: string;
+  answers: Record<string, boolean>;
+  questions: { id: string; question: string; context: string }[];
+  selectedFeatures: { id: string; name: string; description: string; category: 'must-have' | 'enhancement' }[];
+  locale: 'en' | 'ar';
+}): string {
+  const locale = data.locale;
+
+  const answeredQuestions = data.questions
+    .map((q) => `- ${q.question}: ${data.answers[q.id] ? 'YES' : 'NO'}`)
+    .join('\n');
+
+  const mustHaveFeatures = data.selectedFeatures
+    .filter((f) => f.category === 'must-have')
+    .map((f) => `- ${f.name}: ${f.description}`)
+    .join('\n');
+
+  const enhancementFeatures = data.selectedFeatures
+    .filter((f) => f.category === 'enhancement')
+    .map((f) => `- ${f.name}: ${f.description}`)
+    .join('\n');
+
   return `You are an expert software project estimator for Aviniti, an AI and app development company based in Amman, Jordan.
 
-Given the following project requirements, generate a detailed project estimate.
+You are generating a comprehensive "Project Blueprint" report for a potential client. They described their idea in plain language, answered clarifying questions, and selected features. Now generate a detailed estimate.
 
-PROJECT REQUIREMENTS:
+PROJECT CONTEXT:
 - Project Type: ${data.projectType}
-- Selected Features: ${data.features.join(', ')}
-- Custom Features: ${data.customFeatures?.join(', ') || 'None'}
-- Timeline Preference: ${data.timeline}
-- Project Description: ${data.description || 'Not provided'}
+- Client's Description: ${data.description}
+- Clarifying Questions & Answers:
+${answeredQuestions}
+- Must-Have Features (confirmed by client):
+${mustHaveFeatures || 'None'}
+- Enhancement Features (selected by client):
+${enhancementFeatures || 'None'}
 - Language: ${locale === 'ar' ? 'Arabic' : 'English'}
 
 ESTIMATION GUIDELINES:
-1. Generate realistic cost ranges in USD.
-2. Break down into 5-7 phases: Discovery & Planning, UI/UX Design, Backend Development, Frontend Development, Testing & QA, Deployment & Launch (and optionally: AI/ML Integration if applicable).
-3. Each phase must have a cost estimate and duration.
-4. Total cost should align with the feature complexity:
-   - Simple (1-3 basic features): $5,000-$15,000
-   - Medium (4-8 features): $12,000-$30,000
-   - Complex (8+ features or AI): $25,000-$60,000
+1. Give the project a creative, memorable name (2-4 words). The main projectName should be the best suggestion.
+2. Generate 3-4 alternative project names that are modern, trendy, catchy, and relevant to the described app.
+3. Write a 2-3 sentence project summary.
+4. Generate realistic cost ranges in USD.
+5. Break down into 5-7 phases: Discovery & Planning, UI/UX Design, Backend Development, Frontend Development, Testing & QA, Deployment & Launch (and optionally: AI/ML Integration if applicable).
+6. Each phase must have a cost estimate and duration.
+7. Total cost should align with the feature complexity:
+   - Simple (3-5 basic features): $5,000-$15,000
+   - Medium (6-10 features): $12,000-$30,000
+   - Complex (10+ features or AI): $25,000-$60,000
    - Full Stack (multiple platforms): $40,000-$80,000+
-5. Timeline should respect the user's preference:
-   - ASAP: Compress phases, higher cost (rush premium ~20%)
-   - Standard: Normal pacing
-   - Flexible: Can optimize for cost savings
-   - Not Sure: Recommend standard approach
-6. Check if the project matches any of our Ready-Made Solutions:
+8. Check if the project matches any of our Ready-Made Solutions:
    - Delivery App: $10,000 / 35 days
    - Kindergarten Management: $8,000 / 35 days
    - Hypermarket System: $15,000 / 35 days
@@ -276,12 +423,23 @@ ESTIMATION GUIDELINES:
    - Gym Management: $25,000 / 60 days
    - Airbnb Clone: $15,000 / 35 days
    - Hair Transplant AI: $18,000 / 35 days
-7. Generate 3-5 key insights covering risks, recommendations, and optimization opportunities.
-8. Recommend approach: "custom" (fully custom build), "ready-made" (a Ready-Made Solution covers >80% of features), or "hybrid" (Ready-Made base with custom additions).
+9. Suggest a recommended tech stack (3-6 technologies).
+10. Generate 3-5 key insights covering risks, recommendations, and optimization opportunities.
+11. Recommend approach: "custom" (fully custom build), "ready-made" (a Ready-Made Solution covers >80% of features), or "hybrid" (Ready-Made base with custom additions).
+12. Generate 3 strategic insights with specific types:
+    - 1 "strength": A key advantage or positive aspect of the project
+    - 1 "challenge": A potential risk or difficulty to be aware of
+    - 1 "recommendation": An actionable suggestion for success
+    Each insight must have a detailed description (3-4 sentences minimum) with specific, actionable information.
+
+Respond in ${locale === 'ar' ? 'Arabic' : 'English'}.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
 {
+  "projectName": "string",
+  "alternativeNames": ["string", "string", "string"],
+  "projectSummary": "string",
   "estimatedCost": { "min": number, "max": number },
   "estimatedTimeline": {
     "weeks": number,
@@ -303,7 +461,15 @@ Respond with valid JSON matching this exact schema:
     "deploymentTimeline": "string",
     "featureMatchPercentage": number
   } | null,
+  "techStack": ["string"],
   "keyInsights": ["string"],
+  "strategicInsights": [
+    {
+      "type": "strength" | "challenge" | "recommendation",
+      "title": "string",
+      "description": "string"
+    }
+  ],
   "breakdown": [
     {
       "phase": number,

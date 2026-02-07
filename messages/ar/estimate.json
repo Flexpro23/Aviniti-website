@@ -1,114 +1,78 @@
 {
   "meta": {
     "title": "احصل على تقدير بالذكاء الاصطناعي - Aviniti",
-    "description": "احصل على تقدير فوري للتكلفة والجدول الزمني لمشروع تطبيقك في أقل من دقيقتين"
+    "description": "صف فكرة تطبيقك واحصل على مخطط مشروع فوري بالذكاء الاصطناعي مع تفصيل التكلفة والجدول الزمني والتوصيات"
   },
+  "hero_title": "احصل على تقدير مشروعك بالذكاء الاصطناعي",
+  "hero_description": "صف فكرتك بلغتك الخاصة وسيقوم الذكاء الاصطناعي بإنشاء مخطط مشروع تفصيلي مع تفصيل التكلفة والجدول الزمني والتوصيات.",
+  "hero_cta": "ابدأ التقدير",
   "hero": {
     "title": "احصل على تقدير مشروعك بالذكاء الاصطناعي",
-    "subtitle": "أجب على 4 أسئلة بسيطة واحصل على تقدير فوري للتكلفة والجدول الزمني لتطبيقك"
+    "subtitle": "صف فكرتك واحصل على مخطط مشروع فوري"
   },
+  "hero_visual": {
+    "cost": "تقدير التكلفة",
+    "cost_range": "$8K–$25K",
+    "timeline": "الجدول الزمني",
+    "timeline_range": "6–12 أسبوع",
+    "insights": "رؤى الذكاء الاصطناعي",
+    "insights_count": "5 توصيات"
+  },
+  "social_proof": "أكثر من 1,200 تقدير تم إنشاؤه",
   "steps": {
     "step_1": "نوع المشروع",
-    "step_2": "الميزات",
-    "step_3": "الجدول الزمني",
-    "step_4": "معلومات التواصل"
+    "step_2": "فكرتك",
+    "step_3": "أسئلة ذكية",
+    "step_4": "الميزات",
+    "step_5": "معلومات التواصل",
+    "step_6": "المخطط"
   },
   "step1": {
     "title": "ما نوع المشروع الذي تريد بناءه؟",
     "description": "اختر المنصة التي تصف مشروعك بشكل أفضل",
     "project_type": {
       "mobile": "تطبيق موبايل",
-      "mobile_desc": "iOS أو Android أو متعدد المنصات",
+      "mobile_desc": "آيفون، أندرويد، أو كلا المنصتين",
       "web": "تطبيق ويب",
-      "web_desc": "تطبيق ويب تقدمي أو لوحة تحكم",
-      "both": "موبايل + ويب",
-      "both_desc": "تجربة موحدة عبر المنصات",
-      "ecommerce": "منصة تجارة إلكترونية",
-      "ecommerce_desc": "متجر إلكتروني مع معالجة المدفوعات",
+      "web_desc": "موقع إلكتروني، منصة أونلاين، أو لوحة تحكم",
       "ai_ml": "حل ذكاء اصطناعي",
-      "ai_ml_desc": "تطبيق ذكي مع قدرات الذكاء الاصطناعي",
-      "other": "أخرى/غير متأكد",
-      "other_desc": "دعنا نساعدك في تحديده"
+      "ai_ml_desc": "ميزات ذكية مدعومة بالذكاء الاصطناعي",
+      "cloud": "بنية تحتية سحابية",
+      "cloud_desc": "إعداد خوادم ينمو مع عملك",
+      "fullstack": "متعدد / فول ستاك",
+      "fullstack_desc": "حل متكامل: تطبيق + موقع + كل شيء"
     }
   },
   "step2": {
-    "title": "ما هي الميزات التي تحتاجها؟",
-    "description": "اختر كل ما ينطبق. كلما اخترت أكثر، كان التقدير أدق.",
-    "select_all": "اختر كل ما ينطبق",
-    "features": {
-      "user_auth": "مصادقة المستخدم",
-      "user_auth_desc": "التسجيل، تسجيل الدخول، استرداد كلمة المرور",
-      "push_notifications": "الإشعارات الفورية",
-      "push_notifications_desc": "التنبيهات والرسائل الفورية",
-      "payment_integration": "معالجة المدفوعات",
-      "payment_integration_desc": "بطاقات الائتمان، المحافظ، الاشتراكات",
-      "social_login": "تسجيل الدخول الاجتماعي",
-      "social_login_desc": "تسجيل الدخول عبر Google و Facebook و Apple",
-      "admin_dashboard": "لوحة تحكم المسؤول",
-      "admin_dashboard_desc": "لوحة إدارة للمسؤولين",
-      "analytics": "التحليلات والتقارير",
-      "analytics_desc": "رؤى المستخدمين وتقارير البيانات",
-      "chat_messaging": "الدردشة/المراسلة",
-      "chat_messaging_desc": "نظام دردشة أو مراسلة داخل التطبيق",
-      "maps_location": "الخرائط والموقع",
-      "maps_location_desc": "GPS، خرائط، خدمات تحديد الموقع",
-      "camera_media": "الكاميرا والوسائط",
-      "camera_media_desc": "التقاط الصور/الفيديو والتحميل",
-      "ai_features": "ميزات الذكاء الاصطناعي",
-      "ai_features_desc": "التعلم الآلي، التوصيات، روبوتات الدردشة",
-      "multi_language": "متعدد اللغات",
-      "multi_language_desc": "دعم لغات متعددة",
-      "offline_mode": "وضع عدم الاتصال",
-      "offline_mode_desc": "العمل بدون اتصال بالإنترنت",
-      "search_filters": "البحث والفلاتر",
-      "search_filters_desc": "بحث وفلترة متقدمة",
-      "reviews_ratings": "المراجعات والتقييمات",
-      "reviews_ratings_desc": "نظام مراجعات وتقييمات المستخدمين",
-      "booking_scheduling": "الحجز/الجدولة",
-      "booking_scheduling_desc": "نظام المواعيد أو الحجوزات",
-      "ecommerce_cart": "سلة التسوق",
-      "ecommerce_cart_desc": "سلة المنتجات والدفع",
-      "inventory_management": "إدارة المخزون",
-      "inventory_management_desc": "تتبع وإدارة المخزون",
-      "notifications_system": "نظام الإشعارات",
-      "notifications_system_desc": "إشعارات البريد الإلكتروني والرسائل النصية",
-      "crm_integration": "تكامل CRM",
-      "crm_integration_desc": "الاتصال مع Salesforce و HubSpot وغيرها",
-      "api_integration": "واجهات برمجية خارجية",
-      "api_integration_desc": "الاتصال بخدمات خارجية",
-      "file_upload": "تحميل/تنزيل الملفات",
-      "file_upload_desc": "إدارة المستندات والملفات",
-      "video_audio_streaming": "بث الفيديو/الصوت",
-      "video_audio_streaming_desc": "قدرات بث الوسائط",
-      "geofencing": "السياج الجغرافي",
-      "geofencing_desc": "محفزات تعتمد على الموقع",
-      "blockchain": "تكامل البلوكتشين",
-      "blockchain_desc": "مدفوعات العملات المشفرة أو العقود الذكية"
-    },
-    "custom_features_label": "ميزات أخرى غير مدرجة أعلاه",
-    "custom_features_placeholder": "صف أي ميزات إضافية تحتاجها..."
+    "title": "أخبرنا عن فكرة مشروعك",
+    "description": "صف ما تريد بناءه بكلماتك الخاصة. لا حاجة لمعرفة تقنية.",
+    "label": "فكرتك",
+    "placeholder": "مثال: أريد بناء تطبيق توصيل طعام حيث يمكن للمطاعم عرض قوائمها، والعملاء تصفح وطلب الطعام، والسائقين استلام وتوصيل الطلبات...",
+    "hint": "كن مفصلاً كما تريد — سيطرح الذكاء الاصطناعي أسئلة متابعة",
+    "examples_title": "أمثلة على أفكار يصفها عملاؤنا:",
+    "example_1": "أريد تطبيقاً لصالة الألعاب الرياضية حيث يمكن للأعضاء حجز الدروس وتتبع التمارين",
+    "example_2": "سوق حيث يمكن للناس تأجير شققهم مثل Airbnb",
+    "example_3": "نظام إدارة مكتبي لإدارة الحضور والمهام والرواتب"
   },
   "step3": {
-    "title": "ما هو الجدول الزمني المفضل لديك؟",
-    "description": "هذا يساعدنا في تحديد أولويات احتياجات مشروعك",
-    "timeline": {
-      "asap": "في أسرع وقت ممكن (عاجل)",
-      "asap_desc": "أحتاجه بأسرع ما يمكن",
-      "1_2_months": "1-2 شهر",
-      "1_2_months_desc": "جدول زمني سريع قياسي",
-      "3_4_months": "3-4 أشهر",
-      "3_4_months_desc": "جدول زمني متوازن",
-      "6_months_plus": "6+ أشهر",
-      "6_months_plus_desc": "مرن، يركز على الجودة",
-      "not_sure": "غير متأكد",
-      "not_sure_desc": "ساعدني في اتخاذ القرار"
-    }
+    "title": "بعض الأسئلة السريعة لتحسين تقديرك",
+    "description": "أجب بنعم أو لا لمساعدتنا في فهم ما تحتاجه بالضبط.",
+    "ai_summary": "ملخص الذكاء الاصطناعي",
+    "yes": "نعم",
+    "no": "لا",
+    "progress": "{answered} من {total} تمت الإجابة",
+    "all_answered": "تمت الإجابة على الكل!"
   },
   "step4": {
-    "title": "أين يجب أن نرسل تقديرك؟",
-    "description": "سنرسل لك تفصيلاً مفصلاً عبر البريد الإلكتروني فوراً",
+    "title": "أين يجب أن نرسل مخطط مشروعك؟",
+    "description": "سنرسل لك التقرير الكامل مع ملف PDF قابل للتحميل.",
+    "must_have": "ميزات أساسية",
+    "must_have_badge": "ضرورية",
+    "enhancements": "ميزات تحسينية",
+    "enhancements_badge": "اختيارية",
+    "features_selected": "{count} ميزة مختارة",
     "form": {
-      "name_label": "اسمك",
+      "name_label": "الاسم الكامل",
       "name_placeholder": "أحمد محمد",
       "email_label": "عنوان البريد الإلكتروني",
       "email_placeholder": "ahmad@company.com",
@@ -116,16 +80,35 @@
       "company_placeholder": "اسم شركتك",
       "phone_label": "رقم الهاتف (اختياري)",
       "phone_placeholder": "+962 79 123 4567",
-      "whatsapp_label": "أرسل أيضاً عبر واتساب",
-      "description_label": "أخبرنا المزيد عن مشروعك (اختياري)",
-      "description_placeholder": "أي تفاصيل إضافية عن مشروعك...",
-      "submit": "احصل على تقديري",
-      "submitting": "جارٍ إنشاء التقدير..."
+      "whatsapp_label": "أرسل أيضاً مخطط المشروع عبر واتساب",
+      "submit": "إنشاء مخطط المشروع",
+      "submitting": "جارٍ إنشاء المخطط..."
     }
   },
+  "step5": {
+    "deliverables_title": "ما ستحصل عليه",
+    "deliverable_cost": "تفصيل التكلفة حسب المرحلة",
+    "deliverable_timeline": "جدول زمني أسبوعي للمشروع",
+    "deliverable_recommendations": "توصيات استراتيجية بالذكاء الاصطناعي",
+    "deliverable_pdf": "تقرير PDF قابل للتحميل",
+    "deliverables_footer": "بناءً على {count} ميزة مختارة",
+    "review_title": "راجع اختياراتك",
+    "review_project_type": "نوع المشروع",
+    "review_description": "الوصف",
+    "review_features": "الميزات المختارة",
+    "review_questions": "الأسئلة المجابة"
+  },
+  "feature_impact": {
+    "cost": "التكلفة",
+    "time": "الوقت",
+    "low": "منخفض",
+    "medium": "متوسط",
+    "high": "مرتفع"
+  },
   "results": {
-    "title": "تقدير مشروعك",
+    "title": "مخطط المشروع جاهز",
     "subtitle": "بناءً على المعلومات التي قدمتها",
+    "also_consider": "يمكنك أيضاً:",
     "estimated_cost": "التكلفة المقدرة",
     "estimated_timeline": "الجدول الزمني المقدر",
     "cost_range": "{{min}} - {{max}}",
@@ -139,15 +122,32 @@
     "approach_ready_made_desc": "لدينا حل مسبق البناء يتطابق مع احتياجاتك",
     "approach_hybrid": "نهج هجين",
     "approach_hybrid_desc": "ابدأ بحل جاهز وقم بتخصيصه",
+    "tech_stack": "التقنيات الموصى بها",
+    "tech_stack_summary": "التقنيات التي سنستخدمها — {count} تقنية مختارة",
     "matched_solution": "الحل المطابق",
     "solution_price": "يبدأ من {{price}}",
     "solution_timeline": "تسليم {{timeline}}",
     "solution_match": "{{percentage}}% تطابق الميزات",
-    "key_insights": "رؤى رئيسية",
+    "key_insights": "رؤى الذكاء الاصطناعي",
+    "timeline_title": "الجدول الزمني للمشروع",
+    "strategic_insights_title": "رؤى استراتيجية",
     "next_steps": "الخطوات التالية",
-    "next_step_1": "راجع PDF تقديرك التفصيلي",
+    "next_step_1": "راجع PDF مخطط المشروع التفصيلي",
     "next_step_2": "احجز استشارة مجانية لمدة 30 دقيقة",
     "next_step_3": "سنقوم بإعداد عرض تفصيلي",
+    "download_pdf": "تنزيل تقرير PDF",
+    "downloading_pdf": "جارٍ إنشاء PDF...",
+    "copy_link": "نسخ رابط قابل للمشاركة",
+    "link_copied": "تم نسخ الرابط!",
+    "save_results": "حفظ النتائج",
+    "nav": {
+      "summary": "الملخص",
+      "breakdown": "التفصيل",
+      "cost_chart": "مخطط التكلفة",
+      "timeline": "الجدول الزمني",
+      "insights": "الرؤى",
+      "next_steps": "الخطوات التالية"
+    },
     "cta": {
       "book_call": "احجز مكالمة مجانية",
       "download_pdf": "تنزيل PDF",
@@ -155,20 +155,35 @@
       "whatsapp": "ناقش عبر واتساب"
     }
   },
+  "consultation": {
+    "heading": "مستعد لتحويل هذا إلى واقع؟",
+    "subtitle": "لنناقش مشروع {projectName} الخاص بك ونحول هذا المخطط إلى حقيقة.",
+    "book_call": "احجز مكالمة مجانية 30 دقيقة",
+    "whatsapp": "تواصل عبر واتساب"
+  },
+  "cross_sell": {
+    "roi": "تقدير {projectName} هو ${cost}. اكتشف متى ستسترد استثمارك.",
+    "analyzer": "تريد التحقق من {projectName} قبل البناء؟ احصل على تحليل جدوى بالذكاء الاصطناعي."
+  },
+  "processing": {
+    "cancel": "إلغاء والعودة"
+  },
   "loading": {
-    "analyzing": "جارٍ تحليل متطلبات مشروعك...",
-    "calculating": "جارٍ حساب تقديرات التكلفة...",
+    "analyzing": "جارٍ فهم مشروعك...",
+    "calculating": "جارٍ حساب التكاليف والجدول الزمني...",
     "generating": "جارٍ إنشاء تقديرك..."
   },
   "errors": {
     "select_project_type": "يرجى اختيار نوع المشروع",
+    "describe_idea": "يرجى وصف فكرتك في 10 أحرف على الأقل",
     "select_features": "يرجى اختيار ميزة واحدة على الأقل",
-    "select_timeline": "يرجى اختيار تفضيل الجدول الزمني",
     "name_required": "يرجى إدخال اسمك",
     "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
     "generation_failed": "فشل إنشاء التقدير. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة."
   },
   "whatsapp": {
     "message": "مرحباً، أود مناقشة تقدير مشروعي"
-  }
+  },
+  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {{name}}",
+  "dismiss": "إغلاق"
 }
