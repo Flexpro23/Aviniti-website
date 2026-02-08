@@ -47,7 +47,7 @@
   },
   "results": {
     "title": "Idea Analysis Report",
-    "idea_name": "{{name}}",
+    "idea_name": "{name}",
     "overall_score": "Overall Viability Score",
     "score_interpretation": {
       "excellent": "Excellent - Strong market, clear differentiation",
@@ -111,7 +111,34 @@
   "errors": {
     "idea_too_short": "Please describe your idea in at least 30 characters for meaningful analysis",
     "email_required": "Please enter a valid email address",
-    "analysis_failed": "Failed to analyze idea. Please try again or contact us."
+    "analysis_failed": "Failed to analyze idea. Please try again or contact us.",
+    "failed": "Failed to analyze idea. Please try again.",
+    "generic": "Something went wrong. Please try again."
   },
-  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {{name}}"
+  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {name}",
+  "results_analysis_complete": "Analysis Complete",
+  "results_overall_score_label": "Overall Viability Score",
+  "results_score_suffix": "/100",
+  "results_section_market": "Market Potential",
+  "results_section_technical": "Technical Feasibility",
+  "results_section_monetization": "Monetization",
+  "results_section_competition": "Competition",
+  "results_section_recommendations": "Recommendations",
+  "results_complexity_label": "Complexity: ",
+  "results_intensity_label": "Intensity: ",
+  "loading_processing": "Processing your concept...",
+  "loading_evaluating": "Evaluating feasibility...",
+  "loading_assessing": "Assessing market fit...",
+  "loading_compiling": "Compiling analysis...",
+  "buttons_continue": "Continue",
+  "buttons_back": "Back",
+  "buttons_dismiss": "Dismiss",
+  "buttons_link_copied": "Link Copied!",
+  "buttons_save_share": "Save & Share Analysis",
+  "form_textarea_placeholder": "Describe your app idea in detail... What problem does it solve? Who is it for? What makes it different?",
+  "form_char_limit": "{count} / 2000 chars",
+  "form_min_chars": "(minimum 30 characters)",
+  "cross_sell_estimate": "Like what you see? Get a detailed cost and timeline estimate for this idea.",
+  "cross_sell_roi": "Curious about the return? Calculate the ROI of building this app.",
+  "aria_dismiss": "Dismiss"
 }

@@ -414,6 +414,111 @@ export interface ROICalculatorResponse {
 }
 
 // ============================================================
+// ROI Calculator V2 (AI-Driven)
+// ============================================================
+
+export type TargetMarket = 'mena' | 'gcc' | 'north-america' | 'europe' | 'asia-pacific' | 'global';
+
+export type BusinessModel =
+  | 'subscription'
+  | 'marketplace'
+  | 'ecommerce'
+  | 'saas'
+  | 'on-demand'
+  | 'freemium'
+  | 'one-time-license'
+  | 'advertising'
+  | 'unsure';
+
+export interface ROIFromEstimateRequest {
+  mode: 'from-estimate';
+  projectName: string;
+  projectSummary: string;
+  projectType: ProjectType;
+  estimatedCost: { min: number; max: number };
+  estimatedTimeline: { weeks: number };
+  approach: 'custom' | 'ready-made' | 'hybrid';
+  features: string[];
+  techStack: string[];
+  strategicInsights: StrategicInsight[];
+  matchedSolution: MatchedSolution | null;
+  targetMarket: TargetMarket;
+  industry?: Industry;
+  businessModel?: BusinessModel;
+  email: string;
+  phone?: string;
+  whatsapp: boolean;
+  locale: Locale;
+}
+
+export interface ROIStandaloneRequest {
+  mode: 'standalone';
+  ideaDescription: string;
+  targetMarket: TargetMarket;
+  industry?: Industry;
+  businessModel?: BusinessModel;
+  budgetRange?: { min: number; max: number };
+  email: string;
+  phone?: string;
+  whatsapp: boolean;
+  locale: Locale;
+}
+
+export type ROICalculatorRequestV2 = ROIFromEstimateRequest | ROIStandaloneRequest;
+
+export interface ROIRevenueScenario {
+  name: string;
+  monthlyRevenue: number;
+  annualRevenue: number;
+  assumptions: string[];
+}
+
+export interface ROITimelinePoint {
+  month: number;
+  cumulativeInvestment: number;
+  cumulativeRevenue: number;
+  netPosition: number;
+}
+
+export interface ROIMarketOpportunity {
+  totalAddressableMarket: string;
+  serviceableMarket: string;
+  captureTarget: string;
+  growthRate: string;
+}
+
+export interface ROICostBreakdownItem {
+  category: string;
+  year1: number;
+  year2: number;
+  year3: number;
+  description: string;
+}
+
+export interface ROIStrategicRecommendation {
+  type: 'monetization' | 'growth' | 'risk-mitigation' | 'competitive-advantage';
+  title: string;
+  description: string;
+  impact: 'high' | 'medium' | 'low';
+}
+
+export interface ROICalculatorResponseV2 {
+  projectName: string;
+  investmentRequired: { min: number; max: number; currency: string };
+  paybackPeriodMonths: { optimistic: number; moderate: number; conservative: number };
+  threeYearROI: { percentage: number; absoluteReturn: number };
+  marketOpportunity: ROIMarketOpportunity;
+  suggestedRevenueModel: { primary: string; reasoning: string; pricingBenchmark: string };
+  revenueScenarios: ROIRevenueScenario[];
+  projection: ROITimelinePoint[];
+  costBreakdown: ROICostBreakdownItem[];
+  strategicRecommendations: ROIStrategicRecommendation[];
+  executiveSummary: string;
+  keyRisks: string[];
+  keyOpportunities: string[];
+}
+
+// ============================================================
 // Chat
 // ============================================================
 

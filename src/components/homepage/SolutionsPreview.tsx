@@ -73,10 +73,10 @@ export function SolutionsPreview() {
                   {/* Pricing & Timeline */}
                   <div className="flex flex-wrap gap-2 pt-2">
                     <Badge variant="default" size="sm">
-                      From ${solution.startingPrice.toLocaleString()}
+                      {t('starting_from')} ${solution.startingPrice.toLocaleString()}
                     </Badge>
                     <Badge variant="outline" size="sm">
-                      {solution.timelineDays} days
+                      {solution.timelineDays} {t('delivery')}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -84,7 +84,7 @@ export function SolutionsPreview() {
                 <CardFooter>
                   <Button asChild variant="ghost" size="sm" className="w-full">
                     <Link href={`/solutions/${solution.slug}`}>
-                      Learn More
+                      {t('learn_more')}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </Button>

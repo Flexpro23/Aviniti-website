@@ -125,12 +125,15 @@
     "subtitle": "Pre-built app solutions customized for your business. Launch in weeks, not months.",
     "starting_from": "Starting from",
     "delivery": "days delivery",
-    "view_all": "View All Solutions"
+    "view_all": "View All Solutions",
+    "learn_more": "Learn More"
   },
   "apps": {
     "label": "OUR PORTFOLIO",
     "title": "Apps We've Built — Live in Stores",
-    "subtitle": "Real apps serving real users. Download and experience our work."
+    "subtitle": "Real apps serving real users. Download and experience our work.",
+    "app_store": "App Store",
+    "google_play": "Google Play"
   },
   "why_choose": {
     "title": "Why Companies Choose Aviniti",
@@ -149,6 +152,13 @@
     "title": "Real Results, Real Impact",
     "subtitle": "Discover how we've helped businesses transform their operations and achieve measurable success.",
     "view_all": "View All Case Studies",
+    "read_study": "Read Case Study",
+    "industry_ecommerce": "E-Commerce",
+    "industry_healthcare": "Healthcare",
+    "industry_logistics": "Logistics",
+    "metric_1_label": "Sales Growth",
+    "metric_2_label": "Time Saved",
+    "metric_3_label": "Cost Reduction",
     "case_1_headline": "Revolutionizing E-Commerce with AI-Powered Recommendations",
     "case_1_excerpt": "Built a custom mobile app with intelligent product recommendations that tripled conversion rates and increased average order value by 45%.",
     "case_2_headline": "Streamlining Healthcare Operations with Smart Scheduling",
@@ -173,7 +183,9 @@
     "post_2_excerpt": "Stay ahead of the curve with the latest trends in app development, from cross-platform frameworks to edge computing.",
     "post_3_title": "Choosing the Right Tech Stack for Your App",
     "post_3_excerpt": "A comprehensive guide to selecting the best technologies for your next mobile or web application project.",
-    "view_all": "View All Posts"
+    "view_all": "View All Posts",
+    "min_read": "min read",
+    "read_more": "Read More"
   },
   "process": {
     "title": "How We Work",

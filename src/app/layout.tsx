@@ -1,12 +1,22 @@
 import type { ReactNode } from 'react';
+import type { Metadata } from 'next';
 
 type Props = {
   children: ReactNode;
 };
 
+export const metadata: Metadata = {
+  alternates: {
+    languages: {
+      'en': 'https://www.aviniti.app/en',
+      'ar': 'https://www.aviniti.app/ar',
+    },
+  },
+};
+
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning>
+    <html className="dark" suppressHydrationWarning>
       <body className="bg-navy text-off-white antialiased">{children}</body>
     </html>
   );

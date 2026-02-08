@@ -8,6 +8,9 @@ import type {
   ProcessIssue,
   Currency,
   GrowthEstimate,
+  TargetMarket,
+  BusinessModel,
+  ROICalculatorRequestV2,
 } from '@/types/api';
 
 // ============================================================
@@ -87,13 +90,15 @@ export function buildIdeaLabPrompt(data: {
 
   return `You are a creative AI product strategist for Aviniti, an AI and app development company based in Amman, Jordan.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Problem/Opportunity" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including app names, descriptions, features, and tech stack labels — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 A visitor has described their background, industry interest, and a problem they want to solve. Your job is to generate 5-6 unique, creative, and viable app ideas that address their problem.
 
 USER CONTEXT:
 - Background: ${backgroundLabel}
 - Industry: ${industryLabel}
 - Problem/Opportunity: ${data.problem}
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}${existingIdeasNote}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}${existingIdeasNote}
 
 INSTRUCTIONS:
 1. Generate exactly 5-6 app ideas.
@@ -118,7 +123,7 @@ INSTRUCTIONS:
    - Hair Transplant AI: $18,000 / 35 days
 7. Cost estimates should range from $5,000 to $50,000 depending on complexity.
 8. Timeline estimates should range from 4 to 20 weeks.
-9. Respond in ${locale === 'ar' ? 'Arabic' : 'English'}.
+9. IMPORTANT: Your entire response must be in the same language the user used in the "Problem/Opportunity" field above. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this schema:
@@ -157,6 +162,8 @@ export function buildAnalyzerPrompt(data: {
 
   return `You are an expert startup and app idea analyst for Aviniti, an AI and app development company.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Idea Description" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including idea name, summary, analysis, findings, recommendations, competitor names, tech stack items — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 A visitor has described an app idea they want validated. Perform a comprehensive analysis covering market potential, technical feasibility, monetization strategies, and competitive landscape. Provide an overall viability score from 0-100.
 
 USER INPUT:
@@ -164,7 +171,7 @@ USER INPUT:
 - Target Audience: ${data.targetAudience || 'Not specified'}
 - Industry: ${industryLabel}
 - Preferred Revenue Model: ${data.revenueModel || 'Not specified'}
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
 
 SCORING GUIDELINES:
 - 80-100: Excellent -- strong market, clear differentiation, manageable complexity
@@ -182,7 +189,7 @@ ANALYSIS REQUIREMENTS:
 7. Write a 2-3 sentence executive summary.
 8. Give the idea a concise, memorable name.
 
-Respond in ${locale === 'ar' ? 'Arabic' : 'English'}.
+IMPORTANT: Your entire response must be in the same language the user used in the "Idea Description" field above. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
@@ -248,6 +255,8 @@ export function buildAnalyzeIdeaPrompt(data: {
 
   return `You are an expert project analyst for Aviniti, an AI and app development company based in Amman, Jordan.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Description" field). If the user wrote in Arabic, ALL your output — summary, questions, and context explanations — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 A potential client has described their project idea in plain language. They are NOT technical -- they are a regular person who wants to build an app. Your job is to:
 1. Understand what they want to build
 2. Write a brief summary of their idea (2-3 sentences)
@@ -258,7 +267,7 @@ IMPORTANT: The questions must be simple YES/NO questions that a non-technical pe
 USER INPUT:
 - Project Type: ${data.projectType}
 - Description: ${data.description}
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
 
 QUESTION GUIDELINES:
 - Ask 3-5 questions maximum
@@ -272,7 +281,7 @@ QUESTION GUIDELINES:
   * Multi-language or multi-platform needs
 - Each question needs a short context (1 sentence) explaining WHY you're asking
 - Questions should be ordered from most important to least important
-- Language: ${locale === 'ar' ? 'Write everything in Arabic' : 'Write everything in English'}
+- IMPORTANT: Write everything in the same language the user used in the "Description" field above. If they wrote in Arabic, write in Arabic. If they wrote in English, write in English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
@@ -307,6 +316,8 @@ export function buildGenerateFeaturesPrompt(data: {
     .join('\n');
 
   return `You are an expert product manager for Aviniti, an AI and app development company based in Amman, Jordan.
+
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Description" field). If the user wrote in Arabic, ALL your output — including feature selection reasons — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
 
 Based on the user's project description and their answers to clarifying questions, select features from Aviniti's official feature catalog.
 
@@ -364,6 +375,8 @@ export function buildEstimatePrompt(data: {
 
   return `You are an expert software project consultant for Aviniti, an AI and app development company based in Amman, Jordan.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Client's Description" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including project name, alternative names, summary, phase descriptions, insights, tech stack items, and recommendations — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 You are generating the CREATIVE content for a "Project Blueprint" report. Pricing has already been calculated deterministically — you do NOT need to estimate costs. Focus on naming, strategy, and insights.
 
 PROJECT CONTEXT:
@@ -375,7 +388,7 @@ ${answeredQuestions}
 ${featureIdList}
 - Pre-calculated Total: $${data.totalCost.toLocaleString()} USD
 - Pre-calculated Timeline: ~${totalWeeks} weeks (${data.totalTimelineDays} business days)
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
 
 YOUR TASK:
 1. Give the project a creative, memorable name (2-4 words).
@@ -402,7 +415,7 @@ YOUR TASK:
 8. Recommend approach: "custom", "ready-made" (>80% feature match), or "hybrid".
 9. Generate 3 strategic insights (1 strength, 1 challenge, 1 recommendation) with detailed descriptions.
 
-Respond in ${locale === 'ar' ? 'Arabic' : 'English'}.
+IMPORTANT: Your entire response must be in the same language the user used in the "Client's Description" field above. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT (valid JSON):
 {
@@ -446,6 +459,8 @@ export function buildROIPrompt(data: {
 
   return `You are an expert business analyst and ROI calculator for Aviniti, an AI and app development company.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Process to replace" and any custom process description). If the user wrote in Arabic, ALL your output — including the "aiInsight" field and every generated text string — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in. If the user's input is mostly numeric/structured (no clear language), use the locale hint as fallback.
+
 A business visitor wants to understand the potential return on investment from building an app to replace a manual process. Using the data they provided, calculate a comprehensive ROI analysis.
 
 BUSINESS DATA:
@@ -458,7 +473,7 @@ BUSINESS DATA:
 - Could improve retention with app: ${data.retentionImprovement.answer}${data.retentionImprovement.percentage ? ` (${data.retentionImprovement.percentage}%)` : ''}
 - Monthly revenue: ${data.monthlyRevenue ? data.currency + ' ' + data.monthlyRevenue : 'Not provided'}
 - Currency: ${data.currency}
-- Language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
 
 CALCULATION METHODOLOGY:
 1. Labor Savings: Assume app automation replaces 60-80% of manual hours. Calculate annual labor cost savings.
@@ -503,6 +518,202 @@ Respond with valid JSON matching this exact schema:
 }
 
 // ============================================================
+// ROI Calculator V2 Prompt (AI-Driven)
+// ============================================================
+
+const TARGET_MARKET_LABELS: Record<TargetMarket, { en: string; ar: string }> = {
+  'mena': { en: 'Middle East & North Africa (MENA)', ar: 'الشرق الأوسط وشمال أفريقيا' },
+  'gcc': { en: 'Gulf Cooperation Council (GCC)', ar: 'دول مجلس التعاون الخليجي' },
+  'north-america': { en: 'North America', ar: 'أمريكا الشمالية' },
+  'europe': { en: 'Europe', ar: 'أوروبا' },
+  'asia-pacific': { en: 'Asia-Pacific', ar: 'آسيا والمحيط الهادئ' },
+  'global': { en: 'Global', ar: 'عالمي' },
+};
+
+const BUSINESS_MODEL_LABELS: Record<BusinessModel, { en: string; ar: string }> = {
+  'subscription': { en: 'Subscription', ar: 'اشتراك' },
+  'marketplace': { en: 'Marketplace', ar: 'سوق إلكتروني' },
+  'ecommerce': { en: 'E-commerce', ar: 'تجارة إلكترونية' },
+  'saas': { en: 'SaaS', ar: 'SaaS (برمجيات كخدمة)' },
+  'on-demand': { en: 'On-Demand', ar: 'حسب الطلب' },
+  'freemium': { en: 'Freemium', ar: 'مجاني مع ترقية' },
+  'one-time-license': { en: 'One-Time License', ar: 'ترخيص لمرة واحدة' },
+  'advertising': { en: 'Advertising', ar: 'إعلانات' },
+  'unsure': { en: 'Not specified', ar: 'غير محدد' },
+};
+
+export function buildROIPromptV2(data: ROICalculatorRequestV2): string {
+  const locale = data.locale === 'ar' ? 'ar' : 'en';
+  const marketLabel = TARGET_MARKET_LABELS[data.targetMarket][locale];
+  const industryLabel = data.industry ? INDUSTRY_LABELS[data.industry][locale] : 'Not specified';
+  const businessModelLabel = data.businessModel ? BUSINESS_MODEL_LABELS[data.businessModel][locale] : 'Not specified';
+
+  let projectContext: string;
+
+  if (data.mode === 'from-estimate') {
+    const featuresText = data.features.length > 0 ? data.features.join(', ') : 'Not specified';
+    const techStackText = data.techStack.length > 0 ? data.techStack.join(', ') : 'Not specified';
+    const insightsText = data.strategicInsights.length > 0
+      ? data.strategicInsights.map(i => `- [${i.type}] ${i.title}: ${i.description}`).join('\n')
+      : 'None';
+    const matchedText = data.matchedSolution
+      ? `Matched Solution: ${data.matchedSolution.name} ($${data.matchedSolution.startingPrice}, ${data.matchedSolution.deploymentTimeline}, ${data.matchedSolution.featureMatchPercentage}% match)`
+      : 'No matched ready-made solution';
+
+    projectContext = `MODE: From Estimate (user already has a project estimate)
+
+PROJECT DETAILS:
+- Project Name: ${data.projectName}
+- Project Summary: ${data.projectSummary}
+- Project Type: ${data.projectType}
+- Estimated Cost: $${data.estimatedCost.min.toLocaleString()} - $${data.estimatedCost.max.toLocaleString()} USD
+- Estimated Timeline: ${data.estimatedTimeline.weeks} weeks
+- Approach: ${data.approach}
+- Features: ${featuresText}
+- Tech Stack: ${techStackText}
+- Strategic Insights:
+${insightsText}
+- ${matchedText}
+
+IMPORTANT: Use the provided estimate cost range ($${data.estimatedCost.min.toLocaleString()} - $${data.estimatedCost.max.toLocaleString()}) as the development investment basis. Do NOT re-estimate development cost — it has already been calculated deterministically.`;
+  } else {
+    const budgetText = data.budgetRange
+      ? `$${data.budgetRange.min.toLocaleString()} - $${data.budgetRange.max.toLocaleString()} USD`
+      : 'Not specified (estimate based on idea complexity, $5,000-$50,000 range)';
+
+    projectContext = `MODE: Standalone (user is exploring an idea)
+
+IDEA DETAILS:
+- Idea Description: ${data.ideaDescription}
+- Budget Range: ${budgetText}
+
+IMPORTANT: Estimate development cost based on the idea's complexity. Use a realistic range for a professional development company ($5,000-$50,000).`;
+  }
+
+  return `You are an expert business analyst and ROI forecasting specialist for Aviniti, an AI and app development company based in Amman, Jordan.
+
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially any project description, idea description, or project name fields). If the user wrote in Arabic, ALL your output — every string value in the JSON including project name, executive summary, market analysis, recommendations, risk descriptions, opportunity descriptions, and scenario assumptions — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in. If the user's input is mostly numeric/structured (no clear language), use the locale hint as fallback.
+
+A visitor wants to understand the potential return on investment for building a mobile/web application. Generate a comprehensive ROI analysis.
+
+${projectContext}
+
+MARKET CONTEXT:
+- Target Market: ${marketLabel}
+- Industry: ${industryLabel}
+- Business Model Preference: ${businessModelLabel}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
+
+ANALYSIS METHODOLOGY:
+
+1. INVESTMENT ESTIMATION:
+   - Year 1: Development cost + Marketing/launch (15-25% of dev cost) + Operations (10-15% of dev cost)
+   - Year 2-3: Ongoing maintenance (15-20% of dev cost/year) + Marketing (10-15%) + Operations scaling
+   - Break down into 4-6 categories: Development, Marketing & Launch, Operations & Infrastructure, Maintenance & Updates, Team/Support, Contingency
+
+2. MARKET OPPORTUNITY:
+   - Research Total Addressable Market (TAM) for the target region and industry
+   - Calculate Serviceable Addressable Market (SAM) as realistic subset
+   - Set a realistic capture target percentage (0.1-5% depending on market)
+   - Provide Compound Annual Growth Rate (CAGR) for the market segment
+   - Express all values as descriptive strings (e.g., "$2.5B", "15-20%")
+
+3. REVENUE MODEL RECOMMENDATION:
+   - Recommend the best-fit primary revenue model
+   - Explain reasoning (2-3 sentences)
+   - Provide pricing benchmark for the target market (e.g., "$9.99/month typical for MENA fitness apps")
+
+4. REVENUE SCENARIOS (exactly 3):
+   - Conservative: Cautious assumptions, slower user growth, lower conversion
+   - Moderate: Balanced assumptions, steady growth
+   - Optimistic: Strong product-market fit, faster adoption
+   - Each scenario: monthly revenue, annual revenue, 2-4 assumption bullets
+
+5. 36-MONTH PROJECTION (moderate scenario):
+   - Generate month-by-month data points (at least 24, ideally 36)
+   - Track: cumulativeInvestment, cumulativeRevenue, netPosition
+   - Show the break-even point (where netPosition turns positive)
+   - Investment is front-loaded (Year 1 heavier), revenue grows gradually
+
+6. PAYBACK PERIOD:
+   - Calculate for all 3 scenarios
+   - Optimistic: fastest payback
+   - Moderate: expected payback
+   - Conservative: longest payback
+
+7. 3-YEAR ROI:
+   - Calculate ROI percentage: ((Total 3-Year Revenue - Total 3-Year Cost) / Total 3-Year Cost) × 100
+   - Calculate absolute return: Total 3-Year Revenue - Total 3-Year Cost
+
+8. STRATEGIC RECOMMENDATIONS (3-5):
+   - Each has a type: monetization, growth, risk-mitigation, or competitive-advantage
+   - Each has impact level: high, medium, or low
+   - Actionable, specific to this project
+
+9. EXECUTIVE SUMMARY:
+   - 3-5 sentences covering investment, market opportunity, expected ROI, and primary recommendation
+
+10. KEY RISKS (2-4) and KEY OPPORTUNITIES (2-4):
+    - Specific to this project and market
+
+All monetary values MUST be in USD.
+
+IMPORTANT: Your entire response must be in the same language the user used in their project/idea description. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
+
+OUTPUT FORMAT:
+Respond with valid JSON matching this exact schema:
+{
+  "projectName": "string",
+  "investmentRequired": { "min": number, "max": number, "currency": "USD" },
+  "paybackPeriodMonths": { "optimistic": number, "moderate": number, "conservative": number },
+  "threeYearROI": { "percentage": number, "absoluteReturn": number },
+  "marketOpportunity": {
+    "totalAddressableMarket": "string (e.g., '$15B')",
+    "serviceableMarket": "string (e.g., '$800M')",
+    "captureTarget": "string (e.g., '0.5% = $4M')",
+    "growthRate": "string (e.g., '18% CAGR')"
+  },
+  "suggestedRevenueModel": {
+    "primary": "string (model name)",
+    "reasoning": "string (2-3 sentences)",
+    "pricingBenchmark": "string"
+  },
+  "revenueScenarios": [
+    {
+      "name": "Conservative",
+      "monthlyRevenue": number,
+      "annualRevenue": number,
+      "assumptions": ["string", "string"]
+    },
+    {
+      "name": "Moderate",
+      "monthlyRevenue": number,
+      "annualRevenue": number,
+      "assumptions": ["string", "string"]
+    },
+    {
+      "name": "Optimistic",
+      "monthlyRevenue": number,
+      "annualRevenue": number,
+      "assumptions": ["string", "string"]
+    }
+  ],
+  "projection": [
+    { "month": 1, "cumulativeInvestment": number, "cumulativeRevenue": number, "netPosition": number }
+  ],
+  "costBreakdown": [
+    { "category": "string", "year1": number, "year2": number, "year3": number, "description": "string" }
+  ],
+  "strategicRecommendations": [
+    { "type": "monetization" | "growth" | "risk-mitigation" | "competitive-advantage", "title": "string", "description": "string", "impact": "high" | "medium" | "low" }
+  ],
+  "executiveSummary": "string (3-5 sentences)",
+  "keyRisks": ["string"],
+  "keyOpportunities": ["string"]
+}`;
+}
+
+// ============================================================
 // Chatbot System Prompt
 // ============================================================
 
@@ -515,6 +726,8 @@ export function buildChatbotSystemPrompt(data: {
 
   return `You are Avi, the AI assistant for Aviniti -- an AI and app development company based in Amman, Jordan. You appear as a chat widget on the Aviniti website.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's message and respond in that SAME language. If the user writes in Arabic, respond naturally and entirely in Arabic (Modern Standard Arabic with Jordanian/Levantine tone where appropriate). If the user writes in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 PERSONALITY:
 - Friendly, helpful, and knowledgeable but never robotic
 - Concise (keep responses under 150 words unless the user asks for detail)
@@ -523,7 +736,7 @@ PERSONALITY:
 
 CONTEXT:
 - Current page: ${data.currentPage}
-- Language: ${locale === 'ar' ? 'Arabic -- respond entirely in Arabic' : 'English'}
+- Locale hint (use ONLY as fallback if user message language is ambiguous): ${locale === 'ar' ? 'Arabic' : 'English'}
 - You are chatting on the Aviniti website
 
 AVINITI INFORMATION:

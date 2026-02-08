@@ -31,6 +31,14 @@
   },
   "footer": {
     "tagline": "YOUR IDEAS, OUR REALITY",
+    "description": "AI-powered app development company helping businesses digitally transform. Based in Amman, Jordan.",
+    "whatsappLabel": "WhatsApp",
+    "location": "Amman, Jordan",
+    "followUs": "Follow Us",
+    "emailAria": "Email: aliodat@aviniti.app",
+    "phoneAria": "Phone: +962 79 068 5302",
+    "whatsappAria": "WhatsApp: +962 79 068 5302",
+    "visitSocial": "Visit Aviniti on {platform}",
     "quick_links": "Quick Links",
     "quickLinks": "Quick Links",
     "ai_tools": "AI Tools",
@@ -55,10 +63,18 @@
   "language": {
     "en": "English",
     "ar": "العربية",
-    "switch": "Switch language"
+    "switch": "Switch language",
+    "options": "Language options"
   },
   "accessibility": {
-    "skip_to_content": "Skip to main content"
+    "skip_to_content": "Skip to main content",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu",
+    "homeLink": "Aviniti - Home",
+    "mainNavigation": "Main navigation",
+    "navigationMenu": "Navigation menu",
+    "languageOptions": "Language options",
+    "loading": "Loading..."
   },
   "whatsapp": {
     "general_message": "Hi, I'm interested in Aviniti's services",

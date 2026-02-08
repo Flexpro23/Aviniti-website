@@ -30,7 +30,7 @@ export async function generateMetadata({
   const tKey = slugToKey[slug];
 
   if (!tKey) {
-    return { title: 'Solution Not Found - Aviniti' };
+    return { title: t('detail.not_found_title') };
   }
 
   return {
@@ -110,13 +110,13 @@ export default async function SolutionDetailPage({
               <div className="flex items-center gap-2 bg-slate-blue rounded-lg px-4 py-2 border border-slate-blue-light">
                 <DollarSign className="h-5 w-5 text-bronze" />
                 <span className="text-white font-semibold">
-                  Starting at {t(`solutions.${tKey}.starting_price`)}
+                  {t('detail.starting_at')} {t(`solutions.${tKey}.starting_price`)}
                 </span>
               </div>
               <div className="flex items-center gap-2 bg-slate-blue rounded-lg px-4 py-2 border border-slate-blue-light">
                 <Clock className="h-5 w-5 text-bronze" />
                 <span className="text-white font-semibold">
-                  {t(`solutions.${tKey}.timeline`)} delivery
+                  {t(`solutions.${tKey}.timeline`)} {t('detail.delivery')}
                 </span>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default async function SolutionDetailPage({
       <Section background="navy-dark">
         <Container>
           <SectionHeading
-            label="Features"
+            label={t('detail.features')}
             title={t('detail.key_features')}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
@@ -171,7 +171,7 @@ export default async function SolutionDetailPage({
         <Container>
           <div className="max-w-3xl mx-auto">
             <SectionHeading
-              label="Package"
+              label={t('detail.package')}
               title={t('detail.whats_included')}
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12">
@@ -208,10 +208,10 @@ export default async function SolutionDetailPage({
 
       {/* CTA Banner */}
       <CTABanner
-        heading="Ready to Get Started?"
-        subtitle="Get this solution deployed for your business in as little as 35 days."
+        heading={t('detail.cta_heading')}
+        subtitle={t('detail.cta_subtitle')}
         primaryCTA={{ label: t('detail.cta_primary'), href: '/contact' }}
-        secondaryCTA={{ label: 'View All Solutions', href: '/solutions' }}
+        secondaryCTA={{ label: t('detail.view_all'), href: '/solutions' }}
       />
     </main>
   );

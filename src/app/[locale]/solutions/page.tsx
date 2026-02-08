@@ -46,7 +46,7 @@ export default function SolutionsPage() {
       <Section padding="hero">
         <Container>
           <SectionHeading
-            label="Solutions"
+            label={t('page.label')}
             title={t('page.title')}
             subtitle={t('page.subtitle')}
           />
@@ -101,7 +101,7 @@ export default function SolutionsPage() {
                         </Badge>
                         {solution.hasDemo && (
                           <Badge variant="outline" size="sm">
-                            Demo Available
+                            {t('page.demo_available')}
                           </Badge>
                         )}
                       </div>
@@ -129,7 +129,7 @@ export default function SolutionsPage() {
                     <CardFooter>
                       <Button asChild variant="link" size="sm">
                         <Link href={`/solutions/${solution.slug}`}>
-                          Learn More
+                          {t('page.learn_more')}
                           <ArrowRight className="w-4 h-4" />
                         </Link>
                       </Button>
@@ -144,10 +144,10 @@ export default function SolutionsPage() {
 
       {/* CTA */}
       <CTABanner
-        heading="Need a Custom Solution?"
-        subtitle="Our team can build exactly what your business needs. Get a free AI-powered estimate in minutes."
-        primaryCTA={{ label: 'Get AI Estimate', href: '/get-estimate' }}
-        secondaryCTA={{ label: 'Contact Us', href: '/contact' }}
+        heading={t('page.cta_heading')}
+        subtitle={t('page.cta_subtitle')}
+        primaryCTA={{ label: t('page.cta_estimate'), href: '/get-estimate' }}
+        secondaryCTA={{ label: t('page.cta_contact'), href: '/contact' }}
       />
     </main>
   );

@@ -32,6 +32,8 @@ export function buildEstimatePromptV2(input: EstimateRequest): {
 
   const systemPrompt = `You are an expert software project estimator for Aviniti, an AI and app development company based in Amman, Jordan.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Client's Description" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including project name, summary, phase descriptions, insights, tech stack items, and recommendations — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 You are generating a comprehensive "Project Blueprint" report for a potential client.
 
 ESTIMATION GUIDELINES:
@@ -58,7 +60,7 @@ ESTIMATION GUIDELINES:
 10. Recommend approach: "custom", "ready-made", or "hybrid".
 11. Generate 3 strategic insights (1 strength, 1 challenge, 1 recommendation).
 
-Respond in ${language}.
+IMPORTANT: Your entire response must be in the same language the user used in the "Client's Description" field. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
@@ -87,7 +89,7 @@ ${answeredQuestions}
 ${mustHaveFeatures || 'None'}
 - Enhancement Features:
 ${enhancementFeatures || 'None'}
-- Language: ${language}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${language}
 
 Generate a detailed Project Blueprint with cost breakdown, timeline, tech stack, and recommendations.`;
 

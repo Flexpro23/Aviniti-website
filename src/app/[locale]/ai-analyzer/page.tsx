@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowLeft, Check, AlertTriangle, TrendingUp, Shield, Coins, Swords, Link2, CheckCircle2, Info, X } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
@@ -17,6 +17,7 @@ import type { AnalyzerResponse } from '@/types/api';
 
 export default function AIAnalyzerPage() {
   const t = useTranslations('ai_analyzer');
+  const locale = useLocale();
   const searchParams = useSearchParams();
 
   // Check for pre-fill from Idea Lab
@@ -64,7 +65,7 @@ export default function AIAnalyzerPage() {
           idea: updatedData.idea,
           email: updatedData.email,
           whatsapp: updatedData.whatsapp,
-          locale: 'en',
+          locale,
         }),
       });
 
@@ -73,10 +74,10 @@ export default function AIAnalyzerPage() {
       if (data.success) {
         setResults(data.data);
       } else {
-        setError(data.error?.message || 'Failed to analyze idea. Please try again.');
+        setError(data.error?.message || t('errors.failed'));
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
     }
@@ -99,10 +100,10 @@ export default function AIAnalyzerPage() {
           <AIThinkingState
             toolColor="blue"
             messages={[
-              'Processing your concept...',
-              'Evaluating feasibility...',
-              'Assessing market fit...',
-              'Compiling analysis...',
+              t('loading_processing'),
+              t('loading_evaluating'),
+              t('loading_assessing'),
+              t('loading_compiling'),
             ]}
           />
         </div>
@@ -142,7 +143,7 @@ export default function AIAnalyzerPage() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 text-blue-300 text-xs font-medium uppercase tracking-wider mb-4">
               <Check className="h-3.5 w-3.5" />
-              Analysis Complete
+              {t('results_analysis_complete')}
             </div>
             <h2 className="text-h2 text-white">{results.ideaName}</h2>
             <p className="text-base text-muted mt-3 max-w-xl mx-auto">{results.summary}</p>
@@ -153,7 +154,7 @@ export default function AIAnalyzerPage() {
             <ToolResultItem className="flex justify-center py-6">
               <ScoreGauge
                 score={results.overallScore}
-                label="Overall Viability Score"
+                label={t('results_overall_score_label')}
                 toolColor="blue"
                 size="lg"
               />
@@ -170,8 +171,8 @@ export default function AIAnalyzerPage() {
                     <TrendingUp className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Market Potential</h3>
-                    <span className="text-sm text-blue-400 font-medium">{categories.market.score}/100</span>
+                    <h3 className="text-lg font-semibold text-white">{t('results_section_market')}</h3>
+                    <span className="text-sm text-blue-400 font-medium">{categories.market.score}{t('results_score_suffix')}</span>
                   </div>
                 </div>
                 <p className="text-sm text-off-white leading-relaxed mb-4">{categories.market.analysis}</p>
@@ -194,13 +195,13 @@ export default function AIAnalyzerPage() {
                     <Shield className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Technical Feasibility</h3>
-                    <span className="text-sm text-blue-400 font-medium">{categories.technical.score}/100</span>
+                    <h3 className="text-lg font-semibold text-white">{t('results_section_technical')}</h3>
+                    <span className="text-sm text-blue-400 font-medium">{categories.technical.score}{t('results_score_suffix')}</span>
                   </div>
                 </div>
                 <p className="text-sm text-off-white leading-relaxed mb-4">{categories.technical.analysis}</p>
                 <div className="mb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Complexity: </span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">{t('results_complexity_label')}</span>
                   <span className="text-xs text-blue-300 capitalize">{categories.technical.complexity}</span>
                 </div>
                 {categories.technical.suggestedTechStack.length > 0 && (
@@ -231,8 +232,8 @@ export default function AIAnalyzerPage() {
                     <Coins className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Monetization</h3>
-                    <span className="text-sm text-blue-400 font-medium">{categories.monetization.score}/100</span>
+                    <h3 className="text-lg font-semibold text-white">{t('results_section_monetization')}</h3>
+                    <span className="text-sm text-blue-400 font-medium">{categories.monetization.score}{t('results_score_suffix')}</span>
                   </div>
                 </div>
                 <p className="text-sm text-off-white leading-relaxed mb-4">{categories.monetization.analysis}</p>
@@ -253,13 +254,13 @@ export default function AIAnalyzerPage() {
                     <Swords className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">Competition</h3>
-                    <span className="text-sm text-blue-400 font-medium">{categories.competition.score}/100</span>
+                    <h3 className="text-lg font-semibold text-white">{t('results_section_competition')}</h3>
+                    <span className="text-sm text-blue-400 font-medium">{categories.competition.score}{t('results_score_suffix')}</span>
                   </div>
                 </div>
                 <p className="text-sm text-off-white leading-relaxed mb-4">{categories.competition.analysis}</p>
                 <div className="mb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Intensity: </span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">{t('results_intensity_label')}</span>
                   <span className="text-xs text-blue-300 capitalize">{categories.competition.intensity.replace('-', ' ')}</span>
                 </div>
                 {categories.competition.competitors.map((competitor, i: number) => (
@@ -280,7 +281,7 @@ export default function AIAnalyzerPage() {
           {/* Recommendations */}
           <ToolResults toolColor="blue" className="mb-8">
             <ToolResultItem>
-              <h3 className="text-lg font-semibold text-white mb-4">Recommendations</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">{t('results_section_recommendations')}</h3>
               <ol className="space-y-3">
                 {results.recommendations.map((rec: string, i: number) => (
                   <li key={i} className="flex items-start gap-3 text-sm text-off-white">
@@ -303,12 +304,12 @@ export default function AIAnalyzerPage() {
               {isCopied ? (
                 <>
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  Link Copied!
+                  {t('buttons_link_copied')}
                 </>
               ) : (
                 <>
                   <Link2 className="h-5 w-5" />
-                  Save & Share Analysis
+                  {t('buttons_save_share')}
                 </>
               )}
             </button>
@@ -318,11 +319,11 @@ export default function AIAnalyzerPage() {
           <div className="mt-10 space-y-4">
             <CrossSellCTA
               targetTool="get-estimate"
-              message="Like what you see? Get a detailed cost and timeline estimate for this idea."
+              message={t('cross_sell_estimate')}
             />
             <CrossSellCTA
               targetTool="roi-calculator"
-              message="Curious about the return? Calculate the ROI of building this app."
+              message={t('cross_sell_roi')}
             />
           </div>
         </div>
@@ -338,9 +339,9 @@ export default function AIAnalyzerPage() {
       {/* Hero */}
       <ToolHero
         toolSlug="ai-analyzer"
-        title={t('hero_title') || 'Validate Your App Idea with AI'}
-        description={t('hero_description') || 'Describe your app idea and our AI will analyze its market potential, technical feasibility, monetization strategies, and competition.'}
-        ctaText={t('hero_cta') || 'Analyze My Idea'}
+        title={t('hero_title')}
+        description={t('hero_description')}
+        ctaText={t('hero_cta')}
         toolColor="blue"
         onCTAClick={handleStartAnalysis}
       />
@@ -354,13 +355,13 @@ export default function AIAnalyzerPage() {
               <Info className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-blue-300">
-                  {t('prefilled_from_idea_lab', { name: ideaName }) || `Pre-filled from Idea Lab: ${ideaName}`}
+                  {t('prefilled_from_idea_lab', { name: ideaName })}
                 </p>
               </div>
               <button
                 onClick={() => setShowPrefilledBanner(false)}
                 className="text-blue-300 hover:text-white transition-colors"
-                aria-label="Dismiss"
+                aria-label={t('aria_dismiss')}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -376,16 +377,16 @@ export default function AIAnalyzerPage() {
             {step === 1 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step1_title') || 'Describe your app idea'}
+                  {t('step1_title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step1_helper') || 'The more detail you provide, the better our AI can analyze your idea. Include what problem it solves, who it is for, and what makes it unique.'}
+                  {t('step1_helper')}
                 </p>
 
                 <textarea
                   value={formData.idea}
                   onChange={(e) => setFormData((prev) => ({ ...prev, idea: e.target.value }))}
-                  placeholder="Describe your app idea in detail... What problem does it solve? Who is it for? What makes it different?"
+                  placeholder={t('form_textarea_placeholder')}
                   minLength={30}
                   maxLength={2000}
                   className="w-full min-h-[200px] md:min-h-[260px] p-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-blue-500 focus:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y transition-all duration-200"
@@ -393,8 +394,8 @@ export default function AIAnalyzerPage() {
 
                 <div className="flex justify-end mt-1.5">
                   <span className={`text-xs ${formData.idea.length > 0 && formData.idea.length < 30 ? 'text-blue-400' : 'text-muted'}`}>
-                    {formData.idea.length} / 2000 chars
-                    {formData.idea.length > 0 && formData.idea.length < 30 && ' (minimum 30 characters)'}
+                    {t('form_char_limit', { count: formData.idea.length })}
+                    {formData.idea.length > 0 && formData.idea.length < 30 && ` ${t('form_min_chars')}`}
                   </span>
                 </div>
 
@@ -404,7 +405,7 @@ export default function AIAnalyzerPage() {
                     disabled={formData.idea.trim().length < 30}
                     className="h-11 px-6 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
-                    Continue
+                    {t('buttons_continue')}
                     <ArrowLeft className="h-5 w-5 rotate-180" />
                   </button>
                 </div>
@@ -422,7 +423,7 @@ export default function AIAnalyzerPage() {
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back
+                    {t('buttons_back')}
                   </button>
                 </div>
                 <EmailCapture toolColor="blue" onSubmit={handleSubmit} />
@@ -440,7 +441,7 @@ export default function AIAnalyzerPage() {
                 onClick={() => setError(null)}
                 className="mt-2 text-xs text-muted hover:text-white transition-colors"
               >
-                Dismiss
+                {t('buttons_dismiss')}
               </button>
             </div>
           </div>

@@ -1,193 +1,105 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  ArrowLeft,
-  ShoppingCart,
-  Settings,
-  Headphones,
-  Package,
-  TrendingUp,
-  BarChart3,
-  MoreHorizontal,
   Check,
   DollarSign,
   Clock,
+  TrendingUp,
+  Target,
+  BarChart3,
+  Shield,
+  AlertTriangle,
+  Lightbulb,
+  Zap,
+  Rocket,
+  ChevronDown,
   Link2,
   CheckCircle2,
+  FileText,
+  Info,
 } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
-import { ToolForm } from '@/components/ai-tools/ToolForm';
-import { StepTransition } from '@/components/ai-tools/StepTransition';
 import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
-import { ROIChart } from '@/components/ai-tools/ROIChart';
-import { ComparisonBars } from '@/components/ai-tools/ComparisonBars';
 import { ROIProjectionChart } from '@/components/ai-tools/charts/ROIProjectionChart';
+import { ResultsNav } from '@/components/ai-tools/ResultsNav';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
-import type { ProcessType, ProcessIssue, Currency, ROICalculatorResponse } from '@/types/api';
+import type {
+  TargetMarket,
+  BusinessModel,
+  Industry,
+  ROICalculatorResponseV2,
+} from '@/types/api';
 
 // ============================================================
-// Process Type Options
+// Constants
 // ============================================================
-const PROCESS_TYPE_OPTIONS: { value: ProcessType; label: string; description: string; icon: typeof ShoppingCart }[] = [
-  { value: 'orders', label: 'Customer Orders & Bookings', description: 'Manual order processing, booking management', icon: ShoppingCart },
-  { value: 'operations', label: 'Internal Operations & Workflow', description: 'Team tasks, approvals, processes', icon: Settings },
-  { value: 'support', label: 'Customer Support & Communication', description: 'Phone, email, messaging support', icon: Headphones },
-  { value: 'inventory', label: 'Inventory & Resource Management', description: 'Stock tracking, resource allocation', icon: Package },
-  { value: 'sales', label: 'Sales & Lead Management', description: 'Lead tracking, sales pipeline', icon: TrendingUp },
-  { value: 'data', label: 'Data Collection & Reporting', description: 'Manual data entry, reports', icon: BarChart3 },
-  { value: 'other', label: 'Other', description: 'Describe your process', icon: MoreHorizontal },
+
+const TARGET_MARKETS: TargetMarket[] = ['mena', 'gcc', 'north-america', 'europe', 'asia-pacific', 'global'];
+const BUSINESS_MODELS: BusinessModel[] = ['subscription', 'marketplace', 'ecommerce', 'saas', 'on-demand', 'freemium', 'one-time-license', 'advertising', 'unsure'];
+const INDUSTRIES: Industry[] = ['health-wellness', 'finance-banking', 'education-learning', 'ecommerce-retail', 'logistics-delivery', 'entertainment-media', 'travel-hospitality', 'real-estate', 'food-restaurant', 'social-community', 'other'];
+
+const INSPIRATION_EXAMPLES = [
+  'A delivery app for local restaurants in Amman with real-time tracking',
+  'An AI-powered tutoring platform for students in the GCC',
+  'A gym management SaaS for fitness chains across the Middle East',
+  'A marketplace connecting freelance designers with businesses',
 ];
 
 // ============================================================
-// Issue Options
+// Types
 // ============================================================
-const ISSUE_OPTIONS: { value: ProcessIssue; label: string }[] = [
-  { value: 'errors-rework', label: 'Frequent errors requiring rework' },
-  { value: 'missed-opportunities', label: 'Missed business opportunities' },
-  { value: 'customer-complaints', label: 'Customer complaints about delays' },
-  { value: 'delayed-deliveries', label: 'Delayed deliveries or responses' },
-  { value: 'data-entry-mistakes', label: 'Data entry mistakes' },
-  { value: 'compliance-gaps', label: 'Compliance or tracking gaps' },
-];
+
+interface EstimateData {
+  projectName: string;
+  projectSummary: string;
+  projectType: string;
+  estimatedCost: { min: number; max: number };
+  estimatedTimeline: { weeks: number };
+  approach: string;
+  features: string[];
+  techStack: string[];
+  strategicInsights: Array<{ type: string; title: string; description: string }>;
+  matchedSolution: any;
+}
 
 // ============================================================
-// Currency Options
+// Page Component
 // ============================================================
-const CURRENCY_OPTIONS: { value: Currency; label: string; symbol: string }[] = [
-  { value: 'USD', label: 'US Dollar', symbol: '$' },
-  { value: 'JOD', label: 'Jordanian Dinar', symbol: 'JD' },
-  { value: 'AED', label: 'UAE Dirham', symbol: 'AED' },
-  { value: 'SAR', label: 'Saudi Riyal', symbol: 'SAR' },
-];
 
 export default function ROICalculatorPage() {
   const t = useTranslations('roi_calculator');
+  const locale = useLocale();
+  const searchParams = useSearchParams();
 
-  // Form state
-  const [step, setStep] = useState(1);
-  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-  const [formData, setFormData] = useState({
-    processType: '' as ProcessType | '',
-    customProcess: '',
-    hoursPerWeek: 20,
-    employees: 3,
-    hourlyCost: 25,
-    currency: 'USD' as Currency,
-    issues: [] as ProcessIssue[],
-    customerGrowthAnswer: 'unsure' as 'yes' | 'no' | 'unsure',
-    customerGrowthPercent: 15,
-    retentionAnswer: 'unsure' as 'yes' | 'no' | 'unsure',
-    retentionPercent: 10,
-    monthlyRevenue: 0,
-    email: '',
-    whatsapp: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<ROICalculatorResponse | null>(null);
+  // Mode detection
+  const [mode, setMode] = useState<'from-estimate' | 'standalone'>('standalone');
+  const [estimateData, setEstimateData] = useState<EstimateData | null>(null);
+
+  // Standalone form state
+  const [ideaDescription, setIdeaDescription] = useState('');
+  const [targetMarket, setTargetMarket] = useState<TargetMarket | ''>('');
+  const [industry, setIndustry] = useState<Industry | ''>('');
+  const [businessModel, setBusinessModel] = useState<BusinessModel | ''>('');
+  const [budgetMin, setBudgetMin] = useState('');
+  const [budgetMax, setBudgetMax] = useState('');
+
+  // Shared state
+  const [step, setStep] = useState<'form' | 'email' | 'loading' | 'results'>('form');
+  const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState(false);
+  const [results, setResults] = useState<ROICalculatorResponseV2 | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Navigation
-  const goForward = () => {
-    setDirection('forward');
-    setStep((prev) => prev + 1);
-  };
-
-  const goBack = () => {
-    setDirection('backward');
-    setStep((prev) => prev - 1);
-  };
-
-  // Toggle issue
-  const toggleIssue = (issue: ProcessIssue) => {
-    setFormData((prev) => ({
-      ...prev,
-      issues: prev.issues.includes(issue) ? prev.issues.filter((i) => i !== issue) : [...prev.issues, issue],
-    }));
-  };
-
-  // Submit handler
-  const handleSubmit = async (emailData: { email: string; whatsapp: boolean }) => {
-    const updatedData = { ...formData, ...emailData };
-    setFormData(updatedData);
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch('/api/ai/roi-calculator', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          processType: updatedData.processType,
-          customProcess: updatedData.processType === 'other' ? updatedData.customProcess : undefined,
-          hoursPerWeek: updatedData.hoursPerWeek,
-          employees: updatedData.employees,
-          hourlyCost: updatedData.hourlyCost,
-          currency: updatedData.currency,
-          issues: updatedData.issues,
-          customerGrowth: {
-            answer: updatedData.customerGrowthAnswer,
-            percentage: updatedData.customerGrowthAnswer === 'yes' ? updatedData.customerGrowthPercent : undefined,
-          },
-          retentionImprovement: {
-            answer: updatedData.retentionAnswer,
-            percentage: updatedData.retentionAnswer === 'yes' ? updatedData.retentionPercent : undefined,
-          },
-          monthlyRevenue: updatedData.monthlyRevenue > 0 ? updatedData.monthlyRevenue : undefined,
-          email: updatedData.email,
-          whatsapp: updatedData.whatsapp,
-          locale: 'en',
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setResults(data.data);
-      } else {
-        setError(data.error?.message || 'Failed to calculate ROI. Please try again.');
-      }
-    } catch {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleStart = () => {
-    const formSection = document.getElementById('roi-form');
-    if (formSection) {
-      formSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // ============================================================
-  // Loading state
-  // ============================================================
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-navy">
-        <div className="max-w-3xl mx-auto px-4 py-32">
-          <AIThinkingState
-            toolColor="purple"
-            messages={[
-              'Calculating current costs...',
-              'Modeling automation savings...',
-              'Projecting return on investment...',
-              'Building your ROI report...',
-            ]}
-          />
-        </div>
-      </main>
-    );
-  }
-
-  // Result persistence state
+  // Result persistence
   const [isCopied, setIsCopied] = useState(false);
   const { saveResult, copyShareableUrl, savedId } = useResultPersistence('roi-calculator');
 
@@ -198,151 +110,480 @@ export default function ROICalculatorPage() {
     }
   }, [results, savedId, saveResult]);
 
-  // ============================================================
-  // Results state
-  // ============================================================
-  if (results) {
-    const currencySymbol = CURRENCY_OPTIONS.find((c) => c.value === results.currency)?.symbol || '$';
-
-    const handleCopyLink = async () => {
-      const success = await copyShareableUrl();
-      if (success) {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
+  // Mode detection on mount
+  useEffect(() => {
+    const fromEstimate = searchParams.get('fromEstimate') === 'true';
+    if (fromEstimate) {
+      try {
+        const stored = sessionStorage.getItem('aviniti_roi_estimate_data');
+        if (stored) {
+          const parsed = JSON.parse(stored) as EstimateData;
+          setEstimateData(parsed);
+          setMode('from-estimate');
+          sessionStorage.removeItem('aviniti_roi_estimate_data');
+          return;
+        }
+      } catch {
+        // Fall through to standalone
       }
-    };
+      // fromEstimate=true but no data: show banner and fall back
+      setError(t('errors.no_estimate_data'));
+    }
+    setMode('standalone');
+  }, [searchParams, t]);
+
+  // Submit handler
+  const handleSubmit = async (emailData?: { email: string; whatsapp: boolean }) => {
+    const finalEmail = emailData?.email || email;
+    const finalWhatsapp = emailData?.whatsapp ?? whatsapp;
+    setEmail(finalEmail);
+    setWhatsapp(finalWhatsapp);
+    setStep('loading');
+    setError(null);
+
+    try {
+      let body: Record<string, unknown>;
+
+      if (mode === 'from-estimate' && estimateData) {
+        body = {
+          mode: 'from-estimate',
+          projectName: estimateData.projectName,
+          projectSummary: estimateData.projectSummary,
+          projectType: estimateData.projectType,
+          estimatedCost: estimateData.estimatedCost,
+          estimatedTimeline: estimateData.estimatedTimeline,
+          approach: estimateData.approach,
+          features: estimateData.features,
+          techStack: estimateData.techStack,
+          strategicInsights: estimateData.strategicInsights,
+          matchedSolution: estimateData.matchedSolution,
+          targetMarket,
+          industry: industry || undefined,
+          businessModel: businessModel || undefined,
+          email: finalEmail,
+          whatsapp: finalWhatsapp,
+          locale,
+        };
+      } else {
+        body = {
+          mode: 'standalone',
+          ideaDescription,
+          targetMarket,
+          industry: industry || undefined,
+          businessModel: businessModel || undefined,
+          budgetRange: budgetMin && budgetMax ? { min: Number(budgetMin), max: Number(budgetMax) } : undefined,
+          email: finalEmail,
+          whatsapp: finalWhatsapp,
+          locale,
+        };
+      }
+
+      const res = await fetch('/api/ai/roi-calculator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setResults(data.data);
+        setStep('results');
+      } else {
+        setError(data.error?.message || t('errors.calculation_failed'));
+        setStep('form');
+      }
+    } catch {
+      setError(t('errors.calculation_failed'));
+      setStep('form');
+    }
+  };
+
+  const handleStart = () => {
+    const section = document.getElementById('roi-form');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleCopyLink = async () => {
+    const success = await copyShareableUrl();
+    if (success) {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  };
+
+  const canSubmitForm = (): boolean => {
+    if (!targetMarket) return false;
+    if (mode === 'standalone' && ideaDescription.length < 20) return false;
+    return true;
+  };
+
+  // ============================================================
+  // Loading State
+  // ============================================================
+  if (step === 'loading') {
+    return (
+      <main className="min-h-screen bg-navy">
+        <div className="max-w-3xl mx-auto px-4 py-32">
+          <AIThinkingState
+            toolColor="purple"
+            messages={[
+              t('loading.msg1'),
+              t('loading.msg2'),
+              t('loading.msg3'),
+              t('loading.msg4'),
+              t('loading.msg5'),
+            ]}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================================
+  // Results State
+  // ============================================================
+  if (step === 'results' && results) {
+    const navSections = [
+      { id: 'roi-summary', label: t('results.nav.summary') },
+      { id: 'roi-market', label: t('results.nav.market') },
+      { id: 'roi-revenue', label: t('results.nav.revenue') },
+      { id: 'roi-scenarios', label: t('results.nav.scenarios') },
+      { id: 'roi-projection', label: t('results.nav.projection') },
+      { id: 'roi-costs', label: t('results.nav.costs') },
+      { id: 'roi-strategy', label: t('results.nav.strategy') },
+    ];
+
+    const formatMoney = (value: number) =>
+      `$${value.toLocaleString()}`;
+
+    const costTotals = results.costBreakdown.reduce(
+      (acc, item) => ({
+        year1: acc.year1 + item.year1,
+        year2: acc.year2 + item.year2,
+        year3: acc.year3 + item.year3,
+      }),
+      { year1: 0, year2: 0, year3: 0 }
+    );
 
     return (
       <main className="min-h-screen bg-navy">
+        <ResultsNav sections={navSections} />
+
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Results Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 text-purple-300 text-xs font-medium uppercase tracking-wider mb-4">
               <Check className="h-3.5 w-3.5" />
-              ROI Calculated
+              {t('results.badge')}
             </div>
-            <h2 className="text-h2 text-white">
-              {t('results_title') || 'Your ROI Analysis Is Ready'}
-            </h2>
-            <p className="text-base text-muted mt-3 max-w-xl mx-auto">
-              {results.aiInsight}
+            <h2 className="text-h2 text-white">{results.projectName}</h2>
+          </div>
+
+          {/* ===== Section 1: Executive Summary ===== */}
+          <section id="roi-summary" className="scroll-mt-20 mb-10">
+            <p className="text-base text-muted mb-8 max-w-2xl mx-auto text-center leading-relaxed">
+              {results.executiveSummary}
             </p>
-          </div>
 
-          {/* Key Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            <ToolResults toolColor="purple" className="text-center">
-              <ToolResultItem>
-                <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-purple-400" />
-                </div>
-                <p className="text-sm text-muted">Annual ROI</p>
-                <p className="text-2xl font-bold text-white mt-1">
-                  {currencySymbol}{results.annualROI.toLocaleString()}
-                </p>
-              </ToolResultItem>
-            </ToolResults>
-
-            <ToolResults toolColor="purple" className="text-center">
-              <ToolResultItem>
-                <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-purple-400" />
-                </div>
-                <p className="text-sm text-muted">ROI Percentage</p>
-                <p className="text-2xl font-bold text-success mt-1">
-                  {results.roiPercentage > 0 ? '+' : ''}{Math.round(results.roiPercentage)}%
-                </p>
-              </ToolResultItem>
-            </ToolResults>
-
-            <ToolResults toolColor="purple" className="text-center">
-              <ToolResultItem>
-                <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-purple-400" />
-                </div>
-                <p className="text-sm text-muted">Payback Period</p>
-                <p className="text-2xl font-bold text-white mt-1">
-                  {results.paybackPeriodMonths} Months
-                </p>
-              </ToolResultItem>
-            </ToolResults>
-          </div>
-
-          {/* Savings Breakdown */}
-          <ToolResults toolColor="purple" className="mb-8">
-            <ToolResultItem>
-              <h3 className="text-lg font-semibold text-white mb-6">Savings Breakdown</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-blue-light/30 rounded-lg p-4">
-                  <p className="text-xs text-muted uppercase tracking-wider">Labor Savings</p>
+            {/* Hero Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <ToolResults toolColor="purple" className="text-center">
+                <ToolResultItem>
+                  <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <p className="text-sm text-muted">{t('results.investment_required')}</p>
                   <p className="text-xl font-bold text-white mt-1">
-                    {currencySymbol}{results.breakdown.laborSavings.toLocaleString()}/yr
+                    {formatMoney(results.investmentRequired.min)} – {formatMoney(results.investmentRequired.max)}
                   </p>
-                </div>
-                <div className="bg-slate-blue-light/30 rounded-lg p-4">
-                  <p className="text-xs text-muted uppercase tracking-wider">Error Reduction</p>
+                </ToolResultItem>
+              </ToolResults>
+
+              <ToolResults toolColor="purple" className="text-center">
+                <ToolResultItem>
+                  <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <p className="text-sm text-muted">{t('results.payback_period')}</p>
                   <p className="text-xl font-bold text-white mt-1">
-                    {currencySymbol}{results.breakdown.errorReduction.toLocaleString()}/yr
+                    {t('results.payback_months', { months: results.paybackPeriodMonths.moderate })}
                   </p>
-                </div>
-                <div className="bg-slate-blue-light/30 rounded-lg p-4">
-                  <p className="text-xs text-muted uppercase tracking-wider">Revenue Increase</p>
+                  <p className="text-xs text-muted mt-1">
+                    {results.paybackPeriodMonths.optimistic}–{results.paybackPeriodMonths.conservative} mo range
+                  </p>
+                </ToolResultItem>
+              </ToolResults>
+
+              <ToolResults toolColor="purple" className="text-center">
+                <ToolResultItem>
+                  <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <TrendingUp className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <p className="text-sm text-muted">{t('results.three_year_roi')}</p>
                   <p className="text-xl font-bold text-success mt-1">
-                    {currencySymbol}{results.breakdown.revenueIncrease.toLocaleString()}/yr
+                    {results.threeYearROI.percentage > 0 ? '+' : ''}{Math.round(results.threeYearROI.percentage)}%
                   </p>
-                </div>
-                <div className="bg-slate-blue-light/30 rounded-lg p-4">
-                  <p className="text-xs text-muted uppercase tracking-wider">Time Recovered</p>
-                  <p className="text-xl font-bold text-white mt-1">
-                    {results.breakdown.timeRecovered.toLocaleString()} hrs/yr
+                  <p className="text-xs text-muted mt-1">
+                    {formatMoney(results.threeYearROI.absoluteReturn)} return
                   </p>
+                </ToolResultItem>
+              </ToolResults>
+            </div>
+          </section>
+
+          {/* ===== Section 2: Market Opportunity ===== */}
+          <section id="roi-market" className="scroll-mt-20 mb-10">
+            <ToolResults toolColor="purple">
+              <ToolResultItem>
+                <div className="flex items-center gap-2 mb-6">
+                  <Target className="h-5 w-5 text-purple-400" />
+                  <h3 className="text-lg font-semibold text-white">{t('results.market_opportunity')}</h3>
                 </div>
-              </div>
-            </ToolResultItem>
-          </ToolResults>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="bg-slate-blue-light/30 rounded-lg p-4">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.tam')}</p>
+                    <p className="text-lg font-bold text-white">{results.marketOpportunity.totalAddressableMarket}</p>
+                  </div>
+                  <div className="bg-slate-blue-light/30 rounded-lg p-4">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.sam')}</p>
+                    <p className="text-lg font-bold text-white">{results.marketOpportunity.serviceableMarket}</p>
+                  </div>
+                  <div className="bg-slate-blue-light/30 rounded-lg p-4">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.capture_target')}</p>
+                    <p className="text-lg font-bold text-purple-400">{results.marketOpportunity.captureTarget}</p>
+                  </div>
+                  <div className="bg-slate-blue-light/30 rounded-lg p-4">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.growth_rate')}</p>
+                    <p className="text-lg font-bold text-success">{results.marketOpportunity.growthRate}</p>
+                  </div>
+                </div>
+              </ToolResultItem>
+            </ToolResults>
+          </section>
 
-          {/* ROI Chart */}
-          <ToolResults toolColor="purple" className="mb-8">
-            <ToolResultItem>
-              <h3 className="text-lg font-semibold text-white mb-6">Cost vs Return</h3>
-              <ROIChart
-                investment={(results.costVsReturn.appCost.min + results.costVsReturn.appCost.max) / 2}
-                costSavings={results.breakdown.laborSavings + results.breakdown.errorReduction}
-                revenueIncrease={results.breakdown.revenueIncrease}
-                currency={results.currency}
-              />
-            </ToolResultItem>
-          </ToolResults>
+          {/* ===== Section 3: Revenue Model ===== */}
+          <section id="roi-revenue" className="scroll-mt-20 mb-10">
+            <ToolResults toolColor="purple">
+              <ToolResultItem>
+                <div className="flex items-center gap-2 mb-4">
+                  <BarChart3 className="h-5 w-5 text-purple-400" />
+                  <h3 className="text-lg font-semibold text-white">{t('results.revenue_model')}</h3>
+                </div>
+                <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-5">
+                  <p className="text-xl font-bold text-purple-300 mb-3">{results.suggestedRevenueModel.primary}</p>
+                  <div className="mb-3">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.revenue_model_reasoning')}</p>
+                    <p className="text-sm text-off-white leading-relaxed">{results.suggestedRevenueModel.reasoning}</p>
+                  </div>
+                  <div className="bg-slate-blue-light/30 rounded-lg p-3 mt-3">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('results.pricing_benchmark')}</p>
+                    <p className="text-sm font-medium text-white">{results.suggestedRevenueModel.pricingBenchmark}</p>
+                  </div>
+                </div>
+              </ToolResultItem>
+            </ToolResults>
+          </section>
 
-          {/* ROI Projection Chart */}
-          {results.yearlyProjection && results.yearlyProjection.length > 0 && (
-            <ToolResults toolColor="purple" className="mb-8">
+          {/* ===== Section 4: Revenue Scenarios ===== */}
+          <section id="roi-scenarios" className="scroll-mt-20 mb-10">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-purple-400" />
+              {t('results.revenue_scenarios')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {results.revenueScenarios.map((scenario, index) => {
+                const isModerate = index === 1;
+                return (
+                  <div
+                    key={index}
+                    className={`rounded-xl p-5 border transition-colors ${
+                      isModerate
+                        ? 'bg-purple-500/10 border-purple-500/30 ring-1 ring-purple-500/20'
+                        : 'bg-slate-blue border-slate-blue-light'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className={`text-xs font-semibold uppercase tracking-wider ${
+                        isModerate ? 'text-purple-300' : 'text-muted'
+                      }`}>
+                        {scenario.name}
+                      </span>
+                      {isModerate && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
+                          Expected
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-3 mb-4">
+                      <div>
+                        <p className="text-xs text-muted">{t('results.monthly_revenue')}</p>
+                        <p className="text-lg font-bold text-white">{formatMoney(scenario.monthlyRevenue)}/mo</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted">{t('results.annual_revenue')}</p>
+                        <p className="text-lg font-bold text-success">{formatMoney(scenario.annualRevenue)}/yr</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted uppercase tracking-wider mb-2">{t('results.assumptions')}</p>
+                      <ul className="space-y-1">
+                        {scenario.assumptions.map((a, i) => (
+                          <li key={i} className="text-xs text-muted flex items-start gap-1.5">
+                            <span className="mt-1.5 h-1 w-1 rounded-full bg-muted flex-shrink-0" />
+                            {a}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ===== Section 5: 36-Month Projection Chart ===== */}
+          <section id="roi-projection" className="scroll-mt-20 mb-10">
+            <ToolResults toolColor="purple">
               <ToolResultItem>
                 <ROIProjectionChart
-                  projection={results.yearlyProjection}
-                  currency={results.currency}
+                  projectionV2={results.projection}
+                  currency="USD"
+                  locale={locale as 'en' | 'ar'}
                 />
               </ToolResultItem>
             </ToolResults>
-          )}
+          </section>
 
-          {/* Comparison Bars */}
-          <ToolResults toolColor="purple" className="mb-8">
-            <ToolResultItem>
-              <ComparisonBars
-                currentCost={formData.hoursPerWeek * formData.employees * formData.hourlyCost * 52}
-                withAppCost={
-                  formData.hoursPerWeek * formData.employees * formData.hourlyCost * 52 -
-                  results.breakdown.laborSavings
-                }
-                label="Annual Labor Cost"
-                currency={results.currency}
-              />
-            </ToolResultItem>
-          </ToolResults>
+          {/* ===== Section 6: Cost Breakdown ===== */}
+          <section id="roi-costs" className="scroll-mt-20 mb-10">
+            <ToolResults toolColor="purple">
+              <ToolResultItem>
+                <div className="flex items-center gap-2 mb-6">
+                  <DollarSign className="h-5 w-5 text-purple-400" />
+                  <h3 className="text-lg font-semibold text-white">{t('results.cost_breakdown')}</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-blue-light">
+                        <th className="text-left py-3 px-2 text-muted font-medium">{t('results.cost_category')}</th>
+                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year1')}</th>
+                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year2')}</th>
+                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year3')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {results.costBreakdown.map((item, index) => (
+                        <tr key={index} className="border-b border-slate-blue-light/50">
+                          <td className="py-3 px-2">
+                            <p className="text-white font-medium">{item.category}</p>
+                            <p className="text-xs text-muted mt-0.5">{item.description}</p>
+                          </td>
+                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year1)}</td>
+                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year2)}</td>
+                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year3)}</td>
+                        </tr>
+                      ))}
+                      <tr className="border-t-2 border-purple-500/30">
+                        <td className="py-3 px-2 text-white font-bold">{t('results.cost_total')}</td>
+                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year1)}</td>
+                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year2)}</td>
+                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year3)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </ToolResultItem>
+            </ToolResults>
+          </section>
 
-          {/* Save Results Button */}
-          <div className="flex justify-center mb-10">
+          {/* ===== Section 7: Risks & Opportunities ===== */}
+          <section className="scroll-mt-20 mb-10">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Shield className="h-5 w-5 text-purple-400" />
+              {t('results.risks_opportunities')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Risks */}
+              <div className="rounded-xl p-5 bg-red-500/5 border border-red-500/20">
+                <h4 className="text-sm font-semibold text-red-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  {t('results.key_risks')}
+                </h4>
+                <ul className="space-y-2">
+                  {results.keyRisks.map((risk, i) => (
+                    <li key={i} className="text-sm text-muted flex items-start gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                      {risk}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {/* Opportunities */}
+              <div className="rounded-xl p-5 bg-emerald-500/5 border border-emerald-500/20">
+                <h4 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4" />
+                  {t('results.key_opportunities')}
+                </h4>
+                <ul className="space-y-2">
+                  {results.keyOpportunities.map((opp, i) => (
+                    <li key={i} className="text-sm text-muted flex items-start gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                      {opp}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* ===== Section 8: Strategic Recommendations ===== */}
+          <section id="roi-strategy" className="scroll-mt-20 mb-10">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <Rocket className="h-5 w-5 text-purple-400" />
+              {t('results.strategic_recommendations')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {results.strategicRecommendations.map((rec, index) => {
+                const typeConfig: Record<string, { icon: typeof Zap; color: string }> = {
+                  monetization: { icon: DollarSign, color: 'text-emerald-400' },
+                  growth: { icon: TrendingUp, color: 'text-blue-400' },
+                  'risk-mitigation': { icon: Shield, color: 'text-amber-400' },
+                  'competitive-advantage': { icon: Zap, color: 'text-purple-400' },
+                };
+                const config = typeConfig[rec.type] || { icon: Lightbulb, color: 'text-muted' };
+                const Icon = config.icon;
+                const impactLabel =
+                  rec.impact === 'high' ? t('results.impact_high') :
+                  rec.impact === 'medium' ? t('results.impact_medium') :
+                  t('results.impact_low');
+                const impactColor =
+                  rec.impact === 'high' ? 'bg-emerald-500/15 text-emerald-400' :
+                  rec.impact === 'medium' ? 'bg-amber-500/15 text-amber-400' :
+                  'bg-slate-blue-light text-muted';
+
+                return (
+                  <div key={index} className="rounded-xl p-5 bg-slate-blue border border-slate-blue-light">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-4 w-4 ${config.color}`} />
+                        <span className="text-xs font-medium uppercase tracking-wider text-muted">{rec.type.replace('-', ' ')}</span>
+                      </div>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${impactColor}`}>
+                        {impactLabel}
+                      </span>
+                    </div>
+                    <h4 className="text-base font-semibold text-white mb-2">{rec.title}</h4>
+                    <p className="text-sm text-muted leading-relaxed">{rec.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ===== Actions ===== */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
             <button
               onClick={handleCopyLink}
               className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
@@ -350,12 +591,12 @@ export default function ROICalculatorPage() {
               {isCopied ? (
                 <>
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  Link Copied!
+                  {t('results.link_copied')}
                 </>
               ) : (
                 <>
                   <Link2 className="h-5 w-5" />
-                  Save & Share Results
+                  {t('results.save_share')}
                 </>
               )}
             </button>
@@ -365,11 +606,11 @@ export default function ROICalculatorPage() {
           <div className="mt-10 space-y-4">
             <CrossSellCTA
               targetTool="get-estimate"
-              message="Ready to build? Get a detailed cost and timeline estimate for your project."
+              message={t('results.cross_sell_estimate')}
             />
             <CrossSellCTA
-              targetTool="idea-lab"
-              message="Not sure what to build? Let our AI generate app ideas for you."
+              targetTool="ai-analyzer"
+              message={t('results.cross_sell_analyzer')}
             />
           </div>
         </div>
@@ -378,452 +619,269 @@ export default function ROICalculatorPage() {
   }
 
   // ============================================================
-  // Form state (default view)
+  // Email Capture Step
+  // ============================================================
+  if (step === 'email') {
+    return (
+      <main className="min-h-screen bg-navy">
+        <div className="max-w-xl mx-auto px-4 py-32">
+          <div className="mb-4">
+            <button
+              onClick={() => setStep('form')}
+              className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
+            >
+              ← Back
+            </button>
+          </div>
+          <EmailCapture toolColor="purple" onSubmit={handleSubmit} />
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================================
+  // Form State
   // ============================================================
   return (
     <main className="min-h-screen bg-navy">
       {/* Hero */}
       <ToolHero
         toolSlug="roi-calculator"
-        title={t('hero_title') || 'Calculate Your App ROI'}
-        description={t('hero_description') || 'Find out how much time and money your business could save by automating manual processes with a custom app.'}
-        ctaText={t('hero_cta') || 'Calculate My ROI'}
+        title={t('hero_title')}
+        description={t('hero_description')}
+        ctaText={t('hero_cta')}
         toolColor="purple"
         onCTAClick={handleStart}
       />
 
-      {/* Form */}
       <section id="roi-form" className="py-12 md:py-16">
-        <ToolForm totalSteps={6} currentStep={step} toolColor="purple">
-          <StepTransition currentStep={step} direction={direction}>
-            {/* ============================================================ */}
-            {/* Step 1: Process Type */}
-            {/* ============================================================ */}
-            {step === 1 && (
-              <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step1_title') || 'What manual process would you like to improve?'}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  Select the process that takes the most time in your business.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Process type">
-                  {PROCESS_TYPE_OPTIONS.map((option) => {
-                    const Icon = option.icon;
-                    const isSelected = formData.processType === option.value;
-                    return (
-                      <button
-                        key={option.value}
-                        role="radio"
-                        aria-checked={isSelected}
-                        onClick={() => setFormData((prev) => ({ ...prev, processType: option.value }))}
-                        className={`w-full flex items-center gap-3 p-4 rounded-lg border transition-all duration-200 text-left cursor-pointer ${
-                          isSelected
-                            ? 'bg-purple-500/10 border-purple-500/50 ring-1 ring-purple-500/30'
-                            : 'bg-slate-blue border-slate-blue-light hover:bg-slate-blue-light/50'
-                        }`}
-                      >
-                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-blue-light text-muted'
-                        }`}>
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="block text-sm font-medium text-white">{option.label}</span>
-                          <span className="block text-xs text-muted mt-0.5">{option.description}</span>
-                        </div>
-                        {isSelected && (
-                          <div className="ml-auto h-5 w-5 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {formData.processType === 'other' && (
-                  <div className="mt-4">
-                    <input
-                      type="text"
-                      value={formData.customProcess}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, customProcess: e.target.value }))}
-                      placeholder="Describe your process..."
-                      className="w-full h-11 px-3 py-2.5 bg-slate-blue border border-slate-blue-light rounded-lg text-base text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
-                    />
-                  </div>
-                )}
-
-                <div className="flex justify-end mt-8">
-                  <button
-                    onClick={goForward}
-                    disabled={!formData.processType || (formData.processType === 'other' && formData.customProcess.trim().length < 10)}
-                    className="h-11 px-6 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
-                  >
-                    Continue
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================ */}
-            {/* Step 2: Time & Employees (Sliders) */}
-            {/* ============================================================ */}
-            {step === 2 && (
-              <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step2_title') || 'How much time does this process take?'}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  Help us understand the current time investment.
-                </p>
-
-                {/* Hours per week slider */}
-                <div className="mb-8">
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-medium text-off-white">Hours per week on this process</label>
-                    <span className="text-lg font-bold text-purple-400">{formData.hoursPerWeek}h</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={1}
-                    max={200}
-                    value={formData.hoursPerWeek}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, hoursPerWeek: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-blue-light rounded-full appearance-none cursor-pointer accent-purple-500"
-                  />
-                  <div className="flex justify-between text-xs text-muted mt-1">
-                    <span>1h</span>
-                    <span>200h</span>
-                  </div>
-                </div>
-
-                {/* Employees slider */}
-                <div className="mb-8">
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-medium text-off-white">Number of employees involved</label>
-                    <span className="text-lg font-bold text-purple-400">{formData.employees}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={1}
-                    max={100}
-                    value={formData.employees}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, employees: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-blue-light rounded-full appearance-none cursor-pointer accent-purple-500"
-                  />
-                  <div className="flex justify-between text-xs text-muted mt-1">
-                    <span>1</span>
-                    <span>100</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between mt-8">
-                  <button
-                    onClick={goBack}
-                    className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </button>
-                  <button
-                    onClick={goForward}
-                    className="h-11 px-6 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                  >
-                    Continue
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================ */}
-            {/* Step 3: Cost & Currency */}
-            {/* ============================================================ */}
-            {step === 3 && (
-              <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step3_title') || 'What are the costs involved?'}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  This helps us estimate your potential savings accurately.
-                </p>
-
-                {/* Currency selection */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-off-white mb-2">Currency</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {CURRENCY_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => setFormData((prev) => ({ ...prev, currency: option.value }))}
-                        className={`p-3 rounded-lg border text-center transition-all duration-200 ${
-                          formData.currency === option.value
-                            ? 'bg-purple-500/10 border-purple-500/50 text-purple-300'
-                            : 'bg-slate-blue border-slate-blue-light text-muted hover:bg-slate-blue-light/50'
-                        }`}
-                      >
-                        <span className="text-sm font-medium">{option.symbol}</span>
-                        <span className="block text-xs mt-0.5">{option.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Hourly cost */}
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-sm font-medium text-off-white">Average hourly cost per employee</label>
-                    <span className="text-lg font-bold text-purple-400">
-                      {CURRENCY_OPTIONS.find((c) => c.value === formData.currency)?.symbol}{formData.hourlyCost}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={1}
-                    max={200}
-                    value={formData.hourlyCost}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, hourlyCost: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-blue-light rounded-full appearance-none cursor-pointer accent-purple-500"
-                  />
-                  <div className="flex justify-between text-xs text-muted mt-1">
-                    <span>1</span>
-                    <span>200</span>
-                  </div>
-                </div>
-
-                {/* Monthly revenue (optional) */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-off-white mb-2">
-                    Approximate monthly revenue <span className="text-muted text-xs">(optional)</span>
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={formData.monthlyRevenue || ''}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, monthlyRevenue: parseInt(e.target.value) || 0 }))}
-                    className="w-full h-11 px-3 py-2.5 bg-slate-blue border border-slate-blue-light rounded-lg text-base text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
-                    placeholder="e.g., 50000"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between mt-8">
-                  <button
-                    onClick={goBack}
-                    className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </button>
-                  <button
-                    onClick={goForward}
-                    className="h-11 px-6 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                  >
-                    Continue
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================ */}
-            {/* Step 4: Issues (Checkboxes) */}
-            {/* ============================================================ */}
-            {step === 4 && (
-              <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step4_title') || 'What issues do you experience with this process?'}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  Select all that apply. This helps us estimate potential savings from error reduction.
-                </p>
-
-                <div className="space-y-3">
-                  {ISSUE_OPTIONS.map((option) => {
-                    const isChecked = formData.issues.includes(option.value);
-                    return (
-                      <label
-                        key={option.value}
-                        className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-150 ${
-                          isChecked
-                            ? 'bg-purple-500/10 border-purple-500/25'
-                            : 'border-slate-blue-light hover:bg-purple-500/5 hover:border-purple-500/20'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => toggleIssue(option.value)}
-                          className="h-5 w-5 rounded border-2 border-slate-blue-light bg-transparent checked:bg-purple-500 checked:border-purple-500 transition-colors duration-200"
-                        />
-                        <span className="text-sm font-medium text-off-white">{option.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-
-                <div className="flex items-center justify-between mt-8">
-                  <button
-                    onClick={goBack}
-                    className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </button>
-                  <button
-                    onClick={goForward}
-                    className="h-11 px-6 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                  >
-                    Continue
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================ */}
-            {/* Step 5: Growth Potential */}
-            {/* ============================================================ */}
-            {step === 5 && (
-              <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step5_title') || 'Growth potential with an app'}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  Could an app help your business grow? Answer these two quick questions.
-                </p>
-
-                {/* Customer Growth */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-off-white mb-3">
-                    Could an app help you serve more customers?
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {(['yes', 'no', 'unsure'] as const).map((answer) => (
-                      <button
-                        key={answer}
-                        onClick={() => setFormData((prev) => ({ ...prev, customerGrowthAnswer: answer }))}
-                        className={`p-3 rounded-lg border text-center text-sm font-medium capitalize transition-all duration-200 ${
-                          formData.customerGrowthAnswer === answer
-                            ? 'bg-purple-500/10 border-purple-500/50 text-purple-300'
-                            : 'bg-slate-blue border-slate-blue-light text-muted hover:bg-slate-blue-light/50'
-                        }`}
-                      >
-                        {answer === 'unsure' ? 'Not Sure' : answer === 'yes' ? 'Yes' : 'No'}
-                      </button>
-                    ))}
-                  </div>
-                  {formData.customerGrowthAnswer === 'yes' && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-muted">Estimated customer increase</span>
-                        <span className="text-sm font-bold text-purple-400">{formData.customerGrowthPercent}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={1}
-                        max={200}
-                        value={formData.customerGrowthPercent}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, customerGrowthPercent: parseInt(e.target.value) }))}
-                        className="w-full h-2 bg-slate-blue-light rounded-full appearance-none cursor-pointer accent-purple-500"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Retention */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-off-white mb-3">
-                    Could an app increase customer retention?
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {(['yes', 'no', 'unsure'] as const).map((answer) => (
-                      <button
-                        key={answer}
-                        onClick={() => setFormData((prev) => ({ ...prev, retentionAnswer: answer }))}
-                        className={`p-3 rounded-lg border text-center text-sm font-medium capitalize transition-all duration-200 ${
-                          formData.retentionAnswer === answer
-                            ? 'bg-purple-500/10 border-purple-500/50 text-purple-300'
-                            : 'bg-slate-blue border-slate-blue-light text-muted hover:bg-slate-blue-light/50'
-                        }`}
-                      >
-                        {answer === 'unsure' ? 'Not Sure' : answer === 'yes' ? 'Yes' : 'No'}
-                      </button>
-                    ))}
-                  </div>
-                  {formData.retentionAnswer === 'yes' && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-muted">Estimated retention improvement</span>
-                        <span className="text-sm font-bold text-purple-400">{formData.retentionPercent}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={1}
-                        max={200}
-                        value={formData.retentionPercent}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, retentionPercent: parseInt(e.target.value) }))}
-                        className="w-full h-2 bg-slate-blue-light rounded-full appearance-none cursor-pointer accent-purple-500"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between mt-8">
-                  <button
-                    onClick={goBack}
-                    className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </button>
-                  <button
-                    onClick={goForward}
-                    className="h-11 px-6 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
-                  >
-                    Continue
-                    <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================ */}
-            {/* Step 6: Email Capture */}
-            {/* ============================================================ */}
-            {step === 6 && (
-              <div>
-                <div className="mb-4">
-                  <button
-                    onClick={goBack}
-                    className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </button>
-                </div>
-                <EmailCapture toolColor="purple" onSubmit={handleSubmit} />
-              </div>
-            )}
-          </StepTransition>
-        </ToolForm>
-
-        {/* Error message */}
-        {error && (
-          <div className="max-w-3xl mx-auto px-4 mt-4">
-            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-center">
+        <div className="max-w-2xl mx-auto px-4">
+          {/* Error Banner */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-center mb-6">
               <p className="text-sm text-red-400">{error}</p>
-              <button
-                onClick={() => setError(null)}
-                className="mt-2 text-xs text-muted hover:text-white transition-colors"
-              >
+              <button onClick={() => setError(null)} className="mt-2 text-xs text-muted hover:text-white transition-colors">
                 Dismiss
               </button>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* ===== From-Estimate Mode ===== */}
+          {mode === 'from-estimate' && estimateData && (
+            <div className="space-y-6">
+              <h2 className="text-h3 text-white text-center">
+                {t('from_estimate.header', { projectName: estimateData.projectName })}
+              </h2>
+
+              {/* Summary Card */}
+              <div className="rounded-xl p-5 bg-slate-blue border border-slate-blue-light">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.cost_label')}</p>
+                    <p className="text-white font-semibold mt-1">
+                      ${estimateData.estimatedCost.min.toLocaleString()} – ${estimateData.estimatedCost.max.toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.timeline_label')}</p>
+                    <p className="text-white font-semibold mt-1">{estimateData.estimatedTimeline.weeks} weeks</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.features_label')}</p>
+                    <p className="text-white font-semibold mt-1">{estimateData.features.length} features</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.approach_label')}</p>
+                    <p className="text-white font-semibold mt-1 capitalize">{estimateData.approach}</p>
+                  </div>
+                </div>
+                {estimateData.projectSummary && (
+                  <div className="mt-4 pt-4 border-t border-slate-blue-light">
+                    <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('from_estimate.summary_label')}</p>
+                    <p className="text-sm text-off-white leading-relaxed">{estimateData.projectSummary}</p>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-sm text-muted text-center">{t('from_estimate.select_market')}</p>
+
+              {/* Target Market */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {TARGET_MARKETS.map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTargetMarket(m)}
+                      className={`p-3 rounded-lg border text-center text-sm font-medium transition-all duration-200 ${
+                        targetMarket === m
+                          ? 'bg-purple-500/10 border-purple-500/50 text-purple-300'
+                          : 'bg-slate-blue border-slate-blue-light text-muted hover:bg-slate-blue-light/50'
+                      }`}
+                    >
+                      {t(`target_markets.${m}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Optional: Business Model */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
+                <select
+                  value={businessModel}
+                  onChange={(e) => setBusinessModel(e.target.value as BusinessModel)}
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                >
+                  <option value="">{t('standalone.business_model_hint')}</option>
+                  {BUSINESS_MODELS.map((m) => (
+                    <option key={m} value={m}>{t(`business_models.${m}`)}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => setStep('email')}
+                disabled={!targetMarket}
+                className="w-full h-12 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {t('from_estimate.cta')}
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+
+          {/* ===== Standalone Mode ===== */}
+          {mode === 'standalone' && (
+            <div className="space-y-6">
+              <div className="text-center mb-2">
+                <h2 className="text-h3 text-white">{t('standalone.title')}</h2>
+                <p className="text-sm text-muted mt-2">{t('standalone.description')}</p>
+              </div>
+
+              {/* Idea Description */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.idea_label')}</label>
+                <textarea
+                  value={ideaDescription}
+                  onChange={(e) => setIdeaDescription(e.target.value)}
+                  placeholder={t('standalone.idea_placeholder')}
+                  rows={4}
+                  maxLength={2000}
+                  className="w-full px-3 py-2.5 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200 resize-none"
+                />
+                <div className="flex justify-between mt-1">
+                  <p className="text-xs text-muted">{t('standalone.idea_hint')}</p>
+                  <p className="text-xs text-muted">{ideaDescription.length}/2000</p>
+                </div>
+              </div>
+
+              {/* Inspiration */}
+              {ideaDescription.length < 10 && (
+                <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-4">
+                  <p className="text-xs font-medium text-purple-300 mb-2">{t('inspiration.title')}</p>
+                  <div className="space-y-2">
+                    {INSPIRATION_EXAMPLES.map((ex, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setIdeaDescription(ex)}
+                        className="block w-full text-left text-xs text-muted hover:text-off-white transition-colors p-2 rounded hover:bg-purple-500/10"
+                      >
+                        &ldquo;{ex}&rdquo;
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Target Market */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
+                <p className="text-xs text-muted mb-2">{t('standalone.target_market_hint')}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {TARGET_MARKETS.map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTargetMarket(m)}
+                      className={`p-3 rounded-lg border text-center text-sm font-medium transition-all duration-200 ${
+                        targetMarket === m
+                          ? 'bg-purple-500/10 border-purple-500/50 text-purple-300'
+                          : 'bg-slate-blue border-slate-blue-light text-muted hover:bg-slate-blue-light/50'
+                      }`}
+                    >
+                      {t(`target_markets.${m}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Industry */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.industry_label')}</label>
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value as Industry)}
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                >
+                  <option value="">{t('standalone.industry_hint')}</option>
+                  {INDUSTRIES.map((ind) => (
+                    <option key={ind} value={ind}>{t(`industries.${ind}`)}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Business Model */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
+                <select
+                  value={businessModel}
+                  onChange={(e) => setBusinessModel(e.target.value as BusinessModel)}
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                >
+                  <option value="">{t('standalone.business_model_hint')}</option>
+                  {BUSINESS_MODELS.map((m) => (
+                    <option key={m} value={m}>{t(`business_models.${m}`)}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Budget Range */}
+              <div>
+                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.budget_label')}</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="number"
+                    value={budgetMin}
+                    onChange={(e) => setBudgetMin(e.target.value)}
+                    placeholder={t('standalone.budget_min_placeholder')}
+                    min={0}
+                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                  />
+                  <input
+                    type="number"
+                    value={budgetMax}
+                    onChange={(e) => setBudgetMax(e.target.value)}
+                    placeholder={t('standalone.budget_max_placeholder')}
+                    min={0}
+                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                  />
+                </div>
+                <p className="text-xs text-muted mt-1">{t('standalone.budget_hint')}</p>
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => setStep('email')}
+                disabled={!canSubmitForm()}
+                className="w-full h-12 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {t('standalone.cta')}
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
       </section>
     </main>
   );

@@ -80,15 +80,15 @@
   },
   "results": {
     "title": "أفكار تطبيقاتك المخصصة",
-    "subtitle": "بناءً على {{background}} في {{industry}}",
-    "ideas_count": "{{count}} مفاهيم مولدة بالذكاء الاصطناعي",
+    "subtitle": "بناءً على {background} في {industry}",
+    "ideas_count": "{count} مفاهيم مولدة بالذكاء الاصطناعي",
     "idea_card": {
       "estimated_cost": "التكلفة المقدرة",
       "estimated_timeline": "الجدول الزمني المقدر",
       "features": "الميزات الرئيسية",
       "matched_solution": "لدينا حل جاهز لهذا!",
-      "solution_price": "يبدأ من {{price}}",
-      "solution_timeline": "تسليم {{timeline}}",
+      "solution_price": "يبدأ من {price}",
+      "solution_timeline": "تسليم {timeline}",
       "cta_analyze": "حلل هذه الفكرة",
       "cta_estimate": "احصل على تقدير تفصيلي",
       "cta_solution": "عرض الحل الجاهز"
@@ -115,10 +115,69 @@
     "generation_failed": "فشل إنشاء الأفكار. يرجى المحاولة مرة أخرى أو التواصل معنا."
   },
   "generate_more": "توليد أفكار أخرى",
-  "generation_counter": "التوليد {{current}} من {{total}}",
+  "generation_counter": "التوليد {current} من {total}",
   "complexity_simple": "بسيط",
   "complexity_moderate": "متوسط",
   "complexity_complex": "معقد",
   "tech_stack": "المجموعة التقنية",
-  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {{name}}"
+  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {name}",
+
+  "backgrounds": {
+    "entrepreneur": "رائد أعمال / صاحب عمل",
+    "professional": "محترف / موظف",
+    "student": "طالب / أكاديمي",
+    "creative": "مبدع / مستقل",
+    "other": "أخرى"
+  },
+  "industries": {
+    "health_wellness": "الصحة والعافية",
+    "finance_banking": "المالية والبنوك",
+    "education_learning": "التعليم والتعلم",
+    "ecommerce_retail": "التجارة الإلكترونية والتجزئة",
+    "logistics_delivery": "الخدمات اللوجستية والتوصيل",
+    "entertainment_media": "الترفيه والإعلام",
+    "travel_hospitality": "السفر والضيافة",
+    "real_estate": "العقارات",
+    "food_restaurant": "الطعام والمطاعم",
+    "social_community": "التواصل الاجتماعي والمجتمع",
+    "other": "أخرى / متعددة"
+  },
+  "inspiration_prompts": {
+    "prompt_1": "أدير عيادة والمرضى يشتكون دائماً من أوقات الانتظار",
+    "prompt_2": "الطلاب في بلدي لا يجدون دروساً خصوصية بأسعار معقولة",
+    "prompt_3": "المطاعم الصغيرة تعاني من إدارة طلبات التوصيل"
+  },
+  "loading_messages": {
+    "exploring": "جارٍ استكشاف اهتماماتك...",
+    "researching": "جارٍ البحث عن فرص السوق...",
+    "generating": "جارٍ توليد مفاهيم مبتكرة...",
+    "refining": "جارٍ تنقيح أفكارك..."
+  },
+  "results_badge": "تم توليد الأفكار",
+  "results_subtitle": "بناءً على خلفيتك كـ{background} في مجال {industry}، إليك الأفكار التي تتوافق مع رؤيتك.",
+  "fallback_background": "محترف",
+  "fallback_industry": "مجالك",
+  "idea_label": "الفكرة {number}",
+  "key_features": "الميزات الرئيسية",
+  "estimated_cost": "التكلفة التقديرية",
+  "timeline_label": "الجدول الزمني",
+  "explore_idea": "استكشف هذه الفكرة",
+  "get_estimate": "احصل على تقدير",
+  "continue_btn": "متابعة",
+  "back_btn": "رجوع",
+  "dismiss_btn": "إغلاق",
+  "link_copied": "تم نسخ الرابط!",
+  "save_share": "حفظ ومشاركة الأفكار",
+  "textarea_placeholder": "صف التحدي الذي تواجهه أو الفرصة التي اكتشفتها...",
+  "char_counter": "{count} / 500 حرف",
+  "min_chars_warning": "(10 أحرف كحد أدنى)",
+  "need_inspiration": "تحتاج إلى إلهام؟",
+  "error_generate": "فشل توليد الأفكار. يرجى المحاولة مرة أخرى.",
+  "error_generate_more": "فشل توليد المزيد من الأفكار. يرجى المحاولة مرة أخرى.",
+  "error_generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "cross_sell_analyzer": "هل تريد التحقق من إحدى هذه الأفكار؟ دع الذكاء الاصطناعي يحلل إمكاناتها السوقية.",
+  "cross_sell_estimate": "مستعد للبناء؟ احصل على تقدير تفصيلي للتكلفة والجدول الزمني.",
+  "bookmark_aria": "حفظ {name} في المفضلة",
+  "aria_background_selection": "اختيار الخلفية",
+  "aria_industry_selection": "اختيار المجال"
 }

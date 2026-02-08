@@ -96,7 +96,7 @@ export function LanguageSwitcher() {
               'py-1 min-w-[120px]'
             )}
             role="menu"
-            aria-label="Language options"
+            aria-label={t('language.options')}
           >
             {locales.map((locale) => (
               <button

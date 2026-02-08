@@ -36,26 +36,26 @@ export function CaseStudiesPreview() {
   const caseStudies: CaseStudy[] = [
     {
       slug: 'ecommerce-retail',
-      industry: 'E-Commerce',
+      industry: 'industry_ecommerce',
       headlineKey: 'case_1_headline',
       metricValue: '3x',
-      metricLabel: 'Sales Growth',
+      metricLabel: 'metric_1_label',
       excerptKey: 'case_1_excerpt',
     },
     {
       slug: 'healthcare-ai',
-      industry: 'Healthcare',
+      industry: 'industry_healthcare',
       headlineKey: 'case_2_headline',
       metricValue: '85%',
-      metricLabel: 'Time Saved',
+      metricLabel: 'metric_2_label',
       excerptKey: 'case_2_excerpt',
     },
     {
       slug: 'logistics-delivery',
-      industry: 'Logistics',
+      industry: 'industry_logistics',
       headlineKey: 'case_3_headline',
       metricValue: '50%',
-      metricLabel: 'Cost Reduction',
+      metricLabel: 'metric_3_label',
       excerptKey: 'case_3_excerpt',
     },
   ];
@@ -86,7 +86,7 @@ export function CaseStudiesPreview() {
                   {/* Industry Badge */}
                   <div>
                     <Badge variant="default" size="sm">
-                      {study.industry}
+                      {t(study.industry)}
                     </Badge>
                   </div>
 
@@ -99,7 +99,7 @@ export function CaseStudiesPreview() {
                       <TrendingUp className="w-5 h-5 text-bronze" />
                       <span className="text-3xl font-bold text-bronze">{study.metricValue}</span>
                     </div>
-                    <span className="text-sm text-muted">{study.metricLabel}</span>
+                    <span className="text-sm text-muted">{t(study.metricLabel)}</span>
                   </div>
 
                   {/* Excerpt */}
@@ -111,7 +111,7 @@ export function CaseStudiesPreview() {
                 <CardFooter>
                   <Button asChild variant="ghost" size="sm" className="w-full">
                     <Link href={`/case-studies/${study.slug}`}>
-                      Read Case Study
+                      {t('read_study')}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </Button>

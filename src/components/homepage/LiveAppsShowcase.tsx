@@ -67,7 +67,7 @@ export function LiveAppsShowcase() {
                   <CardTitle className="text-lg">{app.name}</CardTitle>
 
                   {/* Category Badge */}
-                  <p className="text-xs text-muted uppercase tracking-wider">{app.category}</p>
+                  <p className="text-xs text-muted uppercase tracking-wider">{at(app.categoryKey)}</p>
 
                   {/* Description */}
                   <CardDescription className="text-sm leading-relaxed">
@@ -85,7 +85,7 @@ export function LiveAppsShowcase() {
                       className="flex items-center gap-1.5 text-xs text-muted hover:text-bronze transition-colors"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      App Store
+                      {t('app_store')}
                     </a>
                   )}
                   {app.googlePlay && (
@@ -96,7 +96,7 @@ export function LiveAppsShowcase() {
                       className="flex items-center gap-1.5 text-xs text-muted hover:text-bronze transition-colors"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      Google Play
+                      {t('google_play')}
                     </a>
                   )}
                 </CardFooter>

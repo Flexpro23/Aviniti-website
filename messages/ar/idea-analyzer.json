@@ -47,7 +47,7 @@
   },
   "results": {
     "title": "تقرير تحليل الفكرة",
-    "idea_name": "{{name}}",
+    "idea_name": "{name}",
     "overall_score": "درجة الجدوى الإجمالية",
     "score_interpretation": {
       "excellent": "ممتاز - سوق قوي، تمايز واضح",
@@ -111,7 +111,34 @@
   "errors": {
     "idea_too_short": "يرجى وصف فكرتك في 30 حرفاً على الأقل للحصول على تحليل ذي معنى",
     "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
-    "analysis_failed": "فشل تحليل الفكرة. يرجى المحاولة مرة أخرى أو التواصل معنا."
+    "analysis_failed": "فشل تحليل الفكرة. يرجى المحاولة مرة أخرى أو التواصل معنا.",
+    "failed": "فشل تحليل الفكرة. يرجى المحاولة مرة أخرى.",
+    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
   },
-  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {{name}}"
+  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {name}",
+  "results_analysis_complete": "اكتمل التحليل",
+  "results_overall_score_label": "درجة الجدوى الإجمالية",
+  "results_score_suffix": "/100",
+  "results_section_market": "إمكانات السوق",
+  "results_section_technical": "الجدوى التقنية",
+  "results_section_monetization": "تحقيق الدخل",
+  "results_section_competition": "المنافسة",
+  "results_section_recommendations": "التوصيات",
+  "results_complexity_label": "التعقيد: ",
+  "results_intensity_label": "الشدة: ",
+  "loading_processing": "جارٍ معالجة فكرتك...",
+  "loading_evaluating": "جارٍ تقييم الجدوى...",
+  "loading_assessing": "جارٍ تقييم ملاءمة السوق...",
+  "loading_compiling": "جارٍ تجميع التحليل...",
+  "buttons_continue": "متابعة",
+  "buttons_back": "رجوع",
+  "buttons_dismiss": "إغلاق",
+  "buttons_link_copied": "تم نسخ الرابط!",
+  "buttons_save_share": "حفظ ومشاركة التحليل",
+  "form_textarea_placeholder": "صف فكرة تطبيقك بالتفصيل... ما المشكلة التي يحلها؟ لمن هو موجه؟ ما الذي يميزه؟",
+  "form_char_limit": "{count} / 2000 حرف",
+  "form_min_chars": "(30 حرفاً كحد أدنى)",
+  "cross_sell_estimate": "أعجبك ما تراه؟ احصل على تقدير تفصيلي للتكلفة والجدول الزمني لهذه الفكرة.",
+  "cross_sell_roi": "هل تتساءل عن العائد؟ احسب العائد على الاستثمار من بناء هذا التطبيق.",
+  "aria_dismiss": "إغلاق"
 }

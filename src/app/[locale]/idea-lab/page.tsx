@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowRight, ArrowLeft, Briefcase, User, GraduationCap, Palette, MoreHorizontal, Heart, DollarSign, BookOpen, ShoppingCart, Truck, Film, Plane, Home, UtensilsCrossed, Users, Check, Star, Link2, CheckCircle2, RefreshCw } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
@@ -17,42 +17,43 @@ import type { IdeaLabResponse, IdeaLabIdea } from '@/types/api';
 // ============================================================
 // Background options for Step 1
 // ============================================================
-const BACKGROUND_OPTIONS: { value: Background; label: string; icon: typeof Briefcase }[] = [
-  { value: 'entrepreneur', label: 'Entrepreneur / Business Owner', icon: Briefcase },
-  { value: 'professional', label: 'Professional / Employee', icon: User },
-  { value: 'student', label: 'Student / Academic', icon: GraduationCap },
-  { value: 'creative', label: 'Creative / Freelancer', icon: Palette },
-  { value: 'other', label: 'Other', icon: MoreHorizontal },
+const BACKGROUND_OPTIONS: { value: Background; labelKey: string; icon: typeof Briefcase }[] = [
+  { value: 'entrepreneur', labelKey: 'backgrounds.entrepreneur', icon: Briefcase },
+  { value: 'professional', labelKey: 'backgrounds.professional', icon: User },
+  { value: 'student', labelKey: 'backgrounds.student', icon: GraduationCap },
+  { value: 'creative', labelKey: 'backgrounds.creative', icon: Palette },
+  { value: 'other', labelKey: 'backgrounds.other', icon: MoreHorizontal },
 ];
 
 // ============================================================
 // Industry options for Step 2
 // ============================================================
-const INDUSTRY_OPTIONS: { value: Industry; label: string; icon: typeof Heart }[] = [
-  { value: 'health-wellness', label: 'Health and Wellness', icon: Heart },
-  { value: 'finance-banking', label: 'Finance and Banking', icon: DollarSign },
-  { value: 'education-learning', label: 'Education and Learning', icon: BookOpen },
-  { value: 'ecommerce-retail', label: 'E-commerce and Retail', icon: ShoppingCart },
-  { value: 'logistics-delivery', label: 'Logistics and Delivery', icon: Truck },
-  { value: 'entertainment-media', label: 'Entertainment and Media', icon: Film },
-  { value: 'travel-hospitality', label: 'Travel and Hospitality', icon: Plane },
-  { value: 'real-estate', label: 'Real Estate', icon: Home },
-  { value: 'food-restaurant', label: 'Food and Restaurant', icon: UtensilsCrossed },
-  { value: 'social-community', label: 'Social and Community', icon: Users },
-  { value: 'other', label: 'Other / Multiple', icon: MoreHorizontal },
+const INDUSTRY_OPTIONS: { value: Industry; labelKey: string; icon: typeof Heart }[] = [
+  { value: 'health-wellness', labelKey: 'industries.health_wellness', icon: Heart },
+  { value: 'finance-banking', labelKey: 'industries.finance_banking', icon: DollarSign },
+  { value: 'education-learning', labelKey: 'industries.education_learning', icon: BookOpen },
+  { value: 'ecommerce-retail', labelKey: 'industries.ecommerce_retail', icon: ShoppingCart },
+  { value: 'logistics-delivery', labelKey: 'industries.logistics_delivery', icon: Truck },
+  { value: 'entertainment-media', labelKey: 'industries.entertainment_media', icon: Film },
+  { value: 'travel-hospitality', labelKey: 'industries.travel_hospitality', icon: Plane },
+  { value: 'real-estate', labelKey: 'industries.real_estate', icon: Home },
+  { value: 'food-restaurant', labelKey: 'industries.food_restaurant', icon: UtensilsCrossed },
+  { value: 'social-community', labelKey: 'industries.social_community', icon: Users },
+  { value: 'other', labelKey: 'industries.other', icon: MoreHorizontal },
 ];
 
 // ============================================================
-// Inspiration prompts for Step 3
+// Inspiration prompt keys for Step 3
 // ============================================================
-const INSPIRATION_PROMPTS = [
-  'I run a clinic and patients always complain about wait times',
-  "Students in my country can't find affordable tutoring",
-  'Small restaurants struggle to manage delivery orders',
-];
+const INSPIRATION_PROMPT_KEYS = [
+  'inspiration_prompts.prompt_1',
+  'inspiration_prompts.prompt_2',
+  'inspiration_prompts.prompt_3',
+] as const;
 
 export default function IdeaLabPage() {
   const t = useTranslations('idea_lab');
+  const locale = useLocale();
 
   // Form state
   const [step, setStep] = useState(1);
@@ -102,7 +103,7 @@ export default function IdeaLabPage() {
           problem: updatedData.problem,
           email: updatedData.email,
           whatsapp: updatedData.whatsapp,
-          locale: 'en',
+          locale,
         }),
       });
 
@@ -116,10 +117,10 @@ export default function IdeaLabPage() {
           setRateLimitRemaining(parseInt(remaining, 10));
         }
       } else {
-        setError(data.error?.message || 'Failed to generate ideas. Please try again.');
+        setError(data.error?.message || t('error_generate'));
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('error_generic'));
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +147,7 @@ export default function IdeaLabPage() {
           problem: formData.problem,
           email: formData.email,
           whatsapp: formData.whatsapp,
-          locale: 'en',
+          locale,
           existingIdeas: existingIdeaNames,
         }),
       });
@@ -162,10 +163,10 @@ export default function IdeaLabPage() {
           setRateLimitRemaining(parseInt(remaining, 10));
         }
       } else {
-        setError(data.error?.message || 'Failed to generate more ideas. Please try again.');
+        setError(data.error?.message || t('error_generate_more'));
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('error_generic'));
     } finally {
       setIsLoading(false);
     }
@@ -188,10 +189,10 @@ export default function IdeaLabPage() {
           <AIThinkingState
             toolColor="orange"
             messages={[
-              'Exploring your interests...',
-              'Researching market opportunities...',
-              'Generating innovative concepts...',
-              'Refining your ideas...',
+              t('loading_messages.exploring'),
+              t('loading_messages.researching'),
+              t('loading_messages.generating'),
+              t('loading_messages.refining'),
             ]}
           />
         </div>
@@ -223,6 +224,14 @@ export default function IdeaLabPage() {
       }
     };
 
+    // Resolve the background and industry labels for the results subtitle
+    const backgroundLabel = formData.background
+      ? t(BACKGROUND_OPTIONS.find(b => b.value === formData.background)?.labelKey ?? 'fallback_background')
+      : t('fallback_background');
+    const industryLabel = formData.industry
+      ? t(INDUSTRY_OPTIONS.find(i => i.value === formData.industry)?.labelKey ?? 'fallback_industry')
+      : t('fallback_industry');
+
     return (
       <main className="min-h-screen bg-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -230,14 +239,13 @@ export default function IdeaLabPage() {
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 text-orange-300 text-xs font-medium uppercase tracking-wider mb-4">
               <Check className="h-3.5 w-3.5" />
-              Ideas Generated
+              {t('results_badge')}
             </div>
             <h2 className="text-h2 text-white">
-              {t('results_title') || 'Here Are Your Personalized App Ideas'}
+              {t('results_title')}
             </h2>
             <p className="text-base text-muted mt-3 max-w-xl mx-auto">
-              Based on your background as {formData.background ? BACKGROUND_OPTIONS.find(b => b.value === formData.background)?.label : 'a professional'} in{' '}
-              {formData.industry ? INDUSTRY_OPTIONS.find(i => i.value === formData.industry)?.label : 'your field'}, here are ideas that match your vision.
+              {t('results_subtitle', { background: backgroundLabel, industry: industryLabel })}
             </p>
           </div>
 
@@ -250,12 +258,12 @@ export default function IdeaLabPage() {
               {isCopied ? (
                 <>
                   <CheckCircle2 className="h-5 w-5 text-success" />
-                  Link Copied!
+                  {t('link_copied')}
                 </>
               ) : (
                 <>
                   <Link2 className="h-5 w-5" />
-                  Save & Share Ideas
+                  {t('save_share')}
                 </>
               )}
             </button>
@@ -271,7 +279,7 @@ export default function IdeaLabPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">
-                          Idea {index + 1}
+                          {t('idea_label', { number: index + 1 })}
                         </span>
                         {/* Complexity Badge */}
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -281,9 +289,9 @@ export default function IdeaLabPage() {
                             ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
                             : 'bg-red-500/15 text-red-400 border border-red-500/30'
                         }`}>
-                          {idea.complexity === 'simple' ? t('complexity_simple') || 'Simple' :
-                           idea.complexity === 'moderate' ? t('complexity_moderate') || 'Moderate' :
-                           t('complexity_complex') || 'Complex'}
+                          {idea.complexity === 'simple' ? t('complexity_simple') :
+                           idea.complexity === 'moderate' ? t('complexity_moderate') :
+                           t('complexity_complex')}
                         </span>
                       </div>
                       <h3 className="text-xl md:text-2xl font-bold text-white">
@@ -292,7 +300,7 @@ export default function IdeaLabPage() {
                     </div>
                     <button
                       className="h-9 w-9 rounded-lg flex items-center justify-center text-muted hover:text-orange-400 hover:bg-orange-500/10 transition-colors duration-200 flex-shrink-0"
-                      aria-label={`Bookmark ${idea.name}`}
+                      aria-label={t('bookmark_aria', { name: idea.name })}
                     >
                       <Star className="h-5 w-5" />
                     </button>
@@ -306,7 +314,7 @@ export default function IdeaLabPage() {
                   {/* Features */}
                   <div className="mt-5">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">
-                      Key Features
+                      {t('key_features')}
                     </h4>
                     <ul className="space-y-2">
                       {idea.features.map((feature: string, fIdx: number) => (
@@ -321,13 +329,13 @@ export default function IdeaLabPage() {
                   {/* Estimates row */}
                   <div className="grid grid-cols-2 gap-4 mt-6">
                     <div className="bg-slate-blue-light/40 rounded-lg p-3">
-                      <span className="text-xs text-muted block">Estimated Cost</span>
+                      <span className="text-xs text-muted block">{t('estimated_cost')}</span>
                       <span className="text-lg font-bold text-white mt-0.5 block">
                         ${idea.estimatedCost.min.toLocaleString()} - ${idea.estimatedCost.max.toLocaleString()}
                       </span>
                     </div>
                     <div className="bg-slate-blue-light/40 rounded-lg p-3">
-                      <span className="text-xs text-muted block">Timeline</span>
+                      <span className="text-xs text-muted block">{t('timeline_label')}</span>
                       <span className="text-lg font-bold text-white mt-0.5 block">
                         {idea.estimatedTimeline}
                       </span>
@@ -338,7 +346,7 @@ export default function IdeaLabPage() {
                   {idea.techStack && idea.techStack.length > 0 && (
                     <div className="mt-4">
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
-                        {t('tech_stack') || 'Tech Stack'}
+                        {t('tech_stack')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {idea.techStack.map((tech: string, techIdx: number) => (
@@ -359,14 +367,14 @@ export default function IdeaLabPage() {
                       href={`/ai-analyzer?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}`}
                       className="h-11 px-5 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
                     >
-                      Explore This Idea
+                      {t('explore_idea')}
                       <ArrowRight className="h-4 w-4" />
                     </a>
                     <a
                       href={`/get-estimate?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}&ideaFeatures=${encodeURIComponent(idea.features.join(','))}`}
                       className="h-11 px-5 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
                     >
-                      Get Estimate
+                      {t('get_estimate')}
                     </a>
                   </div>
                 </article>
@@ -383,10 +391,10 @@ export default function IdeaLabPage() {
                 className="h-11 px-6 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                {t('generate_more') || 'Generate More Ideas'}
+                {t('generate_more')}
               </button>
               <span className="text-xs text-muted">
-                {t('generation_counter', { current: generationCount, total: 3 }) || `Generation ${generationCount} of 3`}
+                {t('generation_counter', { current: generationCount, total: 3 })}
               </span>
             </div>
           )}
@@ -395,11 +403,11 @@ export default function IdeaLabPage() {
           <div className="mt-10 space-y-4">
             <CrossSellCTA
               targetTool="ai-analyzer"
-              message="Want to validate one of these ideas? Let our AI analyze its market potential."
+              message={t('cross_sell_analyzer')}
             />
             <CrossSellCTA
               targetTool="get-estimate"
-              message="Ready to build? Get a detailed cost and timeline estimate."
+              message={t('cross_sell_estimate')}
             />
           </div>
         </div>
@@ -415,9 +423,9 @@ export default function IdeaLabPage() {
       {/* Hero */}
       <ToolHero
         toolSlug="idea-lab"
-        title={t('hero_title') || "Don't Have an App Idea? Let's Discover One Together."}
-        description={t('hero_description') || 'Answer 3 quick questions and our AI will generate personalized app ideas tailored to your background, industry, and vision.'}
-        ctaText={t('hero_cta') || 'Start Discovery'}
+        title={t('hero_title')}
+        description={t('hero_description')}
+        ctaText={t('hero_cta')}
         toolColor="orange"
         onCTAClick={handleStartDiscovery}
       />
@@ -432,13 +440,13 @@ export default function IdeaLabPage() {
             {step === 1 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step1_title') || "Tell me about yourself -- what's your background?"}
+                  {t('step1_title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step1_helper') || 'This helps us match ideas to your strengths and experience.'}
+                  {t('step1_helper')}
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label="Background selection">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label={t('aria_background_selection')}>
                   {BACKGROUND_OPTIONS.map((option) => {
                     const Icon = option.icon;
                     const isSelected = formData.background === option.value;
@@ -462,7 +470,7 @@ export default function IdeaLabPage() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <span className={`text-base font-medium ${isSelected ? 'text-white' : 'text-off-white'}`}>
-                          {option.label}
+                          {t(option.labelKey)}
                         </span>
                         {isSelected && (
                           <div className="ml-auto h-5 w-5 rounded-full bg-orange-500 flex items-center justify-center">
@@ -480,7 +488,7 @@ export default function IdeaLabPage() {
                     disabled={!formData.background}
                     className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
-                    Continue
+                    {t('continue_btn')}
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -493,13 +501,13 @@ export default function IdeaLabPage() {
             {step === 2 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step2_title') || 'What industry or area interests you most?'}
+                  {t('step2_title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step2_helper') || 'Pick the area where you see the most opportunity.'}
+                  {t('step2_helper')}
                 </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4" role="radiogroup" aria-label="Industry selection">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4" role="radiogroup" aria-label={t('aria_industry_selection')}>
                   {INDUSTRY_OPTIONS.map((option) => {
                     const Icon = option.icon;
                     const isSelected = formData.industry === option.value;
@@ -523,7 +531,7 @@ export default function IdeaLabPage() {
                           <Icon className="h-4 w-4 md:h-5 md:w-5" />
                         </div>
                         <span className={`text-sm md:text-base font-medium ${isSelected ? 'text-white' : 'text-off-white'}`}>
-                          {option.label}
+                          {t(option.labelKey)}
                         </span>
                       </button>
                     );
@@ -536,14 +544,14 @@ export default function IdeaLabPage() {
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back
+                    {t('back_btn')}
                   </button>
                   <button
                     onClick={goForward}
                     disabled={!formData.industry}
                     className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
-                    Continue
+                    {t('continue_btn')}
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -556,16 +564,16 @@ export default function IdeaLabPage() {
             {step === 3 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step3_title') || 'What problem do you want to solve or what opportunity do you see?'}
+                  {t('step3_title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step3_helper') || 'Be as specific as you can -- the more detail you give, the better your ideas will be.'}
+                  {t('step3_helper')}
                 </p>
 
                 <textarea
                   value={formData.problem}
                   onChange={(e) => setFormData((prev) => ({ ...prev, problem: e.target.value }))}
-                  placeholder="Describe the challenge you're facing or the opportunity you've spotted..."
+                  placeholder={t('textarea_placeholder')}
                   minLength={10}
                   maxLength={500}
                   className="w-full min-h-[160px] md:min-h-[200px] p-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-orange-500 focus:text-white focus:outline-none focus:ring-1 focus:ring-orange-500 resize-y transition-all duration-200"
@@ -573,27 +581,30 @@ export default function IdeaLabPage() {
 
                 <div className="flex justify-end mt-1.5">
                   <span className={`text-xs ${formData.problem.length < 10 ? 'text-orange-400' : 'text-muted'}`}>
-                    {formData.problem.length} / 500 chars
-                    {formData.problem.length > 0 && formData.problem.length < 10 && ' (minimum 10 characters)'}
+                    {t('char_counter', { count: formData.problem.length })}
+                    {formData.problem.length > 0 && formData.problem.length < 10 && ` ${t('min_chars_warning')}`}
                   </span>
                 </div>
 
                 {/* Inspiration section */}
                 <div className="mt-6">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-light mb-3">
-                    Need inspiration?
+                    {t('need_inspiration')}
                   </p>
                   <div className="space-y-2">
-                    {INSPIRATION_PROMPTS.map((prompt) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() => setFormData((prev) => ({ ...prev, problem: prompt }))}
-                        className="w-full text-left p-3 rounded-lg bg-slate-blue-light/30 border border-transparent text-sm text-muted-light italic hover:bg-slate-blue-light/50 hover:border-slate-blue-light hover:text-muted transition-all duration-200"
-                      >
-                        &ldquo;{prompt}&rdquo;
-                      </button>
-                    ))}
+                    {INSPIRATION_PROMPT_KEYS.map((promptKey) => {
+                      const promptText = t(promptKey);
+                      return (
+                        <button
+                          key={promptKey}
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, problem: promptText }))}
+                          className="w-full text-left p-3 rounded-lg bg-slate-blue-light/30 border border-transparent text-sm text-muted-light italic hover:bg-slate-blue-light/50 hover:border-slate-blue-light hover:text-muted transition-all duration-200"
+                        >
+                          &ldquo;{promptText}&rdquo;
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -603,14 +614,14 @@ export default function IdeaLabPage() {
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back
+                    {t('back_btn')}
                   </button>
                   <button
                     onClick={goForward}
                     disabled={formData.problem.trim().length < 10}
                     className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
-                    Continue
+                    {t('continue_btn')}
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -628,7 +639,7 @@ export default function IdeaLabPage() {
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back
+                    {t('back_btn')}
                   </button>
                 </div>
                 <EmailCapture toolColor="orange" onSubmit={handleSubmit} />
@@ -646,7 +657,7 @@ export default function IdeaLabPage() {
                 onClick={() => setError(null)}
                 className="mt-2 text-xs text-muted hover:text-white transition-colors"
               >
-                Dismiss
+                {t('dismiss_btn')}
               </button>
             </div>
           </div>

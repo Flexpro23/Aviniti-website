@@ -1,4 +1,13 @@
 {
+  "categories": {
+    "health_beauty": "Health & Beauty",
+    "beauty_style": "Beauty & Style",
+    "business": "Business",
+    "education": "Education",
+    "shopping": "Shopping",
+    "health_fitness": "Health & Fitness",
+    "travel": "Travel"
+  },
   "skinverse": {
     "description": "AI-powered skin analysis and hair transplant consultation platform."
   },

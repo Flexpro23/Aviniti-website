@@ -213,11 +213,11 @@ export default function GetEstimatePage() {
         });
         setAnswers(initialAnswers);
       } else {
-        setError(data.error?.message || 'Failed to analyze your idea. Please try again.');
+        setError(data.error?.message || t('errors.analyze_failed'));
         setStep(2); // Go back to description
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('errors.generic'));
       setStep(2);
     } finally {
       setIsAnalyzing(false);
@@ -258,11 +258,11 @@ export default function GetEstimatePage() {
         const preSelected = new Set(response.mustHave.map((f: AIFeature) => f.id));
         setSelectedFeatureIds(preSelected);
       } else {
-        setError(data.error?.message || 'Failed to generate features. Please try again.');
+        setError(data.error?.message || t('errors.features_failed'));
         setStep(3);
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('errors.generic'));
       setStep(3);
     } finally {
       setIsGeneratingFeatures(false);
@@ -307,11 +307,11 @@ export default function GetEstimatePage() {
     const errors: Record<string, string> = {};
 
     if (field === 'email' && contactInfo.email && !validateEmail(contactInfo.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = t('errors.invalid_email');
     }
 
     if (field === 'phone' && !validatePhone(contactInfo.phone)) {
-      errors.phone = 'Phone number must be at least 10 digits';
+      errors.phone = t('errors.phone_required');
     }
 
     setFormErrors((prev) => ({ ...prev, ...errors }));
@@ -325,15 +325,15 @@ export default function GetEstimatePage() {
     const errors: Record<string, string> = {};
 
     if (!contactInfo.name.trim()) {
-      errors.name = 'First name is required';
+      errors.name = t('errors.name_required');
     }
 
     if (!validatePhone(contactInfo.phone)) {
-      errors.phone = 'Phone number must be at least 10 digits';
+      errors.phone = t('errors.phone_required');
     }
 
     if (contactInfo.email && !validateEmail(contactInfo.email)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = t('errors.invalid_email');
     }
 
     if (Object.keys(errors).length > 0) {
@@ -377,14 +377,14 @@ export default function GetEstimatePage() {
       if (data.success) {
         setResults(data.data);
       } else {
-        setError(data.error?.message || 'Failed to generate estimate. Please try again.');
+        setError(data.error?.message || t('errors.generation_failed'));
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
         // User cancelled — do nothing, state already reset in handleCancel
         return;
       }
-      setError('Something went wrong. Please try again.');
+      setError(t('errors.generic'));
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
@@ -443,10 +443,10 @@ export default function GetEstimatePage() {
       <ProcessingState
         featureCount={getSelectedFeatures().length}
         messages={[
-          t('loading.analyzing') || 'Understanding your project scope...',
-          t('loading.calculating') || 'Calculating costs & timeline...',
-          'Matching with our solution catalog...',
-          'Generating your comprehensive blueprint...',
+          t('loading.analyzing'),
+          t('loading.calculating'),
+          t('processing.msg_matching'),
+          t('processing.msg_blueprint'),
         ]}
         onCancel={handleCancel}
       />
@@ -485,10 +485,10 @@ export default function GetEstimatePage() {
           <div id="results-summary" className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bronze/10 text-bronze-light text-xs font-medium uppercase tracking-wider mb-4 border border-bronze/20">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              {t('results.title') || 'Project Blueprint Ready'}
+              {t('results.title')}
             </div>
             <h2 className="text-h2 text-white">
-              {displayName || 'Your Project Blueprint'}
+              {displayName || t('results.your_blueprint')}
             </h2>
             {altNames.length > 0 && (
               <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
@@ -518,7 +518,7 @@ export default function GetEstimatePage() {
                 <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-bronze/15 flex items-center justify-center">
                   <DollarSign className="h-5 w-5 text-bronze-light" />
                 </div>
-                <p className="text-sm text-muted">{t('results.estimated_cost') || 'Estimated Cost'}</p>
+                <p className="text-sm text-muted">{t('results.estimated_cost')}</p>
                 <p className="text-2xl font-bold text-white mt-1">
                   {costDisplay}
                 </p>
@@ -530,9 +530,9 @@ export default function GetEstimatePage() {
                 <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-tool-blue/15 flex items-center justify-center">
                   <Clock className="h-5 w-5 text-tool-blue-light" />
                 </div>
-                <p className="text-sm text-muted">{t('results.estimated_timeline') || 'Estimated Timeline'}</p>
+                <p className="text-sm text-muted">{t('results.estimated_timeline')}</p>
                 <p className="text-2xl font-bold text-white mt-1">
-                  {results.estimatedTimeline.weeks} Weeks
+                  {results.estimatedTimeline.weeks} {t('results.weeks')}
                 </p>
               </ToolResultItem>
             </ToolResults>
@@ -542,9 +542,9 @@ export default function GetEstimatePage() {
                 <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-tool-purple/15 flex items-center justify-center">
                   <Layers className="h-5 w-5 text-tool-purple-light" />
                 </div>
-                <p className="text-sm text-muted">Project Phases</p>
+                <p className="text-sm text-muted">{t('results.project_phases')}</p>
                 <p className="text-2xl font-bold text-white mt-1">
-                  {results.breakdown.length} Phases
+                  {t('results.phases_count', { count: results.breakdown.length })}
                 </p>
               </ToolResultItem>
             </ToolResults>
@@ -621,10 +621,10 @@ export default function GetEstimatePage() {
               <ToolResultItem>
                 <div className="px-6 py-4 border-b border-slate-blue-light flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-white">
-                    {t('results.breakdown_title') || 'Project Breakdown'}
+                    {t('results.breakdown_title')}
                   </h3>
                   <span className="text-sm text-bronze-light font-medium">
-                    ${results.breakdown.reduce((s, p) => s + p.cost, 0).toLocaleString()} total
+                    {t('results.breakdown_total', { amount: results.breakdown.reduce((s, p) => s + p.cost, 0).toLocaleString() })}
                   </span>
                 </div>
                 <div className="overflow-x-auto">
@@ -632,13 +632,13 @@ export default function GetEstimatePage() {
                     <thead>
                       <tr className="border-b border-slate-blue-light">
                         <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
-                          Phase
+                          {t('results.table_phase')}
                         </th>
                         <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">
-                          Cost
+                          {t('results.table_cost')}
                         </th>
                         <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">
-                          Duration
+                          {t('results.table_duration')}
                         </th>
                       </tr>
                     </thead>
@@ -687,7 +687,7 @@ export default function GetEstimatePage() {
             <ToolResults toolColor="orange" className="mb-8">
               <ToolResultItem>
                 <h3 className="text-lg font-semibold text-white mb-6">
-                  {t('results.timeline_title') || 'Project Timeline'}
+                  {t('results.timeline_title')}
                 </h3>
                 <TimelinePhases
                   phases={results.breakdown.map((phase) => ({
@@ -707,7 +707,7 @@ export default function GetEstimatePage() {
             {results.strategicInsights && results.strategicInsights.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-white mb-6">
-                  {t('results.strategic_insights_title') || 'Strategic Insights'}
+                  {t('results.strategic_insights_title')}
                 </h3>
                 <StrategicInsights insights={results.strategicInsights} />
               </div>
@@ -721,7 +721,7 @@ export default function GetEstimatePage() {
                     <Lightbulb className="h-5 w-5 text-bronze-light" />
                   </div>
                   <h3 className="text-lg font-semibold text-white">
-                    {t('results.key_insights') || 'AI Insights'}
+                    {t('results.key_insights')}
                   </h3>
                 </div>
                 <ul className="space-y-3">
@@ -755,12 +755,12 @@ export default function GetEstimatePage() {
                 {isCopied ? (
                   <>
                     <CheckCircle2 className="h-5 w-5 text-success" />
-                    {t('results.link_copied') || 'Link Copied!'}
+                    {t('results.link_copied')}
                   </>
                 ) : (
                   <>
                     <Link2 className="h-5 w-5" />
-                    {t('results.copy_link') || 'Copy Shareable Link'}
+                    {t('results.copy_link')}
                   </>
                 )}
               </button>
@@ -780,6 +780,18 @@ export default function GetEstimatePage() {
                 projectName: displayName || results.projectName,
                 cost: costDisplay,
               })}
+              estimateData={{
+                projectName: displayName || results.projectName,
+                projectSummary: results.projectSummary,
+                projectType: projectType,
+                estimatedCost: results.estimatedCost || (results.pricing ? { min: results.pricing.total * 0.9, max: results.pricing.total * 1.1 } : { min: 10000, max: 20000 }),
+                estimatedTimeline: results.estimatedTimeline,
+                approach: results.approach,
+                features: results.pricing ? results.pricing.features.map((f: any) => f.name) : [],
+                techStack: results.techStack || [],
+                strategicInsights: results.strategicInsights || [],
+                matchedSolution: results.matchedSolution,
+              }}
             />
             <CrossSellCTA
               targetTool="ai-analyzer"
@@ -801,12 +813,9 @@ export default function GetEstimatePage() {
       {/* Hero */}
       <ToolHero
         toolSlug="get-estimate"
-        title={t('hero_title') || 'Get Your AI-Powered Project Estimate'}
-        description={
-          t('hero_description') ||
-          'Describe your idea in plain language and our AI will generate a detailed Project Blueprint with cost breakdown, timeline, and recommendations.'
-        }
-        ctaText={t('hero_cta') || 'Start Estimate'}
+        title={t('hero_title')}
+        description={t('hero_description')}
+        ctaText={t('hero_cta')}
         toolColor="green"
         onCTAClick={handleStartEstimate}
       />
@@ -846,16 +855,16 @@ export default function GetEstimatePage() {
             {step === 1 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step1.title') || 'What type of project do you want to build?'}
+                  {t('step1.title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step1.description') || 'Select the platform that best describes your project'}
+                  {t('step1.description')}
                 </p>
 
                 <div
                   className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   role="radiogroup"
-                  aria-label="Project type"
+                  aria-label={t('step1.aria_project_type')}
                 >
                   {PROJECT_TYPE_OPTIONS.map((option) => {
                     const Icon = option.icon;
@@ -901,7 +910,7 @@ export default function GetEstimatePage() {
                     disabled={!projectType}
                     className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                   >
-                    Next: Describe Your Idea
+                    {t('buttons.next_describe')}
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -972,7 +981,7 @@ export default function GetEstimatePage() {
                     className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                   >
                     <ArrowLeft className="h-5 w-5" />
-                    Back
+                    {t('buttons.back')}
                   </button>
                   <button
                     onClick={handleAnalyzeIdea}
@@ -980,7 +989,7 @@ export default function GetEstimatePage() {
                     className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                   >
                     <Brain className="h-5 w-5" />
-                    Analyze My Idea
+                    {t('buttons.analyze')}
                   </button>
                 </div>
               </div>
@@ -1001,18 +1010,18 @@ export default function GetEstimatePage() {
                     >
                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tool-green/10 border border-tool-green/20 text-tool-green-light text-xs font-medium uppercase tracking-wider">
                         <Brain className="h-3 w-3" />
-                        AI Analyzing
+                        {t('analyzing.badge')}
                       </span>
                       <p className="text-sm text-muted mt-3">
-                        Our AI is reading your idea and preparing smart follow-up questions
+                        {t('analyzing.description')}
                       </p>
                     </motion.div>
                     <AIThinkingState
                       toolColor="green"
                       messages={[
-                        'Reading your idea...',
-                        'Understanding the scope...',
-                        'Preparing smart questions...',
+                        t('analyzing.msg_1'),
+                        t('analyzing.msg_2'),
+                        t('analyzing.msg_3'),
                       ]}
                     />
                   </div>
@@ -1109,7 +1118,7 @@ export default function GetEstimatePage() {
                         className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                       >
                         <ArrowLeft className="h-5 w-5" />
-                        Back
+                        {t('buttons.back')}
                       </button>
                       <button
                         onClick={handleGenerateFeatures}
@@ -1117,7 +1126,7 @@ export default function GetEstimatePage() {
                         className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                       >
                         <ListChecks className="h-5 w-5" />
-                        Generate Features
+                        {t('buttons.generate_features')}
                       </button>
                     </div>
                   </>
@@ -1140,29 +1149,28 @@ export default function GetEstimatePage() {
                     >
                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tool-green/10 border border-tool-green/20 text-tool-green-light text-xs font-medium uppercase tracking-wider">
                         <ListChecks className="h-3 w-3" />
-                        Building Feature List
+                        {t('generating_features.badge')}
                       </span>
                       <p className="text-sm text-muted mt-3">
-                        Generating must-have and enhancement features based on your answers
+                        {t('generating_features.description')}
                       </p>
                     </motion.div>
                     <AIThinkingState
                       toolColor="green"
                       messages={[
-                        'Analyzing your requirements...',
-                        'Identifying core features...',
-                        'Suggesting enhancements...',
+                        t('generating_features.msg_1'),
+                        t('generating_features.msg_2'),
+                        t('generating_features.msg_3'),
                       ]}
                     />
                   </div>
                 ) : (
                   <>
                     <h2 className="text-h4 text-white mb-2">
-                      Review your project features
+                      {t('step4.review_title')}
                     </h2>
                     <p className="text-sm text-muted mb-6">
-                      We've identified the essential features for your project. You can also add
-                      optional enhancements to get a more comprehensive estimate.
+                      {t('step4.review_description')}
                     </p>
 
                     {/* Must-Have Features */}
@@ -1173,10 +1181,10 @@ export default function GetEstimatePage() {
                             <Check className="h-3 w-3 text-tool-green-light" />
                           </div>
                           <h3 className="text-base font-semibold text-white">
-                            Must-Have Features
+                            {t('step4.must_have')}
                           </h3>
                           <span className="text-xs text-tool-green-light bg-tool-green/10 px-2 py-0.5 rounded-full">
-                            Essential
+                            {t('step4.must_have_badge')}
                           </span>
                         </div>
                         <div className="space-y-3">
@@ -1207,7 +1215,7 @@ export default function GetEstimatePage() {
                                   {feature.timelineDays && (
                                     <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-muted">
                                       <Clock className="h-2.5 w-2.5" />
-                                      {feature.timelineDays} days
+                                      {t('pricing.days', { count: feature.timelineDays })}
                                     </span>
                                   )}
                                 </div>
@@ -1231,10 +1239,10 @@ export default function GetEstimatePage() {
                             <Sparkles className="h-3 w-3 text-tool-purple-light" />
                           </div>
                           <h3 className="text-base font-semibold text-white">
-                            Enhancement Features
+                            {t('step4.enhancements')}
                           </h3>
                           <span className="text-xs text-tool-purple-light bg-tool-purple/10 px-2 py-0.5 rounded-full">
-                            Optional
+                            {t('step4.enhancements_badge')}
                           </span>
                         </div>
                         <div className="space-y-3">
@@ -1265,7 +1273,7 @@ export default function GetEstimatePage() {
                                   {feature.timelineDays && (
                                     <span className="inline-flex items-center gap-1 mt-2 text-[10px] text-muted">
                                       <Clock className="h-2.5 w-2.5" />
-                                      {feature.timelineDays} days
+                                      {t('pricing.days', { count: feature.timelineDays })}
                                     </span>
                                   )}
                                 </div>
@@ -1319,14 +1327,14 @@ export default function GetEstimatePage() {
                         className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                       >
                         <ArrowLeft className="h-5 w-5" />
-                        Back
+                        {t('buttons.back')}
                       </button>
                       <button
                         onClick={goForward}
                         disabled={selectedFeatureIds.size === 0}
                         className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                       >
-                        Next: Contact Info
+                        {t('buttons.next_contact')}
                         <ArrowRight className="h-5 w-5" />
                       </button>
                     </div>
@@ -1341,11 +1349,10 @@ export default function GetEstimatePage() {
             {step === 5 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step4.title') || 'Where should we send your Project Blueprint?'}
+                  {t('step4.title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step4.description') ||
-                    "We'll email you the full report with a downloadable PDF."}
+                  {t('step4.description')}
                 </p>
 
                 {/* What You'll Get — Deliverables Card */}
@@ -1404,7 +1411,7 @@ export default function GetEstimatePage() {
                   {/* Name */}
                   <div className="space-y-1.5">
                     <label htmlFor="est-name" className="block text-sm font-medium text-off-white">
-                      First Name <span className="text-red-400">*</span>
+                      {t('step4.form.name_label')} <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="est-name"
@@ -1421,7 +1428,7 @@ export default function GetEstimatePage() {
                       className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
                         formErrors.name ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
-                      placeholder="John"
+                      placeholder={t('step4.form.name_placeholder')}
                     />
                     {formErrors.name && (
                       <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>
@@ -1434,7 +1441,7 @@ export default function GetEstimatePage() {
                       htmlFor="est-email"
                       className="block text-sm font-medium text-off-white"
                     >
-                      Email Address <span className="text-muted text-xs">(optional)</span>
+                      {t('step4.form.email_label')} <span className="text-muted text-xs">{t('step4.form.email_optional')}</span>
                     </label>
                     <input
                       id="est-email"
@@ -1450,7 +1457,7 @@ export default function GetEstimatePage() {
                       className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
                         formErrors.email ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
-                      placeholder="you@company.com"
+                      placeholder={t('step4.form.email_placeholder')}
                     />
                     {formErrors.email && (
                       <p className="text-xs text-red-400 mt-1">{formErrors.email}</p>
@@ -1463,7 +1470,7 @@ export default function GetEstimatePage() {
                       htmlFor="est-phone"
                       className="block text-sm font-medium text-off-white"
                     >
-                      Phone Number <span className="text-red-400">*</span>
+                      {t('step4.form.phone_label')} <span className="text-red-400">*</span>
                     </label>
                     <input
                       id="est-phone"
@@ -1480,12 +1487,12 @@ export default function GetEstimatePage() {
                       className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
                         formErrors.phone ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
-                      placeholder="+962 7XX XXX XXX"
+                      placeholder={t('step4.form.phone_placeholder')}
                     />
                     {formErrors.phone && (
                       <p className="text-xs text-red-400 mt-1">{formErrors.phone}</p>
                     )}
-                    <p className="text-xs text-muted">Jordan format: +962</p>
+                    <p className="text-xs text-muted">{t('step4.form.phone_hint')}</p>
                   </div>
 
                   {/* WhatsApp checkbox */}
@@ -1502,17 +1509,17 @@ export default function GetEstimatePage() {
                       className="h-5 w-5 rounded border-2 border-slate-blue-light bg-transparent checked:bg-tool-green checked:border-tool-green transition-colors duration-200"
                     />
                     <span className="text-sm text-off-white">
-                      Also send my Project Blueprint via WhatsApp
+                      {t('step4.form.whatsapp_label')}
                     </span>
                   </label>
 
                   {/* Privacy note */}
                   <p className="text-xs text-muted">
-                    By submitting, you agree to our{' '}
+                    {t('step4.form.privacy_text')}{' '}
                     <a href="/privacy" className="text-tool-green-light hover:underline">
-                      Privacy Policy
+                      {t('step4.form.privacy_link')}
                     </a>
-                    . We will never share your information.
+                    {t('step4.form.privacy_suffix')}
                   </p>
                 </div>
 
@@ -1522,7 +1529,7 @@ export default function GetEstimatePage() {
                     className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                   >
                     <ArrowLeft className="h-5 w-5" />
-                    Back
+                    {t('buttons.back')}
                   </button>
                   <button
                     onClick={handleSubmit}
@@ -1530,7 +1537,7 @@ export default function GetEstimatePage() {
                     className="h-12 px-8 bg-tool-green text-white font-semibold rounded-lg shadow-md hover:bg-tool-green/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2 text-lg"
                   >
                     <Sparkles className="h-5 w-5" />
-                    Generate My Blueprint
+                    {t('step4.form.submit')}
                   </button>
                 </div>
               </div>
@@ -1547,7 +1554,7 @@ export default function GetEstimatePage() {
                 onClick={() => setError(null)}
                 className="mt-2 text-xs text-muted hover:text-white transition-colors"
               >
-                Dismiss
+                {t('buttons.dismiss')}
               </button>
             </div>
           </div>

@@ -17,11 +17,13 @@ export {
   analyzerResponseSchema,
   estimateResponseSchema,
   roiResponseSchema,
+  roiResponseSchemaV2,
   chatResponseSchema,
   validateIdeaLabResponse,
   validateAnalyzerResponse,
   validateEstimateResponse,
   validateROIResponse,
+  validateROIResponseV2,
   validateChatResponse,
   safeValidate,
 } from './schemas';
@@ -31,5 +33,6 @@ export type {
   AnalyzerGeminiResponse,
   EstimateGeminiResponse,
   ROIGeminiResponse,
+  ROIGeminiResponseV2,
   ChatGeminiResponse,
 } from './schemas';

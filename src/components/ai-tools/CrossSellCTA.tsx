@@ -13,6 +13,7 @@
 
 import { ArrowRight, Sparkles, Search, Calculator, TrendingUp } from 'lucide-react';
 import { Link } from '@/lib/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
 
@@ -20,6 +21,7 @@ interface CrossSellCTAProps {
   targetTool: 'idea-lab' | 'ai-analyzer' | 'get-estimate' | 'roi-calculator';
   message: string;
   className?: string;
+  estimateData?: Record<string, unknown>;
 }
 
 const toolConfig = {
@@ -60,7 +62,8 @@ const colorClasses = {
   purple: 'bg-tool-purple/10 border-tool-purple/30',
 };
 
-export function CrossSellCTA({ targetTool, message, className }: CrossSellCTAProps) {
+export function CrossSellCTA({ targetTool, message, className, estimateData }: CrossSellCTAProps) {
+  const router = useRouter();
   const tool = toolConfig[targetTool];
   const Icon = tool.icon;
 
@@ -90,15 +93,30 @@ export function CrossSellCTA({ targetTool, message, className }: CrossSellCTAPro
       </div>
 
       {/* CTA Button */}
-      <Button
-        asChild
-        variant="secondary"
-        size="lg"
-        className="w-full mt-4"
-        rightIcon={<ArrowRight />}
-      >
-        <Link href={tool.href}>Try {tool.name}</Link>
-      </Button>
+      {estimateData && targetTool === 'roi-calculator' ? (
+        <Button
+          variant="secondary"
+          size="lg"
+          className="w-full mt-4"
+          rightIcon={<ArrowRight />}
+          onClick={() => {
+            sessionStorage.setItem('aviniti_roi_estimate_data', JSON.stringify(estimateData));
+            router.push(tool.href + '?fromEstimate=true');
+          }}
+        >
+          Try {tool.name}
+        </Button>
+      ) : (
+        <Button
+          asChild
+          variant="secondary"
+          size="lg"
+          className="w-full mt-4"
+          rightIcon={<ArrowRight />}
+        >
+          <Link href={tool.href}>Try {tool.name}</Link>
+        </Button>
+      )}
     </div>
   );
 }

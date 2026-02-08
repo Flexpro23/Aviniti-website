@@ -7,7 +7,7 @@
  * Features post cards with title, date, reading time, and excerpt.
  */
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
@@ -29,6 +29,7 @@ interface BlogPost {
 
 export function BlogPreview() {
   const t = useTranslations('home.blog');
+  const locale = useLocale();
 
   // Placeholder blog posts
   const posts: BlogPost[] = [
@@ -56,7 +57,7 @@ export function BlogPreview() {
   ];
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(locale === 'ar' ? 'ar-JO' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -94,7 +95,7 @@ export function BlogPreview() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
-                      <span>{post.readingTime} min read</span>
+                      <span>{post.readingTime} {t('min_read')}</span>
                     </div>
                   </div>
 
@@ -110,7 +111,7 @@ export function BlogPreview() {
                 <CardFooter>
                   <Button asChild variant="ghost" size="sm" className="w-full">
                     <Link href={`/blog/${post.slug}`}>
-                      Read More
+                      {t('read_more')}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </Button>

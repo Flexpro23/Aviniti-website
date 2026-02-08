@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans, Cairo } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -22,6 +22,13 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: 'swap',
 });
 
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-arabic',
+  display: 'swap',
+});
+
 export default async function LocaleLayout({
   children,
   params,
@@ -38,7 +45,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <div className={`${inter.variable} ${plusJakartaSans.variable} font-sans`}>
+    <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} font-sans`}>
       <NextIntlClientProvider messages={messages}>
         <LocaleUpdater />
         <Navbar />

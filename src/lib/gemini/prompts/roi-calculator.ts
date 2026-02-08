@@ -16,6 +16,8 @@ export function buildROICalculatorPrompt(input: ROICalculatorRequest): {
 
   const systemPrompt = `You are an expert business analyst and ROI calculator for Aviniti, an AI and app development company.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Process to replace" and any custom process description). If the user wrote in Arabic, ALL your output — including the "aiInsight" field and every generated text string — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in. If the user's input is mostly numeric/structured (no clear language), use the locale hint as fallback.
+
 A business visitor wants to understand the potential return on investment from building an app to replace a manual process. Using the data they provided, calculate a comprehensive ROI analysis.
 
 CALCULATION METHODOLOGY:
@@ -91,7 +93,7 @@ Respond with valid JSON matching this exact schema:
 - Could improve retention with app: ${retentionStr}
 - Monthly revenue: ${input.monthlyRevenue ? `${input.currency} ${input.monthlyRevenue}` : 'Not provided'}
 - Currency: ${input.currency}
-- Language: ${language}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${language}
 
 Calculate a comprehensive ROI analysis for automating this business process with a custom app.`;
 

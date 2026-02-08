@@ -72,7 +72,7 @@ export function Navbar() {
             <Link
               href="/"
               className="flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze rounded-sm"
-              aria-label="Aviniti - Home"
+              aria-label={t('accessibility.homeLink')}
             >
               <Image
                 src="/logo/logo.svg"
@@ -87,7 +87,7 @@ export function Navbar() {
             {/* Desktop Navigation */}
             <nav
               className="hidden lg:flex items-center gap-8"
-              aria-label="Main navigation"
+              aria-label={t('accessibility.mainNavigation')}
             >
               {mainNavLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -140,7 +140,7 @@ export function Navbar() {
                   'transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze'
                 )}
-                aria-label="Open navigation menu"
+                aria-label={t('accessibility.openMenu')}
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
               >

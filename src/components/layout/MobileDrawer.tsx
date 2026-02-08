@@ -89,7 +89,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
             )}
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation menu"
+            aria-label={t('accessibility.navigationMenu')}
           >
             {/* Close Button */}
             <button
@@ -102,7 +102,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 'transition-colors duration-200',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze'
               )}
-              aria-label="Close navigation menu"
+              aria-label={t('accessibility.closeMenu')}
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -186,7 +186,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                       : 'bg-slate-blue-light/50 text-muted hover:text-off-white'
                   )}
                 >
-                  English
+                  {t('language.en')}
                 </button>
                 <button
                   onClick={() => {
@@ -200,7 +200,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                       : 'bg-slate-blue-light/50 text-muted hover:text-off-white'
                   )}
                 >
-                  العربية
+                  {t('language.ar')}
                 </button>
               </div>
             </div>

@@ -60,7 +60,7 @@
   --font-heading: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-body: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-sans: var(--font-body);
-  --font-arabic: var(--font-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-cairo), 'Cairo', 'Noto Sans Arabic', var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* ─── BORDER RADIUS ───────────────────────────────────── */

@@ -325,6 +325,111 @@ export const roiFormSchema = z.object({
 export type ROIFormData = z.infer<typeof roiFormSchema>;
 
 // ============================================================
+// ROI Calculator V2 Form Schemas (AI-Driven)
+// ============================================================
+
+const targetMarketEnum = z.enum([
+  'mena',
+  'gcc',
+  'north-america',
+  'europe',
+  'asia-pacific',
+  'global',
+] as const);
+
+const businessModelEnum = z.enum([
+  'subscription',
+  'marketplace',
+  'ecommerce',
+  'saas',
+  'on-demand',
+  'freemium',
+  'one-time-license',
+  'advertising',
+  'unsure',
+] as const);
+
+const industryEnum = z.enum([
+  'health-wellness',
+  'finance-banking',
+  'education-learning',
+  'ecommerce-retail',
+  'logistics-delivery',
+  'entertainment-media',
+  'travel-hospitality',
+  'real-estate',
+  'food-restaurant',
+  'social-community',
+  'other',
+] as const);
+
+const strategicInsightSchema = z.object({
+  type: z.enum(['strength', 'challenge', 'recommendation']),
+  title: z.string(),
+  description: z.string(),
+});
+
+const matchedSolutionSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  startingPrice: z.number(),
+  deploymentTimeline: z.string(),
+  featureMatchPercentage: z.number(),
+}).nullable();
+
+const roiFromEstimateSchema = z.object({
+  mode: z.literal('from-estimate'),
+  projectName: z.string().min(1, 'Project name is required'),
+  projectSummary: z.string().min(1, 'Project summary is required'),
+  projectType: z.enum(['mobile', 'web', 'ai', 'cloud', 'fullstack'] as const),
+  estimatedCost: z.object({
+    min: z.number().positive(),
+    max: z.number().positive(),
+  }),
+  estimatedTimeline: z.object({
+    weeks: z.number().positive(),
+  }),
+  approach: z.enum(['custom', 'ready-made', 'hybrid']),
+  features: z.array(z.string()),
+  techStack: z.array(z.string()),
+  strategicInsights: z.array(strategicInsightSchema),
+  matchedSolution: matchedSolutionSchema,
+  targetMarket: targetMarketEnum,
+  industry: industryEnum.optional(),
+  businessModel: businessModelEnum.optional(),
+  email: emailSchema,
+  phone: phoneSchema.optional(),
+  whatsapp: z.boolean().default(false),
+  locale: z.enum(['en', 'ar']),
+});
+
+const roiStandaloneSchema = z.object({
+  mode: z.literal('standalone'),
+  ideaDescription: z
+    .string()
+    .min(20, 'Please describe your idea in at least 20 characters')
+    .max(2000, 'Description cannot exceed 2000 characters'),
+  targetMarket: targetMarketEnum,
+  industry: industryEnum.optional(),
+  businessModel: businessModelEnum.optional(),
+  budgetRange: z.object({
+    min: z.number().nonnegative(),
+    max: z.number().positive(),
+  }).optional(),
+  email: emailSchema,
+  phone: phoneSchema.optional(),
+  whatsapp: z.boolean().default(false),
+  locale: z.enum(['en', 'ar']),
+});
+
+export const roiFormSchemaV2 = z.discriminatedUnion('mode', [
+  roiFromEstimateSchema,
+  roiStandaloneSchema,
+]);
+
+export type ROIFormDataV2 = z.infer<typeof roiFormSchemaV2>;
+
+// ============================================================
 // Contact Form Schema
 // ============================================================
 

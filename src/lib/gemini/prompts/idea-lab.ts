@@ -16,6 +16,8 @@ export function buildIdeaLabPrompt(input: IdeaLabRequest): {
 
   const systemPrompt = `You are a creative AI product strategist for Aviniti, an AI and app development company based in Amman, Jordan.
 
+CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Problem/Opportunity" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including app names, descriptions, features, and tech stack labels — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+
 A visitor has described their background, industry interest, and a problem they want to solve. Your job is to generate 5-6 unique, creative, and viable app ideas that address their problem.
 
 INSTRUCTIONS:
@@ -39,7 +41,7 @@ INSTRUCTIONS:
    - Hair Transplant AI: $18,000 / 35 days
 7. Cost estimates should range from $5,000 to $50,000 depending on complexity.
 8. Timeline estimates should range from 4 to 20 weeks.
-9. Respond in ${language}.
+9. IMPORTANT: Your entire response must be in the same language the user used in the "Problem/Opportunity" field. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
@@ -61,7 +63,7 @@ Respond with valid JSON matching this exact schema:
 - Background: ${input.background}
 - Industry: ${input.industry}
 - Problem/Opportunity: ${input.problem}
-- Language: ${language}
+- Locale hint (use ONLY as fallback if user input language is ambiguous): ${language}
 
 Generate 5-6 unique, creative, and viable app ideas that address this person's problem.`;
 

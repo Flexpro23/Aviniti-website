@@ -8,16 +8,17 @@ import {
   hashIP,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
-import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collections';
-import { roiFormSchema } from '@/lib/utils/validators';
-import { buildROIPrompt } from '@/lib/gemini/prompts';
-import type { ROICalculatorResponse } from '@/types/api';
+import { saveLeadToFirestore, saveAISubmission, type LeadData } from '@/lib/firebase/collections';
+import { roiFormSchemaV2 } from '@/lib/utils/validators';
+import { buildROIPromptV2 } from '@/lib/gemini/prompts';
+import type { ROICalculatorResponseV2 } from '@/types/api';
 
 // Rate limiting configuration
 const RATE_LIMIT = 5;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.3;
-const TIMEOUT_MS = 45000; // 45 seconds
+const MAX_OUTPUT_TOKENS = 8192;
+const TIMEOUT_MS = 60000; // 60 seconds
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Parse and validate request body
     const body = await request.json();
-    const validatedData = roiFormSchema.parse(body);
+    const validatedData = roiFormSchemaV2.parse(body);
 
     // 2. Rate limiting
     const clientIP = getClientIP(request);
@@ -49,24 +50,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Build prompt and call Gemini
-    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
-    const prompt = buildROIPrompt({
-      processType: validatedData.processType,
-      customProcess: validatedData.customProcess,
-      hoursPerWeek: validatedData.hoursPerWeek,
-      employees: validatedData.employees,
-      hourlyCost: validatedData.hourlyCost,
-      currency: validatedData.currency,
-      issues: validatedData.issues || [],
-      customerGrowth: validatedData.customerGrowth,
-      retentionImprovement: validatedData.retentionImprovement,
-      monthlyRevenue: validatedData.monthlyRevenue,
-      locale,
-    });
+    const locale = validatedData.locale === 'ar' ? 'ar' : 'en';
+    const prompt = buildROIPromptV2(validatedData);
 
-    const result = await generateJsonContent<ROICalculatorResponse>(prompt, {
+    const result = await generateJsonContent<ROICalculatorResponseV2>(prompt, {
       temperature: TEMPERATURE,
-      maxOutputTokens: 4096,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
       timeoutMs: TIMEOUT_MS,
     });
 
@@ -84,44 +73,40 @@ export async function POST(request: NextRequest) {
     try {
       const metadata = extractRequestMetadata(request);
 
-      const leadId = await saveLeadToFirestore({
+      const leadData: Omit<LeadData, 'converted' | 'notes'> = {
         email: validatedData.email,
-        name: validatedData.name || null,
-        company: validatedData.company || null,
-        whatsapp: validatedData.whatsapp,
-        source: 'roi-calculator',
+        whatsapp: validatedData.whatsapp ?? false,
+        source: 'roi-calculator' as const,
         locale: locale,
-        processType: validatedData.processType,
-        customProcess: validatedData.customProcess,
-        hoursPerWeek: validatedData.hoursPerWeek,
-        employees: validatedData.employees,
-        hourlyCost: validatedData.hourlyCost,
-        currency: validatedData.currency,
-        issues: validatedData.issues,
-        customerGrowth: validatedData.customerGrowth,
-        retentionImprovement: validatedData.retentionImprovement,
-        monthlyRevenue: validatedData.monthlyRevenue,
         metadata: {
           ...metadata,
           ipCountry: undefined,
         },
-      });
+      };
+
+      const leadId = await saveLeadToFirestore(leadData);
+
+      const submissionRequest: Record<string, unknown> = validatedData.mode === 'from-estimate'
+        ? {
+            mode: 'from-estimate',
+            projectName: validatedData.projectName,
+            projectType: validatedData.projectType,
+            estimatedCost: validatedData.estimatedCost,
+            estimatedTimeline: validatedData.estimatedTimeline,
+            approach: validatedData.approach,
+            targetMarket: validatedData.targetMarket,
+          }
+        : {
+            mode: 'standalone',
+            ideaDescription: validatedData.ideaDescription,
+            targetMarket: validatedData.targetMarket,
+            budgetRange: validatedData.budgetRange,
+          };
 
       await saveAISubmission({
         tool: 'roi-calculator',
         leadId,
-        request: {
-          processType: validatedData.processType,
-          customProcess: validatedData.customProcess,
-          hoursPerWeek: validatedData.hoursPerWeek,
-          employees: validatedData.employees,
-          hourlyCost: validatedData.hourlyCost,
-          currency: validatedData.currency,
-          issues: validatedData.issues,
-          customerGrowth: validatedData.customerGrowth,
-          retentionImprovement: validatedData.retentionImprovement,
-          monthlyRevenue: validatedData.monthlyRevenue,
-        },
+        request: submissionRequest,
         response: result.data as unknown as Record<string, unknown>,
         processingTimeMs,
         model: 'gemini-3-flash-preview',

@@ -209,6 +209,79 @@ export const roiResponseSchema = z.object({
 export type ROIGeminiResponse = z.infer<typeof roiResponseSchema>;
 
 // ============================================================
+// ROI Calculator V2 Response Schema (AI-Driven)
+// ============================================================
+
+const revenueScenarioSchema = z.object({
+  name: z.string().min(1).max(100),
+  monthlyRevenue: z.number().nonnegative(),
+  annualRevenue: z.number().nonnegative(),
+  assumptions: z.array(z.string().min(5).max(300)).min(2).max(4),
+});
+
+const roiTimelinePointSchema = z.object({
+  month: z.number().int().min(1).max(36),
+  cumulativeInvestment: z.number(),
+  cumulativeRevenue: z.number().nonnegative(),
+  netPosition: z.number(),
+});
+
+const marketOpportunitySchema = z.object({
+  totalAddressableMarket: z.string().min(1).max(200),
+  serviceableMarket: z.string().min(1).max(200),
+  captureTarget: z.string().min(1).max(200),
+  growthRate: z.string().min(1).max(100),
+});
+
+const costBreakdownItemSchema = z.object({
+  category: z.string().min(1).max(100),
+  year1: z.number().nonnegative(),
+  year2: z.number().nonnegative(),
+  year3: z.number().nonnegative(),
+  description: z.string().min(1).max(300),
+});
+
+const strategicRecommendationSchema = z.object({
+  type: z.enum(['monetization', 'growth', 'risk-mitigation', 'competitive-advantage']),
+  title: z.string().min(1).max(150),
+  description: z.string().min(10).max(500),
+  impact: z.enum(['high', 'medium', 'low']),
+});
+
+export const roiResponseSchemaV2 = z.object({
+  projectName: z.string().min(1).max(100),
+  investmentRequired: z.object({
+    min: z.number().nonnegative(),
+    max: z.number().positive(),
+    currency: z.string().default('USD'),
+  }),
+  paybackPeriodMonths: z.object({
+    optimistic: z.number().positive().max(60),
+    moderate: z.number().positive().max(60),
+    conservative: z.number().positive().max(72),
+  }),
+  threeYearROI: z.object({
+    percentage: z.number(),
+    absoluteReturn: z.number(),
+  }),
+  marketOpportunity: marketOpportunitySchema,
+  suggestedRevenueModel: z.object({
+    primary: z.string().min(1).max(100),
+    reasoning: z.string().min(20).max(500),
+    pricingBenchmark: z.string().min(1).max(300),
+  }),
+  revenueScenarios: z.array(revenueScenarioSchema).length(3),
+  projection: z.array(roiTimelinePointSchema).min(12).max(36),
+  costBreakdown: z.array(costBreakdownItemSchema).min(4).max(6),
+  strategicRecommendations: z.array(strategicRecommendationSchema).min(3).max(5),
+  executiveSummary: z.string().min(50).max(1000),
+  keyRisks: z.array(z.string().min(10).max(300)).min(2).max(4),
+  keyOpportunities: z.array(z.string().min(10).max(300)).min(2).max(4),
+});
+
+export type ROIGeminiResponseV2 = z.infer<typeof roiResponseSchemaV2>;
+
+// ============================================================
 // Chat Response Schema
 // ============================================================
 
@@ -269,6 +342,13 @@ export function validateEstimateResponse(
  */
 export function validateROIResponse(data: unknown): ROIGeminiResponse {
   return roiResponseSchema.parse(data);
+}
+
+/**
+ * Validate and parse ROI Calculator V2 response from Gemini
+ */
+export function validateROIResponseV2(data: unknown): ROIGeminiResponseV2 {
+  return roiResponseSchemaV2.parse(data);
 }
 
 /**

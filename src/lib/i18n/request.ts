@@ -34,6 +34,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       idea_lab: (await import(`../../../messages/${locale}/idea-lab.json`)).default,
       ai_analyzer: (await import(`../../../messages/${locale}/idea-analyzer.json`)).default,
       roi_calculator: (await import(`../../../messages/${locale}/roi-calculator.json`)).default,
+      privacy_policy: (await import(`../../../messages/${locale}/privacy-policy.json`)).default,
+      terms_of_service: (await import(`../../../messages/${locale}/terms-of-service.json`)).default,
     },
   };
 });

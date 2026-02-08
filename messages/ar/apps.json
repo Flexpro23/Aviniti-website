@@ -1,4 +1,13 @@
 {
+  "categories": {
+    "health_beauty": "الصحة والجمال",
+    "beauty_style": "الجمال والأناقة",
+    "business": "الأعمال",
+    "education": "التعليم",
+    "shopping": "التسوق",
+    "health_fitness": "الصحة واللياقة",
+    "travel": "السفر"
+  },
   "skinverse": {
     "description": "منصة تحليل البشرة واستشارات زراعة الشعر المدعومة بالذكاء الاصطناعي."
   },

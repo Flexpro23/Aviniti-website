@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import {
   HeroSection,
   CompanyLogos,
@@ -46,6 +47,7 @@ export async function generateMetadata({
   return {
     title: t('title'),
     description: t('description'),
+    alternates: getAlternateLinks(''),
     openGraph: {
       title: t('og_title'),
       description: t('og_description'),

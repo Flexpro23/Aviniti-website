@@ -115,10 +115,69 @@
     "generation_failed": "Failed to generate ideas. Please try again or contact us."
   },
   "generate_more": "Generate More Ideas",
-  "generation_counter": "Generation {{current}} of {{total}}",
+  "generation_counter": "Generation {current} of {total}",
   "complexity_simple": "Simple",
   "complexity_moderate": "Moderate",
   "complexity_complex": "Complex",
   "tech_stack": "Tech Stack",
-  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {{name}}"
+  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {name}",
+
+  "backgrounds": {
+    "entrepreneur": "Entrepreneur / Business Owner",
+    "professional": "Professional / Employee",
+    "student": "Student / Academic",
+    "creative": "Creative / Freelancer",
+    "other": "Other"
+  },
+  "industries": {
+    "health_wellness": "Health and Wellness",
+    "finance_banking": "Finance and Banking",
+    "education_learning": "Education and Learning",
+    "ecommerce_retail": "E-commerce and Retail",
+    "logistics_delivery": "Logistics and Delivery",
+    "entertainment_media": "Entertainment and Media",
+    "travel_hospitality": "Travel and Hospitality",
+    "real_estate": "Real Estate",
+    "food_restaurant": "Food and Restaurant",
+    "social_community": "Social and Community",
+    "other": "Other / Multiple"
+  },
+  "inspiration_prompts": {
+    "prompt_1": "I run a clinic and patients always complain about wait times",
+    "prompt_2": "Students in my country can't find affordable tutoring",
+    "prompt_3": "Small restaurants struggle to manage delivery orders"
+  },
+  "loading_messages": {
+    "exploring": "Exploring your interests...",
+    "researching": "Researching market opportunities...",
+    "generating": "Generating innovative concepts...",
+    "refining": "Refining your ideas..."
+  },
+  "results_badge": "Ideas Generated",
+  "results_subtitle": "Based on your background as {background} in {industry}, here are ideas that match your vision.",
+  "fallback_background": "a professional",
+  "fallback_industry": "your field",
+  "idea_label": "Idea {number}",
+  "key_features": "Key Features",
+  "estimated_cost": "Estimated Cost",
+  "timeline_label": "Timeline",
+  "explore_idea": "Explore This Idea",
+  "get_estimate": "Get Estimate",
+  "continue_btn": "Continue",
+  "back_btn": "Back",
+  "dismiss_btn": "Dismiss",
+  "link_copied": "Link Copied!",
+  "save_share": "Save & Share Ideas",
+  "textarea_placeholder": "Describe the challenge you're facing or the opportunity you've spotted...",
+  "char_counter": "{count} / 500 chars",
+  "min_chars_warning": "(minimum 10 characters)",
+  "need_inspiration": "Need inspiration?",
+  "error_generate": "Failed to generate ideas. Please try again.",
+  "error_generate_more": "Failed to generate more ideas. Please try again.",
+  "error_generic": "Something went wrong. Please try again.",
+  "cross_sell_analyzer": "Want to validate one of these ideas? Let our AI analyze its market potential.",
+  "cross_sell_estimate": "Ready to build? Get a detailed cost and timeline estimate.",
+  "bookmark_aria": "Bookmark {name}",
+  "aria_background_selection": "Background selection",
+  "aria_industry_selection": "Industry selection"
 }

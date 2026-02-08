@@ -63,3 +63,23 @@ export function getLocaleConfig(locale: Locale): LocaleConfig {
 export function isValidLocale(locale: string): locale is Locale {
   return SUPPORTED_LOCALES.includes(locale as Locale);
 }
+
+/**
+ * Generate hreflang alternate links for SEO
+ * @param pathname - The current pathname (e.g., "/solutions", "/blog/my-post")
+ * @returns Alternates object for Next.js metadata
+ */
+export function getAlternateLinks(pathname: string = '') {
+  const baseUrl = 'https://www.aviniti.app';
+  // Ensure pathname starts with / if it's not empty
+  const normalizedPath = pathname && !pathname.startsWith('/') ? `/${pathname}` : pathname;
+
+  return {
+    canonical: `${baseUrl}/en${normalizedPath}`,
+    languages: {
+      'en': `${baseUrl}/en${normalizedPath}`,
+      'ar': `${baseUrl}/ar${normalizedPath}`,
+      'x-default': `${baseUrl}/en${normalizedPath}`,
+    },
+  };
+}

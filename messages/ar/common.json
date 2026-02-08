@@ -4,7 +4,7 @@
     "solutions": "الحلول",
     "idea_lab": "مختبر الأفكار",
     "ai_analyzer": "محلل الذكاء الاصطناعي",
-    "get_estimate": "احصل على تقدير",
+    "get_estimate": "احصل على تقدير مدعوم بالذكاء الاصطناعي",
     "roi_calculator": "حاسبة العائد",
     "blog": "المدونة",
     "case_studies": "دراسات الحالة",
@@ -31,6 +31,14 @@
   },
   "footer": {
     "tagline": "أفكارك، واقعنا",
+    "description": "شركة تطوير تطبيقات مدعومة بالذكاء الاصطناعي تساعد الشركات على التحول الرقمي. مقرها في عمّان، الأردن.",
+    "whatsappLabel": "واتساب",
+    "location": "عمّان، الأردن",
+    "followUs": "تابعنا",
+    "emailAria": "البريد الإلكتروني: aliodat@aviniti.app",
+    "phoneAria": "الهاتف: +962 79 068 5302",
+    "whatsappAria": "واتساب: +962 79 068 5302",
+    "visitSocial": "زيارة أفينيتي على {platform}",
     "quick_links": "روابط سريعة",
     "quickLinks": "روابط سريعة",
     "ai_tools": "أدوات الذكاء الاصطناعي",
@@ -55,10 +63,18 @@
   "language": {
     "en": "English",
     "ar": "العربية",
-    "switch": "تغيير اللغة"
+    "switch": "تغيير اللغة",
+    "options": "خيارات اللغة"
   },
   "accessibility": {
-    "skip_to_content": "تخطي إلى المحتوى الرئيسي"
+    "skip_to_content": "تخطي إلى المحتوى الرئيسي",
+    "openMenu": "فتح قائمة التنقل",
+    "closeMenu": "إغلاق قائمة التنقل",
+    "homeLink": "أفينيتي - الرئيسية",
+    "mainNavigation": "التنقل الرئيسي",
+    "navigationMenu": "قائمة التنقل",
+    "languageOptions": "خيارات اللغة",
+    "loading": "جارٍ التحميل..."
   },
   "whatsapp": {
     "general_message": "مرحباً، أنا مهتم بخدمات أفينيتي",

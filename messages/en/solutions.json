@@ -4,6 +4,7 @@
     "description": "Pre-built app solutions ready to deploy in 35 days. Delivery apps, e-commerce, booking systems, and more."
   },
   "page": {
+    "label": "Solutions",
     "title": "Ready-Made Solutions",
     "subtitle": "Launch faster with our pre-built, customizable app solutions",
     "filter_all": "All Solutions",
@@ -13,7 +14,13 @@
     "filter_ecommerce": "E-commerce",
     "filter_restaurant": "Food & Restaurant",
     "filter_operations": "Business Operations",
-    "filter_social": "Social & Community"
+    "filter_social": "Social & Community",
+    "learn_more": "Learn More",
+    "demo_available": "Demo Available",
+    "cta_heading": "Need a Custom Solution?",
+    "cta_subtitle": "Our team can build exactly what your business needs. Get a free AI-powered estimate in minutes.",
+    "cta_estimate": "Get AI Estimate",
+    "cta_contact": "Contact Us"
   },
   "solutions": {
     "delivery-app-system": {
@@ -153,6 +160,14 @@
     "customization_desc": "This solution can be customized to match your brand and specific needs",
     "cta_primary": "Get This Solution",
     "cta_secondary": "Customize & Get Estimate",
-    "cta_demo": "Request Demo"
+    "cta_demo": "Request Demo",
+    "starting_at": "Starting at",
+    "delivery": "delivery",
+    "features": "Features",
+    "package": "Package",
+    "cta_heading": "Ready to Get Started?",
+    "cta_subtitle": "Get this solution deployed for your business in as little as 35 days.",
+    "view_all": "View All Solutions",
+    "not_found_title": "Solution Not Found - Aviniti"
   }
 }

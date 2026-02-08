@@ -54,8 +54,7 @@ export function Footer() {
             {t('footer.tagline')}
           </p>
           <p className="text-sm text-muted mt-4 max-w-[320px]">
-            AI and app development company helping SMBs digitally transform.
-            Based in Amman, Jordan.
+            {t('footer.description')}
           </p>
         </div>
 
@@ -96,7 +95,7 @@ export function Footer() {
                 <a
                   href="mailto:aliodat@aviniti.app"
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
-                  aria-label="Email: aliodat@aviniti.app"
+                  aria-label={t('footer.emailAria')}
                 >
                   <Mail className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                   aliodat@aviniti.app
@@ -106,7 +105,7 @@ export function Footer() {
                 <a
                   href="tel:+962790685302"
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
-                  aria-label="Phone: +962 79 068 5302"
+                  aria-label={t('footer.phoneAria')}
                 >
                   <Phone className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                   +962 79 068 5302
@@ -118,15 +117,15 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-2"
-                  aria-label="WhatsApp: +962 79 068 5302"
+                  aria-label={t('footer.whatsappAria')}
                 >
                   <MessageCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                  WhatsApp
+                  {t('footer.whatsappLabel')}
                 </a>
               </li>
               <li className="text-sm text-muted flex items-center gap-2">
                 <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                Amman, Jordan
+                {t('footer.location')}
               </li>
             </ul>
           </div>
@@ -134,7 +133,7 @@ export function Footer() {
           {/* Follow Us Column */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-off-white uppercase tracking-[0.05em]">
-              Follow Us
+              {t('footer.followUs')}
             </h3>
             <ul className="space-y-3">
               {socialLinks.map((social) => (
@@ -144,7 +143,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-muted hover:text-off-white transition-colors duration-200 inline-flex items-center"
-                    aria-label={`Visit Aviniti on ${social.platform}`}
+                    aria-label={t('footer.visitSocial', { platform: social.platform })}
                   >
                     {social.platform}
                   </a>

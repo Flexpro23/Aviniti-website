@@ -41,7 +41,8 @@
       "cloud_desc": "إعداد خوادم ينمو مع عملك",
       "fullstack": "متعدد / فول ستاك",
       "fullstack_desc": "حل متكامل: تطبيق + موقع + كل شيء"
-    }
+    },
+    "aria_project_type": "نوع المشروع"
   },
   "step2": {
     "title": "أخبرنا عن فكرة مشروعك",
@@ -71,18 +72,25 @@
     "enhancements": "ميزات تحسينية",
     "enhancements_badge": "اختيارية",
     "features_selected": "{count} ميزة مختارة",
+    "review_title": "راجع ميزات مشروعك",
+    "review_description": "لقد حددنا الميزات الأساسية لمشروعك. يمكنك أيضاً إضافة تحسينات اختيارية للحصول على تقدير أكثر شمولاً.",
     "form": {
-      "name_label": "الاسم الكامل",
-      "name_placeholder": "أحمد محمد",
+      "name_label": "الاسم الأول",
+      "name_placeholder": "أحمد",
       "email_label": "عنوان البريد الإلكتروني",
-      "email_placeholder": "ahmad@company.com",
+      "email_optional": "(اختياري)",
+      "email_placeholder": "you@company.com",
       "company_label": "الشركة (اختياري)",
       "company_placeholder": "اسم شركتك",
-      "phone_label": "رقم الهاتف (اختياري)",
-      "phone_placeholder": "+962 79 123 4567",
+      "phone_label": "رقم الهاتف",
+      "phone_placeholder": "+962 7XX XXX XXX",
+      "phone_hint": "صيغة الأردن: +962",
       "whatsapp_label": "أرسل أيضاً مخطط المشروع عبر واتساب",
       "submit": "إنشاء مخطط المشروع",
-      "submitting": "جارٍ إنشاء المخطط..."
+      "submitting": "جارٍ إنشاء المخطط...",
+      "privacy_text": "بتقديم هذا النموذج، فإنك توافق على",
+      "privacy_link": "سياسة الخصوصية",
+      "privacy_suffix": ". لن نشارك معلوماتك أبداً."
     }
   },
   "step5": {
@@ -121,15 +129,46 @@
     "features_count": "{count} ميزة",
     "days": "{count} يوم"
   },
+  "buttons": {
+    "next_describe": "التالي: صف فكرتك",
+    "back": "رجوع",
+    "analyze": "حلّل فكرتي",
+    "generate_features": "إنشاء الميزات",
+    "next_contact": "التالي: معلومات التواصل",
+    "generate_blueprint": "إنشاء مخطط المشروع",
+    "dismiss": "إغلاق"
+  },
+  "analyzing": {
+    "badge": "الذكاء الاصطناعي يحلّل",
+    "description": "يقوم الذكاء الاصطناعي بقراءة فكرتك وإعداد أسئلة متابعة ذكية",
+    "msg_1": "جارٍ قراءة فكرتك...",
+    "msg_2": "جارٍ فهم النطاق...",
+    "msg_3": "جارٍ إعداد الأسئلة الذكية..."
+  },
+  "generating_features": {
+    "badge": "جارٍ بناء قائمة الميزات",
+    "description": "جارٍ إنشاء الميزات الأساسية والتحسينية بناءً على إجاباتك",
+    "msg_1": "جارٍ تحليل متطلباتك...",
+    "msg_2": "جارٍ تحديد الميزات الأساسية...",
+    "msg_3": "جارٍ اقتراح التحسينات..."
+  },
   "results": {
     "title": "مخطط المشروع جاهز",
     "subtitle": "بناءً على المعلومات التي قدمتها",
+    "your_blueprint": "مخطط مشروعك",
     "also_consider": "يمكنك أيضاً:",
     "estimated_cost": "التكلفة المقدرة",
     "estimated_timeline": "الجدول الزمني المقدر",
+    "weeks": "أسبوع",
+    "project_phases": "مراحل المشروع",
+    "phases_count": "{count} مراحل",
     "cost_range": "{{min}} - {{max}}",
     "timeline_weeks": "{{weeks}} أسبوع",
     "breakdown_title": "تفصيل التكلفة حسب المرحلة",
+    "breakdown_total": "${amount} إجمالي",
+    "table_phase": "المرحلة",
+    "table_cost": "التكلفة",
+    "table_duration": "المدة",
     "phase": "المرحلة {{number}}",
     "approach_title": "النهج الموصى به",
     "approach_custom": "تطوير مخصص",
@@ -183,7 +222,9 @@
     "analyzer": "تريد التحقق من {projectName} قبل البناء؟ احصل على تحليل جدوى بالذكاء الاصطناعي."
   },
   "processing": {
-    "cancel": "إلغاء والعودة"
+    "cancel": "إلغاء والعودة",
+    "msg_matching": "جارٍ المطابقة مع كتالوج الحلول...",
+    "msg_blueprint": "جارٍ إنشاء مخططك الشامل..."
   },
   "loading": {
     "analyzing": "جارٍ فهم مشروعك...",
@@ -194,9 +235,14 @@
     "select_project_type": "يرجى اختيار نوع المشروع",
     "describe_idea": "يرجى وصف فكرتك في 10 أحرف على الأقل",
     "select_features": "يرجى اختيار ميزة واحدة على الأقل",
-    "name_required": "يرجى إدخال اسمك",
+    "name_required": "الاسم الأول مطلوب",
     "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
-    "generation_failed": "فشل إنشاء التقدير. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة."
+    "invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "phone_required": "يجب أن يكون رقم الهاتف 10 أرقام على الأقل",
+    "generation_failed": "فشل إنشاء التقدير. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.",
+    "analyze_failed": "فشل تحليل فكرتك. يرجى المحاولة مرة أخرى.",
+    "features_failed": "فشل إنشاء الميزات. يرجى المحاولة مرة أخرى.",
+    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
   },
   "whatsapp": {
     "message": "مرحباً، أود مناقشة تقدير مشروعي"

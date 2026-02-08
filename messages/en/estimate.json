@@ -41,7 +41,8 @@
       "cloud_desc": "Server setup that grows with your business",
       "fullstack": "Multiple / Full Stack",
       "fullstack_desc": "Complete solution: app + website + everything"
-    }
+    },
+    "aria_project_type": "Project type"
   },
   "step2": {
     "title": "Tell us about your project idea",
@@ -71,18 +72,25 @@
     "enhancements": "Enhancement Features",
     "enhancements_badge": "Optional",
     "features_selected": "{count} features selected",
+    "review_title": "Review your project features",
+    "review_description": "We've identified the essential features for your project. You can also add optional enhancements to get a more comprehensive estimate.",
     "form": {
-      "name_label": "Full Name",
-      "name_placeholder": "John Smith",
+      "name_label": "First Name",
+      "name_placeholder": "John",
       "email_label": "Email Address",
-      "email_placeholder": "john@company.com",
+      "email_optional": "(optional)",
+      "email_placeholder": "you@company.com",
       "company_label": "Company (optional)",
       "company_placeholder": "Your Company Name",
-      "phone_label": "Phone Number (optional)",
-      "phone_placeholder": "+962 79 123 4567",
+      "phone_label": "Phone Number",
+      "phone_placeholder": "+962 7XX XXX XXX",
+      "phone_hint": "Jordan format: +962",
       "whatsapp_label": "Also send my Project Blueprint via WhatsApp",
       "submit": "Generate My Blueprint",
-      "submitting": "Generating Blueprint..."
+      "submitting": "Generating Blueprint...",
+      "privacy_text": "By submitting, you agree to our",
+      "privacy_link": "Privacy Policy",
+      "privacy_suffix": ". We will never share your information."
     }
   },
   "step5": {
@@ -121,15 +129,46 @@
     "features_count": "{count} features",
     "days": "{count} days"
   },
+  "buttons": {
+    "next_describe": "Next: Describe Your Idea",
+    "back": "Back",
+    "analyze": "Analyze My Idea",
+    "generate_features": "Generate Features",
+    "next_contact": "Next: Contact Info",
+    "generate_blueprint": "Generate My Blueprint",
+    "dismiss": "Dismiss"
+  },
+  "analyzing": {
+    "badge": "AI Analyzing",
+    "description": "Our AI is reading your idea and preparing smart follow-up questions",
+    "msg_1": "Reading your idea...",
+    "msg_2": "Understanding the scope...",
+    "msg_3": "Preparing smart questions..."
+  },
+  "generating_features": {
+    "badge": "Building Feature List",
+    "description": "Generating must-have and enhancement features based on your answers",
+    "msg_1": "Analyzing your requirements...",
+    "msg_2": "Identifying core features...",
+    "msg_3": "Suggesting enhancements..."
+  },
   "results": {
     "title": "Project Blueprint Ready",
     "subtitle": "Based on the information you provided",
+    "your_blueprint": "Your Project Blueprint",
     "also_consider": "Also consider:",
     "estimated_cost": "Estimated Cost",
     "estimated_timeline": "Estimated Timeline",
+    "weeks": "Weeks",
+    "project_phases": "Project Phases",
+    "phases_count": "{count} Phases",
     "cost_range": "{{min}} - {{max}}",
     "timeline_weeks": "{{weeks}} weeks",
     "breakdown_title": "Cost Breakdown by Phase",
+    "breakdown_total": "${amount} total",
+    "table_phase": "Phase",
+    "table_cost": "Cost",
+    "table_duration": "Duration",
     "phase": "Phase {{number}}",
     "approach_title": "Recommended Approach",
     "approach_custom": "Custom Development",
@@ -183,7 +222,9 @@
     "analyzer": "Want to validate {projectName} before building? Get an AI-powered viability analysis."
   },
   "processing": {
-    "cancel": "Cancel and go back"
+    "cancel": "Cancel and go back",
+    "msg_matching": "Matching with our solution catalog...",
+    "msg_blueprint": "Generating your comprehensive blueprint..."
   },
   "loading": {
     "analyzing": "Understanding your project...",
@@ -194,9 +235,14 @@
     "select_project_type": "Please select a project type",
     "describe_idea": "Please describe your idea in at least 10 characters",
     "select_features": "Please select at least one feature",
-    "name_required": "Please enter your name",
+    "name_required": "First name is required",
     "email_required": "Please enter a valid email address",
-    "generation_failed": "Failed to generate estimate. Please try again or contact us directly."
+    "invalid_email": "Please enter a valid email address",
+    "phone_required": "Phone number must be at least 10 digits",
+    "generation_failed": "Failed to generate estimate. Please try again or contact us directly.",
+    "analyze_failed": "Failed to analyze your idea. Please try again.",
+    "features_failed": "Failed to generate features. Please try again.",
+    "generic": "Something went wrong. Please try again."
   },
   "whatsapp": {
     "message": "Hi, I'd like to discuss my project estimate"
