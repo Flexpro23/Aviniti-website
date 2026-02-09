@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowRight, TrendingUp, Users, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Badge } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -64,7 +65,8 @@ const caseStudies: CaseStudy[] = [
   },
 ];
 
-const industries = ['All', 'Logistics', 'E-Commerce', 'Education'];
+const industryKeys = ['filter_all', 'filter_logistics', 'filter_ecommerce', 'filter_education'] as const;
+const industryValues = ['All', 'Logistics', 'E-Commerce', 'Education'] as const;
 
 const MetricIcon = ({ icon }: { icon: 'trending' | 'users' | 'zap' }) => {
   switch (icon) {
@@ -78,6 +80,7 @@ const MetricIcon = ({ icon }: { icon: 'trending' | 'users' | 'zap' }) => {
 };
 
 export default function CaseStudiesPage() {
+  const t = useTranslations('case_studies');
   const [activeIndustry, setActiveIndustry] = useState('All');
 
   const filteredStudies =
@@ -98,9 +101,9 @@ export default function CaseStudiesPage() {
       <Section padding="hero">
         <Container>
           <SectionHeading
-            label="Case Studies"
-            title="Real Results for Real Businesses"
-            subtitle="See how we have helped companies across industries achieve their digital transformation goals."
+            label={t('page.label')}
+            title={t('page.heading')}
+            subtitle={t('page.description')}
           />
         </Container>
       </Section>
@@ -109,17 +112,17 @@ export default function CaseStudiesPage() {
       <Section padding="compact">
         <Container>
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {industries.map((industry) => (
+            {industryKeys.map((key, index) => (
               <button
-                key={industry}
-                onClick={() => setActiveIndustry(industry)}
+                key={key}
+                onClick={() => setActiveIndustry(industryValues[index])}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeIndustry === industry
+                  activeIndustry === industryValues[index]
                     ? 'bg-bronze text-white'
                     : 'bg-slate-blue text-muted hover:text-white hover:bg-slate-blue-light'
                 }`}
               >
-                {industry}
+                {t(`page.${key}`)}
               </button>
             ))}
           </div>
@@ -185,7 +188,7 @@ export default function CaseStudiesPage() {
                       href={`/case-studies/${study.slug}`}
                       className="text-bronze font-medium hover:text-bronze-light transition-colors flex items-center gap-2"
                     >
-                      Read Full Case Study
+                      {t('card.read_case_study')}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </CardFooter>
@@ -197,7 +200,7 @@ export default function CaseStudiesPage() {
           {filteredStudies.length === 0 && (
             <div className="text-center py-16">
               <p className="text-muted text-lg">
-                No case studies found for this industry. Check back soon!
+                {t('empty.title')}
               </p>
             </div>
           )}
@@ -206,10 +209,10 @@ export default function CaseStudiesPage() {
 
       {/* CTA */}
       <CTABanner
-        heading="Ready to Write Your Success Story?"
-        subtitle="Let us help you achieve similar results. Get started with a free consultation."
-        primaryCTA={{ label: 'Get Free Consultation', href: '/contact' }}
-        secondaryCTA={{ label: 'View Solutions', href: '/solutions' }}
+        heading={t('list_cta.heading')}
+        subtitle={t('list_cta.subtitle')}
+        primaryCTA={{ label: t('list_cta.primary'), href: '/contact' }}
+        secondaryCTA={{ label: t('list_cta.secondary'), href: '/solutions' }}
       />
     </main>
   );

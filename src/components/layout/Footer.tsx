@@ -20,14 +20,25 @@
 'use client';
 
 import Image from 'next/image';
-import { Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { Link } from '@/lib/i18n/navigation';
+import { Mail, Phone, MessageCircle, MapPin, Linkedin, Facebook, Instagram, Twitter } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
+import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 import { footerSections, legalLinks, socialLinks } from '@/lib/data/navigation';
 
+// Icon mapping for social platforms
+const socialIconMap: Record<string, React.ReactNode> = {
+  LinkedIn: <Linkedin className="w-4 h-4" />,
+  Facebook: <Facebook className="w-4 h-4" />,
+  Instagram: <Instagram className="w-4 h-4" />,
+  Twitter: <Twitter className="w-4 h-4" />,
+};
+
 export function Footer() {
   const t = useTranslations('common');
+  const currentLocale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -142,9 +153,12 @@ export function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted hover:text-off-white transition-colors duration-200 inline-flex items-center"
+                    className="text-sm text-muted hover:text-off-white transition-colors duration-200 inline-flex items-center gap-2"
                     aria-label={t('footer.visitSocial', { platform: social.platform })}
                   >
+                    <span className="text-muted" aria-hidden="true">
+                      {socialIconMap[social.platform]}
+                    </span>
                     {social.platform}
                   </a>
                 </li>
@@ -183,17 +197,23 @@ export function Footer() {
             {/* Language Switcher */}
             <div className="flex items-center gap-2 text-sm order-3 md:order-3">
               <button
-                onClick={() => (window.location.href = '/en')}
-                className="text-off-white font-medium hover:text-bronze transition-colors"
+                onClick={() => router.replace(pathname, { locale: 'en' })}
+                className={cn(
+                  'hover:text-bronze transition-colors',
+                  currentLocale === 'en' ? 'text-off-white font-medium' : 'text-muted'
+                )}
               >
                 EN
               </button>
               <span className="text-slate-blue-light">|</span>
               <button
-                onClick={() => (window.location.href = '/ar')}
-                className="text-muted hover:text-off-white transition-colors"
+                onClick={() => router.replace(pathname, { locale: 'ar' })}
+                className={cn(
+                  'hover:text-bronze transition-colors',
+                  currentLocale === 'ar' ? 'text-off-white font-medium' : 'text-muted'
+                )}
               >
-                AR
+                عربي
               </button>
             </div>
           </div>

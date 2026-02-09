@@ -32,7 +32,7 @@ export function NewsletterForm() {
       setEmail('');
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (err) {
-      setError('Failed to subscribe. Please try again.');
+      setError(t('newsletter.subscribe_error'));
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +57,7 @@ export function NewsletterForm() {
             'transition-all duration-200',
             'disabled:opacity-50 disabled:cursor-not-allowed'
           )}
-          aria-label="Email address"
+          aria-label={t('newsletter.email_aria')}
         />
 
         {/* Submit Button */}
@@ -75,21 +75,21 @@ export function NewsletterForm() {
               ? 'bg-success text-white'
               : 'bg-bronze text-white hover:bg-bronze-hover'
           )}
-          aria-label="Subscribe to newsletter"
+          aria-label={t('newsletter.subscribe_aria')}
         >
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              <span className="sr-only">Subscribing...</span>
+              <span className="sr-only">{t('newsletter.subscribing')}</span>
             </>
           ) : isSuccess ? (
             <>
               <Check className="h-4 w-4" aria-hidden="true" />
-              Subscribed!
+              {t('newsletter.subscribed')}
             </>
           ) : (
             <>
-              Subscribe
+              {t('newsletter.subscribe')}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </>
           )}

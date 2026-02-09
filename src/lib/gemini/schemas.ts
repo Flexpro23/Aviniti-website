@@ -4,7 +4,26 @@
 import { z } from 'zod';
 
 // ============================================================
-// Idea Lab Response Schema
+// Idea Lab — Discovery Questions Response Schema
+// ============================================================
+
+const discoveryQuestionSchema = z.object({
+  id: z.string().min(1),
+  text: z.string().min(5).max(300),
+  type: z.enum(['yes-no', 'multiple-choice', 'single-line']),
+  options: z.array(z.string().min(1).max(150)).min(2).max(5).optional(),
+  placeholder: z.string().max(200).optional(),
+});
+
+export const ideaLabDiscoverResponseSchema = z.object({
+  questions: z.array(discoveryQuestionSchema).min(4).max(7),
+  contextSummary: z.string().min(10).max(500),
+});
+
+export type IdeaLabDiscoverGeminiResponse = z.infer<typeof ideaLabDiscoverResponseSchema>;
+
+// ============================================================
+// Idea Lab — Generate Ideas Response Schema
 // ============================================================
 
 const matchedSolutionSchema = z.object({
@@ -16,20 +35,22 @@ const matchedSolutionSchema = z.object({
 });
 
 const ideaLabIdeaSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1),
   name: z.string().min(1).max(100),
-  description: z.string().min(10).max(500),
-  features: z.array(z.string().min(1).max(100)).min(3).max(5),
-  estimatedCost: z.object({
-    min: z.number().positive(),
-    max: z.number().positive(),
-  }),
-  estimatedTimeline: z.string().min(1).max(50),
-  matchedSolution: matchedSolutionSchema.nullable(),
+  tagline: z.string().min(5).max(200),
+  benefits: z.array(z.string().min(5).max(200)).min(2).max(4),
+  description: z.string().min(20).max(800),
+  features: z.array(z.string().min(5).max(200)).min(3).max(6),
+  impactMetrics: z.array(z.string().min(5).max(200)).min(2).max(4),
+  howItWorks: z.string().min(20).max(600),
+  workflowBefore: z.string().min(10).max(400),
+  workflowAfter: z.string().min(10).max(400),
+  socialProof: z.string().min(10).max(300),
+  tag: z.enum(['easiest-to-start', 'biggest-impact', 'most-innovative']),
 });
 
 export const ideaLabResponseSchema = z.object({
-  ideas: z.array(ideaLabIdeaSchema).min(5).max(6),
+  ideas: z.array(ideaLabIdeaSchema).min(3).max(4),
 });
 
 export type IdeaLabGeminiResponse = z.infer<typeof ideaLabResponseSchema>;
@@ -317,6 +338,13 @@ export type ChatGeminiResponse = z.infer<typeof chatResponseSchema>;
  */
 export function validateIdeaLabResponse(data: unknown): IdeaLabGeminiResponse {
   return ideaLabResponseSchema.parse(data);
+}
+
+/**
+ * Validate and parse Idea Lab discover response from Gemini
+ */
+export function validateIdeaLabDiscoverResponse(data: unknown): IdeaLabDiscoverGeminiResponse {
+  return ideaLabDiscoverResponseSchema.parse(data);
 }
 
 /**

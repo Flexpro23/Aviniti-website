@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, ArrowRight, MessageCircle, Phone } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { useExitIntent } from './ExitIntentProvider';
 
@@ -22,6 +23,7 @@ async function trackExitIntent(payload: Record<string, unknown>) {
 
 // --- Variant A: Email capture with free consultation ---
 function VariantA({ onConvert }: { onConvert: () => void }) {
+  const t = useTranslations('common');
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -37,18 +39,17 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
   if (submitted) {
     return (
       <div className="text-center py-4">
-        <p className="text-lg font-semibold text-off-white">Thank you!</p>
-        <p className="text-sm text-muted mt-1">We&apos;ll be in touch shortly.</p>
+        <p className="text-lg font-semibold text-off-white">{t('exit_intent.thank_you')}</p>
+        <p className="text-sm text-muted mt-1">{t('exit_intent.will_be_in_touch')}</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">Before you go...</h2>
+      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.before_you_go')}</h2>
       <p className="text-sm text-muted">
-        Get a free consultation with our team. We&apos;ll help you find the right
-        solution for your business.
+        {t('exit_intent.free_consultation_description')}
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
@@ -58,7 +59,7 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
+            placeholder={t('exit_intent.email_placeholder')}
             className="w-full h-11 pl-10 pr-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all"
           />
         </div>
@@ -66,7 +67,7 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
           type="submit"
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
-          Get a Free Consultation
+          {t('exit_intent.get_free_consultation')}
           <ArrowRight className="h-4 w-4" />
         </button>
       </form>
@@ -76,6 +77,7 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
 
 // --- Variant B: Solutions navigation ---
 function VariantB({ onConvert }: { onConvert: () => void }) {
+  const t = useTranslations('common');
   const handleClick = async (destination: string) => {
     await trackExitIntent({ variant: 'B', action: 'navigate', destination });
     onConvert();
@@ -83,10 +85,9 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">See Our Solutions</h2>
+      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.see_our_solutions')}</h2>
       <p className="text-sm text-muted">
-        Explore how we can help transform your business with tailored technology
-        solutions.
+        {t('exit_intent.solutions_description')}
       </p>
       <div className="space-y-3">
         <a
@@ -94,7 +95,7 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
           onClick={() => handleClick('/solutions')}
           className="flex items-center justify-between w-full h-11 px-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white hover:border-bronze hover:text-bronze transition-colors"
         >
-          Browse Solutions
+          {t('exit_intent.browse_solutions')}
           <ArrowRight className="h-4 w-4" />
         </a>
         <a
@@ -102,7 +103,7 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
           onClick={() => handleClick('/get-estimate')}
           className="flex items-center justify-between w-full h-11 px-4 bg-gradient-to-r from-bronze to-bronze-hover rounded-lg text-sm text-white font-medium hover:opacity-90 transition-opacity"
         >
-          Get a Free Estimate
+          {t('exit_intent.get_free_estimate')}
           <ArrowRight className="h-4 w-4" />
         </a>
       </div>
@@ -112,6 +113,7 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
 
 // --- Variant C: Quick estimate form ---
 function VariantC({ onConvert }: { onConvert: () => void }) {
+  const t = useTranslations('common');
   const [projectType, setProjectType] = useState('');
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -133,9 +135,9 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
   if (submitted) {
     return (
       <div className="text-center py-4">
-        <p className="text-lg font-semibold text-off-white">Request received!</p>
+        <p className="text-lg font-semibold text-off-white">{t('exit_intent.request_received')}</p>
         <p className="text-sm text-muted mt-1">
-          We&apos;ll send your estimate within 24 hours.
+          {t('exit_intent.estimate_timeline')}
         </p>
       </div>
     );
@@ -143,10 +145,9 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">Get a Quick Estimate</h2>
+      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.get_quick_estimate')}</h2>
       <p className="text-sm text-muted">
-        Tell us what you need and we&apos;ll get back to you with a ballpark
-        estimate.
+        {t('exit_intent.quick_estimate_description')}
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
         <select
@@ -156,14 +157,14 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
           className="w-full h-11 px-3 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all appearance-none cursor-pointer"
         >
           <option value="" disabled>
-            Select project type
+            {t('exit_intent.select_project_type')}
           </option>
-          <option value="web-app">Web Application</option>
-          <option value="mobile-app">Mobile Application</option>
-          <option value="ai-integration">AI Integration</option>
-          <option value="cloud-infra">Cloud Infrastructure</option>
-          <option value="consulting">Consulting</option>
-          <option value="other">Other</option>
+          <option value="web-app">{t('exit_intent.web_application')}</option>
+          <option value="mobile-app">{t('exit_intent.mobile_application')}</option>
+          <option value="ai-integration">{t('exit_intent.ai_ml_solution')}</option>
+          <option value="cloud-infra">{t('exit_intent.saas_platform')}</option>
+          <option value="e-commerce">{t('exit_intent.e_commerce')}</option>
+          <option value="other">{t('exit_intent.other')}</option>
         </select>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
@@ -172,7 +173,7 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Your email address"
+            placeholder={t('exit_intent.email_placeholder')}
             className="w-full h-11 pl-10 pr-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all"
           />
         </div>
@@ -180,7 +181,7 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
           type="submit"
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
-          Get My Estimate
+          {t('exit_intent.get_my_estimate')}
           <ArrowRight className="h-4 w-4" />
         </button>
       </form>
@@ -190,6 +191,7 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
 
 // --- Variant D: Blog post links ---
 function VariantD({ onConvert }: { onConvert: () => void }) {
+  const t = useTranslations('common');
   const handleClick = async (post: string) => {
     await trackExitIntent({ variant: 'D', action: 'blog_click', post });
     onConvert();
@@ -197,10 +199,9 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">Read Our Latest</h2>
+      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.read_our_latest')}</h2>
       <p className="text-sm text-muted">
-        Explore insights from our team on technology, AI, and digital
-        transformation.
+        {t('exit_intent.blog_description')}
       </p>
       <div className="space-y-3">
         <a
@@ -209,9 +210,9 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
           className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
         >
           <p className="text-sm font-medium text-off-white group-hover:text-bronze transition-colors">
-            How AI is Transforming Business Operations
+            {t('exit_intent.blog_post_1_title')}
           </p>
-          <p className="text-xs text-muted mt-1">5 min read</p>
+          <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_1_read_time')}</p>
         </a>
         <a
           href="/blog/choosing-right-tech-stack"
@@ -219,9 +220,9 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
           className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
         >
           <p className="text-sm font-medium text-off-white group-hover:text-bronze transition-colors">
-            Choosing the Right Tech Stack for Your Startup
+            {t('exit_intent.blog_post_2_title')}
           </p>
-          <p className="text-xs text-muted mt-1">7 min read</p>
+          <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_2_read_time')}</p>
         </a>
       </div>
     </div>
@@ -230,6 +231,7 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
 
 // --- Variant E: Direct contact options ---
 function VariantE({ onConvert }: { onConvert: () => void }) {
+  const t = useTranslations('common');
   const handleClick = async (action: string) => {
     await trackExitIntent({ variant: 'E', action });
     onConvert();
@@ -237,10 +239,9 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">Still Deciding?</h2>
+      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.still_deciding')}</h2>
       <p className="text-sm text-muted">
-        No pressure. Let&apos;s have a quick chat to see if we&apos;re the right fit
-        for your project.
+        {t('exit_intent.no_pressure_description')}
       </p>
       <div className="space-y-3">
         <a
@@ -251,7 +252,7 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
           className="flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-[#25D366] text-white font-medium text-sm hover:opacity-90 transition-opacity"
         >
           <MessageCircle className="h-4 w-4" />
-          Chat on WhatsApp
+          {t('exit_intent.chat_on_whatsapp')}
         </a>
         <a
           href="/contact?booking=true"
@@ -259,7 +260,7 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
           className="flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity"
         >
           <Phone className="h-4 w-4" />
-          Book a Call
+          {t('exit_intent.book_a_call')}
         </a>
       </div>
     </div>
@@ -277,6 +278,7 @@ const VARIANT_MAP: Record<ExitIntentVariant, React.FC<{ onConvert: () => void }>
 
 // --- Main Popup Component ---
 export default function ExitIntentPopup() {
+  const t = useTranslations('common');
   const { isVisible, variant, dismiss, markConverted } = useExitIntent();
 
   const handleEscape = useCallback(
@@ -332,13 +334,13 @@ export default function ExitIntentPopup() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             role="dialog"
             aria-modal="true"
-            aria-label="Special offer"
+            aria-label={t('exit_intent.special_offer_aria')}
           >
             {/* Close button */}
             <button
               onClick={dismiss}
               className="absolute top-3 right-3 h-8 w-8 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
-              aria-label="Close popup"
+              aria-label={t('exit_intent.close_popup_aria')}
             >
               <X className="h-4 w-4" />
             </button>

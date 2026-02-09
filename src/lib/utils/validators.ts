@@ -101,43 +101,64 @@ export const whatsappWithPhoneSchema = z
   );
 
 // ============================================================
-// Idea Lab Form Schema
+// Idea Lab — Discovery Wizard Schemas
 // ============================================================
 
-export const ideaLabFormSchema = z
+const personaEnum = z.enum([
+  'small-business',
+  'professional',
+  'creative',
+  'student',
+  'hobby',
+  'manager',
+] as const);
+
+const industryEnumShared = z.enum([
+  'health-wellness',
+  'finance-banking',
+  'education-learning',
+  'ecommerce-retail',
+  'logistics-delivery',
+  'entertainment-media',
+  'travel-hospitality',
+  'real-estate',
+  'food-restaurant',
+  'social-community',
+  'other',
+] as const);
+
+/** Schema for the /api/ai/idea-lab/discover endpoint */
+export const ideaLabDiscoverSchema = z.object({
+  persona: personaEnum.describe('Please select who you are'),
+  industry: industryEnumShared.describe('Please select an industry'),
+  locale: z.enum(['en', 'ar']),
+});
+
+export type IdeaLabDiscoverData = z.infer<typeof ideaLabDiscoverSchema>;
+
+const discoveryAnswerSchema = z.object({
+  questionId: z.string().min(1),
+  questionText: z.string().min(1),
+  answer: z.string().min(1, 'Please provide an answer'),
+});
+
+/** Schema for the /api/ai/idea-lab (generate) endpoint */
+export const ideaLabGenerateSchema = z
   .object({
-    background: z.enum([
-      'entrepreneur',
-      'professional',
-      'student',
-      'creative',
-      'other',
-    ] as const).describe('Please select your background'),
-    industry: z.enum([
-      'health-wellness',
-      'finance-banking',
-      'education-learning',
-      'ecommerce-retail',
-      'logistics-delivery',
-      'entertainment-media',
-      'travel-hospitality',
-      'real-estate',
-      'food-restaurant',
-      'social-community',
-      'other',
-    ] as const).describe('Please select an industry'),
-    problem: z
-      .string()
-      .min(10, 'Please describe your problem in at least 10 characters')
-      .max(500, 'Description cannot exceed 500 characters'),
+    persona: personaEnum,
+    industry: industryEnumShared,
+    discoveryAnswers: z.array(discoveryAnswerSchema).min(3).max(10),
     email: emailSchema,
     phone: phoneSchema.optional(),
+    countryCode: z.string().optional(),
     whatsapp: z.boolean().default(false),
-    existingIdeas: z.array(z.string()).optional(),
+    locale: z.enum(['en', 'ar']),
+    /** Names of previously generated ideas to exclude (for refresh) */
+    previousIdeaNames: z.array(z.string()).optional(),
   })
   .and(whatsappWithPhoneSchema);
 
-export type IdeaLabFormData = z.infer<typeof ideaLabFormSchema>;
+export type IdeaLabGenerateData = z.infer<typeof ideaLabGenerateSchema>;
 
 // ============================================================
 // AI Analyzer Form Schema

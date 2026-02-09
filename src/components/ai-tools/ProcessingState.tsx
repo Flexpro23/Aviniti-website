@@ -15,6 +15,7 @@ import {
   Code2,
   CheckCircle2,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { AIThinkingState } from './AIThinkingState';
 
 interface ProcessingStateProps {
@@ -24,6 +25,7 @@ interface ProcessingStateProps {
 }
 
 export function ProcessingState({ featureCount, messages, onCancel }: ProcessingStateProps) {
+  const t = useTranslations('common');
   const [processingPhase, setProcessingPhase] = useState(0);
   const [showCancel, setShowCancel] = useState(false);
 
@@ -45,10 +47,10 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
   }, [onCancel]);
 
   const defaultMessages = [
-    'Understanding your project scope...',
-    'Calculating costs & timeline...',
-    'Matching with our solution catalog...',
-    'Generating your comprehensive blueprint...',
+    t('processing.messages.scope'),
+    t('processing.messages.costs'),
+    t('processing.messages.catalog'),
+    t('processing.messages.blueprint'),
   ];
 
   const processingMessages = messages || defaultMessages;
@@ -118,7 +120,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-bronze/10 border border-bronze/20 text-bronze-light text-xs font-medium uppercase tracking-widest">
             <Sparkles className="h-3 w-3" />
-            AI Processing
+            {t('processing.badge')}
           </span>
         </motion.div>
 
@@ -129,7 +131,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-2xl md:text-3xl font-bold text-white mb-3"
         >
-          Building Your Project Blueprint
+          {t('processing.heading')}
         </motion.h2>
 
         <motion.p
@@ -138,7 +140,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-sm text-muted mb-10"
         >
-          Our AI is analyzing {featureCount} features across your project
+          {t('processing.analyzing_features', { count: featureCount })}
         </motion.p>
 
         {/* Premium morphing bars animation */}
@@ -172,10 +174,10 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
           className="mt-8 grid grid-cols-2 gap-3 max-w-sm mx-auto"
         >
           {[
-            { icon: Brain, label: 'Scope Analysis', phase: 0 },
-            { icon: DollarSign, label: 'Cost Estimation', phase: 1 },
-            { icon: Clock, label: 'Timeline Planning', phase: 2 },
-            { icon: Code2, label: 'Tech Stack', phase: 3 },
+            { icon: Brain, label: t('processing.steps.scope_analysis'), phase: 0 },
+            { icon: DollarSign, label: t('processing.steps.cost_estimation'), phase: 1 },
+            { icon: Clock, label: t('processing.steps.timeline_planning'), phase: 2 },
+            { icon: Code2, label: t('processing.steps.tech_stack'), phase: 3 },
           ].map((item, i) => {
             const isActive = processingPhase === item.phase;
             const isCompleted = processingPhase > item.phase;
@@ -233,7 +235,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
               onClick={onCancel}
               className="text-sm text-muted hover:text-off-white underline underline-offset-4 transition-colors duration-200"
             >
-              Cancel and go back
+              {t('processing.cancel')}
             </button>
           </motion.div>
         )}

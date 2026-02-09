@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 /* ============================================================
@@ -16,6 +17,7 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, helperText, required, id, maxLength, value, onChange, ...props }, ref) => {
+    const t = useTranslations('common');
     const textareaId = id || `textarea-${React.useId()}`;
     const errorId = error ? `${textareaId}-error` : undefined;
     const helperId = helperText ? `${textareaId}-helper` : undefined;
@@ -39,7 +41,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <div className="flex items-center justify-between">
             <label htmlFor={textareaId} className="block text-sm font-medium text-off-white">
               {label}
-              {required && <span className="text-error ms-1" aria-label="required">*</span>}
+              {required && <span className="text-error ms-1" aria-label={t('ui.required_aria')}>*</span>}
             </label>
             {maxLength && (
               <span className="text-xs text-muted tabular-nums" aria-live="polite">

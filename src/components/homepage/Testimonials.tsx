@@ -7,7 +7,7 @@
  * Features glassmorphism cards with star ratings and company details.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -66,8 +66,11 @@ const AUTO_ROTATE_INTERVAL = 6000; // 6 seconds
 
 export function Testimonials() {
   const t = useTranslations('home.testimonials');
+  const tCommon = useTranslations('common');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
@@ -80,6 +83,30 @@ export function Testimonials() {
   const goToIndex = useCallback((index: number) => {
     setCurrentIndex(index);
   }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setIsPaused(true); // Pause auto-rotation on touch
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX.current;
+
+    // Swipe threshold: 50px
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        // Swiped left → go to next
+        goToNext();
+      } else {
+        // Swiped right → go to previous
+        goToPrevious();
+      }
+    }
+
+    // Resume auto-rotation after a delay
+    setTimeout(() => setIsPaused(false), 1000);
+  };
 
   // Auto-rotate effect
   useEffect(() => {
@@ -110,7 +137,11 @@ export function Testimonials() {
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* Testimonial Card */}
-          <div className="relative min-h-[320px] lg:min-h-[280px]">
+          <div
+            className="relative min-h-[320px] lg:min-h-[280px]"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTestimonial.id}
@@ -186,7 +217,7 @@ export function Testimonials() {
             <button
               onClick={goToPrevious}
               className="pointer-events-auto w-12 h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
-              aria-label="Previous testimonial"
+              aria-label={tCommon('ui.prev_testimonial')}
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
@@ -194,7 +225,7 @@ export function Testimonials() {
             <button
               onClick={goToNext}
               className="pointer-events-auto w-12 h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
-              aria-label="Next testimonial"
+              aria-label={tCommon('ui.next_testimonial')}
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -212,7 +243,7 @@ export function Testimonials() {
                     ? 'w-8 h-2 rounded-full bg-bronze'
                     : 'w-2 h-2 rounded-full bg-slate-blue-light hover:bg-bronze/60'
                 )}
-                aria-label={`Go to testimonial ${index + 1}`}
+                aria-label={tCommon('ui.goto_testimonial', { number: index + 1 })}
                 aria-current={index === currentIndex ? 'true' : 'false'}
               />
             ))}

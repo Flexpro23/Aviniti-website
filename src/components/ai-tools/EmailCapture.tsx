@@ -14,12 +14,14 @@
 
 import { useState, FormEvent } from 'react';
 import { Mail, MessageCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
+import { CountryCodePicker } from './CountryCodePicker';
 
 interface EmailCaptureProps {
   toolColor: 'orange' | 'blue' | 'green' | 'purple';
-  onSubmit: (data: { email: string; whatsapp: boolean }) => void;
+  onSubmit: (data: { email: string; whatsapp: boolean; phone?: string; countryCode?: string }) => void;
   isLoading?: boolean;
 }
 
@@ -28,28 +30,35 @@ export function EmailCapture({
   onSubmit,
   isLoading = false,
 }: EmailCaptureProps) {
+  const t = useTranslations('common');
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+962'); // Default Jordan
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({ email, whatsapp });
+    onSubmit({
+      email,
+      whatsapp,
+      ...(whatsapp && phone ? { phone, countryCode } : {}),
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Heading */}
       <div className="text-center">
-        <h3 className="text-h4 text-white mb-2">Get Your Results</h3>
+        <h3 className="text-h4 text-white mb-2">{t('email_capture.title')}</h3>
         <p className="text-sm text-muted">
-          Enter your email to receive detailed results and next steps.
+          {t('email_capture.description')}
         </p>
       </div>
 
       {/* Email Input */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-off-white mb-2">
-          Email Address *
+          {t('email_capture.email_label')} *
         </label>
         <div className="relative">
           <Mail
@@ -63,7 +72,7 @@ export function EmailCapture({
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isLoading}
-            placeholder="your@email.com"
+            placeholder={t('email_capture.email_placeholder')}
             className={cn(
               'w-full h-12 ps-11 pe-4 rounded-lg',
               'bg-navy border border-slate-blue-light',
@@ -94,13 +103,56 @@ export function EmailCapture({
           <span className="flex-1">
             <span className="flex items-center gap-2 text-sm font-medium text-off-white group-hover:text-white">
               <MessageCircle className="h-4 w-4 text-[#25D366]" aria-hidden="true" />
-              Send results to WhatsApp
+              {t('email_capture.whatsapp_label')}
             </span>
             <span className="text-xs text-muted mt-1 block">
-              Get instant results + follow-up on WhatsApp
+              {t('email_capture.whatsapp_hint')}
             </span>
           </span>
         </label>
+
+        {/* Phone Input — shown when WhatsApp is checked */}
+        {whatsapp && (
+          <div className="mt-3 flex gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <CountryCodePicker
+              value={countryCode}
+              onChange={setCountryCode}
+              disabled={isLoading}
+              labels={{
+                searchPlaceholder: t('email_capture.search_countries'),
+                popular: t('email_capture.popular_countries'),
+                allCountries: t('email_capture.all_countries'),
+                noResults: t('email_capture.no_countries_found'),
+                selectCountryCode: t('email_capture.select_country_code'),
+              }}
+            />
+            <div className="relative flex-1">
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                disabled={isLoading}
+                maxLength={20}
+                placeholder={t('email_capture.phone_placeholder')}
+                style={{ direction: 'ltr', unicodeBidi: 'embed' }}
+                className={cn(
+                  'w-full h-12 px-4 rounded-lg',
+                  'bg-navy border border-slate-blue-light',
+                  'text-sm text-off-white placeholder:text-muted-light',
+                  'focus:border-bronze focus:ring-1 focus:ring-bronze',
+                  'transition-all duration-200',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Validation Note */}
+        {whatsapp && !phone && (
+          <p className="text-xs text-amber-400 mt-2">{t('email_capture.phone_required')}</p>
+        )}
       </div>
 
       {/* Submit Button */}
@@ -109,14 +161,15 @@ export function EmailCapture({
         size="lg"
         toolColor={toolColor}
         isLoading={isLoading}
+        disabled={isLoading || (whatsapp && !phone.trim())}
         className="w-full"
       >
-        {isLoading ? 'Sending Results...' : 'Get Results'}
+        {isLoading ? t('email_capture.submitting') : t('email_capture.submit')}
       </Button>
 
       {/* Privacy Note */}
       <p className="text-xs text-muted-light text-center">
-        We respect your privacy. Your email will only be used to send your results.
+        {t('email_capture.privacy')}
       </p>
     </form>
   );

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 /* ============================================================
@@ -18,10 +19,12 @@ export interface StepperProps extends React.HTMLAttributes<HTMLDivElement> {
   steps: Step[];
   currentStep: number;
   orientation?: 'horizontal' | 'vertical';
+  onStepClick?: (step: number) => void;
 }
 
 export const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
-  ({ className, steps, currentStep, orientation = 'horizontal', ...props }, ref) => {
+  ({ className, steps, currentStep, orientation = 'horizontal', onStepClick, ...props }, ref) => {
+    const t = useTranslations('common');
     return (
       <div
         ref={ref}
@@ -31,7 +34,7 @@ export const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
           className
         )}
         role="list"
-        aria-label="Progress"
+        aria-label={t('ui.progress_aria')}
         {...props}
       >
         {steps.map((step, index) => {
@@ -50,17 +53,32 @@ export const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                 role="listitem"
               >
                 {/* Step Circle */}
-                <div
-                  className={cn(
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 font-semibold text-sm transition-colors duration-200',
-                    isCompleted && 'bg-bronze border-bronze text-white',
-                    isActive && 'border-bronze text-bronze bg-navy',
-                    !isCompleted && !isActive && 'border-slate-blue-light text-muted bg-navy'
-                  )}
-                  aria-current={isActive ? 'step' : undefined}
-                >
-                  {isCompleted ? <Check className="h-5 w-5" /> : stepNumber}
-                </div>
+                {isCompleted ? (
+                  <button
+                    onClick={() => onStepClick?.(stepNumber)}
+                    className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 font-semibold text-sm transition-all duration-200',
+                      'bg-bronze border-bronze text-white cursor-pointer',
+                      'hover:ring-2 hover:ring-bronze/30 hover:scale-105'
+                    )}
+                    aria-label={`Go back to step ${stepNumber}: ${step.label}`}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <Check className="h-5 w-5" />
+                  </button>
+                ) : (
+                  <div
+                    className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 font-semibold text-sm transition-colors duration-200',
+                      isActive && 'border-bronze text-bronze bg-navy',
+                      !isActive && 'border-slate-blue-light text-muted bg-navy'
+                    )}
+                    aria-current={isActive ? 'step' : undefined}
+                  >
+                    {stepNumber}
+                  </div>
+                )}
 
                 {/* Step Label */}
                 <div className={cn('flex flex-col', orientation === 'vertical' && 'flex-1')}>

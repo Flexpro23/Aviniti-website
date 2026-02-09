@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 /* ============================================================
@@ -15,6 +16,7 @@ export interface SpinnerProps extends React.SVGAttributes<SVGSVGElement> {
 
 export const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
   ({ className, size = 'md', toolColor, ...props }, ref) => {
+    const t = useTranslations('common');
     const sizeStyles = {
       sm: 'h-4 w-4',
       md: 'h-5 w-5',
@@ -37,7 +39,7 @@ export const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        aria-label="Loading"
+        aria-label={t('ui.loading_aria')}
         role="status"
         {...props}
       >

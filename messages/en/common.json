@@ -76,10 +76,154 @@
     "languageOptions": "Language options",
     "loading": "Loading..."
   },
+  "loading": "Loading...",
+  "loading_aria": "Loading page content",
   "whatsapp": {
     "general_message": "Hi, I'm interested in Aviniti's services",
     "estimate_message": "Hi, I'd like to discuss my project estimate",
     "roi_message": "Hi, I'd like to discuss the ROI analysis",
-    "support_message": "Hi, I need help with..."
+    "support_message": "Hi, I need help with...",
+    "chat_label": "Chat on WhatsApp",
+    "chat_aria": "Chat on WhatsApp"
+  },
+  "email_capture": {
+    "title": "Get Your Results",
+    "description": "Enter your email to receive detailed results and next steps.",
+    "email_label": "Email Address",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "Send results to WhatsApp",
+    "whatsapp_hint": "Get instant results + follow-up on WhatsApp",
+    "phone_placeholder": "7XX XXX XXX",
+    "phone_required": "Phone number is required for WhatsApp delivery",
+    "search_countries": "Search countries...",
+    "popular_countries": "Popular",
+    "all_countries": "All Countries",
+    "submit": "Get Results",
+    "submitting": "Sending Results...",
+    "privacy": "We respect your privacy. Your email will only be used to send your results.",
+    "no_countries_found": "No countries found",
+    "select_country_code": "Select country code"
+  },
+  "exit_intent": {
+    "thank_you": "Thank you!",
+    "will_be_in_touch": "We'll be in touch shortly.",
+    "before_you_go": "Before you go...",
+    "free_consultation_description": "Get a free consultation with our team. We'll help you find the right solution for your business.",
+    "email_placeholder": "Your email address",
+    "get_free_consultation": "Get a Free Consultation",
+    "see_our_solutions": "See Our Solutions",
+    "solutions_description": "Explore how we can help transform your business with tailored technology solutions.",
+    "browse_solutions": "Browse Solutions",
+    "get_free_estimate": "Get a Free Estimate",
+    "request_received": "Request received!",
+    "estimate_timeline": "We'll send your estimate within 24 hours.",
+    "get_quick_estimate": "Get a Quick Estimate",
+    "quick_estimate_description": "Tell us what you need and we'll get back to you with a ballpark estimate.",
+    "select_project_type": "Select project type",
+    "web_application": "Web Application",
+    "mobile_application": "Mobile Application",
+    "ai_ml_solution": "AI/ML Solution",
+    "e_commerce": "E-Commerce",
+    "saas_platform": "SaaS Platform",
+    "other": "Other",
+    "get_my_estimate": "Get My Estimate",
+    "read_our_latest": "Read Our Latest",
+    "blog_description": "Explore insights from our team on technology, AI, and digital transformation.",
+    "blog_post_1_title": "How AI is Transforming Business Operations",
+    "blog_post_1_read_time": "5 min read",
+    "blog_post_2_title": "Choosing the Right Tech Stack for Your Startup",
+    "blog_post_2_read_time": "7 min read",
+    "still_deciding": "Still Deciding?",
+    "no_pressure_description": "No pressure. Let's have a quick chat to see if we're the right fit for your project.",
+    "chat_on_whatsapp": "Chat on WhatsApp",
+    "book_a_call": "Book a Call",
+    "special_offer_aria": "Special offer",
+    "close_popup_aria": "Close popup"
+  },
+  "ai_tools": {
+    "idea_lab": {
+      "name": "Idea Lab",
+      "description": "Generate app ideas tailored to your industry"
+    },
+    "ai_analyzer": {
+      "name": "AI Idea Analyzer",
+      "description": "Validate your app idea with AI insights"
+    },
+    "get_estimate": {
+      "name": "Get AI Estimate",
+      "description": "Get instant project cost and timeline estimates"
+    },
+    "roi_calculator": {
+      "name": "ROI Calculator",
+      "description": "Calculate the ROI of your app investment"
+    },
+    "try_tool": "Try {tool}"
+  },
+  "processing": {
+    "badge": "AI Processing",
+    "heading": "Building Your Project Blueprint",
+    "analyzing_features": "Our AI is analyzing {count} features across your project",
+    "cancel": "Cancel and go back",
+    "messages": {
+      "scope": "Understanding your project scope...",
+      "costs": "Calculating costs & timeline...",
+      "catalog": "Matching with our solution catalog...",
+      "blueprint": "Generating your comprehensive blueprint..."
+    },
+    "steps": {
+      "scope_analysis": "Scope Analysis",
+      "cost_estimation": "Cost Estimation",
+      "timeline_planning": "Timeline Planning",
+      "tech_stack": "Tech Stack"
+    }
+  },
+  "ai_thinking": {
+    "messages": {
+      "understanding": "Understanding your requirements...",
+      "analyzing": "Analyzing market data...",
+      "building": "Building your personalized report...",
+      "finalizing": "Finalizing recommendations..."
+    }
+  },
+  "tool_hero": {
+    "label": "AI Tool"
+  },
+  "tool_form": {
+    "step_fallback": "Step {step}"
+  },
+  "strategic_insights": {
+    "strength": "Strength",
+    "challenge": "Challenge",
+    "recommendation": "Recommendation"
+  },
+  "country_picker": {
+    "select_country_code": "Select country code",
+    "search_placeholder": "Search countries...",
+    "popular": "Popular",
+    "all_countries": "All Countries",
+    "no_countries_found": "No countries found"
+  },
+  "newsletter": {
+    "subscribe_error": "Failed to subscribe. Please try again.",
+    "email_aria": "Email address",
+    "subscribe_aria": "Subscribe to newsletter",
+    "subscribing": "Subscribing...",
+    "subscribed": "Subscribed!",
+    "subscribe": "Subscribe"
+  },
+  "share": {
+    "label": "Share:",
+    "linkedin_aria": "Share on LinkedIn",
+    "whatsapp_aria": "Share on WhatsApp",
+    "copy_link_aria": "Copy link to clipboard"
+  },
+  "ui": {
+    "loading_text": "Loading...",
+    "loading_aria": "Loading",
+    "progress_aria": "Progress",
+    "required_aria": "required",
+    "prev_testimonial": "Previous testimonial",
+    "next_testimonial": "Next testimonial",
+    "goto_testimonial": "Go to testimonial {number}"
   }
 }

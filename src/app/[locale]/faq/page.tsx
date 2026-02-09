@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { faqCategories } from '@/lib/data/faq';
 import { Container, Section } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -13,6 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'faq' });
 
   return {
@@ -33,6 +34,7 @@ export default async function FAQPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'faq' });
 
   // Build FAQ data with resolved translations for JSON-LD
@@ -90,7 +92,7 @@ export default async function FAQPage({
       <Section padding="hero">
         <Container>
           <SectionHeading
-            label="FAQ"
+            label={t('page.label')}
             title={t('page.title')}
             subtitle={t('page.subtitle')}
           />
@@ -102,10 +104,10 @@ export default async function FAQPage({
 
       {/* CTA */}
       <CTABanner
-        heading="Still Have Questions?"
-        subtitle="Our team is here to help. Reach out and we will get back to you within 24 hours."
-        primaryCTA={{ label: 'Contact Us', href: '/contact' }}
-        secondaryCTA={{ label: 'Get AI Estimate', href: '/get-estimate' }}
+        heading={t('cta.heading')}
+        subtitle={t('cta.subtitle')}
+        primaryCTA={{ label: t('cta.primary_label'), href: '/contact' }}
+        secondaryCTA={{ label: t('cta.secondary_label'), href: '/get-estimate' }}
       />
     </main>
   );

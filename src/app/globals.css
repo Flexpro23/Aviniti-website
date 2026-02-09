@@ -519,6 +519,15 @@
     }
   }
 
+  /* ─── SCROLLBAR HIDE ──────────────────────────────────── */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* ─── ADDITIONAL ANIMATIONS ─────────────────────────── */
 
   .animate-float-delayed {

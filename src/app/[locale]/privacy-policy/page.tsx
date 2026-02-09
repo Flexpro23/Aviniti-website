@@ -1,18 +1,30 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Container, Section } from '@/components/ui';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('privacy_policy');
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'privacy_policy' });
   return {
     title: t('meta.title'),
     description: t('meta.description'),
   };
 }
 
-export default async function PrivacyPolicyPage() {
-  const t = await getTranslations('privacy_policy');
+export default async function PrivacyPolicyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'privacy_policy' });
 
   return (
     <main className="min-h-screen bg-navy">

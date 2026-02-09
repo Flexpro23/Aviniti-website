@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/lib/i18n/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
@@ -31,7 +31,6 @@ interface MobileDrawerProps {
 export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const t = useTranslations('common');
   const pathname = usePathname();
-  const locale = useLocale();
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -170,40 +169,6 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                 })}
               </div>
             </motion.nav>
-
-            {/* Language Switcher */}
-            <div className="mt-6 pt-6 border-t border-slate-blue-light">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    window.location.href = `/en${pathname}`;
-                  }}
-                  className={cn(
-                    'px-4 py-2 rounded-lg text-sm font-medium',
-                    'transition-colors duration-200',
-                    locale === 'en'
-                      ? 'bg-bronze/15 text-bronze'
-                      : 'bg-slate-blue-light/50 text-muted hover:text-off-white'
-                  )}
-                >
-                  {t('language.en')}
-                </button>
-                <button
-                  onClick={() => {
-                    window.location.href = `/ar${pathname}`;
-                  }}
-                  className={cn(
-                    'px-4 py-2 rounded-lg text-sm font-medium',
-                    'transition-colors duration-200',
-                    locale === 'ar'
-                      ? 'bg-bronze/15 text-bronze'
-                      : 'bg-slate-blue-light/50 text-muted hover:text-off-white'
-                  )}
-                >
-                  {t('language.ar')}
-                </button>
-              </div>
-            </div>
           </motion.div>
         </>
       )}

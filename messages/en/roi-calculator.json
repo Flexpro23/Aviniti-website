@@ -176,6 +176,35 @@
     "msg4": "Building your ROI report...",
     "msg5": "Finalizing projections..."
   },
+  "analysis": {
+    "steps": {
+      "market_analysis": {
+        "label": "Market Analysis",
+        "detail": "Sizing TAM & SAM for your region"
+      },
+      "revenue_modeling": {
+        "label": "Revenue Modeling",
+        "detail": "3 scenarios: conservative to optimistic"
+      },
+      "financial_projection": {
+        "label": "Financial Projection",
+        "detail": "36-month cash flow analysis"
+      },
+      "roi_calculation": {
+        "label": "ROI Calculation",
+        "detail": "Payback period & 3-year returns"
+      },
+      "strategy_insights": {
+        "label": "Strategy & Insights",
+        "detail": "Recommendations & risk assessment"
+      }
+    },
+    "building_title": "Building Your ROI Analysis",
+    "building_subtitle": "Our AI is crunching the numbers across multiple dimensions",
+    "analyzing": "Analyzing",
+    "done": "Done",
+    "time_estimate": "This usually takes 15–30 seconds"
+  },
   "errors": {
     "idea_too_short": "Please describe your idea in at least 20 characters",
     "select_market": "Please select a target market",
@@ -237,7 +266,11 @@
     "save_share": "Save & Share Results",
     "link_copied": "Link Copied!",
     "cross_sell_estimate": "Ready to build? Get a detailed cost and timeline estimate.",
-    "cross_sell_analyzer": "Want deeper validation? Analyze your idea's viability."
+    "cross_sell_analyzer": "Want deeper validation? Analyze your idea's viability.",
+    "mo_range": "mo range",
+    "return_suffix": "return",
+    "expected": "Expected",
+    "back": "← Back"
   },
   "inspiration": {
     "title": "Need inspiration?",
@@ -247,5 +280,19 @@
       "A gym management SaaS for fitness chains across the Middle East",
       "A marketplace connecting freelance designers with businesses"
     ]
+  },
+  "chart": {
+    "projected_roi": "Projected ROI",
+    "first_year_roi": "First Year Return on Investment",
+    "investment": "Investment",
+    "cost_savings": "Cost Savings",
+    "revenue_increase": "Revenue Increase",
+    "total_annual_benefit": "Total Annual Benefit"
+  },
+  "comparison": {
+    "save_percent": "Save {percent}%",
+    "current_process": "Current Process",
+    "with_app_automation": "With App Automation",
+    "annual_savings": "Annual Savings"
   }
 }

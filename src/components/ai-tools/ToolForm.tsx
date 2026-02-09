@@ -17,6 +17,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { Check } from 'lucide-react';
 
@@ -24,6 +25,7 @@ interface ToolFormProps {
   totalSteps: number;
   currentStep: number;
   onStepChange?: (step: number) => void;
+  onStepClick?: (step: number) => void;
   toolColor: 'orange' | 'blue' | 'green' | 'purple';
   stepLabels?: string[];
   stepIcons?: React.ElementType[];
@@ -48,12 +50,14 @@ const textColorClasses = {
 export function ToolForm({
   totalSteps,
   currentStep,
+  onStepClick,
   toolColor,
   stepLabels,
   stepIcons,
   children,
   className,
 }: ToolFormProps) {
+  const t = useTranslations('common');
   return (
     <div className={cn('max-w-3xl mx-auto px-4 sm:px-6 lg:px-8', className)}>
       {/* Desktop Stepper (md+) */}
@@ -65,27 +69,46 @@ export function ToolForm({
               <div key={step} className="flex items-center flex-1">
                 {/* Step Circle + Label */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <div
-                    className={cn(
-                      'h-10 w-10 rounded-full',
-                      'flex items-center justify-center',
-                      'text-sm font-semibold',
-                      'transition-all duration-300',
-                      step < currentStep
-                        ? `${colorClasses[toolColor]} text-white`
-                        : step === currentStep
-                        ? `${colorClasses[toolColor]} text-white ring-4 ring-${toolColor}/20`
-                        : 'bg-slate-blue-light text-muted'
-                    )}
-                  >
-                    {step < currentStep ? (
+                  {step < currentStep ? (
+                    <button
+                      onClick={() => onStepClick?.(step)}
+                      className={cn(
+                        'h-10 w-10 rounded-full',
+                        'flex items-center justify-center',
+                        'text-sm font-semibold',
+                        'transition-all duration-300',
+                        colorClasses[toolColor],
+                        'text-white cursor-pointer',
+                        'hover:ring-2',
+                        toolColor === 'orange' && 'hover:ring-bronze/30',
+                        toolColor === 'blue' && 'hover:ring-tool-blue/30',
+                        toolColor === 'green' && 'hover:ring-tool-green/30',
+                        toolColor === 'purple' && 'hover:ring-tool-purple/30',
+                        'hover:scale-105'
+                      )}
+                      aria-label={`Go back to step ${step}${stepLabels?.[step - 1] ? `: ${stepLabels[step - 1]}` : ''}`}
+                    >
                       <Check className="h-4 w-4" />
-                    ) : StepIcon ? (
-                      <StepIcon className="h-4.5 w-4.5" />
-                    ) : (
-                      step
-                    )}
-                  </div>
+                    </button>
+                  ) : (
+                    <div
+                      className={cn(
+                        'h-10 w-10 rounded-full',
+                        'flex items-center justify-center',
+                        'text-sm font-semibold',
+                        'transition-all duration-300',
+                        step === currentStep
+                          ? `${colorClasses[toolColor]} text-white ring-4 ring-${toolColor}/20`
+                          : 'bg-slate-blue-light text-muted'
+                      )}
+                    >
+                      {StepIcon ? (
+                        <StepIcon className="h-4.5 w-4.5" />
+                      ) : (
+                        step
+                      )}
+                    </div>
+                  )}
                   {stepLabels?.[step - 1] && (
                     <span
                       className={cn(
@@ -122,7 +145,7 @@ export function ToolForm({
       <div className="md:hidden mb-6">
         <div className="flex items-center justify-between mb-2">
           <span className={cn('text-sm font-medium', textColorClasses[toolColor])}>
-            {stepLabels?.[currentStep - 1] || `Step ${currentStep}`}
+            {stepLabels?.[currentStep - 1] || t('tool_form.step_fallback', { step: currentStep })}
           </span>
           <span className="text-xs text-muted">
             {currentStep}/{totalSteps}

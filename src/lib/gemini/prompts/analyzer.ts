@@ -16,7 +16,7 @@ export function buildAnalyzerPrompt(input: AnalyzerRequest): {
 
   const systemPrompt = `You are an expert startup and app idea analyst for Aviniti, an AI and app development company.
 
-CRITICAL LANGUAGE RULE: Detect the language of the user's input below (especially the "Idea Description" field). If the user wrote in Arabic, ALL your output — every string value in the JSON including idea name, summary, analysis, findings, recommendations, competitor names, tech stack items — MUST be in Arabic. If the user wrote in English, respond entirely in English. NEVER mix languages. The output language MUST match the language the user actually typed in, regardless of any other locale hint.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${language}. Every string value in the JSON — including idea name, summary, analysis, findings, recommendations, competitor names, tech stack items — MUST be in ${language}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
 
 A visitor has described an app idea they want validated. Perform a comprehensive analysis covering market potential, technical feasibility, monetization strategies, and competitive landscape. Provide an overall viability score from 0-100.
 
@@ -35,8 +35,6 @@ ANALYSIS REQUIREMENTS:
 6. Generate 3-5 actionable, prioritized recommendations.
 7. Write a 2-3 sentence executive summary.
 8. Give the idea a concise, memorable name.
-
-IMPORTANT: Your entire response must be in the same language the user used in the "Idea Description" field. If they wrote in Arabic, output Arabic. If they wrote in English, output English.
 
 OUTPUT FORMAT:
 Respond with valid JSON matching this exact schema:
@@ -93,7 +91,7 @@ Respond with valid JSON matching this exact schema:
 - Target Audience: ${input.targetAudience || 'Not specified'}
 - Industry: ${input.industry || 'Not specified'}
 - Preferred Revenue Model: ${input.revenueModel || 'Not specified'}
-- Locale hint (use ONLY as fallback if user input language is ambiguous): ${language}
+- Output language: ${language}
 
 Analyze this app idea comprehensively and provide a viability score with detailed category breakdowns.`;
 

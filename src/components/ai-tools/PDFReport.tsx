@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Document,
   Page,
@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
   PDFDownloadLink,
+  Font,
   Svg,
   Path,
   G,
@@ -18,8 +19,38 @@ import {
   Defs,
 } from '@react-pdf/renderer';
 import { Download, FileText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import type { EstimateResponse, EstimatePhase, StrategicInsight, PricingBreakdown } from '@/types/api';
+
+// ============================================================
+// Arabic Font Registration
+// ============================================================
+Font.register({
+  family: 'Tajawal',
+  fonts: [
+    { src: '/fonts/Tajawal-Regular.ttf', fontWeight: 400 },
+    { src: '/fonts/Tajawal-Bold.ttf', fontWeight: 700 },
+  ],
+});
+
+// Detect if text contains Arabic characters
+function containsArabic(text: string): boolean {
+  return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text);
+}
+
+// Determine if the AI-generated content is in Arabic
+function isArabicContent(results: EstimateResponse): boolean {
+  const textsToCheck = [
+    results.projectName,
+    results.projectSummary,
+    ...(results.keyInsights || []),
+    ...(results.breakdown || results.estimatedTimeline.phases || []).map(p => p.name),
+  ].filter(Boolean);
+  
+  // If any significant text contains Arabic, treat the whole document as Arabic
+  return textsToCheck.some(text => text && containsArabic(text));
+}
 
 // ============================================================
 // Brand Colors
@@ -169,23 +200,23 @@ const s = StyleSheet.create({
 // ============================================================
 // Header & Footer Components
 // ============================================================
-const PageHeader = () => (
+const PageHeader = ({ t }: { t: (key: string) => string }) => (
   <View style={s.headerBar} fixed>
     <View style={s.headerRow}>
       <Text style={s.headerBrand}>AVINITI</Text>
-      <Text style={s.headerLabel}>Project Blueprint</Text>
+      <Text style={s.headerLabel}>{t('pdf.project_blueprint')}</Text>
     </View>
     <View style={s.headerLine} />
   </View>
 );
 
-const PageFooter = ({ userName }: { userName?: string }) => (
+const PageFooter = ({ userName, t }: { userName?: string; t: (key: string, values?: Record<string, string | number>) => string }) => (
   <View style={s.footerBar} fixed>
     <View style={s.footerLine} />
     <View style={s.footerRow}>
-      <Text style={s.footerText}>Confidential{userName ? ` — ${userName}` : ''}</Text>
+      <Text style={s.footerText}>{t('pdf.confidential')}{userName ? ` — ${userName}` : ''}</Text>
       <Text style={s.footerText}>www.aviniti.app</Text>
-      <Text style={s.footerText} render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+      <Text style={s.footerText} render={({ pageNumber, totalPages }) => t('pdf.page_of', { page: (pageNumber ?? 1).toString(), total: (totalPages ?? 1).toString() })} />
     </View>
   </View>
 );
@@ -213,7 +244,7 @@ const InfinityLogo = () => (
 // ============================================================
 
 // Gantt Timeline Chart
-const GanttChart = ({ phases }: { phases: EstimatePhase[] }) => {
+const GanttChart = ({ phases, t, isArabic }: { phases: EstimatePhase[]; t: (key: string, values?: Record<string, string | number>) => string; isArabic: boolean }) => {
   const chartW = 480;
   const barH = 20;
   const rowH = 28;
@@ -243,13 +274,13 @@ const GanttChart = ({ phases }: { phases: EstimatePhase[] }) => {
 
   return (
     <View style={{ marginTop: 14 }}>
-      <Text style={[s.sectionSubtitle, { marginBottom: 10 }]}>Project Timeline</Text>
+      <Text style={[s.sectionSubtitle, { marginBottom: 10 }]}>{t('pdf.project_timeline')}</Text>
       <Svg width={chartW} height={chartH}>
         {/* Grid lines */}
         {gridLines.map((gx, i) => (
           <G key={`g-${i}`}>
             <Line x1={gx} y1={0} x2={gx} y2={chartH - bottomPad} stroke="#1a2a3a" strokeWidth={1} />
-            <Text x={gx} y={chartH - 8} style={{ fontSize: 7, fontFamily: 'Helvetica' }} fill={C.mutedDark}>
+            <Text x={gx} y={chartH - 8} style={{ fontSize: 7, fontFamily: isArabic ? 'Tajawal' : 'Helvetica' }} fill={C.mutedDark}>
               {`W${(i + 1) * gridInterval}`}
             </Text>
           </G>
@@ -258,14 +289,14 @@ const GanttChart = ({ phases }: { phases: EstimatePhase[] }) => {
         {bars.map((b, i) => (
           <G key={`b-${i}`}>
             <Rect x={b.x} y={b.y} width={b.width} height={barH} rx={4} fill={b.color} />
-            <Text x={b.x + 6} y={b.y + 13} style={{ fontSize: 8, fontFamily: 'Helvetica-Bold' }} fill={C.offWhite}>
-              {`P${i + 1}: ${b.weeks}w`}
+            <Text x={b.x + 6} y={b.y + 13} style={{ fontSize: 8, fontFamily: isArabic ? 'Tajawal' : 'Helvetica-Bold' }} fill={C.offWhite}>
+              {t('pdf.phase_number', { number: (i + 1).toString() })}: {b.weeks}{t('pdf.weeks_short')}
             </Text>
           </G>
         ))}
         {/* End label */}
-        <Text x={chartW - 2} y={chartH - 8} style={{ fontSize: 7, fontFamily: 'Helvetica' }} fill={C.muted}>
-          {`${totalWeeks} weeks`}
+        <Text x={chartW - 2} y={chartH - 8} style={{ fontSize: 7, fontFamily: isArabic ? 'Tajawal' : 'Helvetica' }} fill={C.muted}>
+          {`${totalWeeks} ${t('pdf.weeks')}`}
         </Text>
       </Svg>
     </View>
@@ -273,7 +304,7 @@ const GanttChart = ({ phases }: { phases: EstimatePhase[] }) => {
 };
 
 // Investment Range Bar
-const InvestmentRangeBar = ({ min, max }: { min: number; max: number }) => {
+const InvestmentRangeBar = ({ min, max, t, isArabic }: { min: number; max: number; t: (key: string) => string; isArabic: boolean }) => {
   const w = 480;
   const h = 28;
   const padding = max * 0.1;
@@ -283,14 +314,14 @@ const InvestmentRangeBar = ({ min, max }: { min: number; max: number }) => {
 
   return (
     <View style={{ marginBottom: 16 }}>
-      <Text style={[s.sectionSubtitle, { marginBottom: 8 }]}>Investment Range</Text>
+      <Text style={[s.sectionSubtitle, { marginBottom: 8 }]}>{t('pdf.investment_range')}</Text>
       <Svg width={w} height={h + 24}>
         <Rect x={0} y={4} width={w} height={h} rx={6} fill={C.slateBlue} />
         <Rect x={minX} y={4} width={Math.max(maxX - minX, 8)} height={h} rx={6} fill={C.bronze} opacity={0.8} />
-        <Text x={minX} y={h + 18} style={{ fontSize: 9, fontFamily: 'Helvetica-Bold' }} fill={C.bronzeLight}>
+        <Text x={minX} y={h + 18} style={{ fontSize: 9, fontFamily: isArabic ? 'Tajawal' : 'Helvetica-Bold' }} fill={C.bronzeLight}>
           {formatCurrency(min)}
         </Text>
-        <Text x={maxX - 2} y={h + 18} style={{ fontSize: 9, fontFamily: 'Helvetica-Bold' }} fill={C.bronzeLight}>
+        <Text x={maxX - 2} y={h + 18} style={{ fontSize: 9, fontFamily: isArabic ? 'Tajawal' : 'Helvetica-Bold' }} fill={C.bronzeLight}>
           {formatCurrency(max)}
         </Text>
       </Svg>
@@ -299,7 +330,7 @@ const InvestmentRangeBar = ({ min, max }: { min: number; max: number }) => {
 };
 
 // Stacked Cost Bar
-const StackedCostBar = ({ phases }: { phases: EstimatePhase[] }) => {
+const StackedCostBar = ({ phases, t, isArabic }: { phases: EstimatePhase[]; t: (key: string) => string; isArabic: boolean }) => {
   const w = 480;
   const h = 28;
   const total = phases.reduce((a, p) => a + p.cost, 0);
@@ -315,7 +346,7 @@ const StackedCostBar = ({ phases }: { phases: EstimatePhase[] }) => {
 
   return (
     <View style={{ marginBottom: 16 }}>
-      <Text style={[s.sectionSubtitle, { marginBottom: 8 }]}>Cost Distribution</Text>
+      <Text style={[s.sectionSubtitle, { marginBottom: 8 }]}>{t('pdf.cost_distribution')}</Text>
       <Svg width={w} height={h}>
         <Defs>
           <ClipPath id={clipId}>
@@ -344,13 +375,13 @@ const StackedCostBar = ({ phases }: { phases: EstimatePhase[] }) => {
 };
 
 // Individual Phase Bars
-const PhaseBars = ({ phases }: { phases: EstimatePhase[] }) => {
+const PhaseBars = ({ phases, t, isArabic }: { phases: EstimatePhase[]; t: (key: string) => string; isArabic: boolean }) => {
   const maxCost = Math.max(...phases.map(p => p.cost));
   const barW = 300;
 
   return (
     <View style={{ marginTop: 8 }}>
-      <Text style={[s.sectionSubtitle, { marginBottom: 10 }]}>Phase-by-Phase Investment</Text>
+      <Text style={[s.sectionSubtitle, { marginBottom: 10 }]}>{t('pdf.phase_investment')}</Text>
       {phases.map((p, i) => {
         const w = (p.cost / maxCost) * barW;
         return (
@@ -372,28 +403,28 @@ const PhaseBars = ({ phases }: { phases: EstimatePhase[] }) => {
 // ============================================================
 
 // PAGE 1: Cover
-const CoverPage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const CoverPage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string, values?: Record<string, string>) => string; isArabic: boolean }) => {
   const refId = generateRefId();
   const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const phases = results.breakdown || results.estimatedTimeline.phases;
 
   return (
-    <Page size="A4" style={s.coverPage}>
+    <Page size="A4" style={[s.coverPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
       {/* Logo */}
       <View style={s.coverLogoWrap}>
         <InfinityLogo />
         <Text style={s.coverBrandName}>AVINITI</Text>
-        <Text style={s.coverTagline}>YOUR IDEAS, OUR REALITY</Text>
+        <Text style={s.coverTagline}>{t('pdf.tagline')}</Text>
       </View>
 
       {/* Bronze rule */}
       <View style={s.coverRule} />
 
       {/* Blueprint label */}
-      <Text style={s.coverLabel}>Project Blueprint</Text>
+      <Text style={s.coverLabel}>{t('pdf.project_blueprint')}</Text>
 
       {/* Project name */}
-      <Text style={s.coverTitle}>{results.projectName || 'Project Estimate'}</Text>
+      <Text style={s.coverTitle}>{results.projectName || t('pdf.project_estimate')}</Text>
 
       {/* Summary */}
       {results.projectSummary && (
@@ -411,18 +442,18 @@ const CoverPage = ({ results, userName }: { results: EstimateResponse; userName?
           </Text>
         </View>
         <View style={s.coverPill}>
-          <Text style={s.coverPillText}>{results.estimatedTimeline.weeks} Weeks</Text>
+          <Text style={s.coverPillText}>{results.estimatedTimeline.weeks} {t('pdf.weeks')}</Text>
         </View>
         <View style={s.coverPill}>
-          <Text style={s.coverPillText}>{phases.length} Phases</Text>
+          <Text style={s.coverPillText}>{phases.length} {t('pdf.development_phases')}</Text>
         </View>
       </View>
 
       {/* Bottom metadata */}
       <View style={s.coverMeta}>
-        {userName && <Text style={s.coverMetaBold}>Prepared for {userName}</Text>}
+        {userName && <Text style={s.coverMetaBold}>{t('pdf.prepared_for', { name: userName })}</Text>}
         <Text style={s.coverMetaText}>{dateStr}</Text>
-        <Text style={s.coverMetaText}>Reference: {refId}</Text>
+        <Text style={s.coverMetaText}>{t('pdf.reference')} {refId}</Text>
       </View>
 
       {/* Bottom accent line */}
@@ -432,44 +463,44 @@ const CoverPage = ({ results, userName }: { results: EstimateResponse; userName?
 };
 
 // PAGE 2: Executive Summary
-const ExecutiveSummaryPage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const ExecutiveSummaryPage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string) => string; isArabic: boolean }) => {
   const phases = results.breakdown || results.estimatedTimeline.phases;
-  const approachLabel = results.approach === 'ready-made' ? 'Ready-Made Solution' : results.approach === 'hybrid' ? 'Hybrid Approach' : 'Custom Development';
+  const approachLabel = results.approach === 'ready-made' ? t('pdf.ready_made') : results.approach === 'hybrid' ? t('pdf.hybrid') : t('pdf.custom_dev');
 
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Executive Summary</Text>
+      <Text style={s.sectionTitle}>{t('pdf.executive_summary')}</Text>
 
       {/* KPI Cards */}
       <View style={s.kpiRow}>
         <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>Estimated Cost</Text>
+          <Text style={s.kpiLabel}>{t('pdf.estimated_cost')}</Text>
           <Text style={s.kpiValue}>
             {results.estimatedCost.min === results.estimatedCost.max
               ? formatCurrency(results.estimatedCost.min)
               : `${formatCurrency(results.estimatedCost.min)} – ${formatCurrency(results.estimatedCost.max)}`
             }
           </Text>
-          <Text style={s.kpiSub}>{phases.length} development phases</Text>
+          <Text style={s.kpiSub}>{phases.length} {t('pdf.development_phases')}</Text>
         </View>
         <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>Timeline</Text>
-          <Text style={s.kpiValue}>{results.estimatedTimeline.weeks} Weeks</Text>
-          <Text style={s.kpiSub}>End-to-end delivery</Text>
+          <Text style={s.kpiLabel}>{t('pdf.timeline')}</Text>
+          <Text style={s.kpiValue}>{results.estimatedTimeline.weeks} {t('pdf.weeks')}</Text>
+          <Text style={s.kpiSub}>{t('pdf.end_to_end')}</Text>
         </View>
         <View style={s.kpiCard}>
-          <Text style={s.kpiLabel}>Approach</Text>
+          <Text style={s.kpiLabel}>{t('pdf.approach')}</Text>
           <Text style={[s.kpiValue, { fontSize: 14 }]}>{approachLabel}</Text>
-          <Text style={s.kpiSub}>{results.approach === 'ready-made' ? 'Faster deployment' : 'Tailored solution'}</Text>
+          <Text style={s.kpiSub}>{results.approach === 'ready-made' ? t('pdf.faster_deployment') : t('pdf.tailored_solution')}</Text>
         </View>
       </View>
 
       {/* Project Overview */}
       {results.projectSummary && (
         <View style={{ marginBottom: 14 }}>
-          <Text style={s.sectionSubtitle}>Project Overview</Text>
+          <Text style={s.sectionSubtitle}>{t('pdf.project_overview')}</Text>
           <Text style={s.textPrimary}>{results.projectSummary}</Text>
         </View>
       )}
@@ -477,21 +508,21 @@ const ExecutiveSummaryPage = ({ results, userName }: { results: EstimateResponse
       {/* Matched Solution */}
       {results.matchedSolution && (
         <View style={s.cardBronzeLeft}>
-          <Text style={[s.sectionSubtitle, { marginBottom: 6 }]}>Recommended Approach</Text>
+          <Text style={[s.sectionSubtitle, { marginBottom: 6 }]}>{t('pdf.recommended_approach')}</Text>
           <View style={s.matchRow}>
-            <Text style={s.textMuted}>Ready-Made Solution:</Text>
+            <Text style={s.textMuted}>{t('pdf.ready_made_solution')}</Text>
             <Text style={s.textBronze}>{results.matchedSolution.name}</Text>
           </View>
           <View style={s.matchRow}>
-            <Text style={s.textMuted}>Feature Match:</Text>
+            <Text style={s.textMuted}>{t('pdf.feature_match')}</Text>
             <Text style={s.textBronze}>{results.matchedSolution.featureMatchPercentage}%</Text>
           </View>
           <View style={s.matchRow}>
-            <Text style={s.textMuted}>Starting Price:</Text>
+            <Text style={s.textMuted}>{t('pdf.starting_price')}</Text>
             <Text style={s.textBronze}>{formatCurrency(results.matchedSolution.startingPrice)}</Text>
           </View>
           <View style={s.matchRow}>
-            <Text style={s.textMuted}>Deployment:</Text>
+            <Text style={s.textMuted}>{t('pdf.deployment')}</Text>
             <Text style={s.textBronze}>{results.matchedSolution.deploymentTimeline}</Text>
           </View>
         </View>
@@ -500,7 +531,7 @@ const ExecutiveSummaryPage = ({ results, userName }: { results: EstimateResponse
       {/* Tech Stack */}
       {results.techStack && results.techStack.length > 0 && (
         <View style={{ marginBottom: 14 }}>
-          <Text style={s.sectionSubtitle}>Recommended Tech Stack</Text>
+          <Text style={s.sectionSubtitle}>{t('pdf.tech_stack')}</Text>
           <View style={s.pillWrap}>
             {results.techStack.map((tech, i) => (
               <View key={i} style={s.pill}>
@@ -513,7 +544,7 @@ const ExecutiveSummaryPage = ({ results, userName }: { results: EstimateResponse
 
       {/* Key Insights */}
       <View>
-        <Text style={s.sectionSubtitle}>Key Insights</Text>
+        <Text style={s.sectionSubtitle}>{t('pdf.key_insights')}</Text>
         {results.keyInsights.map((insight, i) => (
           <View key={i} style={s.bulletItem}>
             <View style={s.bulletDot} />
@@ -522,28 +553,28 @@ const ExecutiveSummaryPage = ({ results, userName }: { results: EstimateResponse
         ))}
       </View>
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
 
 // PAGE 3: Phases & Timeline
-const PhasesTimelinePage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const PhasesTimelinePage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string, values?: Record<string, string | number>) => string; isArabic: boolean }) => {
   const phases = results.breakdown || results.estimatedTimeline.phases;
   const totalCost = phases.reduce((a, p) => a + p.cost, 0);
 
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Project Phases & Timeline</Text>
+      <Text style={s.sectionTitle}>{t('pdf.phases_timeline')}</Text>
 
       {/* Phase table */}
       <View style={s.tableHeader}>
         <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 36 }}>#</Text>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', flex: 1 }}>Phase</Text>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>Cost</Text>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>Duration</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', flex: 1 }}>{t('pdf.phase')}</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{t('pdf.cost')}</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{t('pdf.duration')}</Text>
       </View>
 
       {phases.map((phase, i) => (
@@ -566,47 +597,47 @@ const PhasesTimelinePage = ({ results, userName }: { results: EstimateResponse; 
       {/* Total row */}
       <View style={s.tableTotal}>
         <Text style={{ fontSize: 9, color: C.muted, width: 36 }} />
-        <Text style={{ fontSize: 10, color: C.offWhite, fontWeight: 'bold', flex: 1 }}>Total Estimated Cost</Text>
+        <Text style={{ fontSize: 10, color: C.offWhite, fontWeight: 'bold', flex: 1 }}>{t('pdf.total_cost')}</Text>
         <Text style={{ fontSize: 11, color: C.bronze, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(totalCost)}</Text>
-        <Text style={{ fontSize: 9, color: C.muted, width: 70, textAlign: 'right' }}>{results.estimatedTimeline.weeks} weeks</Text>
+        <Text style={{ fontSize: 9, color: C.muted, width: 70, textAlign: 'right' }}>{results.estimatedTimeline.weeks} {t('pdf.weeks')}</Text>
       </View>
 
       {/* Gantt Chart */}
-      <GanttChart phases={phases} />
+      <GanttChart phases={phases} t={t} isArabic={isArabic} />
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
 
 // PAGE 4: Cost Analysis
-const CostAnalysisPage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const CostAnalysisPage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string) => string; isArabic: boolean }) => {
   const phases = results.breakdown || results.estimatedTimeline.phases;
 
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Cost Analysis</Text>
+      <Text style={s.sectionTitle}>{t('pdf.cost_analysis')}</Text>
 
       {/* Investment Range — only show when there's actually a range */}
       {results.estimatedCost.min !== results.estimatedCost.max && (
-        <InvestmentRangeBar min={results.estimatedCost.min} max={results.estimatedCost.max} />
+        <InvestmentRangeBar min={results.estimatedCost.min} max={results.estimatedCost.max} t={t} isArabic={isArabic} />
       )}
 
       {/* Stacked Cost Bar */}
-      <StackedCostBar phases={phases} />
+      <StackedCostBar phases={phases} t={t} isArabic={isArabic} />
 
       {/* Individual Phase Bars */}
-      <PhaseBars phases={phases} />
+      <PhaseBars phases={phases} t={t} isArabic={isArabic} />
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
 
 // PAGE 5: Strategic Insights
-const StrategicInsightsPage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const StrategicInsightsPage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string) => string; isArabic: boolean }) => {
   const insights = results.strategicInsights || [];
 
   const colorMap: Record<StrategicInsight['type'], string> = {
@@ -616,9 +647,9 @@ const StrategicInsightsPage = ({ results, userName }: { results: EstimateRespons
   };
 
   const labelMap: Record<StrategicInsight['type'], string> = {
-    strength: 'STRENGTH',
-    challenge: 'CHALLENGE',
-    recommendation: 'RECOMMENDATION',
+    strength: t('pdf.strength'),
+    challenge: t('pdf.challenge'),
+    recommendation: t('pdf.recommendation'),
   };
 
   // Group insights by type, keeping order: strengths, challenges, recommendations
@@ -626,10 +657,10 @@ const StrategicInsightsPage = ({ results, userName }: { results: EstimateRespons
   const grouped = orderedTypes.flatMap(type => insights.filter(ins => ins.type === type));
 
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Strategic Insights</Text>
+      <Text style={s.sectionTitle}>{t('pdf.strategic_insights')}</Text>
 
       {grouped.length > 0 ? (
         grouped.map((insight, i) => (
@@ -641,14 +672,14 @@ const StrategicInsightsPage = ({ results, userName }: { results: EstimateRespons
         ))
       ) : (
         <View style={s.card}>
-          <Text style={s.textMuted}>Strategic insights will be available after a detailed consultation.</Text>
+          <Text style={s.textMuted}>{t('pdf.strategic_consultation')}</Text>
         </View>
       )}
 
       {/* Alternative names */}
       {results.alternativeNames && results.alternativeNames.length > 0 && (
         <View style={{ marginTop: 14 }}>
-          <Text style={s.sectionSubtitle}>Alternative Project Names</Text>
+          <Text style={s.sectionSubtitle}>{t('pdf.alt_names')}</Text>
           <View style={s.pillWrap}>
             {results.alternativeNames.map((name, i) => (
               <View key={i} style={s.pill}>
@@ -659,24 +690,24 @@ const StrategicInsightsPage = ({ results, userName }: { results: EstimateRespons
         </View>
       )}
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
 
 // PAGE: Features & Pricing (only when catalog pricing is available)
-const FeaturesPricingPage = ({ pricing, userName }: { pricing: PricingBreakdown; userName?: string }) => {
+const FeaturesPricingPage = ({ pricing, userName, t, isArabic }: { pricing: PricingBreakdown; userName?: string; t: (key: string, values?: Record<string, string | number>) => string; isArabic: boolean }) => {
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Features & Pricing</Text>
+      <Text style={s.sectionTitle}>{t('pdf.features_pricing')}</Text>
 
       {/* Feature table */}
       <View style={s.tableHeader}>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', flex: 1 }}>Feature</Text>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 80 }}>Category</Text>
-        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>Price</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', flex: 1 }}>{t('pdf.feature')}</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 80 }}>{t('pdf.category')}</Text>
+        <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{t('pdf.price')}</Text>
       </View>
 
       {pricing.features.map((f, i) => (
@@ -689,13 +720,13 @@ const FeaturesPricingPage = ({ pricing, userName }: { pricing: PricingBreakdown;
 
       {/* Subtotal row */}
       <View style={{ flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 10, borderTopWidth: 1, borderTopColor: C.slateBorder, marginTop: 4 }}>
-        <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>Subtotal</Text>
+        <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>{t('pdf.subtotal')}</Text>
         <Text style={{ fontSize: 10, color: C.offWhite, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.subtotal)}</Text>
       </View>
 
       {/* Design surcharge */}
       <View style={{ flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 10 }}>
-        <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>Design & UX (+20%)</Text>
+        <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>{t('pdf.design_ux')}</Text>
         <Text style={{ fontSize: 10, color: C.offWhite, width: 70, textAlign: 'right' }}>+{formatCurrency(pricing.designSurcharge)}</Text>
       </View>
 
@@ -703,7 +734,7 @@ const FeaturesPricingPage = ({ pricing, userName }: { pricing: PricingBreakdown;
       {pricing.bundleDiscount > 0 && (
         <View style={{ flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 10 }}>
           <Text style={{ fontSize: 10, color: C.green, flex: 1 }}>
-            Bundle Discount (-{Math.round(pricing.bundleDiscountPercent * 100)}%)
+            {t('pdf.bundle_discount', { percent: Math.round(pricing.bundleDiscountPercent * 100) })}
           </Text>
           <Text style={{ fontSize: 10, color: C.green, width: 70, textAlign: 'right' }}>-{formatCurrency(pricing.bundleDiscount)}</Text>
         </View>
@@ -711,29 +742,29 @@ const FeaturesPricingPage = ({ pricing, userName }: { pricing: PricingBreakdown;
 
       {/* Total */}
       <View style={s.tableTotal}>
-        <Text style={{ fontSize: 12, color: C.offWhite, fontWeight: 'bold', flex: 1 }}>Total</Text>
+        <Text style={{ fontSize: 12, color: C.offWhite, fontWeight: 'bold', flex: 1 }}>{t('pdf.total')}</Text>
         <Text style={{ fontSize: 12, color: C.bronze, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.total)}</Text>
       </View>
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
 
 // PAGE 6: Next Steps & Contact
-const NextStepsPage = ({ results, userName }: { results: EstimateResponse; userName?: string }) => {
+const NextStepsPage = ({ results, userName, t, isArabic }: { results: EstimateResponse; userName?: string; t: (key: string) => string; isArabic: boolean }) => {
   const steps = [
-    { title: 'Review This Blueprint', desc: 'Share this document with your team and stakeholders to align on scope and budget.' },
-    { title: 'Book a Free Consultation', desc: 'Schedule a 30-minute call to discuss your project in detail.' },
-    { title: 'Get a Detailed Proposal', desc: 'Receive a comprehensive proposal with exact timelines, milestones, and deliverables.' },
-    { title: 'Start Building', desc: 'Kick off development with our experienced team and watch your idea come to life.' },
+    { title: t('pdf.next_step_1_title'), desc: t('pdf.next_step_1_desc') },
+    { title: t('pdf.next_step_2_title'), desc: t('pdf.next_step_2_desc') },
+    { title: t('pdf.next_step_3_title'), desc: t('pdf.next_step_3_desc') },
+    { title: t('pdf.next_step_4_title'), desc: t('pdf.next_step_4_desc') },
   ];
 
   return (
-    <Page size="A4" style={s.contentPage}>
-      <PageHeader />
+    <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
+      <PageHeader t={t} />
 
-      <Text style={s.sectionTitle}>Next Steps</Text>
+      <Text style={s.sectionTitle}>{t('pdf.next_steps')}</Text>
 
       {steps.map((step, i) => (
         <View key={i} style={s.stepRow}>
@@ -754,26 +785,26 @@ const NextStepsPage = ({ results, userName }: { results: EstimateResponse; userN
 
       {/* Contact Card */}
       <View style={s.contactCard}>
-        <Text style={[s.sectionSubtitle, { marginBottom: 10, color: C.bronze }]}>Get In Touch</Text>
+        <Text style={[s.sectionSubtitle, { marginBottom: 10, color: C.bronze }]}>{t('pdf.get_in_touch')}</Text>
 
         <View style={s.contactRow}>
-          <Text style={s.contactLabel}>Contact:</Text>
+          <Text style={s.contactLabel}>{t('pdf.contact_label')}</Text>
           <Text style={s.contactValue}>Ali Odat</Text>
         </View>
         <View style={s.contactRow}>
-          <Text style={s.contactLabel}>Email:</Text>
+          <Text style={s.contactLabel}>{t('pdf.email_label')}</Text>
           <Link src="mailto:aliodat@aviniti.app"><Text style={s.contactLink}>aliodat@aviniti.app</Text></Link>
         </View>
         <View style={s.contactRow}>
-          <Text style={s.contactLabel}>WhatsApp:</Text>
+          <Text style={s.contactLabel}>{t('pdf.whatsapp_label')}</Text>
           <Link src="https://wa.me/962790685302"><Text style={s.contactLink}>+962 79 068 5302</Text></Link>
         </View>
         <View style={s.contactRow}>
-          <Text style={s.contactLabel}>Website:</Text>
+          <Text style={s.contactLabel}>{t('pdf.website_label')}</Text>
           <Link src="https://www.aviniti.app"><Text style={s.contactLink}>www.aviniti.app</Text></Link>
         </View>
         <View style={s.contactRow}>
-          <Text style={s.contactLabel}>Calendly:</Text>
+          <Text style={s.contactLabel}>{t('pdf.calendly_label')}</Text>
           <Link src="https://calendly.com/ali-aviniti/30min"><Text style={s.contactLink}>calendly.com/ali-aviniti/30min</Text></Link>
         </View>
       </View>
@@ -781,13 +812,11 @@ const NextStepsPage = ({ results, userName }: { results: EstimateResponse; userN
       {/* Disclaimer */}
       <View style={s.disclaimer}>
         <Text style={s.disclaimerText}>
-          This estimate is AI-generated and serves as an initial assessment. Actual costs and timelines may vary
-          based on detailed requirements analysis. Final pricing will be provided in a formal proposal after
-          consultation. All information in this document is confidential and intended solely for the named recipient.
+          {t('pdf.disclaimer')}
         </Text>
       </View>
 
-      <PageFooter userName={userName} />
+      <PageFooter userName={userName} t={t} />
     </Page>
   );
 };
@@ -799,26 +828,30 @@ const EstimatePDFDocument = ({
   results,
   userName,
   userEmail,
+  t,
+  isArabic,
 }: {
   results: EstimateResponse;
   userName?: string;
   userEmail?: string;
+  t: (key: string, values?: Record<string, string | number>) => string;
+  isArabic: boolean;
 }) => (
   <Document
-    title={`${results.projectName || 'Project'} Blueprint — Aviniti`}
+    title={`${results.projectName || t('pdf.project_estimate')} ${t('pdf.project_blueprint')} — Aviniti`}
     author="Aviniti"
-    subject="Project Blueprint"
+    subject={t('pdf.project_blueprint')}
     creator="Aviniti AI Estimator"
   >
-    <CoverPage results={results} userName={userName} />
-    <ExecutiveSummaryPage results={results} userName={userName} />
+    <CoverPage results={results} userName={userName} t={t} isArabic={isArabic} />
+    <ExecutiveSummaryPage results={results} userName={userName} t={t} isArabic={isArabic} />
     {results.pricing && results.pricing.features.length > 0 && (
-      <FeaturesPricingPage pricing={results.pricing} userName={userName} />
+      <FeaturesPricingPage pricing={results.pricing} userName={userName} t={t} isArabic={isArabic} />
     )}
-    <PhasesTimelinePage results={results} userName={userName} />
-    <CostAnalysisPage results={results} userName={userName} />
-    <StrategicInsightsPage results={results} userName={userName} />
-    <NextStepsPage results={results} userName={userName} />
+    <PhasesTimelinePage results={results} userName={userName} t={t} isArabic={isArabic} />
+    <CostAnalysisPage results={results} userName={userName} t={t} isArabic={isArabic} />
+    <StrategicInsightsPage results={results} userName={userName} t={t} isArabic={isArabic} />
+    <NextStepsPage results={results} userName={userName} t={t} isArabic={isArabic} />
   </Document>
 );
 
@@ -834,12 +867,14 @@ interface PDFReportProps {
 
 export function PDFReport({ results, userName, userEmail, className }: PDFReportProps) {
   const [isClient, setIsClient] = useState(false);
+  const t = useTranslations('get_estimate');
 
-  useState(() => {
+  useEffect(() => {
     setIsClient(true);
-  });
+  }, []);
 
   const filename = `Aviniti_Blueprint_${slugify(results.projectName || 'project')}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const arabic = isArabicContent(results);
 
   if (!isClient) {
     return (
@@ -851,14 +886,14 @@ export function PDFReport({ results, userName, userEmail, className }: PDFReport
         )}
       >
         <FileText className="h-5 w-5" />
-        Loading PDF...
+        {t('pdf.loading')}
       </button>
     );
   }
 
   return (
     <PDFDownloadLink
-      document={<EstimatePDFDocument results={results} userName={userName} userEmail={userEmail} />}
+      document={<EstimatePDFDocument results={results} userName={userName} userEmail={userEmail} t={t} isArabic={arabic} />}
       fileName={filename}
       className={cn(
         'h-11 px-5 bg-bronze hover:bg-bronze-hover text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center gap-2',
@@ -870,12 +905,12 @@ export function PDFReport({ results, userName, userEmail, className }: PDFReport
           {loading ? (
             <>
               <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Generating PDF...
+              {t('pdf.generating')}
             </>
           ) : (
             <>
               <Download className="h-5 w-5" />
-              Download PDF Report
+              {t('pdf.download')}
             </>
           )}
         </>

@@ -16,6 +16,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { SectionLabel } from '@/components/shared/SectionLabel';
 import { cn } from '@/lib/utils/cn';
@@ -45,6 +46,7 @@ export function ToolHero({
   toolColor,
   onCTAClick,
 }: ToolHeroProps) {
+  const t = useTranslations('common');
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -58,7 +60,7 @@ export function ToolHero({
         {/* Label */}
         <motion.div variants={fadeInUp}>
           <SectionLabel className={cn('justify-center', colorClasses[toolColor])}>
-            AI Tool
+            {t('tool_hero.label')}
           </SectionLabel>
         </motion.div>
 

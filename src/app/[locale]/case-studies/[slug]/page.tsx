@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Check, TrendingUp, Users, Zap, Clock, Target, Lightbulb } from 'lucide-react';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Card, CardContent, Badge } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -208,15 +209,17 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'case_studies' });
   const study = caseStudies.find((s) => s.slug === slug);
 
   if (!study) {
-    return { title: 'Case Study Not Found - Aviniti' };
+    return { title: t('meta.not_found') };
   }
 
   return {
-    title: `${study.title} - Aviniti Case Study`,
+    title: `${study.title} - ${t('meta.case_study_suffix')}`,
     description: study.excerpt,
     openGraph: {
       title: study.title,
@@ -231,7 +234,9 @@ export default async function CaseStudyDetailPage({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'case_studies' });
   const study = caseStudies.find((s) => s.slug === slug);
 
   if (!study) {
@@ -257,7 +262,7 @@ export default async function CaseStudyDetailPage({
               className="inline-flex items-center gap-2 text-muted hover:text-bronze transition-colors mb-8"
             >
               <ArrowLeft className="h-4 w-4" />
-              All Case Studies
+              {t('page.all_case_studies')}
             </Link>
 
             {/* Badges */}
@@ -392,7 +397,7 @@ export default async function CaseStudyDetailPage({
         <Container>
           <div className="max-w-4xl mx-auto">
             <h3 className="text-lg font-semibold text-white mb-4">
-              Technologies Used
+              {t('detail.technologies')}
             </h3>
             <div className="flex flex-wrap gap-2">
               {study.technologies.map((tech) => (
@@ -424,10 +429,10 @@ export default async function CaseStudyDetailPage({
 
       {/* CTA Banner */}
       <CTABanner
-        heading="Ready to Achieve Similar Results?"
-        subtitle="Let us discuss how we can help transform your business with technology."
-        primaryCTA={{ label: 'Start Your Project', href: '/contact' }}
-        secondaryCTA={{ label: 'View Solutions', href: '/solutions' }}
+        heading={t('detail.cta_title')}
+        subtitle={t('detail.cta_subtitle')}
+        primaryCTA={{ label: t('detail.cta_primary'), href: '/contact' }}
+        secondaryCTA={{ label: t('detail.cta_secondary'), href: '/solutions' }}
       />
     </main>
   );

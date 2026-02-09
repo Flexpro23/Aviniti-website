@@ -9,12 +9,13 @@ import {
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collections';
-import { ideaLabFormSchema } from '@/lib/utils/validators';
-import { buildIdeaLabPrompt } from '@/lib/gemini/prompts';
+import { ideaLabGenerateSchema } from '@/lib/utils/validators';
+import { buildIdeaLabPrompt } from '@/lib/gemini/prompts/idea-lab';
+import { ideaLabResponseSchema } from '@/lib/gemini/schemas';
 import type { IdeaLabResponse } from '@/types/api';
 
-// Rate limiting configuration
-const RATE_LIMIT = 3;
+// Rate limiting configuration — 6 per 24h to allow discover + generate + 2 refreshes + buffer
+const RATE_LIMIT = 6;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.7;
 const TIMEOUT_MS = 45000; // 45 seconds
@@ -25,9 +26,9 @@ export async function POST(request: NextRequest) {
   try {
     // 1. Parse and validate request body
     const body = await request.json();
-    const validatedData = ideaLabFormSchema.parse(body);
+    const validatedData = ideaLabGenerateSchema.parse(body);
 
-    // 2. Rate limiting
+    // 2. Rate limiting (shared key with discover endpoint)
     const clientIP = getClientIP(request);
     const rateLimitKey = `idea-lab:${hashIP(clientIP)}`;
     const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
@@ -48,23 +49,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Build prompt and call Gemini
-    const locale = ((body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar');
+    // 3. Build prompt and call Gemini (with retry on validation failure)
+    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
     const prompt = buildIdeaLabPrompt({
-      background: validatedData.background,
+      persona: validatedData.persona,
       industry: validatedData.industry,
-      problem: validatedData.problem,
+      discoveryAnswers: validatedData.discoveryAnswers,
       locale,
-      existingIdeas: validatedData.existingIdeas,
+      previousIdeaNames: validatedData.previousIdeaNames,
     });
 
-    const result = await generateJsonContent<IdeaLabResponse>(prompt, {
-      temperature: TEMPERATURE,
-      maxOutputTokens: 4096,
-      timeoutMs: TIMEOUT_MS,
-    });
+    const MAX_AI_ATTEMPTS = 2;
+    let validated: { success: true; data: IdeaLabResponse } | null = null;
+    let lastError: string | undefined;
 
-    if (!result.success || !result.data) {
+    for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
+      if (attempt > 0) {
+        console.log(`[Idea Lab Generate] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+      }
+
+      const result = await generateJsonContent<IdeaLabResponse>(prompt, {
+        temperature: TEMPERATURE,
+        maxOutputTokens: 8192,
+        timeoutMs: TIMEOUT_MS,
+      });
+
+      if (!result.success || !result.data) {
+        console.error(
+          `[Idea Lab Generate] Gemini call failed (attempt ${attempt + 1}):`,
+          result.error || 'No data returned'
+        );
+        lastError = result.error || 'AI service returned no data';
+        continue;
+      }
+
+      // 4. Validate AI response
+      const parseResult = ideaLabResponseSchema.safeParse(result.data);
+      if (!parseResult.success) {
+        console.error(
+          `[Idea Lab Generate] Validation failed (attempt ${attempt + 1}):`,
+          JSON.stringify(parseResult.error.issues, null, 2)
+        );
+        lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
+        continue;
+      }
+
+      validated = { success: true, data: parseResult.data as unknown as IdeaLabResponse };
+      break;
+    }
+
+    if (!validated) {
+      console.error(`[Idea Lab Generate] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -74,7 +109,7 @@ export async function POST(request: NextRequest) {
 
     const processingTimeMs = Date.now() - startTime;
 
-    // 4. Save to Firestore (non-blocking — don't fail the request if save fails)
+    // 5. Save to Firestore (non-blocking)
     try {
       const metadata = extractRequestMetadata(request);
 
@@ -84,9 +119,6 @@ export async function POST(request: NextRequest) {
         whatsapp: validatedData.whatsapp,
         source: 'idea-lab',
         locale: locale,
-        background: validatedData.background,
-        industry: validatedData.industry,
-        problem: validatedData.problem,
         metadata: {
           ...metadata,
           ipCountry: undefined,
@@ -97,11 +129,11 @@ export async function POST(request: NextRequest) {
         tool: 'idea-lab',
         leadId,
         request: {
-          background: validatedData.background,
+          persona: validatedData.persona,
           industry: validatedData.industry,
-          problem: validatedData.problem,
+          discoveryAnswers: validatedData.discoveryAnswers,
         },
-        response: result.data as unknown as Record<string, unknown>,
+        response: validated.data as unknown as Record<string, unknown>,
         processingTimeMs,
         model: 'gemini-3-flash-preview',
         locale: locale,
@@ -111,8 +143,8 @@ export async function POST(request: NextRequest) {
       console.error('[Idea Lab API] Failed to save to Firestore (non-fatal):', saveError);
     }
 
-    // 5. Return success response
-    const response = createSuccessResponse(result.data);
+    // 6. Return success response
+    const response = createSuccessResponse(validated.data);
 
     // Copy rate limit headers to response
     headers.forEach((value, key) => {

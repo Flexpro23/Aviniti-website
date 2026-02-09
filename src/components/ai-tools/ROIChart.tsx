@@ -13,6 +13,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { TrendingUp, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { duration } from '@/lib/motion/tokens';
@@ -35,6 +36,7 @@ export function ROIChart({
   locale = 'en',
   className,
 }: ROIChartProps) {
+  const t = useTranslations('roi-calculator');
   const totalBenefit = costSavings + revenueIncrease;
   const roiPercentage = ((totalBenefit - investment) / investment) * 100;
   const maxValue = Math.max(investment, totalBenefit);
@@ -50,13 +52,13 @@ export function ROIChart({
       <div className="text-center p-6 rounded-xl bg-success/10 border border-success/30">
         <div className="flex items-center justify-center gap-2 mb-2">
           <TrendingUp className="h-6 w-6 text-success" aria-hidden="true" />
-          <span className="text-sm font-medium text-muted">Projected ROI</span>
+          <span className="text-sm font-medium text-muted">{t('chart.projected_roi')}</span>
         </div>
         <p className="text-4xl font-bold text-success">
           {roiPercentage > 0 ? '+' : ''}
           {Math.round(roiPercentage)}%
         </p>
-        <p className="text-sm text-muted mt-1">First Year Return on Investment</p>
+        <p className="text-sm text-muted mt-1">{t('chart.first_year_roi')}</p>
       </div>
 
       {/* Bar Chart */}
@@ -66,7 +68,7 @@ export function ROIChart({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-off-white flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-error" aria-hidden="true" />
-              Investment
+              {t('chart.investment')}
             </span>
             <span className="text-sm font-semibold text-white">
               {formatCurrency(investment, currency, locale)}
@@ -91,7 +93,7 @@ export function ROIChart({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-off-white flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-success" aria-hidden="true" />
-              Cost Savings
+              {t('chart.cost_savings')}
             </span>
             <span className="text-sm font-semibold text-white">
               {formatCurrency(costSavings, currency, locale)}
@@ -120,7 +122,7 @@ export function ROIChart({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-off-white flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-tool-green" aria-hidden="true" />
-              Revenue Increase
+              {t('chart.revenue_increase')}
             </span>
             <span className="text-sm font-semibold text-white">
               {formatCurrency(revenueIncrease, currency, locale)}
@@ -148,7 +150,7 @@ export function ROIChart({
       {/* Total Benefit */}
       <div className="pt-4 border-t border-slate-blue-light">
         <div className="flex items-center justify-between">
-          <span className="text-base font-semibold text-off-white">Total Annual Benefit</span>
+          <span className="text-base font-semibold text-off-white">{t('chart.total_annual_benefit')}</span>
           <span className="text-lg font-bold text-success">
             {formatCurrency(totalBenefit, currency, locale)}
           </span>

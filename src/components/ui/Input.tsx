@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 /* ============================================================
@@ -17,6 +18,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, icon, required, id, ...props }, ref) => {
+    const t = useTranslations('common');
     const inputId = id || `input-${React.useId()}`;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText ? `${inputId}-helper` : undefined;
@@ -26,7 +28,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label htmlFor={inputId} className="block text-sm font-medium text-off-white">
             {label}
-            {required && <span className="text-error ms-1" aria-label="required">*</span>}
+            {required && <span className="text-error ms-1" aria-label={t('ui.required_aria')}>*</span>}
           </label>
         )}
         <div className="relative">

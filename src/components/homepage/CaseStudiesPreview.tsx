@@ -8,7 +8,7 @@
  */
 
 import { useTranslations } from 'next-intl';
-import { ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowRight, TrendingUp, ShoppingCart, Activity, Truck } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
@@ -27,6 +27,8 @@ interface CaseStudy {
   metricValue: string;
   metricLabel: string;
   excerptKey: string;
+  icon: React.ReactNode;
+  accentColor: string;
 }
 
 export function CaseStudiesPreview() {
@@ -41,6 +43,8 @@ export function CaseStudiesPreview() {
       metricValue: '3x',
       metricLabel: 'metric_1_label',
       excerptKey: 'case_1_excerpt',
+      icon: <ShoppingCart className="w-5 h-5" />,
+      accentColor: 'rgb(34, 197, 94)', // green
     },
     {
       slug: 'healthcare-ai',
@@ -49,6 +53,8 @@ export function CaseStudiesPreview() {
       metricValue: '85%',
       metricLabel: 'metric_2_label',
       excerptKey: 'case_2_excerpt',
+      icon: <Activity className="w-5 h-5" />,
+      accentColor: 'rgb(59, 130, 246)', // blue
     },
     {
       slug: 'logistics-delivery',
@@ -57,6 +63,8 @@ export function CaseStudiesPreview() {
       metricValue: '50%',
       metricLabel: 'metric_3_label',
       excerptKey: 'case_3_excerpt',
+      icon: <Truck className="w-5 h-5" />,
+      accentColor: 'rgb(249, 115, 22)', // orange
     },
   ];
 
@@ -81,11 +89,19 @@ export function CaseStudiesPreview() {
         >
           {caseStudies.map((study) => (
             <motion.div key={study.slug} variants={fadeInUp}>
-              <Card hover className="h-full flex flex-col">
+              <Card
+                hover
+                className="h-full flex flex-col relative overflow-hidden"
+                style={{ borderTopColor: study.accentColor, borderTopWidth: '3px' }}
+              >
                 <CardHeader className="space-y-4 flex-1">
                   {/* Industry Badge */}
                   <div>
-                    <Badge variant="default" size="sm">
+                    <Badge
+                      variant="default"
+                      size="sm"
+                      style={{ backgroundColor: `${study.accentColor}20`, color: study.accentColor, borderColor: `${study.accentColor}40` }}
+                    >
                       {t(study.industry)}
                     </Badge>
                   </div>
@@ -95,11 +111,18 @@ export function CaseStudiesPreview() {
 
                   {/* Key Metric */}
                   <div className="flex items-center gap-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-bronze" />
-                      <span className="text-3xl font-bold text-bronze">{study.metricValue}</span>
+                    <div
+                      className="flex items-center justify-center w-10 h-10 rounded-lg"
+                      style={{ backgroundColor: `${study.accentColor}15`, color: study.accentColor }}
+                    >
+                      {study.icon}
                     </div>
-                    <span className="text-sm text-muted">{t(study.metricLabel)}</span>
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-bold" style={{ color: study.accentColor }}>
+                        {study.metricValue}
+                      </span>
+                      <span className="text-xs text-muted">{t(study.metricLabel)}</span>
+                    </div>
                   </div>
 
                   {/* Excerpt */}

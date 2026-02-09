@@ -49,7 +49,7 @@ export default function Error({
         {process.env.NODE_ENV === 'development' && (
           <details className="mt-4 text-start">
             <summary className="text-sm text-muted-light cursor-pointer hover:text-muted">
-              Error details
+              {t('generic.error_details')}
             </summary>
             <pre className="mt-2 text-xs text-muted-light bg-slate-blue-light/20 rounded-lg p-3 overflow-x-auto">
               {error.message}

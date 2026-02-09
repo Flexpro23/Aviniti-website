@@ -9,6 +9,7 @@
 
 import { useState } from 'react';
 import { Linkedin, MessageCircle, Link as LinkIcon, Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 interface ShareButtonsProps {
@@ -24,6 +25,7 @@ export function ShareButtons({
   description,
   className,
 }: ShareButtonsProps) {
+  const t = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = async () => {
@@ -53,7 +55,7 @@ export function ShareButtons({
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <span className="text-sm font-medium text-muted me-2">Share:</span>
+      <span className="text-sm font-medium text-muted me-2">{t('share.label')}</span>
 
       {/* LinkedIn */}
       <button
@@ -66,7 +68,7 @@ export function ShareButtons({
           'transition-colors duration-200',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze'
         )}
-        aria-label="Share on LinkedIn"
+        aria-label={t('share.linkedin_aria')}
       >
         <Linkedin className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -82,7 +84,7 @@ export function ShareButtons({
           'transition-colors duration-200',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze'
         )}
-        aria-label="Share on WhatsApp"
+        aria-label={t('share.whatsapp_aria')}
       >
         <MessageCircle className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -100,7 +102,7 @@ export function ShareButtons({
             ? 'bg-success/20 text-success'
             : 'text-muted hover:bg-slate-blue-light hover:text-white'
         )}
-        aria-label="Copy link to clipboard"
+        aria-label={t('share.copy_link_aria')}
       >
         {copied ? (
           <Check className="h-4 w-4" aria-hidden="true" />

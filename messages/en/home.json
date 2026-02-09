@@ -5,7 +5,7 @@
     "title_line1": "Turn Your Ideas Into",
     "title_accent": "Powerful Apps",
     "subtitle": "We build custom mobile and web applications powered by AI. From concept to launch, we make it happen.",
-    "cta_primary": "Get Instant AI Estimate",
+    "cta_primary": "Explore Our AI Tools",
     "cta_secondary": "Ready-Made Solutions",
     "cta_tertiary": "Schedule a free consultation",
     "journey_idea_title": "Dream It",
@@ -34,7 +34,8 @@
   },
   "company_logos": {
     "title": "Trusted by Growing Businesses",
-    "subtitle": "Join the companies that have transformed their operations with our custom applications"
+    "subtitle": "Join the companies that have transformed their operations with our custom applications",
+    "aria_label": "Scrolling list of companies that trust Aviniti"
   },
   "testimonials": {
     "label": "CLIENT SUCCESS STORIES",
@@ -61,62 +62,88 @@
     "label": "WHAT WE BUILD",
     "title": "Full-Stack Development, Powered by AI",
     "subtitle": "From mobile apps to AI integrations, we build complete digital solutions tailored to your business needs.",
+    "cta": "Explore Our Solutions",
+    "card_cta": "Get Started",
+    "labels": {
+      "capabilities": "CAPABILITIES",
+      "technologies": "TECHNOLOGIES",
+      "industries": "INDUSTRIES SERVED"
+    },
     "mobile-apps": {
       "name": "Mobile Apps",
-      "description": "Native and cross-platform mobile applications for iOS and Android."
+      "badge": "iOS & Android",
+      "description": "Cross-platform native apps that users love. From consumer apps to enterprise mobility, built for performance and reliability.",
+      "cap_1": "Cross-platform (React Native & Flutter)",
+      "cap_2": "Push notifications & real-time sync",
+      "cap_3": "Offline-first architecture",
+      "cap_4": "App Store submission & optimization",
+      "technologies": "React Native, Flutter, Swift, Kotlin, Firebase",
+      "industries": "Delivery · Fitness · Education · Healthcare · E-commerce"
     },
     "web-applications": {
       "name": "Web Applications",
-      "description": "Scalable web apps with modern frameworks and cloud infrastructure."
+      "badge": "Scalable & Fast",
+      "description": "Modern web platforms with SSR, PWA support, and cloud-native architecture. Built for performance at any scale.",
+      "cap_1": "Full-stack development (Next.js & React)",
+      "cap_2": "Progressive Web Apps (PWA)",
+      "cap_3": "Admin dashboards & analytics",
+      "cap_4": "Cloud deployment & CI/CD",
+      "technologies": "Next.js, React, TypeScript, Node.js, Firebase, Vercel",
+      "industries": "E-commerce · SaaS · Business Ops · Real Estate"
     },
     "ai-solutions": {
       "name": "AI Solutions",
-      "description": "Custom AI integrations, chatbots, and machine learning models."
+      "badge": "Gemini-Powered",
+      "description": "Custom AI integrations powered by Google Gemini. Intelligent chatbots, predictive analytics, and computer vision that transform your business.",
+      "cap_1": "AI chatbots & virtual assistants",
+      "cap_2": "Natural language processing",
+      "cap_3": "Predictive analytics & forecasting",
+      "cap_4": "Computer vision & image recognition",
+      "technologies": "Google Gemini, TensorFlow, OpenAI, LangChain, Python",
+      "industries": "Healthcare · Analytics · Customer Service · Finance"
     },
     "ui-ux-design": {
       "name": "UI/UX Design",
-      "description": "Beautiful, intuitive interfaces designed for conversion and engagement."
-    },
-    "mobile": {
-      "title": "Mobile Apps",
-      "description": "Native and cross-platform mobile applications for iOS and Android."
-    },
-    "web": {
-      "title": "Web Applications",
-      "description": "Scalable web apps with modern frameworks and cloud infrastructure."
-    },
-    "ai": {
-      "title": "AI Solutions",
-      "description": "Custom AI integrations, chatbots, and machine learning models."
-    },
-    "design": {
-      "title": "UI/UX Design",
-      "description": "Beautiful, intuitive interfaces designed for conversion and engagement."
+      "badge": "User-Centered",
+      "description": "Research-driven design that converts. Beautiful, intuitive, and accessible interfaces from wireframes to production-ready components.",
+      "cap_1": "User research & prototyping (Figma)",
+      "cap_2": "Responsive & mobile-first design",
+      "cap_3": "Design systems & component libraries",
+      "cap_4": "A/B testing & conversion optimization",
+      "technologies": "Figma, Adobe XD, Tailwind CSS, Framer, Storybook",
+      "industries": "All Industries"
     }
   },
   "ai_tools": {
     "label": "AI-POWERED TOOLS",
     "title": "AI-Powered Tools to Get You Started",
     "subtitle": "Try our free AI tools to explore ideas, analyze viability, get estimates, and calculate ROI.",
+    "journey_label": "Your AI-Powered Journey",
+    "step_label": "Step",
     "idea-lab": {
       "name": "Idea Lab",
       "description": "Transform your concepts into structured app ideas with AI-powered brainstorming and validation.",
-      "cta": "Launch Idea Lab"
+      "cta": "Launch Idea Lab",
+      "badge": "Start Here",
+      "time": "Free · 2 min"
     },
     "ai-analyzer": {
       "name": "AI Analyzer",
       "description": "Get instant feasibility analysis and technical recommendations for your app idea.",
-      "cta": "Analyze Your Idea"
+      "cta": "Analyze Your Idea",
+      "time": "Free · 3 min"
     },
     "get-estimate": {
       "name": "Get Estimate",
       "description": "Receive a detailed project estimate with timeline and cost breakdown in minutes.",
-      "cta": "Get Your Estimate"
+      "cta": "Get Your Estimate",
+      "time": "Free · 2 min"
     },
     "roi-calculator": {
       "name": "ROI Calculator",
       "description": "Calculate the potential return on investment for your app development project.",
-      "cta": "Calculate ROI"
+      "cta": "Calculate ROI",
+      "time": "Free · 1 min"
     }
   },
   "solutions": {
@@ -126,7 +153,9 @@
     "starting_from": "Starting from",
     "delivery": "days delivery",
     "view_all": "View All Solutions",
-    "learn_more": "Learn More"
+    "learn_more": "Learn More",
+    "demo_available": "Live Demo",
+    "more_features": "more features"
   },
   "apps": {
     "label": "OUR PORTFOLIO",

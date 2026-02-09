@@ -17,6 +17,7 @@
   "generic": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Our team has been notified and we're working on it.",
+    "error_details": "Error details",
     "cta": {
       "try_again": "Try Again",
       "home": "Go to Homepage"

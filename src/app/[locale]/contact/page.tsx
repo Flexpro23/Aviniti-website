@@ -117,7 +117,7 @@ export default function ContactPage() {
               <p className="text-lg text-muted mt-4">{t('success.message')}</p>
               {ticketId && (
                 <p className="text-sm text-bronze mt-4 font-mono bg-slate-blue rounded-lg px-4 py-2 inline-block">
-                  Reference: {ticketId}
+                  {t('success.reference')} {ticketId}
                 </p>
               )}
             </div>
@@ -140,7 +140,7 @@ export default function ContactPage() {
       <Section padding="hero">
         <Container>
           <SectionHeading
-            label="Contact"
+            label={t('page.label')}
             title={t('page.title')}
             subtitle={t('page.subtitle')}
           />
@@ -263,7 +263,7 @@ export default function ContactPage() {
               <Card>
                 <CardContent className="pt-6 space-y-6">
                   <h3 className="text-lg font-semibold text-white">
-                    Contact Information
+                    {t('info.heading')}
                   </h3>
 
                   {/* Email */}

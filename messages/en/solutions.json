@@ -147,6 +147,13 @@
     "key_features": "Key Features",
     "pricing": "Pricing",
     "timeline": "Timeline",
+    "related_title": "You Might Also Like",
+    "timeline_title": "Implementation Timeline",
+    "timeline_week1": "Requirements & Design",
+    "timeline_week2": "Core Development",
+    "timeline_week3": "Features & Integration",
+    "timeline_week4": "Testing & QA",
+    "timeline_week5": "Deployment & Training",
     "whats_included": "What's Included",
     "included_items": {
       "item_1": "Full source code",

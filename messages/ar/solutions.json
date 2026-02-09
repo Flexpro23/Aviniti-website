@@ -147,6 +147,13 @@
     "key_features": "الميزات الرئيسية",
     "pricing": "التسعير",
     "timeline": "الجدول الزمني",
+    "related_title": "قد يعجبك أيضاً",
+    "timeline_title": "الجدول الزمني للتنفيذ",
+    "timeline_week1": "المتطلبات والتصميم",
+    "timeline_week2": "التطوير الأساسي",
+    "timeline_week3": "الميزات والتكامل",
+    "timeline_week4": "الاختبار وضمان الجودة",
+    "timeline_week5": "النشر والتدريب",
     "whats_included": "ما هو مشمول",
     "included_items": {
       "item_1": "كود المصدر كامل",

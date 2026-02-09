@@ -1,14 +1,12 @@
 /**
  * AI Thinking State - Premium Processing Animation
  *
- * A sophisticated AI processing animation featuring:
+ * A polished AI processing animation featuring:
  * - Morphing equalizer bars with organic breathing motion
- * - Subtle glow and shimmer effects
- * - 4-phase progression with smooth crossfades
+ * - Concentric pulse rings for depth
+ * - 2-phase progression with smooth crossfades
  * - Horizontal progress indicator
  * - Accessible, RTL-compatible, reduced-motion support
- *
- * Design: Steve Jobs-quality premium animation (Apple/Linear/Stripe aesthetic)
  */
 
 'use client';
@@ -16,7 +14,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
-import { fadeIn } from '@/lib/motion/variants';
 import { easing } from '@/lib/motion/tokens';
 
 interface AIThinkingStateProps {
@@ -31,194 +28,229 @@ const toolColorMap = {
     primary: '#9A6A3C',
     light: '#B8936A',
     dark: '#1C1611',
-    gradient: 'rgba(154, 106, 60, 0.05)',
+    glow: 'rgba(154, 106, 60, 0.12)',
+    ring: 'rgba(154, 106, 60, 0.06)',
   },
   blue: {
     primary: '#5A7A9B',
     light: '#7E9AB5',
     dark: '#141A22',
-    gradient: 'rgba(90, 122, 155, 0.05)',
+    glow: 'rgba(90, 122, 155, 0.12)',
+    ring: 'rgba(90, 122, 155, 0.06)',
   },
   green: {
     primary: '#4A7E62',
     light: '#6F9E82',
     dark: '#121C17',
-    gradient: 'rgba(74, 126, 98, 0.05)',
+    glow: 'rgba(74, 126, 98, 0.12)',
+    ring: 'rgba(74, 126, 98, 0.06)',
   },
   purple: {
     primary: '#7A5E96',
     light: '#9B83B2',
     dark: '#18131F',
-    gradient: 'rgba(122, 94, 150, 0.05)',
+    glow: 'rgba(122, 94, 150, 0.12)',
+    ring: 'rgba(122, 94, 150, 0.06)',
   },
 };
 
-const defaultMessages = [
-  'Understanding your requirements...',
-  'Analyzing market data...',
-  'Building your personalized report...',
-  'Finalizing recommendations...',
-];
-
 export function AIThinkingState({
   toolColor,
-  messages = defaultMessages,
+  messages,
   hideProgress = false,
   className,
 }: AIThinkingStateProps) {
   const [phaseIndex, setPhaseIndex] = useState(0);
   const colors = toolColorMap[toolColor];
 
+  const processingMessages = messages || ['Analyzing...', 'Almost ready...'];
+
   useEffect(() => {
-    const totalPhases = messages.length;
+    const totalPhases = processingMessages.length;
+    const interval = totalPhases <= 2 ? 5000 : 4000;
     const phaseTimers: NodeJS.Timeout[] = [];
 
     for (let i = 1; i < totalPhases; i++) {
       const timer = setTimeout(() => {
         setPhaseIndex(i);
-      }, i * 4000);
+      }, i * interval);
       phaseTimers.push(timer);
     }
 
     return () => {
       phaseTimers.forEach((timer) => clearTimeout(timer));
     };
-  }, [messages.length]);
+  }, [processingMessages.length]);
 
   return (
-    <div className={cn('py-16 flex flex-col items-center justify-center', className)}>
-      {/* Morphing Bars Container */}
-      <div className="relative mb-10" style={{ width: 80, height: 80 }}>
-        {/* 5 Equalizer Bars */}
-        <div className="flex items-center justify-center h-full gap-[2px]">
+    <div className={cn('py-20 flex flex-col items-center justify-center', className)}>
+
+      {/* Central Animation Container */}
+      <div className="relative mb-12" style={{ width: 120, height: 120 }}>
+
+        {/* Outer Pulse Ring */}
+        <motion.div
+          className="absolute inset-0 rounded-full"
+          style={{ border: `1px solid ${colors.primary}15` }}
+          animate={{
+            scale: [1, 1.4, 1],
+            opacity: [0.4, 0, 0.4],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+
+        {/* Inner Pulse Ring */}
+        <motion.div
+          className="absolute inset-2 rounded-full"
+          style={{ border: `1px solid ${colors.primary}20` }}
+          animate={{
+            scale: [1, 1.25, 1],
+            opacity: [0.5, 0, 0.5],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: 'easeOut',
+            delay: 0.8,
+          }}
+        />
+
+        {/* Glow Backdrop */}
+        <div
+          className="absolute inset-0 rounded-full blur-2xl"
+          style={{ backgroundColor: colors.glow }}
+        />
+
+        {/* Equalizer Bars */}
+        <div className="absolute inset-0 flex items-center justify-center gap-[3px]">
           {[0, 1, 2, 3, 4].map((index) => (
             <motion.div
               key={index}
               className="rounded-full"
               style={{
-                width: 4,
+                width: 5,
                 backgroundColor: colors.primary,
-                boxShadow: `0 0 15px ${colors.primary}30`,
+                boxShadow: `0 0 12px ${colors.primary}40`,
               }}
-              initial={{ height: 20 }}
+              initial={{ height: 16 }}
               animate={{
                 height: [
-                  20,
-                  index === 1 ? 60 : index === 3 ? 55 : 40,
-                  20,
-                  index === 2 ? 60 : index === 0 ? 50 : 35,
-                  20,
+                  16,
+                  index === 1 ? 52 : index === 3 ? 48 : index === 2 ? 56 : 36,
+                  16,
+                  index === 2 ? 52 : index === 0 ? 44 : index === 4 ? 40 : 30,
+                  16,
                 ],
               }}
               transition={{
-                duration: 2.5 + index * 0.3,
+                duration: 2.2 + index * 0.2,
                 repeat: Infinity,
                 ease: 'easeInOut',
-                delay: index * 0.15,
+                delay: index * 0.12,
               }}
             />
           ))}
         </div>
 
-        {/* Shimmer Effect */}
+        {/* Subtle Shimmer Sweep */}
         <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
+          className="absolute inset-0 pointer-events-none overflow-hidden rounded-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           <motion.div
             className="absolute top-0 left-0 w-[2px] h-full"
             style={{
-              background: `linear-gradient(to bottom, transparent, ${colors.light}80, transparent)`,
-              filter: 'blur(2px)',
+              background: `linear-gradient(to bottom, transparent, ${colors.light}60, transparent)`,
+              filter: 'blur(3px)',
             }}
-            animate={{
-              x: [0, 80, 0],
-            }}
+            animate={{ x: [0, 120, 0] }}
             transition={{
-              duration: 4,
+              duration: 4.5,
               repeat: Infinity,
               ease: 'easeInOut',
-              delay: 1,
+              delay: 1.5,
             }}
           />
         </motion.div>
       </div>
 
       {!hideProgress && (
-        <>
-          {/* Horizontal Progress Line */}
-          <div className="relative w-full max-w-[240px] h-[2px] mb-8">
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ backgroundColor: '#243044' }}
-            />
-            <motion.div
-              className="absolute left-0 top-0 h-full rounded-full"
-              style={{ backgroundColor: colors.primary }}
-              initial={{ width: '0%' }}
-              animate={{
-                width: `${((phaseIndex + 1) / messages.length) * 100}%`,
-              }}
-              transition={{
-                duration: 1,
-                ease: easing.easeOut,
-              }}
-            />
-          </div>
-        </>
+        /* Horizontal Progress Bar */
+        <div className="relative w-full max-w-[200px] h-[2px] mb-8">
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{ backgroundColor: '#1e2d40' }}
+          />
+          <motion.div
+            className="absolute left-0 top-0 h-full rounded-full"
+            style={{
+              backgroundColor: colors.primary,
+              boxShadow: `0 0 8px ${colors.primary}50`,
+            }}
+            initial={{ width: '0%' }}
+            animate={{
+              width: `${((phaseIndex + 1) / processingMessages.length) * 100}%`,
+            }}
+            transition={{
+              duration: 1.2,
+              ease: easing.easeOut,
+            }}
+          />
+        </div>
       )}
 
-      {/* Phase Messages */}
-      <div className="relative h-8 flex items-center justify-center mb-6">
+      {/* Phase Message — single line with generous height */}
+      <div className="relative w-full max-w-xs min-h-[56px] flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.p
             key={phaseIndex}
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            className="text-base text-muted font-medium text-center absolute"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="text-sm sm:text-base text-muted font-medium text-center leading-relaxed px-4"
           >
-            {messages[phaseIndex]}
+            {processingMessages[phaseIndex]}
           </motion.p>
         </AnimatePresence>
       </div>
 
-      {!hideProgress && (
-        <>
-          {/* Phase Indicators (Dots) */}
-          <div className="flex items-center gap-2">
-            {messages.map((_, index) => (
-              <motion.div
-                key={index}
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: 8,
-                  height: 8,
-                  backgroundColor:
-                    index <= phaseIndex ? colors.primary : '#243044',
-                }}
-                initial={{ scale: 0 }}
-                animate={{
-                  scale: index === phaseIndex ? [1, 1.3, 1] : 1,
-                }}
-                transition={{
-                  scale: {
-                    duration: 0.6,
-                    repeat: index === phaseIndex ? Infinity : 0,
-                    ease: 'easeInOut',
-                  },
-                }}
-              />
-            ))}
-          </div>
-        </>
+      {!hideProgress && processingMessages.length > 1 && (
+        /* Phase Dots */
+        <div className="flex items-center gap-2 mt-4">
+          {processingMessages.map((_, index) => (
+            <motion.div
+              key={index}
+              className="rounded-full"
+              style={{
+                width: 6,
+                height: 6,
+                backgroundColor:
+                  index <= phaseIndex ? colors.primary : '#1e2d40',
+              }}
+              animate={{
+                scale: index === phaseIndex ? [1, 1.4, 1] : 1,
+              }}
+              transition={{
+                scale: {
+                  duration: 1,
+                  repeat: index === phaseIndex ? Infinity : 0,
+                  ease: 'easeInOut',
+                },
+              }}
+            />
+          ))}
+        </div>
       )}
 
       {/* Accessibility */}
       <span className="sr-only" role="status" aria-live="polite">
-        {messages[phaseIndex]}
+        {processingMessages[phaseIndex]}
       </span>
 
       {/* Reduced Motion Fallback */}

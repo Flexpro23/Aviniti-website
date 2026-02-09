@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { buttonVariants } from '@/lib/motion/variants';
 
@@ -30,7 +31,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'primary',
       size = 'md',
       isLoading = false,
-      loadingText = 'Loading...',
+      loadingText,
       leftIcon,
       rightIcon,
       toolColor,
@@ -41,6 +42,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
+    const t = useTranslations('common');
+    const defaultLoadingText = loadingText ?? t('ui.loading_text');
     const Comp = asChild ? Slot : 'button';
 
     // Base styles
@@ -86,7 +89,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <>
             <Loader2 className={cn('animate-spin', iconSizes[size])} aria-hidden="true" />
-            <span className="sr-only">{loadingText}</span>
+            <span className="sr-only">{defaultLoadingText}</span>
           </>
         ) : (
           <>

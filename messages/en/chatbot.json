@@ -59,5 +59,16 @@
     "thanks": "You're welcome! Anything else I can help with?",
     "goodbye": "Goodbye! Feel free to reach out anytime. Have a great day!",
     "unclear": "I'm not sure I understand. Could you rephrase that, or would you like to speak with our team directly?"
+  },
+  "widget": {
+    "error_message": "I'm having trouble connecting. Please try again or contact us directly.",
+    "open_chat_aria": "Open chat with Avi, Aviniti's AI assistant",
+    "name": "Avi",
+    "status": "Online now",
+    "close_chat_aria": "Close chat",
+    "greeting": "Hi! I'm Avi, your AI assistant. How can I help you today?",
+    "input_placeholder": "Type your message...",
+    "input_aria": "Chat message",
+    "send_aria": "Send message"
   }
 }

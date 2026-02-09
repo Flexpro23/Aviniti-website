@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Badge } from '@/components/ui';
 import { ShareButtons } from '@/components/shared/ShareButtons';
@@ -212,15 +213,17 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'blog' });
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
-    return { title: 'Post Not Found - Aviniti Blog' };
+    return { title: t('meta.not_found') };
   }
 
   return {
-    title: `${post.title} - Aviniti Blog`,
+    title: `${post.title} - ${t('meta.blog_suffix')}`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -237,7 +240,9 @@ export default async function BlogPostPage({
 }: {
   params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'blog' });
   const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
@@ -304,7 +309,7 @@ export default async function BlogPostPage({
               className="inline-flex items-center gap-2 text-muted hover:text-bronze transition-colors mb-8"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Blog
+              {t('post.back_to_blog')}
             </Link>
 
             {/* Category Badge */}
@@ -325,7 +330,7 @@ export default async function BlogPostPage({
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                {new Date(post.date).toLocaleDateString('en-US', {
+                {new Date(post.date).toLocaleDateString(locale === 'ar' ? 'ar-JO' : 'en-US', {
                   month: 'long',
                   day: 'numeric',
                   year: 'numeric',
@@ -372,7 +377,7 @@ export default async function BlogPostPage({
               className="text-bronze hover:text-bronze-light transition-colors font-medium flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              All Articles
+              {t('post.all_articles')}
             </Link>
           </div>
         </Container>

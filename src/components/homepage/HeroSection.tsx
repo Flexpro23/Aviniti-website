@@ -10,6 +10,7 @@
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
   ArrowRight,
+  ArrowDown,
   Sparkles,
   Lightbulb,
   BrainCircuit,
@@ -623,7 +624,7 @@ function JourneyDeviceShowcase({
       if (!isHovering.current) {
         onStageChange((prev) => (prev + 1) % JOURNEY_STAGES.length);
       }
-    }, 5000);
+    }, 7000);
   }, []);
 
   useEffect(() => {
@@ -805,9 +806,9 @@ function JourneyDeviceShowcase({
         </motion.div>
 
         {/* Data-flow beam connecting devices (desktop only) */}
-        <div className="hidden lg:block absolute top-1/2 -translate-y-1/2 left-[420px] w-8 h-px z-20" aria-hidden="true">
+        <div className="hidden lg:block absolute top-1/2 -translate-y-1/2 start-[420px] w-8 h-px z-20" aria-hidden="true">
           <motion.div
-            className="absolute inset-y-0 left-0 right-0 rounded-full"
+            className="absolute inset-y-0 start-0 end-0 rounded-full"
             style={{ backgroundColor: stage.colorVar }}
             animate={{ opacity: [0.15, 0.4, 0.15] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -816,7 +817,7 @@ function JourneyDeviceShowcase({
           <motion.div
             className="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
             style={{ backgroundColor: stage.colorVar }}
-            animate={{ left: ['-4px', '100%'], opacity: [0, 1, 1, 0] }}
+            animate={{ insetInlineStart: ['-4px', '100%'], opacity: [0, 1, 1, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           />
         </div>
@@ -915,13 +916,13 @@ function JourneyDeviceShowcase({
       </AnimatePresence>
 
       {/* Floating Metric Badges */}
-      {/* Badge 1: Top center-right — "50+ Apps Delivered" */}
+      {/* Badge 1: Top center-end — "50+ Apps Delivered" */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.8 }}
         style={{ x: badgeX1, y: badgeY1, boxShadow: `0 0 20px ${stage.colorVar}22` }}
-        className="absolute top-4 left-1/2 translate-x-8 lg:translate-x-16 glass rounded-lg px-3 py-2 shadow-2xl rotate-6 transition-shadow duration-1000"
+        className="absolute top-4 start-1/2 translate-x-8 lg:translate-x-16 ltr:translate-x-8 ltr:lg:translate-x-16 rtl:-translate-x-8 rtl:lg:-translate-x-16 glass rounded-lg px-3 py-2 shadow-2xl rotate-6 rtl:-rotate-6 transition-shadow duration-1000"
       >
         <div className="flex items-center gap-2">
           <Smartphone className="w-3.5 h-3.5 text-off-white/70" />
@@ -931,13 +932,13 @@ function JourneyDeviceShowcase({
         </div>
       </motion.div>
 
-      {/* Badge 2: Bottom-left — "60% Faster Launch" */}
+      {/* Badge 2: Bottom-start — "60% Faster Launch" */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.9 }}
         style={{ x: badgeX2, y: badgeY2, boxShadow: `0 0 20px ${stage.colorVar}22` }}
-        className="absolute bottom-10 left-4 lg:left-0 glass rounded-lg px-3 py-2 shadow-2xl -rotate-6 transition-shadow duration-1000"
+        className="absolute bottom-10 start-4 lg:start-0 glass rounded-lg px-3 py-2 shadow-2xl -rotate-6 rtl:rotate-6 transition-shadow duration-1000"
       >
         <div className="flex items-center gap-2">
           <Zap className="w-3.5 h-3.5 text-off-white/70" />
@@ -947,13 +948,13 @@ function JourneyDeviceShowcase({
         </div>
       </motion.div>
 
-      {/* Badge 3: Right side — "AI-Powered" (desktop only) */}
+      {/* Badge 3: End side — "AI-Powered" (desktop only) */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 1.0 }}
         style={{ x: badgeX3, y: badgeY3, boxShadow: `0 0 20px ${stage.colorVar}22` }}
-        className="hidden lg:block absolute top-1/3 -end-4 lg:-end-8 glass rounded-lg px-3 py-2 shadow-2xl rotate-3 transition-shadow duration-1000"
+        className="hidden lg:block absolute top-1/3 -end-4 lg:-end-8 glass rounded-lg px-3 py-2 shadow-2xl rotate-3 rtl:-rotate-3 transition-shadow duration-1000"
       >
         <div className="flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-off-white/70" />
@@ -962,7 +963,7 @@ function JourneyDeviceShowcase({
       </motion.div>
 
       {/* Stage Indicator Pills */}
-      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex gap-1.5">
+      <div className="absolute -bottom-1 start-1/2 -translate-x-1/2 flex gap-1.5">
         {JOURNEY_STAGES.map((s, i) => {
           const isActive = currentStage === i;
           const StageIcon = s.Icon;
@@ -1090,11 +1091,15 @@ export function HeroSection() {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <div className="relative overflow-hidden rounded-lg group">
-                <Button asChild variant="primary" size="lg">
-                  <Link href="/get-estimate">
-                    {t('cta_primary')}
-                    <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-                  </Link>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    document.getElementById('ai-tools')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  {t('cta_primary')}
+                  <ArrowDown className="w-5 h-5 transition-transform duration-200 group-hover:translate-y-1" />
                 </Button>
                 {/* Periodic light sweep */}
                 <motion.div

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 const WHATSAPP_NUMBER = '962790685302';
@@ -24,6 +25,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export default function WhatsAppButton() {
+  const t = useTranslations('common');
   const [showTooltip, setShowTooltip] = useState(false);
   const [shouldPulse, setShouldPulse] = useState(false);
 
@@ -42,7 +44,7 @@ export default function WhatsAppButton() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-6 z-30">
+    <div className="fixed bottom-20 sm:bottom-6 start-6 z-30">
       {/* Tooltip */}
       <AnimatePresence>
         {showTooltip && (
@@ -54,7 +56,7 @@ export default function WhatsAppButton() {
             transition={{ duration: 0.15 }}
           >
             <div className="bg-slate-blue border border-slate-blue-light rounded-lg px-3 py-1.5 text-xs text-off-white shadow-lg">
-              Chat on WhatsApp
+              {t('whatsapp.chat_label')}
             </div>
             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
               <div className="border-4 border-transparent border-t-slate-blue" />
@@ -75,7 +77,7 @@ export default function WhatsAppButton() {
           'bg-[#25D366] shadow-lg shadow-[#25D366]/25',
           'hover:scale-110 active:scale-95 transition-transform duration-200',
         )}
-        aria-label="Chat on WhatsApp"
+        aria-label={t('whatsapp.chat_aria')}
       >
         {/* Pulse ring for first visit */}
         {shouldPulse && (

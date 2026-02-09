@@ -10,9 +10,17 @@ interface NavItem {
 
 interface ResultsNavProps {
   sections: NavItem[];
+  toolColor?: 'orange' | 'blue' | 'green' | 'purple';
 }
 
-export function ResultsNav({ sections }: ResultsNavProps) {
+const activeColorClasses = {
+  orange: 'bg-bronze/20 text-bronze-light',
+  blue: 'bg-blue-500/20 text-blue-300',
+  green: 'bg-emerald-500/20 text-emerald-300',
+  purple: 'bg-purple-500/20 text-purple-300',
+};
+
+export function ResultsNav({ sections, toolColor = 'orange' }: ResultsNavProps) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
   const [isVisible, setIsVisible] = useState(false);
 
@@ -65,7 +73,7 @@ export function ResultsNav({ sections }: ResultsNavProps) {
               onClick={() => scrollTo(id)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
                 activeId === id
-                  ? 'bg-bronze/20 text-bronze-light'
+                  ? activeColorClasses[toolColor]
                   : 'text-muted hover:text-off-white hover:bg-slate-blue-light/30'
               }`}
             >

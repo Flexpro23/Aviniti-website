@@ -252,6 +252,45 @@ export async function generateContent(
  * @param options - Generation options (jsonMode is forced to true)
  * @returns Generated JSON content result
  */
+/**
+ * Attempt to extract valid JSON from a string that might be wrapped
+ * in markdown code fences or contain leading/trailing noise.
+ */
+function extractJson(raw: string): string {
+  // 1. Try as-is first
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    return trimmed;
+  }
+
+  // 2. Strip markdown code fences (```json ... ``` or ``` ... ```)
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
+  if (fenceMatch?.[1]) {
+    return fenceMatch[1].trim();
+  }
+
+  // 3. Find the first { or [ and match to the last } or ]
+  const firstBrace = trimmed.indexOf('{');
+  const firstBracket = trimmed.indexOf('[');
+  const start =
+    firstBrace === -1
+      ? firstBracket
+      : firstBracket === -1
+        ? firstBrace
+        : Math.min(firstBrace, firstBracket);
+
+  if (start !== -1) {
+    const closingChar = trimmed[start] === '{' ? '}' : ']';
+    const lastClose = trimmed.lastIndexOf(closingChar);
+    if (lastClose > start) {
+      return trimmed.slice(start, lastClose + 1);
+    }
+  }
+
+  // 4. Return as-is as a last resort
+  return trimmed;
+}
+
 export async function generateJsonContent<T = unknown>(
   prompt: string,
   options: Omit<GenerateContentOptions, 'jsonMode'> = {}
@@ -263,12 +302,17 @@ export async function generateJsonContent<T = unknown>(
 
   if (result.success && result.text) {
     try {
-      const data = JSON.parse(result.text) as T;
+      const cleaned = extractJson(result.text);
+      const data = JSON.parse(cleaned) as T;
       return {
         ...result,
         data,
       };
     } catch (parseError) {
+      console.error(
+        '[Gemini Client] JSON parse failed. Raw text (first 500 chars):',
+        result.text.slice(0, 500)
+      );
       return {
         ...result,
         success: false,

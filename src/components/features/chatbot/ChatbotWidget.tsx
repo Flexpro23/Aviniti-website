@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ChatMessage } from '@/types/api';
 
 interface ChatSession {
@@ -12,6 +13,7 @@ interface ChatSession {
 }
 
 export default function ChatbotWidget() {
+  const t = useTranslations('chatbot');
   const [session, setSession] = useState<ChatSession>(() => {
     // Initialize from sessionStorage if available
     if (typeof window !== 'undefined') {
@@ -115,7 +117,7 @@ export default function ChatbotWidget() {
       // Add error message
       const errorMessage: ChatMessage = {
         role: 'assistant',
-        content: "I'm having trouble connecting. Please try again or contact us directly.",
+        content: t('widget.error_message'),
         timestamp: new Date().toISOString(),
       };
 
@@ -154,11 +156,12 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ unreadCount, onClick, showPulse }: ChatBubbleProps) {
+  const t = useTranslations('chatbot');
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-bronze to-bronze-hover shadow-lg shadow-bronze/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200"
-      aria-label="Open chat with Avi, Aviniti's AI assistant"
+      className="fixed bottom-6 end-6 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-bronze to-bronze-hover shadow-lg shadow-bronze/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200"
+      aria-label={t('widget.open_chat_aria')}
     >
       {showPulse && (
         <span className="absolute inset-0 rounded-full bg-bronze/30 animate-ping" />
@@ -188,6 +191,7 @@ interface ChatWindowProps {
 }
 
 function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
+  const t = useTranslations('chatbot');
   const [inputValue, setInputValue] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -199,7 +203,7 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-40 w-[380px] h-[520px] max-h-[70vh] bg-slate-blue border border-slate-blue-light rounded-2xl shadow-2xl flex flex-col">
+    <div className="fixed bottom-24 end-6 z-40 w-[calc(100vw-2rem)] sm:w-[380px] h-[520px] max-h-[70vh] bg-slate-blue border border-slate-blue-light rounded-2xl shadow-2xl flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-blue-light">
         <div className="flex items-center gap-3">
@@ -207,17 +211,17 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-white">Avi</div>
+            <div className="text-sm font-semibold text-white">{t('widget.name')}</div>
             <div className="text-xs text-success flex items-center gap-1">
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
-              Online now
+              {t('widget.status')}
             </div>
           </div>
         </div>
         <button
           onClick={onClose}
           className="h-8 w-8 rounded-lg text-muted hover:text-white hover:bg-slate-blue-light transition-colors"
-          aria-label="Close chat"
+          aria-label={t('widget.close_chat_aria')}
         >
           ✕
         </button>
@@ -227,7 +231,7 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-sm text-muted text-center mt-8">
-            Hi! I'm Avi, your AI assistant. How can I help you today?
+            {t('widget.greeting')}
           </div>
         )}
 
@@ -264,16 +268,16 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type your message..."
+          placeholder={t('widget.input_placeholder')}
           className="flex-1 h-10 px-3 py-2 bg-navy/50 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-bronze focus:ring-1 focus:ring-bronze transition-all outline-none"
-          aria-label="Chat message"
+          aria-label={t('widget.input_aria')}
           maxLength={1000}
         />
         <button
           type="submit"
           disabled={!inputValue.trim()}
           className="h-10 w-10 rounded-lg bg-bronze flex items-center justify-center text-white hover:bg-bronze-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label="Send message"
+          aria-label={t('widget.send_aria')}
         >
           →
         </button>

@@ -10,6 +10,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { duration } from '@/lib/motion/tokens';
 import { formatCurrency } from '@/lib/i18n/formatters';
@@ -31,6 +32,7 @@ export function ComparisonBars({
   locale = 'en',
   className,
 }: ComparisonBarsProps) {
+  const t = useTranslations('roi-calculator');
   const maxCost = Math.max(currentCost, withAppCost);
   const currentWidth = (currentCost / maxCost) * 100;
   const withAppWidth = (withAppCost / maxCost) * 100;
@@ -45,7 +47,7 @@ export function ComparisonBars({
         {savings > 0 && (
           <div className="px-3 py-1 rounded-full bg-success/10 border border-success/30">
             <span className="text-xs font-semibold text-success">
-              Save {savingsPercent}%
+              {t('comparison.save_percent', { percent: savingsPercent })}
             </span>
           </div>
         )}
@@ -54,7 +56,7 @@ export function ComparisonBars({
       {/* Current Cost Bar */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted">Current Process</span>
+          <span className="text-sm text-muted">{t('comparison.current_process')}</span>
           <span className="text-sm font-semibold text-white">
             {formatCurrency(currentCost, currency, locale)}
           </span>
@@ -76,7 +78,7 @@ export function ComparisonBars({
       {/* With App Cost Bar */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted">With App Automation</span>
+          <span className="text-sm text-muted">{t('comparison.with_app_automation')}</span>
           <span className="text-sm font-semibold text-white">
             {formatCurrency(withAppCost, currency, locale)}
           </span>
@@ -103,7 +105,7 @@ export function ComparisonBars({
       {savings > 0 && (
         <div className="pt-3 border-t border-slate-blue-light">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted">Annual Savings</span>
+            <span className="text-sm font-medium text-muted">{t('comparison.annual_savings')}</span>
             <span className="text-base font-bold text-success">
               {formatCurrency(savings, currency, locale)}
             </span>

@@ -1,31 +1,45 @@
 {
   "meta": {
     "title": "Blog - Aviniti",
-    "description": "Insights on AI, app development, technology trends, and digital transformation"
+    "description": "Insights on AI, app development, technology trends, and digital transformation",
+    "not_found": "Post Not Found - Aviniti Blog",
+    "blog_suffix": "Aviniti Blog"
   },
   "page": {
-    "title": "Blog & Insights",
-    "subtitle": "Expert insights on AI, app development, and digital transformation",
+    "label": "Blog",
+    "title": "Insights & Articles",
+    "subtitle": "Expert perspectives on AI, mobile development, web technologies, and digital transformation.",
     "search_placeholder": "Search articles...",
+    "search_no_results": "No articles found matching your search.",
     "categories": {
-      "all": "All Articles",
-      "ai": "AI & Machine Learning",
-      "mobile": "Mobile Development",
-      "web": "Web Development",
-      "case_study": "Case Studies",
-      "industry": "Industry Insights",
-      "tutorial": "Tutorials & Guides"
+      "all": "All",
+      "ai": "AI",
+      "mobile": "Mobile",
+      "web": "Web",
+      "tutorials": "Tutorials"
     }
   },
+  "cta": {
+    "heading": "Ready to Build Your Idea?",
+    "subtitle": "Use our free AI-powered tools to explore, analyze, and estimate your next project.",
+    "idea_lab": "Try Idea Lab",
+    "estimate": "Get AI Estimate"
+  },
   "post": {
+    "read": "Read",
     "read_more": "Read More",
-    "reading_time": "{{minutes}} min read",
-    "published_on": "Published on {{date}}",
-    "by_author": "By {{author}}",
+    "reading_time": "{minutes} min read",
+    "published_on": "Published on {date}",
+    "by_author": "By {author}",
     "share": "Share this article",
     "related_posts": "Related Articles",
     "categories": "Categories",
-    "tags": "Tags"
+    "tags": "Tags",
+    "featured": "Featured",
+    "featured_image": "Featured Image",
+    "back_to_blog": "Back to Blog",
+    "all_articles": "All Articles",
+    "not_found_title": "Post Not Found"
   },
   "filters": {
     "sort_by": "Sort by",

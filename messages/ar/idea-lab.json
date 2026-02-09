@@ -1,138 +1,39 @@
 {
   "meta": {
-    "title": "مختبر الأفكار - مولد أفكار التطبيقات بالذكاء الاصطناعي | Aviniti",
-    "description": "نفدت الأفكار؟ سيقوم الذكاء الاصطناعي لدينا بإنشاء 5-6 مفاهيم تطبيقات مخصصة حسب مجال عملك وخلفيتك"
+    "title": "مختبر الأفكار — اكتشف ما يمكن للتكنولوجيا أن تقدمه لك | Aviniti",
+    "description": "أجب عن بضعة أسئلة بسيطة واكتشف أفكاراً مخصصة لكيفية تحسين عملك أو حياتك اليومية باستخدام التكنولوجيا."
   },
-  "hero_title": "ليس لديك فكرة تطبيق؟ دعنا نكتشف واحدة معاً.",
-  "hero_description": "أجب على 3 أسئلة سريعة وسيقوم الذكاء الاصطناعي لدينا بإنشاء أفكار تطبيقات مخصصة حسب خلفيتك ومجال عملك ورؤيتك.",
-  "hero_cta": "ابدأ الاكتشاف",
-  "step1_title": "أخبرني عن نفسك -- ما هي خلفيتك؟",
-  "step1_helper": "هذا يساعدنا في مطابقة الأفكار مع نقاط قوتك وخبرتك.",
-  "step2_title": "ما هي الصناعة أو المجال الذي يهمك أكثر؟",
-  "step2_helper": "اختر المجال الذي ترى فيه أكبر فرصة.",
-  "step3_title": "ما المشكلة التي تريد حلها أو ما الفرصة التي تراها؟",
-  "step3_helper": "كن محدداً قدر الإمكان -- كلما قدمت تفاصيل أكثر، كانت أفكارك أفضل.",
-  "results_title": "إليك أفكار التطبيقات المخصصة لك",
-  "hero": {
-    "title": "اكتشف فكرة تطبيقك الكبيرة التالية",
-    "subtitle": "أجب على 3 أسئلة سريعة واحصل على أفكار تطبيقات مولدة بالذكاء الاصطناعي مخصصة لك"
-  },
-  "steps": {
-    "step_1": "خلفيتك",
-    "step_2": "التركيز الصناعي",
-    "step_3": "المشكلة/الهدف",
-    "step_4": "احصل على النتائج"
-  },
-  "step1": {
-    "title": "ما هي خلفيتك؟",
-    "description": "هذا يساعدنا في إنشاء أفكار تتناسب مع خبرتك",
-    "background": {
-      "entrepreneur": "رائد أعمال / صاحب عمل",
-      "entrepreneur_desc": "إدارة أو بدء عمل تجاري",
-      "professional": "محترف / موظف",
-      "professional_desc": "العمل في بيئة شركات",
-      "student": "طالب / أكاديمي",
-      "student_desc": "الدراسة أو البحث",
-      "creative": "مبدع / مستقل",
-      "creative_desc": "مصمم، مطور، أو عامل مستقل",
-      "other": "أخرى",
-      "other_desc": "شيء آخر"
-    }
-  },
-  "step2": {
-    "title": "ما هي الصناعة التي تهمك؟",
-    "description": "اختر المجال الذي تريد إحداث تأثير فيه",
-    "industry": {
-      "health_wellness": "الصحة والعافية",
-      "finance_banking": "المالية والبنوك",
-      "education_learning": "التعليم والتعلم",
-      "ecommerce_retail": "التجارة الإلكترونية والتجزئة",
-      "logistics_delivery": "الخدمات اللوجستية والتوصيل",
-      "entertainment_media": "الترفيه والإعلام",
-      "travel_hospitality": "السفر والضيافة",
-      "real_estate": "العقارات",
-      "food_restaurant": "الطعام والمطاعم",
-      "social_community": "التواصل الاجتماعي والمجتمع",
-      "other": "أخرى / متعددة"
-    }
-  },
-  "step3": {
-    "title": "ما هي المشكلة التي تريد حلها؟",
-    "description": "صف التحدي أو الفرصة التي تراها",
-    "placeholder": "مثال: تعاني المطاعم من إدارة طلبات التوصيل من منصات متعددة...",
-    "min_chars": "10 أحرف على الأقل",
-    "examples": {
-      "title": "تحتاج إلى إلهام؟ جرب هذه:",
-      "example_1": "الشركات الصغيرة لا تستطيع تحمل تكلفة أنظمة CRM باهظة الثمن",
-      "example_2": "يكافح الآباء لإيجاد جليسات أطفال موثوقات",
-      "example_3": "يضيع مدربو اللياقة البدنية الوقت في الجدولة اليدوية"
-    }
-  },
-  "step4": {
-    "title": "أين يجب أن نرسل أفكارك؟",
-    "description": "سنرسل لك عبر البريد الإلكتروني 5-6 مفاهيم تطبيقات مخصصة فوراً",
-    "email_label": "عنوان البريد الإلكتروني",
-    "email_placeholder": "your@email.com",
-    "whatsapp_label": "أرسل ملخصاً عبر واتساب أيضاً",
-    "phone_placeholder": "+962 79 123 4567",
-    "submit": "إنشاء أفكاري",
-    "submitting": "جارٍ إنشاء الأفكار..."
-  },
-  "results": {
-    "title": "أفكار تطبيقاتك المخصصة",
-    "subtitle": "بناءً على {background} في {industry}",
-    "ideas_count": "{count} مفاهيم مولدة بالذكاء الاصطناعي",
-    "idea_card": {
-      "estimated_cost": "التكلفة المقدرة",
-      "estimated_timeline": "الجدول الزمني المقدر",
-      "features": "الميزات الرئيسية",
-      "matched_solution": "لدينا حل جاهز لهذا!",
-      "solution_price": "يبدأ من {price}",
-      "solution_timeline": "تسليم {timeline}",
-      "cta_analyze": "حلل هذه الفكرة",
-      "cta_estimate": "احصل على تقدير تفصيلي",
-      "cta_solution": "عرض الحل الجاهز"
-    },
-    "next_steps": {
-      "title": "ما التالي؟",
-      "step_1": "اختر فكرتك المفضلة",
-      "step_2": "احصل على تحليلها للجدوى (مجاناً)",
-      "step_3": "استلم تقدير مشروع تفصيلي",
-      "cta_analyze": "تحليل فكرة",
-      "cta_call": "احجز مكالمة عصف ذهني"
-    }
-  },
-  "loading": {
-    "analyzing": "جارٍ فهم خلفيتك ومجالك...",
-    "generating": "جارٍ إنشاء أفكار تطبيقات مخصصة...",
-    "finalizing": "جارٍ وضع اللمسات الأخيرة على مفاهيمك..."
-  },
-  "errors": {
-    "select_background": "يرجى اختيار خلفيتك",
-    "select_industry": "يرجى اختيار صناعة",
-    "problem_too_short": "يرجى وصف المشكلة في 10 أحرف على الأقل",
-    "email_required": "يرجى إدخال عنوان بريد إلكتروني صالح",
-    "generation_failed": "فشل إنشاء الأفكار. يرجى المحاولة مرة أخرى أو التواصل معنا."
-  },
-  "generate_more": "توليد أفكار أخرى",
-  "generation_counter": "التوليد {current} من {total}",
-  "complexity_simple": "بسيط",
-  "complexity_moderate": "متوسط",
-  "complexity_complex": "معقد",
-  "tech_stack": "المجموعة التقنية",
-  "prefilled_from_idea_lab": "تم الملء من مختبر الأفكار: {name}",
+  "hero_title": "ماذا لو كانت التكنولوجيا تجعل حياتك أسهل؟",
+  "hero_description": "لست بحاجة لأن تكون خبيراً تقنياً. أجب عن بضعة أسئلة بسيطة عن يومك، وسنريك ما هو ممكن.",
+  "hero_cta": "هيا نكتشف",
+  "hero_badge": "اكتشاف مدعوم بالذكاء الاصطناعي",
+  "hero_trust": "أقل من 5 دقائق — لا تحتاج أي معرفة تقنية",
 
-  "backgrounds": {
-    "entrepreneur": "رائد أعمال / صاحب عمل",
-    "professional": "محترف / موظف",
-    "student": "طالب / أكاديمي",
-    "creative": "مبدع / مستقل",
-    "other": "أخرى"
+  "step1_title": "أولاً، أخبرنا عن نفسك",
+  "step1_helper": "اختر الخيار الذي يصفك بشكل أفضل. هذا يساعدنا في تخصيص التجربة لك.",
+
+  "personas": {
+    "small_business": "أدير عملاً تجارياً صغيراً",
+    "small_business_subtitle": "صاحب محل، مطعم، عيادة، وكالة، إلخ.",
+    "professional": "أنا موظف / محترف",
+    "professional_subtitle": "موظف مكتب، رعاية صحية، مالية، حكومة، إلخ.",
+    "creative": "أنا مبدع / مستقل",
+    "creative_subtitle": "مصمم، مصور، كاتب، صانع محتوى، إلخ.",
+    "student": "أنا طالب / باحث",
+    "student_subtitle": "جامعة، دراسات عليا، بحث أكاديمي، إلخ.",
+    "hobby": "لدي مشروع شخصي",
+    "hobby_subtitle": "هواية، مشروع جانبي، مبادرة مجتمعية، إلخ.",
+    "manager": "أدير فريقاً",
+    "manager_subtitle": "قائد فريق، رئيس قسم، مدير عمليات، إلخ."
   },
+
+  "step2_title": "في أي مجال تعمل؟",
+  "step2_helper": "اختر المجال أو القطاع الأقرب لعملك أو اهتمامك.",
+
   "industries": {
     "health_wellness": "الصحة والعافية",
     "finance_banking": "المالية والبنوك",
-    "education_learning": "التعليم والتعلم",
+    "education_learning": "التعليم والتعلّم",
     "ecommerce_retail": "التجارة الإلكترونية والتجزئة",
     "logistics_delivery": "الخدمات اللوجستية والتوصيل",
     "entertainment_media": "الترفيه والإعلام",
@@ -140,44 +41,97 @@
     "real_estate": "العقارات",
     "food_restaurant": "الطعام والمطاعم",
     "social_community": "التواصل الاجتماعي والمجتمع",
-    "other": "أخرى / متعددة"
+    "other": "أخرى"
   },
-  "inspiration_prompts": {
-    "prompt_1": "أدير عيادة والمرضى يشتكون دائماً من أوقات الانتظار",
-    "prompt_2": "الطلاب في بلدي لا يجدون دروساً خصوصية بأسعار معقولة",
-    "prompt_3": "المطاعم الصغيرة تعاني من إدارة طلبات التوصيل"
+
+  "discovery_loading_title": "نجهّز أسئلتك المخصصة...",
+  "discovery_loading_messages": {
+    "analyzing": "نجهّز أسئلة مخصصة لملفك الشخصي...",
+    "almost": "تقريباً جاهز — لحظة واحدة..."
   },
-  "loading_messages": {
-    "exploring": "جارٍ استكشاف اهتماماتك...",
-    "researching": "جارٍ البحث عن فرص السوق...",
-    "generating": "جارٍ توليد مفاهيم مبتكرة...",
-    "refining": "جارٍ تنقيح أفكارك..."
+
+  "questions_title": "دعنا نتعرّف عليك أكثر",
+  "questions_helper": "أجب عن بضعة أسئلة سريعة حتى نقترح أفكاراً تناسب وضعك.",
+  "question_of": "السؤال {current} من {total}",
+  "yes": "نعم",
+  "no": "لا",
+  "single_line_placeholder": "اكتب إجابتك هنا...",
+
+  "email_step_title": "أوشكت على الانتهاء!",
+  "email_step_helper": "أدخل بريدك الإلكتروني لرؤية أفكارك المخصصة. سنرسل لك نسخة أيضاً.",
+
+  "generating_title": "نصمّم أفكارك المخصصة...",
+  "generating_messages": {
+    "analyzing": "نحلّل إجاباتك لاستخلاص رؤى...",
+    "crafting": "نبني أفكاراً مخصصة لك..."
   },
-  "results_badge": "تم توليد الأفكار",
-  "results_subtitle": "بناءً على خلفيتك كـ{background} في مجال {industry}، إليك الأفكار التي تتوافق مع رؤيتك.",
-  "fallback_background": "محترف",
-  "fallback_industry": "مجالك",
-  "idea_label": "الفكرة {number}",
-  "key_features": "الميزات الرئيسية",
-  "estimated_cost": "التكلفة التقديرية",
-  "timeline_label": "الجدول الزمني",
-  "explore_idea": "استكشف هذه الفكرة",
-  "get_estimate": "احصل على تقدير",
+
+  "results_badge": "أفكارك المخصصة",
+  "results_title": "هذا ما اكتشفناه لك",
+  "results_subtitle": "بناءً على إجاباتك، وجدنا {count} أفكار يمكن أن تحدث فرقاً حقيقياً.",
+
+  "tag_easiest": "الأسهل للبدء",
+  "tag_impact": "الأكبر تأثيراً",
+  "tag_innovative": "الأكثر ابتكاراً",
+
+  "view_details": "عرض المزيد من التفاصيل",
+  "close_details": "إغلاق",
+
+  "detail_before_title": "كيف تسير الأمور حالياً",
+  "detail_after_title": "كيف يمكن أن تكون",
+  "detail_description_title": "ماذا يفعل هذا الحل",
+  "detail_social_proof_title": "مثال من الواقع",
+  "detail_features_title": "المزايا الرئيسية",
+  "detail_impact_title": "الأثر المتوقع",
+  "detail_how_it_works_title": "كيف يعمل",
+  "detail_cta_section_title": "مستعد للخطوة التالية؟",
+  "detail_cta_section_subtitle": "سنملأ كل شيء مسبقاً حتى لا تضطر للبدء من الصفر.",
+  "detail_cta_roi": "اعرف العائد على الاستثمار",
+  "detail_cta_roi_desc": "اكتشف العائد المحتمل على استثمارك",
+  "detail_cta_estimate": "احصل على تقدير التكلفة",
+  "detail_cta_estimate_desc": "اعرف كم سيكلّف بناء هذا الحل",
+  "detail_or_talk": "أو تحدث معنا مباشرة",
+  "detail_book_call": "احجز مكالمة مجانية",
+  "detail_whatsapp": "تحدث عبر واتساب",
+
+  "email_ideas": "أرسل لي هذه الأفكار بالبريد",
+  "email_ideas_sent": "تم إرسال الأفكار إلى بريدك!",
+  "save_share": "حفظ ومشاركة النتائج",
+  "link_copied": "تم نسخ الرابط!",
+
+  "refresh_ideas_btn": "أرني أفكاراً مختلفة",
+  "refresh_ideas_subtitle": "ليست ما تبحث عنه؟ دعنا ننشئ أفكاراً جديدة.",
+  "refresh_ideas_loading": "ننشئ أفكاراً جديدة...",
+  "refresh_limit_reached": "لقد استكشفت جميع مجموعات الأفكار المتاحة لهذه الجلسة.",
+  "refresh_count": "{current} من {total} تحديثات مستخدمة",
+
+  "cross_sell_analyzer": "تريد تحليلاً أعمق؟ حلّل أي من هذه الأفكار مع محلل الأفكار بالذكاء الاصطناعي.",
+  "cross_sell_estimate": "مستعد للخطوة التالية؟ احصل على تقدير مفصّل للتكلفة والمدة الزمنية.",
+
   "continue_btn": "متابعة",
   "back_btn": "رجوع",
+  "skip_btn": "تخطي",
   "dismiss_btn": "إغلاق",
-  "link_copied": "تم نسخ الرابط!",
-  "save_share": "حفظ ومشاركة الأفكار",
-  "textarea_placeholder": "صف التحدي الذي تواجهه أو الفرصة التي اكتشفتها...",
-  "char_counter": "{count} / 500 حرف",
-  "min_chars_warning": "(10 أحرف كحد أدنى)",
-  "need_inspiration": "تحتاج إلى إلهام؟",
-  "error_generate": "فشل توليد الأفكار. يرجى المحاولة مرة أخرى.",
-  "error_generate_more": "فشل توليد المزيد من الأفكار. يرجى المحاولة مرة أخرى.",
+  "try_again_btn": "حاول مرة أخرى",
+  "start_over_btn": "ابدأ من جديد",
+
   "error_generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
-  "cross_sell_analyzer": "هل تريد التحقق من إحدى هذه الأفكار؟ دع الذكاء الاصطناعي يحلل إمكاناتها السوقية.",
-  "cross_sell_estimate": "مستعد للبناء؟ احصل على تقدير تفصيلي للتكلفة والجدول الزمني.",
-  "bookmark_aria": "حفظ {name} في المفضلة",
-  "aria_background_selection": "اختيار الخلفية",
-  "aria_industry_selection": "اختيار المجال"
+  "error_generate": "فشل توليد الأفكار. يرجى المحاولة مرة أخرى.",
+  "error_discover": "فشل تحميل الأسئلة. يرجى المحاولة مرة أخرى.",
+  "error_rate_limit": "استنفدت جلساتك المجانية لهذا اليوم. عد غداً!",
+
+  "aria_persona_selection": "اختر من أنت",
+  "aria_industry_selection": "اختر مجالك أو قطاعك",
+  "aria_question_answer": "أجب على هذا السؤال",
+  "aria_idea_card": "فكرة: {name}",
+  "aria_view_details": "عرض تفاصيل {name}",
+
+  "progress_step_persona": "عنك",
+  "progress_step_industry": "مجالك",
+  "progress_step_discover": "الاكتشاف",
+  "progress_step_email": "التواصل",
+  "progress_step_results": "أفكارك",
+
+  "discovery_progress_title": "نبني ملفك الشخصي",
+  "discovery_progress_answered": "{count} تمت الإجابة عليها"
 }

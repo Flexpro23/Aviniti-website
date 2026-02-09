@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Calendar, Clock, ArrowRight, User } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Calendar, Clock, ArrowRight, User, Search, X } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Badge, Button } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -73,15 +74,35 @@ const blogPosts: BlogPost[] = [
   },
 ];
 
-const categories = ['All', 'AI', 'Mobile', 'Web', 'Tutorials'];
+const categoryKeys = ['all', 'ai', 'mobile', 'web', 'tutorials'] as const;
 
 export default function BlogPage() {
-  const [activeCategory, setActiveCategory] = useState('All');
+  const t = useTranslations('blog');
+  const locale = useLocale();
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredPosts =
-    activeCategory === 'All'
-      ? blogPosts
-      : blogPosts.filter((post) => post.category === activeCategory);
+  // Filter posts by category and search query
+  const filteredPosts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    let posts = blogPosts;
+
+    // Filter by category
+    if (activeCategory !== 'all') {
+      posts = posts.filter((post) => post.category.toLowerCase() === activeCategory);
+    }
+
+    // Filter by search query
+    if (query) {
+      posts = posts.filter((post) =>
+        post.title.toLowerCase().includes(query) ||
+        post.excerpt.toLowerCase().includes(query)
+      );
+    }
+
+    return posts;
+  }, [activeCategory, searchQuery]);
 
   return (
     <main className="min-h-screen bg-navy">
@@ -96,10 +117,37 @@ export default function BlogPage() {
       <Section padding="hero">
         <Container>
           <SectionHeading
-            label="Blog"
-            title="Insights & Articles"
-            subtitle="Expert perspectives on AI, mobile development, web technologies, and digital transformation."
+            label={t('page.label')}
+            title={t('page.title')}
+            subtitle={t('page.subtitle')}
           />
+        </Container>
+      </Section>
+
+      {/* Search Input */}
+      <Section padding="compact">
+        <Container>
+          <div className="max-w-2xl mx-auto">
+            <div className="relative">
+              <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('page.search_placeholder')}
+                className="w-full bg-slate-blue border border-slate-blue-light rounded-xl ps-12 pe-12 py-3 text-off-white placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-bronze/50 focus:border-bronze transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute end-4 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+          </div>
         </Container>
       </Section>
 
@@ -107,17 +155,17 @@ export default function BlogPage() {
       <Section padding="compact">
         <Container>
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {categories.map((cat) => (
+            {categoryKeys.map((catKey) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={catKey}
+                onClick={() => setActiveCategory(catKey)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeCategory === cat
+                  activeCategory === catKey
                     ? 'bg-bronze text-white'
                     : 'bg-slate-blue text-muted hover:text-white hover:bg-slate-blue-light'
                 }`}
               >
-                {cat}
+                {t(`page.categories.${catKey}`)}
               </button>
             ))}
           </div>
@@ -133,7 +181,7 @@ export default function BlogPage() {
                 <Card hover className="h-full flex flex-col">
                   {/* Placeholder image area */}
                   <div className="h-48 bg-slate-blue-light rounded-t-lg flex items-center justify-center border-b border-slate-blue-light">
-                    <span className="text-muted text-sm">Featured Image</span>
+                    <span className="text-muted text-sm">{t('post.featured_image')}</span>
                   </div>
 
                   <CardHeader className="pt-4">
@@ -143,7 +191,7 @@ export default function BlogPage() {
                       </Badge>
                       {post.featured && (
                         <Badge variant="outline" size="sm">
-                          Featured
+                          {t('post.featured')}
                         </Badge>
                       )}
                     </div>
@@ -162,7 +210,7 @@ export default function BlogPage() {
                     <div className="flex items-center gap-3 text-xs text-muted">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(post.date).toLocaleDateString('en-US', {
+                        {new Date(post.date).toLocaleDateString(locale === 'ar' ? 'ar-JO' : 'en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
@@ -177,7 +225,7 @@ export default function BlogPage() {
                       href={`/blog/${post.slug}`}
                       className="text-bronze text-sm font-medium hover:text-bronze-light transition-colors flex items-center gap-1"
                     >
-                      Read
+                      {t('post.read')}
                       <ArrowRight className="h-3 w-3" />
                     </Link>
                   </CardFooter>
@@ -189,10 +237,46 @@ export default function BlogPage() {
           {filteredPosts.length === 0 && (
             <div className="text-center py-16">
               <p className="text-muted text-lg">
-                No articles found in this category. Check back soon!
+                {searchQuery ? t('page.search_no_results') : t('empty.title')}
               </p>
             </div>
           )}
+        </Container>
+      </Section>
+
+      {/* CTA Section */}
+      <Section>
+        <Container>
+          <ScrollReveal>
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-blue via-slate-blue to-slate-blue-light p-8 md:p-12 border border-bronze/20">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(205,147,89,0.15),transparent_50%)]" />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 text-center max-w-2xl mx-auto space-y-6">
+                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                  {t('cta.heading')}
+                </h2>
+                <p className="text-lg text-muted">
+                  {t('cta.subtitle')}
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+                  <Link href="/idea-lab">
+                    <Button size="lg" variant="primary">
+                      {t('cta.idea_lab')}
+                    </Button>
+                  </Link>
+                  <Link href="/get-estimate">
+                    <Button size="lg" variant="secondary">
+                      {t('cta.estimate')}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
         </Container>
       </Section>
     </main>

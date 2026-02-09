@@ -12,7 +12,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Globe } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { usePathname } from '@/lib/i18n/navigation';
+import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
 import { fadeInDown } from '@/lib/motion/variants';
@@ -24,6 +24,7 @@ export function LanguageSwitcher() {
   const t = useTranslations('common');
   const currentLocale = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -56,10 +57,8 @@ export function LanguageSwitcher() {
     }
   }, [isOpen]);
 
-  const handleLocaleChange = (locale: string) => {
-    // Create new path with different locale
-    const newPath = `/${locale}${pathname}`;
-    window.location.href = newPath;
+  const handleLocaleChange = (newLocale: string) => {
+    router.replace(pathname, { locale: newLocale as 'en' | 'ar' });
   };
 
   return (

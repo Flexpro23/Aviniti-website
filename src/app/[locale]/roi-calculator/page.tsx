@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   Check,
@@ -25,10 +25,10 @@ import {
   Info,
 } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
-import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
+import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { ROIProjectionChart } from '@/components/ai-tools/charts/ROIProjectionChart';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
@@ -72,6 +72,271 @@ interface EstimateData {
 }
 
 // ============================================================
+// Premium Loading Screen
+// ============================================================
+
+function getLoadingPhases(t: (key: string) => string) {
+  return [
+    {
+      icon: Target,
+      label: t('analysis.steps.market_analysis.label'),
+      detail: t('analysis.steps.market_analysis.detail'),
+      color: 'text-blue-400',
+      bg: 'bg-blue-500/10',
+      border: 'border-blue-500/20',
+    },
+    {
+      icon: DollarSign,
+      label: t('analysis.steps.revenue_modeling.label'),
+      detail: t('analysis.steps.revenue_modeling.detail'),
+      color: 'text-emerald-400',
+      bg: 'bg-emerald-500/10',
+      border: 'border-emerald-500/20',
+    },
+    {
+      icon: BarChart3,
+      label: t('analysis.steps.financial_projection.label'),
+      detail: t('analysis.steps.financial_projection.detail'),
+      color: 'text-purple-400',
+      bg: 'bg-purple-500/10',
+      border: 'border-purple-500/20',
+    },
+    {
+      icon: TrendingUp,
+      label: t('analysis.steps.roi_calculation.label'),
+      detail: t('analysis.steps.roi_calculation.detail'),
+      color: 'text-amber-400',
+      bg: 'bg-amber-500/10',
+      border: 'border-amber-500/20',
+    },
+    {
+      icon: Rocket,
+      label: t('analysis.steps.strategy_insights.label'),
+      detail: t('analysis.steps.strategy_insights.detail'),
+      color: 'text-rose-400',
+      bg: 'bg-rose-500/10',
+      border: 'border-rose-500/20',
+    },
+  ];
+}
+
+function ROILoadingScreen({ messages }: { messages: string[] }) {
+  const t = useTranslations('roi_calculator');
+  const LOADING_PHASES = getLoadingPhases(t);
+  const [activePhase, setActivePhase] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // Phase progression every 4s
+    const phaseInterval = setInterval(() => {
+      setActivePhase((prev) => (prev < LOADING_PHASES.length - 1 ? prev + 1 : prev));
+    }, 4000);
+    return () => clearInterval(phaseInterval);
+  }, []);
+
+  useEffect(() => {
+    // Smooth progress bar — reaches ~90% over the duration, never hits 100 until done
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        const target = ((activePhase + 1) / LOADING_PHASES.length) * 90;
+        const step = (target - prev) * 0.08;
+        return prev + Math.max(step, 0.1);
+      });
+    }, 50);
+    return () => clearInterval(progressInterval);
+  }, [activePhase]);
+
+  return (
+    <main className="min-h-screen bg-navy">
+      <div className="max-w-2xl mx-auto px-4 py-20 sm:py-28">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          {/* Animated orb */}
+          <div className="relative mx-auto mb-8 w-20 h-20">
+            <motion.div
+              className="absolute inset-0 rounded-full bg-purple-500/20"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.1, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="absolute inset-2 rounded-full bg-purple-500/30"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+            />
+            <div className="absolute inset-4 rounded-full bg-purple-500/40 flex items-center justify-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-purple-300">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.div>
+            </div>
+          </div>
+
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{t('analysis.building_title')}</h2>
+          <p className="text-sm text-muted">{t('analysis.building_subtitle')}</p>
+        </motion.div>
+
+        {/* Progress bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-10"
+        >
+          <div className="flex justify-between text-xs text-muted mb-2">
+            <span>{t('analysis.analyzing')}</span>
+            <span>{Math.round(progress)}%</span>
+          </div>
+          <div className="h-1.5 bg-slate-blue-light/50 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #7C3AED, #A855F7, #C084FC)',
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Phase cards */}
+        <div className="space-y-3">
+          {LOADING_PHASES.map((phase, index) => {
+            const Icon = phase.icon;
+            const isActive = index === activePhase;
+            const isComplete = index < activePhase;
+            const isPending = index > activePhase;
+
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{
+                  opacity: isPending ? 0.4 : 1,
+                  x: 0,
+                }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={`relative flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${
+                  isActive
+                    ? `${phase.bg} ${phase.border} shadow-lg`
+                    : isComplete
+                    ? 'bg-slate-blue/50 border-slate-blue-light/30'
+                    : 'bg-slate-blue/20 border-transparent'
+                }`}
+              >
+                {/* Icon */}
+                <div className={`flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center transition-all duration-500 ${
+                  isActive ? phase.bg : isComplete ? 'bg-emerald-500/10' : 'bg-slate-blue-light/30'
+                }`}>
+                  {isComplete ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+                      <Check className="h-5 w-5 text-emerald-400" />
+                    </motion.div>
+                  ) : (
+                    <Icon className={`h-5 w-5 transition-colors duration-500 ${
+                      isActive ? phase.color : 'text-muted-light'
+                    }`} />
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold transition-colors duration-500 ${
+                    isActive ? 'text-white' : isComplete ? 'text-off-white' : 'text-muted'
+                  }`}>
+                    {phase.label}
+                  </p>
+                  <p className={`text-xs transition-colors duration-500 ${
+                    isActive ? 'text-muted' : 'text-muted-light'
+                  }`}>
+                    {phase.detail}
+                  </p>
+                </div>
+
+                {/* Status */}
+                <div className="flex-shrink-0">
+                  {isActive && (
+                    <motion.div
+                      className="flex gap-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {[0, 1, 2].map((dot) => (
+                        <motion.div
+                          key={dot}
+                          className={`h-1.5 w-1.5 rounded-full ${phase.color.replace('text-', 'bg-')}`}
+                          animate={{ opacity: [0.3, 1, 0.3] }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            delay: dot * 0.2,
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  )}
+                  {isComplete && (
+                    <span className="text-[10px] font-medium text-emerald-400/80">{t('analysis.done')}</span>
+                  )}
+                </div>
+
+                {/* Active pulse border */}
+                {isActive && (
+                  <motion.div
+                    className={`absolute inset-0 rounded-xl border ${phase.border}`}
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Current message */}
+        <div className="mt-10 text-center">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={activePhase}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="text-sm text-purple-300/80 font-medium"
+            >
+              {messages[Math.min(activePhase, messages.length - 1)]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+
+        {/* Bottom reassurance */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2 }}
+          className="text-center text-xs text-muted mt-8"
+        >
+          {t('analysis.time_estimate')}
+        </motion.p>
+      </div>
+    </main>
+  );
+}
+
+// ============================================================
 // Page Component
 // ============================================================
 
@@ -110,8 +375,35 @@ export default function ROICalculatorPage() {
     }
   }, [results, savedId, saveResult]);
 
-  // Mode detection on mount
+  // Mode detection on mount (ref prevents React Strict Mode double-execution)
+  const modeDetectedRef = useRef(false);
   useEffect(() => {
+    if (modeDetectedRef.current) return;
+    modeDetectedRef.current = true;
+
+    const fromIdeaLab = searchParams.get('fromIdeaLab') === 'true';
+    if (fromIdeaLab) {
+      try {
+        const stored = sessionStorage.getItem('aviniti_roi_idealab_data');
+        if (stored) {
+          const ideaData = JSON.parse(stored);
+          sessionStorage.removeItem('aviniti_roi_idealab_data');
+          
+          // Pre-fill the idea description with rich context from the Idea Lab
+          const descriptionParts = [ideaData.ideaName || ''];
+          if (ideaData.ideaDescription) descriptionParts.push(ideaData.ideaDescription);
+          if (ideaData.features?.length) descriptionParts.push('Key features: ' + ideaData.features.join(', '));
+          if (ideaData.benefits?.length) descriptionParts.push('Benefits: ' + ideaData.benefits.join(', '));
+          
+          setIdeaDescription(descriptionParts.filter(Boolean).join('\n\n'));
+          setMode('standalone'); // Use standalone mode but with pre-filled data
+          return;
+        }
+      } catch {
+        // Fall through to standalone
+      }
+    }
+
     const fromEstimate = searchParams.get('fromEstimate') === 'true';
     if (fromEstimate) {
       try {
@@ -133,13 +425,20 @@ export default function ROICalculatorPage() {
   }, [searchParams, t]);
 
   // Submit handler
-  const handleSubmit = async (emailData?: { email: string; whatsapp: boolean }) => {
+  const handleSubmit = async (emailData?: { email: string; whatsapp: boolean; phone?: string; countryCode?: string }) => {
     const finalEmail = emailData?.email || email;
     const finalWhatsapp = emailData?.whatsapp ?? whatsapp;
+    const finalPhone = emailData?.phone;
+    const finalCountryCode = emailData?.countryCode;
     setEmail(finalEmail);
     setWhatsapp(finalWhatsapp);
     setStep('loading');
     setError(null);
+
+    const phoneFields = finalWhatsapp && finalPhone ? {
+      phone: finalPhone,
+      countryCode: finalCountryCode,
+    } : {};
 
     try {
       let body: Record<string, unknown>;
@@ -162,6 +461,7 @@ export default function ROICalculatorPage() {
           businessModel: businessModel || undefined,
           email: finalEmail,
           whatsapp: finalWhatsapp,
+          ...phoneFields,
           locale,
         };
       } else {
@@ -174,6 +474,7 @@ export default function ROICalculatorPage() {
           budgetRange: budgetMin && budgetMax ? { min: Number(budgetMin), max: Number(budgetMax) } : undefined,
           email: finalEmail,
           whatsapp: finalWhatsapp,
+          ...phoneFields,
           locale,
         };
       }
@@ -219,25 +520,16 @@ export default function ROICalculatorPage() {
   };
 
   // ============================================================
-  // Loading State
+  // Loading State — Premium Processing Experience
   // ============================================================
   if (step === 'loading') {
-    return (
-      <main className="min-h-screen bg-navy">
-        <div className="max-w-3xl mx-auto px-4 py-32">
-          <AIThinkingState
-            toolColor="purple"
-            messages={[
-              t('loading.msg1'),
-              t('loading.msg2'),
-              t('loading.msg3'),
-              t('loading.msg4'),
-              t('loading.msg5'),
-            ]}
-          />
-        </div>
-      </main>
-    );
+    return <ROILoadingScreen messages={[
+      t('loading.msg1'),
+      t('loading.msg2'),
+      t('loading.msg3'),
+      t('loading.msg4'),
+      t('loading.msg5'),
+    ]} />;
   }
 
   // ============================================================
@@ -310,7 +602,7 @@ export default function ROICalculatorPage() {
                     {t('results.payback_months', { months: results.paybackPeriodMonths.moderate })}
                   </p>
                   <p className="text-xs text-muted mt-1">
-                    {results.paybackPeriodMonths.optimistic}–{results.paybackPeriodMonths.conservative} mo range
+                    {results.paybackPeriodMonths.optimistic}–{results.paybackPeriodMonths.conservative} {t('results.mo_range')}
                   </p>
                 </ToolResultItem>
               </ToolResults>
@@ -325,7 +617,7 @@ export default function ROICalculatorPage() {
                     {results.threeYearROI.percentage > 0 ? '+' : ''}{Math.round(results.threeYearROI.percentage)}%
                   </p>
                   <p className="text-xs text-muted mt-1">
-                    {formatMoney(results.threeYearROI.absoluteReturn)} return
+                    {formatMoney(results.threeYearROI.absoluteReturn)} {t('results.return_suffix')}
                   </p>
                 </ToolResultItem>
               </ToolResults>
@@ -411,7 +703,7 @@ export default function ROICalculatorPage() {
                       </span>
                       {isModerate && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
-                          Expected
+                          {t('results.expected')}
                         </span>
                       )}
                     </div>
@@ -607,11 +899,20 @@ export default function ROICalculatorPage() {
             <CrossSellCTA
               targetTool="get-estimate"
               message={t('results.cross_sell_estimate')}
+              roiData={{
+                projectName: results.projectName,
+                executiveSummary: results.executiveSummary,
+                investmentRequired: results.investmentRequired,
+                suggestedRevenueModel: results.suggestedRevenueModel,
+                marketOpportunity: results.marketOpportunity,
+                ideaDescription: ideaDescription || estimateData?.projectSummary || '',
+              }}
             />
             <CrossSellCTA
               targetTool="ai-analyzer"
               message={t('results.cross_sell_analyzer')}
             />
+            <ConsultationCTA projectName={results.projectName} />
           </div>
         </div>
       </main>
@@ -630,7 +931,7 @@ export default function ROICalculatorPage() {
               onClick={() => setStep('form')}
               className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
             >
-              ← Back
+              {t('results.back')}
             </button>
           </div>
           <EmailCapture toolColor="purple" onSubmit={handleSubmit} />
@@ -661,7 +962,7 @@ export default function ROICalculatorPage() {
             <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-center mb-6">
               <p className="text-sm text-red-400">{error}</p>
               <button onClick={() => setError(null)} className="mt-2 text-xs text-muted hover:text-white transition-colors">
-                Dismiss
+                {t('buttons.dismiss')}
               </button>
             </div>
           )}

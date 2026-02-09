@@ -1,14 +1,20 @@
 {
   "meta": {
     "title": "Case Studies - Real Results | Aviniti",
-    "description": "See how we've helped businesses transform with custom apps and AI solutions"
+    "description": "See how we've helped businesses transform with custom apps and AI solutions",
+    "not_found": "Case Study Not Found - Aviniti",
+    "case_study_suffix": "Aviniti Case Study"
   },
   "page": {
+    "label": "Case Studies",
     "title": "Case Studies",
+    "heading": "Real Results for Real Businesses",
     "subtitle": "Real results from real projects",
-    "filter_all": "All Industries",
+    "description": "See how we have helped companies across industries achieve their digital transformation goals.",
+    "all_case_studies": "All Case Studies",
+    "filter_all": "All",
     "filter_healthcare": "Healthcare",
-    "filter_ecommerce": "E-commerce",
+    "filter_ecommerce": "E-Commerce",
     "filter_logistics": "Logistics",
     "filter_education": "Education",
     "filter_restaurant": "Restaurant & Food"
@@ -31,9 +37,16 @@
     "takeaways": "Key Takeaways",
     "testimonial": "Client Testimonial",
     "related_solutions": "Related Solutions",
-    "cta_title": "Ready to achieve similar results?",
-    "cta_primary": "Get Your Estimate",
-    "cta_secondary": "Book a Consultation"
+    "cta_title": "Ready to Achieve Similar Results?",
+    "cta_subtitle": "Let us discuss how we can help transform your business with technology.",
+    "cta_primary": "Start Your Project",
+    "cta_secondary": "View Solutions"
+  },
+  "list_cta": {
+    "heading": "Ready to Write Your Success Story?",
+    "subtitle": "Let us help you achieve similar results. Get started with a free consultation.",
+    "primary": "Get Free Consultation",
+    "secondary": "View Solutions"
   },
   "examples": {
     "healthcare_1": {

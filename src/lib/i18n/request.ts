@@ -36,6 +36,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       roi_calculator: (await import(`../../../messages/${locale}/roi-calculator.json`)).default,
       privacy_policy: (await import(`../../../messages/${locale}/privacy-policy.json`)).default,
       terms_of_service: (await import(`../../../messages/${locale}/terms-of-service.json`)).default,
+      features: (await import(`../../../messages/${locale}/features.json`)).default,
     },
   };
 });

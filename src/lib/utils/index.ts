@@ -22,7 +22,8 @@ export {
   companySchema,
   optionalPhoneSchema,
   whatsappWithPhoneSchema,
-  ideaLabFormSchema,
+  ideaLabDiscoverSchema,
+  ideaLabGenerateSchema,
   analyzerFormSchema,
   analyzeIdeaSchema,
   generateFeaturesSchema,
@@ -35,7 +36,8 @@ export {
 } from './validators';
 
 export type {
-  IdeaLabFormData,
+  IdeaLabDiscoverData,
+  IdeaLabGenerateData,
   AnalyzerFormData,
   AnalyzeIdeaFormData,
   GenerateFeaturesFormData,

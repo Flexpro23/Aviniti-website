@@ -1,183 +1,137 @@
 {
   "meta": {
-    "title": "Idea Lab - AI App Idea Generator | Aviniti",
-    "description": "Out of ideas? Our AI will generate 5-6 personalized app concepts tailored to your industry and background"
+    "title": "Idea Lab — Discover What Technology Can Do for You | Aviniti",
+    "description": "Answer a few simple questions and discover personalized ideas for how technology could improve your work, business, or daily life."
   },
-  "hero_title": "Don't Have an App Idea? Let's Discover One Together.",
-  "hero_description": "Answer 3 quick questions and our AI will generate personalized app ideas tailored to your background, industry, and vision.",
-  "hero_cta": "Start Discovery",
-  "step1_title": "Tell me about yourself -- what's your background?",
-  "step1_helper": "This helps us match ideas to your strengths and experience.",
-  "step2_title": "What industry or area interests you most?",
-  "step2_helper": "Pick the area where you see the most opportunity.",
-  "step3_title": "What problem do you want to solve or what opportunity do you see?",
-  "step3_helper": "Be as specific as you can -- the more detail you give, the better your ideas will be.",
-  "results_title": "Here Are Your Personalized App Ideas",
-  "hero": {
-    "title": "Discover Your Next Big App Idea",
-    "subtitle": "Answer 3 quick questions and get AI-generated app concepts tailored to you"
-  },
-  "steps": {
-    "step_1": "Your Background",
-    "step_2": "Industry Focus",
-    "step_3": "Problem/Goal",
-    "step_4": "Get Results"
-  },
-  "step1": {
-    "title": "What's your background?",
-    "description": "This helps us generate ideas that match your expertise",
-    "background": {
-      "entrepreneur": "Entrepreneur / Business Owner",
-      "entrepreneur_desc": "Running or starting a business",
-      "professional": "Professional / Employee",
-      "professional_desc": "Working in a corporate environment",
-      "student": "Student / Academic",
-      "student_desc": "Studying or researching",
-      "creative": "Creative / Freelancer",
-      "creative_desc": "Designer, developer, or independent worker",
-      "other": "Other",
-      "other_desc": "Something else"
-    }
-  },
-  "step2": {
-    "title": "Which industry interests you?",
-    "description": "Choose the area where you want to make an impact",
-    "industry": {
-      "health_wellness": "Health and Wellness",
-      "finance_banking": "Finance and Banking",
-      "education_learning": "Education and Learning",
-      "ecommerce_retail": "E-commerce and Retail",
-      "logistics_delivery": "Logistics and Delivery",
-      "entertainment_media": "Entertainment and Media",
-      "travel_hospitality": "Travel and Hospitality",
-      "real_estate": "Real Estate",
-      "food_restaurant": "Food and Restaurant",
-      "social_community": "Social and Community",
-      "other": "Other / Multiple"
-    }
-  },
-  "step3": {
-    "title": "What problem do you want to solve?",
-    "description": "Describe the challenge or opportunity you see",
-    "placeholder": "Example: Restaurants struggle with managing delivery orders from multiple platforms...",
-    "min_chars": "At least 10 characters",
-    "examples": {
-      "title": "Need inspiration? Try these:",
-      "example_1": "Small businesses can't afford expensive CRM systems",
-      "example_2": "Parents struggle to find trustworthy babysitters",
-      "example_3": "Fitness trainers waste time on manual scheduling"
-    }
-  },
-  "step4": {
-    "title": "Where should we send your ideas?",
-    "description": "We'll email you 5-6 personalized app concepts instantly",
-    "email_label": "Email Address",
-    "email_placeholder": "your@email.com",
-    "whatsapp_label": "Also send summary via WhatsApp",
-    "phone_placeholder": "+962 79 123 4567",
-    "submit": "Generate My Ideas",
-    "submitting": "Generating Ideas..."
-  },
-  "results": {
-    "title": "Your Personalized App Ideas",
-    "subtitle": "Based on {{background}} in {{industry}}",
-    "ideas_count": "{{count}} AI-Generated Concepts",
-    "idea_card": {
-      "estimated_cost": "Est. Cost",
-      "estimated_timeline": "Est. Timeline",
-      "features": "Key Features",
-      "matched_solution": "We have a ready-made solution for this!",
-      "solution_price": "Starting at {{price}}",
-      "solution_timeline": "{{timeline}} delivery",
-      "cta_analyze": "Analyze This Idea",
-      "cta_estimate": "Get Detailed Estimate",
-      "cta_solution": "View Ready-Made Solution"
-    },
-    "next_steps": {
-      "title": "What's Next?",
-      "step_1": "Pick your favorite idea",
-      "step_2": "Get it analyzed for viability (free)",
-      "step_3": "Receive a detailed project estimate",
-      "cta_analyze": "Analyze an Idea",
-      "cta_call": "Book a Brainstorming Call"
-    }
-  },
-  "loading": {
-    "analyzing": "Understanding your background and industry...",
-    "generating": "Generating personalized app ideas...",
-    "finalizing": "Finalizing your concepts..."
-  },
-  "errors": {
-    "select_background": "Please select your background",
-    "select_industry": "Please select an industry",
-    "problem_too_short": "Please describe the problem in at least 10 characters",
-    "email_required": "Please enter a valid email address",
-    "generation_failed": "Failed to generate ideas. Please try again or contact us."
-  },
-  "generate_more": "Generate More Ideas",
-  "generation_counter": "Generation {current} of {total}",
-  "complexity_simple": "Simple",
-  "complexity_moderate": "Moderate",
-  "complexity_complex": "Complex",
-  "tech_stack": "Tech Stack",
-  "prefilled_from_idea_lab": "Pre-filled from Idea Lab: {name}",
+  "hero_title": "What If Technology Could Make Your Life Easier?",
+  "hero_description": "You don't need to be a tech expert. Answer a few simple questions about your day, and we'll show you what's possible.",
+  "hero_cta": "Let's Find Out",
+  "hero_badge": "AI-Powered Discovery",
+  "hero_trust": "Takes less than 5 minutes — no technical knowledge needed",
 
-  "backgrounds": {
-    "entrepreneur": "Entrepreneur / Business Owner",
-    "professional": "Professional / Employee",
-    "student": "Student / Academic",
-    "creative": "Creative / Freelancer",
+  "step1_title": "First, Tell Us About Yourself",
+  "step1_helper": "Pick the option that best describes you. This helps us tailor the experience.",
+
+  "personas": {
+    "small_business": "I Run a Small Business",
+    "small_business_subtitle": "Shop owner, restaurant, clinic, agency, etc.",
+    "professional": "I'm a Working Professional",
+    "professional_subtitle": "Office worker, healthcare, finance, government, etc.",
+    "creative": "I'm a Creative / Freelancer",
+    "creative_subtitle": "Designer, photographer, writer, content creator, etc.",
+    "student": "I'm a Student / Researcher",
+    "student_subtitle": "University, graduate school, academic research, etc.",
+    "hobby": "I Have a Passion Project",
+    "hobby_subtitle": "Hobby, side project, community initiative, etc.",
+    "manager": "I Manage a Team",
+    "manager_subtitle": "Team lead, department head, operations manager, etc."
+  },
+
+  "step2_title": "What Area Are You In?",
+  "step2_helper": "Pick the industry or area closest to your work or interest.",
+
+  "industries": {
+    "health_wellness": "Health & Wellness",
+    "finance_banking": "Finance & Banking",
+    "education_learning": "Education & Learning",
+    "ecommerce_retail": "E-commerce & Retail",
+    "logistics_delivery": "Logistics & Delivery",
+    "entertainment_media": "Entertainment & Media",
+    "travel_hospitality": "Travel & Hospitality",
+    "real_estate": "Real Estate",
+    "food_restaurant": "Food & Restaurant",
+    "social_community": "Social & Community",
     "other": "Other"
   },
-  "industries": {
-    "health_wellness": "Health and Wellness",
-    "finance_banking": "Finance and Banking",
-    "education_learning": "Education and Learning",
-    "ecommerce_retail": "E-commerce and Retail",
-    "logistics_delivery": "Logistics and Delivery",
-    "entertainment_media": "Entertainment and Media",
-    "travel_hospitality": "Travel and Hospitality",
-    "real_estate": "Real Estate",
-    "food_restaurant": "Food and Restaurant",
-    "social_community": "Social and Community",
-    "other": "Other / Multiple"
+
+  "discovery_loading_title": "Setting Up Your Personalized Questions...",
+  "discovery_loading_messages": {
+    "analyzing": "Tailoring questions to your profile...",
+    "almost": "Almost ready — just a moment..."
   },
-  "inspiration_prompts": {
-    "prompt_1": "I run a clinic and patients always complain about wait times",
-    "prompt_2": "Students in my country can't find affordable tutoring",
-    "prompt_3": "Small restaurants struggle to manage delivery orders"
+
+  "questions_title": "Let's Learn More About You",
+  "questions_helper": "Answer a few quick questions so we can suggest ideas tailored to your situation.",
+  "question_of": "Question {current} of {total}",
+  "yes": "Yes",
+  "no": "No",
+  "single_line_placeholder": "Type your answer here...",
+
+  "email_step_title": "Almost There!",
+  "email_step_helper": "Enter your email to see your personalized ideas. We'll also send you a copy.",
+
+  "generating_title": "Crafting Your Personalized Ideas...",
+  "generating_messages": {
+    "analyzing": "Analyzing your answers for insights...",
+    "crafting": "Building personalized ideas for you..."
   },
-  "loading_messages": {
-    "exploring": "Exploring your interests...",
-    "researching": "Researching market opportunities...",
-    "generating": "Generating innovative concepts...",
-    "refining": "Refining your ideas..."
-  },
-  "results_badge": "Ideas Generated",
-  "results_subtitle": "Based on your background as {background} in {industry}, here are ideas that match your vision.",
-  "fallback_background": "a professional",
-  "fallback_industry": "your field",
-  "idea_label": "Idea {number}",
-  "key_features": "Key Features",
-  "estimated_cost": "Estimated Cost",
-  "timeline_label": "Timeline",
-  "explore_idea": "Explore This Idea",
-  "get_estimate": "Get Estimate",
+
+  "results_badge": "Your Personalized Ideas",
+  "results_title": "Here's What We Discovered for You",
+  "results_subtitle": "Based on your answers, we found {count} ideas that could make a real difference.",
+
+  "tag_easiest": "Easiest to Start",
+  "tag_impact": "Biggest Impact",
+  "tag_innovative": "Most Innovative",
+
+  "view_details": "View More Details",
+  "close_details": "Close",
+
+  "detail_before_title": "How Things Are Now",
+  "detail_after_title": "How It Could Be",
+  "detail_description_title": "What This Solution Does",
+  "detail_social_proof_title": "Real-World Example",
+  "detail_features_title": "Key Features",
+  "detail_impact_title": "Expected Impact",
+  "detail_how_it_works_title": "How It Works",
+  "detail_cta_section_title": "Ready to Take the Next Step?",
+  "detail_cta_section_subtitle": "We'll pre-fill everything so you don't have to start from scratch.",
+  "detail_cta_roi": "See the ROI",
+  "detail_cta_roi_desc": "Find out the potential return on investment",
+  "detail_cta_estimate": "Get a Cost Estimate",
+  "detail_cta_estimate_desc": "See how much it would cost to build",
+  "detail_or_talk": "Or talk to us directly",
+  "detail_book_call": "Book a Free Call",
+  "detail_whatsapp": "Chat on WhatsApp",
+
+  "email_ideas": "Email Me These Ideas",
+  "email_ideas_sent": "Ideas Sent to Your Email!",
+  "save_share": "Save & Share Results",
+  "link_copied": "Link Copied!",
+
+  "refresh_ideas_btn": "Show Me Different Ideas",
+  "refresh_ideas_subtitle": "Not what you're looking for? Let us generate fresh ideas.",
+  "refresh_ideas_loading": "Generating fresh ideas...",
+  "refresh_limit_reached": "You've explored all available idea sets for this session.",
+  "refresh_count": "{current} of {total} refreshes used",
+
+  "cross_sell_analyzer": "Want deeper validation? Analyze any of these ideas with our AI Analyzer.",
+  "cross_sell_estimate": "Ready to take the next step? Get a detailed cost and timeline estimate.",
+
   "continue_btn": "Continue",
   "back_btn": "Back",
+  "skip_btn": "Skip",
   "dismiss_btn": "Dismiss",
-  "link_copied": "Link Copied!",
-  "save_share": "Save & Share Ideas",
-  "textarea_placeholder": "Describe the challenge you're facing or the opportunity you've spotted...",
-  "char_counter": "{count} / 500 chars",
-  "min_chars_warning": "(minimum 10 characters)",
-  "need_inspiration": "Need inspiration?",
-  "error_generate": "Failed to generate ideas. Please try again.",
-  "error_generate_more": "Failed to generate more ideas. Please try again.",
+  "try_again_btn": "Try Again",
+  "start_over_btn": "Start Over",
+
   "error_generic": "Something went wrong. Please try again.",
-  "cross_sell_analyzer": "Want to validate one of these ideas? Let our AI analyze its market potential.",
-  "cross_sell_estimate": "Ready to build? Get a detailed cost and timeline estimate.",
-  "bookmark_aria": "Bookmark {name}",
-  "aria_background_selection": "Background selection",
-  "aria_industry_selection": "Industry selection"
+  "error_generate": "Failed to generate ideas. Please try again.",
+  "error_discover": "Failed to load questions. Please try again.",
+  "error_rate_limit": "You've used all your free sessions today. Come back tomorrow!",
+
+  "aria_persona_selection": "Select who you are",
+  "aria_industry_selection": "Select your industry or area",
+  "aria_question_answer": "Answer this question",
+  "aria_idea_card": "Idea: {name}",
+  "aria_view_details": "View details for {name}",
+
+  "progress_step_persona": "About You",
+  "progress_step_industry": "Your Area",
+  "progress_step_discover": "Discovery",
+  "progress_step_email": "Contact",
+  "progress_step_results": "Your Ideas",
+
+  "discovery_progress_title": "Building Your Profile",
+  "discovery_progress_answered": "{count} answered"
 }

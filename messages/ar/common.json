@@ -76,10 +76,154 @@
     "languageOptions": "خيارات اللغة",
     "loading": "جارٍ التحميل..."
   },
+  "loading": "جارٍ التحميل...",
+  "loading_aria": "جارٍ تحميل محتوى الصفحة",
   "whatsapp": {
     "general_message": "مرحباً، أنا مهتم بخدمات أفينيتي",
     "estimate_message": "مرحباً، أود مناقشة تقدير مشروعي",
     "roi_message": "مرحباً، أود مناقشة تحليل العائد على الاستثمار",
-    "support_message": "مرحباً، أحتاج مساعدة في..."
+    "support_message": "مرحباً، أحتاج مساعدة في...",
+    "chat_label": "تحدث عبر واتساب",
+    "chat_aria": "تحدث عبر واتساب"
+  },
+  "email_capture": {
+    "title": "احصل على نتائجك",
+    "description": "أدخل بريدك الإلكتروني لتلقي النتائج التفصيلية والخطوات التالية.",
+    "email_label": "عنوان البريد الإلكتروني",
+    "email_placeholder": "your@email.com",
+    "whatsapp_label": "إرسال النتائج عبر واتساب",
+    "whatsapp_hint": "احصل على نتائج فورية + متابعة عبر واتساب",
+    "phone_placeholder": "7XX XXX XXX",
+    "phone_required": "رقم الهاتف مطلوب لتوصيل واتساب",
+    "search_countries": "ابحث عن الدول...",
+    "popular_countries": "الشائعة",
+    "all_countries": "جميع الدول",
+    "submit": "احصل على النتائج",
+    "submitting": "جارٍ إرسال النتائج...",
+    "privacy": "نحن نحترم خصوصيتك. سيتم استخدام بريدك الإلكتروني فقط لإرسال نتائجك.",
+    "no_countries_found": "لم يتم العثور على دول",
+    "select_country_code": "اختر رمز الدولة"
+  },
+  "exit_intent": {
+    "thank_you": "شكراً لك!",
+    "will_be_in_touch": "سنتواصل معك قريباً.",
+    "before_you_go": "قبل أن تغادر...",
+    "free_consultation_description": "احصل على استشارة مجانية مع فريقنا. سنساعدك في إيجاد الحل المناسب لعملك.",
+    "email_placeholder": "عنوان بريدك الإلكتروني",
+    "get_free_consultation": "احصل على استشارة مجانية",
+    "see_our_solutions": "شاهد حلولنا",
+    "solutions_description": "اكتشف كيف يمكننا المساعدة في تحويل أعمالك بحلول تقنية مخصصة.",
+    "browse_solutions": "تصفح الحلول",
+    "get_free_estimate": "احصل على تقدير مجاني",
+    "request_received": "تم استلام الطلب!",
+    "estimate_timeline": "سنرسل تقديرك خلال 24 ساعة.",
+    "get_quick_estimate": "احصل على تقدير سريع",
+    "quick_estimate_description": "أخبرنا بما تحتاجه وسنعود إليك بتقدير تقريبي.",
+    "select_project_type": "اختر نوع المشروع",
+    "web_application": "تطبيق ويب",
+    "mobile_application": "تطبيق موبايل",
+    "ai_ml_solution": "حل ذكاء اصطناعي",
+    "e_commerce": "تجارة إلكترونية",
+    "saas_platform": "منصة SaaS",
+    "other": "أخرى",
+    "get_my_estimate": "احصل على تقديري",
+    "read_our_latest": "اقرأ أحدث مقالاتنا",
+    "blog_description": "اكتشف رؤى فريقنا حول التكنولوجيا والذكاء الاصطناعي والتحول الرقمي.",
+    "blog_post_1_title": "كيف يُحوّل الذكاء الاصطناعي العمليات التجارية",
+    "blog_post_1_read_time": "5 دقائق قراءة",
+    "blog_post_2_title": "اختيار مجموعة التقنيات المناسبة لشركتك الناشئة",
+    "blog_post_2_read_time": "7 دقائق قراءة",
+    "still_deciding": "لا تزال تفكر؟",
+    "no_pressure_description": "لا ضغط. دعنا نتحدث بسرعة لنرى إن كنا الخيار المناسب لمشروعك.",
+    "chat_on_whatsapp": "تحدث عبر واتساب",
+    "book_a_call": "احجز مكالمة",
+    "special_offer_aria": "عرض خاص",
+    "close_popup_aria": "إغلاق النافذة"
+  },
+  "ai_tools": {
+    "idea_lab": {
+      "name": "مختبر الأفكار",
+      "description": "ولّد أفكار تطبيقات مخصصة لقطاعك"
+    },
+    "ai_analyzer": {
+      "name": "محلل الأفكار بالذكاء الاصطناعي",
+      "description": "تحقق من فكرة تطبيقك برؤى الذكاء الاصطناعي"
+    },
+    "get_estimate": {
+      "name": "احصل على تقدير بالذكاء الاصطناعي",
+      "description": "احصل على تقديرات فورية للتكلفة والجدول الزمني للمشروع"
+    },
+    "roi_calculator": {
+      "name": "حاسبة العائد على الاستثمار",
+      "description": "احسب العائد على الاستثمار لتطبيقك"
+    },
+    "try_tool": "جرب {tool}"
+  },
+  "processing": {
+    "badge": "معالجة الذكاء الاصطناعي",
+    "heading": "بناء مخطط مشروعك",
+    "analyzing_features": "ذكاؤنا الاصطناعي يحلل {count} ميزة في مشروعك",
+    "cancel": "إلغاء والعودة",
+    "messages": {
+      "scope": "فهم نطاق مشروعك...",
+      "costs": "حساب التكاليف والجدول الزمني...",
+      "catalog": "المطابقة مع كتالوج حلولنا...",
+      "blueprint": "إنشاء مخططك الشامل..."
+    },
+    "steps": {
+      "scope_analysis": "تحليل النطاق",
+      "cost_estimation": "تقدير التكلفة",
+      "timeline_planning": "تخطيط الجدول الزمني",
+      "tech_stack": "مجموعة التقنيات"
+    }
+  },
+  "ai_thinking": {
+    "messages": {
+      "understanding": "فهم متطلباتك...",
+      "analyzing": "تحليل بيانات السوق...",
+      "building": "بناء تقريرك المخصص...",
+      "finalizing": "إنهاء التوصيات..."
+    }
+  },
+  "tool_hero": {
+    "label": "أداة الذكاء الاصطناعي"
+  },
+  "tool_form": {
+    "step_fallback": "الخطوة {step}"
+  },
+  "strategic_insights": {
+    "strength": "نقطة قوة",
+    "challenge": "تحدي",
+    "recommendation": "توصية"
+  },
+  "country_picker": {
+    "select_country_code": "اختر رمز الدولة",
+    "search_placeholder": "ابحث عن الدول...",
+    "popular": "الشائعة",
+    "all_countries": "جميع الدول",
+    "no_countries_found": "لم يتم العثور على دول"
+  },
+  "newsletter": {
+    "subscribe_error": "فشل الاشتراك. يرجى المحاولة مرة أخرى.",
+    "email_aria": "عنوان البريد الإلكتروني",
+    "subscribe_aria": "الاشتراك في النشرة الإخبارية",
+    "subscribing": "جارٍ الاشتراك...",
+    "subscribed": "تم الاشتراك!",
+    "subscribe": "اشترك"
+  },
+  "share": {
+    "label": "مشاركة:",
+    "linkedin_aria": "مشاركة على LinkedIn",
+    "whatsapp_aria": "مشاركة على واتساب",
+    "copy_link_aria": "نسخ الرابط"
+  },
+  "ui": {
+    "loading_text": "جارٍ التحميل...",
+    "loading_aria": "جارٍ التحميل",
+    "progress_aria": "التقدم",
+    "required_aria": "مطلوب",
+    "prev_testimonial": "الشهادة السابقة",
+    "next_testimonial": "الشهادة التالية",
+    "goto_testimonial": "الذهاب للشهادة {number}"
   }
 }

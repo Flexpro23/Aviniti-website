@@ -14,6 +14,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Shield, AlertCircle, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { stagger, duration } from '@/lib/motion/tokens';
@@ -28,10 +29,10 @@ interface StrategicInsightsProps {
   className?: string;
 }
 
-const insightConfig = {
+const getInsightConfig = (t: (key: string) => string) => ({
   strength: {
     icon: Shield,
-    label: 'Strength',
+    label: t('strategic_insights.strength'),
     iconBg: 'bg-emerald-600/15',
     iconColor: 'text-emerald-400',
     cardBg: 'bg-emerald-600/5',
@@ -39,7 +40,7 @@ const insightConfig = {
   },
   challenge: {
     icon: AlertCircle,
-    label: 'Challenge',
+    label: t('strategic_insights.challenge'),
     iconBg: 'bg-amber-500/15',
     iconColor: 'text-amber-400',
     cardBg: 'bg-amber-500/5',
@@ -47,13 +48,13 @@ const insightConfig = {
   },
   recommendation: {
     icon: Lightbulb,
-    label: 'Recommendation',
+    label: t('strategic_insights.recommendation'),
     iconBg: 'bg-bronze/15',
     iconColor: 'text-bronze-light',
     cardBg: 'bg-bronze/5',
     borderColor: 'border-bronze/20',
   },
-};
+});
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -84,7 +85,9 @@ export function StrategicInsights({
   insights,
   className,
 }: StrategicInsightsProps) {
+  const t = useTranslations('common');
   const prefersReducedMotion = useReducedMotion();
+  const insightConfig = getInsightConfig(t);
 
   return (
     <motion.div

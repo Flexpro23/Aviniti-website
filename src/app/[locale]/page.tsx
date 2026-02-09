@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getAlternateLinks } from '@/lib/i18n/config';
 import {
   HeroSection,
@@ -20,8 +20,8 @@ import {
  *
  * Composed of 13 sections:
  * 1. HeroSection - Full-viewport hero with headline, CTAs, and device mockup
- * 2. CompanyLogos - Infinite scrolling marquee of client logos
- * 3. AIToolsSpotlight - 4 AI tools with color accents
+ * 2. AIToolsSpotlight - 4 AI tools with color accents
+ * 3. CompanyLogos - Infinite scrolling marquee of client logos
  * 4. ServicesOverview - 4 core services grid
  * 5. SolutionsPreview - Ready-made solutions preview
  * 6. Testimonials - Client testimonials carousel
@@ -42,6 +42,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'home.meta' });
 
   return {
@@ -62,17 +63,25 @@ export async function generateMetadata({
   };
 }
 
-export default function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <main className="min-h-screen bg-navy">
       {/* 1. Hero Section */}
       <HeroSection />
 
-      {/* 2. Company Logos - Immediate credibility */}
-      <CompanyLogos />
+      {/* 2. AI Tools Spotlight */}
+      <div id="ai-tools">
+        <AIToolsSpotlight />
+      </div>
 
-      {/* 3. AI Tools Spotlight */}
-      <AIToolsSpotlight />
+      {/* 3. Company Logos - Immediate credibility */}
+      <CompanyLogos />
 
       {/* 4. Services Overview */}
       <ServicesOverview />

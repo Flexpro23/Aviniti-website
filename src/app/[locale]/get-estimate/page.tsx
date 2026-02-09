@@ -24,6 +24,9 @@ import {
   ListChecks,
   FileText,
   ChevronDown,
+  Info,
+  X,
+  TrendingUp,
 } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
@@ -85,6 +88,7 @@ const IMPACT_COLORS = {
 
 export default function GetEstimatePage() {
   const t = useTranslations('get_estimate');
+  const tf = useTranslations('features');
   const locale = useLocale();
   const searchParams = useSearchParams();
 
@@ -92,6 +96,12 @@ export default function GetEstimatePage() {
   const fromIdea = searchParams.get('fromIdea') === 'true';
   const ideaName = searchParams.get('ideaName') || '';
   const ideaDescription = searchParams.get('ideaDescription') || '';
+
+  // Check for pre-fill from AI Analyzer
+  const fromAnalyzer = searchParams.get('fromAnalyzer') === 'true';
+
+  // Check for pre-fill from ROI Calculator
+  const fromROI = searchParams.get('fromROI') === 'true';
 
   // Form state
   const [step, setStep] = useState(1);
@@ -104,6 +114,24 @@ export default function GetEstimatePage() {
   const [description, setDescription] = useState(
     fromIdea ? `${ideaName}\n\n${ideaDescription}` : ''
   );
+
+  // Analyzer data state
+  const [analyzerData, setAnalyzerData] = useState<{
+    ideaName: string;
+    summary: string;
+    overallScore: number;
+    techStack: string[];
+    complexity: string;
+    challenges: string[];
+    recommendations: string[];
+    originalIdea: string;
+  } | null>(null);
+
+  const [showAnalyzerBanner, setShowAnalyzerBanner] = useState(false);
+
+  // ROI Calculator data state
+  const [roiData, setRoiData] = useState<Record<string, unknown> | null>(null);
+  const [showROIBanner, setShowROIBanner] = useState(false);
 
   // Step 3: AI Questions
   const [aiSummary, setAiSummary] = useState('');
@@ -151,6 +179,116 @@ export default function GetEstimatePage() {
     }
   }, [results, savedId, saveResult]);
 
+  // Ref prevents React Strict Mode double-execution from clearing sessionStorage
+  const prefillLoadedRef = useRef(false);
+
+  // Load richer Idea Lab data from sessionStorage (if available)
+  useEffect(() => {
+    if (prefillLoadedRef.current || !fromIdea) return;
+    prefillLoadedRef.current = true;
+    
+    try {
+      const stored = sessionStorage.getItem('aviniti_estimate_idealab_data');
+      if (stored) {
+        const ideaData = JSON.parse(stored);
+        sessionStorage.removeItem('aviniti_estimate_idealab_data');
+        
+        // Build a rich description from idea data
+        const parts = [ideaData.ideaName || ideaName];
+        if (ideaData.ideaDescription) parts.push(ideaData.ideaDescription);
+        if (ideaData.features?.length) parts.push('Key features:\n' + ideaData.features.map((f: string) => '- ' + f).join('\n'));
+        if (ideaData.benefits?.length) parts.push('Expected benefits:\n' + ideaData.benefits.map((b: string) => '- ' + b).join('\n'));
+        
+        setDescription(parts.filter(Boolean).join('\n\n'));
+        return; // Don't fall through to other prefill handlers
+      }
+    } catch {
+      // Fall through to URL param prefill (already handled by initial state)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromIdea, ideaName]);
+
+  // Load analyzer data from sessionStorage if coming from AI Analyzer
+  useEffect(() => {
+    if (prefillLoadedRef.current || !fromAnalyzer) return;
+    prefillLoadedRef.current = true;
+
+    try {
+      const stored = sessionStorage.getItem('aviniti_estimate_analyzer_data');
+      if (stored) {
+        const data = JSON.parse(stored);
+        setAnalyzerData(data);
+        sessionStorage.removeItem('aviniti_estimate_analyzer_data');
+
+        // Pre-fill description with the original idea text
+        setDescription(data.originalIdea || '');
+
+        // Auto-detect project type from tech stack
+        const techStr = (data.techStack || []).join(' ').toLowerCase();
+        if (techStr.includes('react native') || techStr.includes('flutter') || techStr.includes('swift') || techStr.includes('kotlin')) {
+          setProjectType('mobile');
+        } else if (techStr.includes('tensorflow') || techStr.includes('pytorch') || techStr.includes('ml') || techStr.includes('ai')) {
+          setProjectType('ai');
+        } else if (techStr.includes('react') || techStr.includes('next') || techStr.includes('vue') || techStr.includes('angular')) {
+          setProjectType('web');
+        } else if (techStr.includes('aws') || techStr.includes('gcp') || techStr.includes('azure') || techStr.includes('docker')) {
+          setProjectType('cloud');
+        }
+
+        // Start at step 2 (description) since we have the idea text and can auto-detect project type
+        setStep(2);
+        setShowAnalyzerBanner(true);
+      }
+    } catch (e) {
+      console.error('Failed to load analyzer data:', e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromAnalyzer]);
+
+  // Load ROI data from sessionStorage if coming from ROI Calculator
+  useEffect(() => {
+    if (prefillLoadedRef.current || !fromROI) return;
+    prefillLoadedRef.current = true;
+
+    try {
+      const stored = sessionStorage.getItem('aviniti_estimate_roi_data');
+      if (stored) {
+        const data = JSON.parse(stored);
+        setRoiData(data);
+        sessionStorage.removeItem('aviniti_estimate_roi_data');
+
+        // Pre-fill description from ROI data
+        const description = data.originalIdea || data.ideaDescription || data.executiveSummary || '';
+        if (description && typeof description === 'string') {
+          setDescription(description);
+        }
+
+        // Auto-detect project type from tech stack if available
+        const techStr = (data.techStack || []).join(' ').toLowerCase();
+        if (techStr.includes('react native') || techStr.includes('flutter') || techStr.includes('swift') || techStr.includes('kotlin')) {
+          setProjectType('mobile');
+        } else if (techStr.includes('tensorflow') || techStr.includes('pytorch') || techStr.includes('ml') || techStr.includes('ai')) {
+          setProjectType('ai');
+        } else if (techStr.includes('react') || techStr.includes('next') || techStr.includes('vue') || techStr.includes('angular')) {
+          setProjectType('web');
+        } else if (techStr.includes('aws') || techStr.includes('gcp') || techStr.includes('azure') || techStr.includes('docker')) {
+          setProjectType('cloud');
+        } else {
+          setProjectType('fullstack');
+        }
+
+        // Skip to step 2 if we have a description
+        if (description) {
+          setStep(2);
+          setShowROIBanner(true);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load ROI data:', e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromROI]);
+
   // Set display name when results arrive
   useEffect(() => {
     if (results) {
@@ -178,6 +316,14 @@ export default function GetEstimatePage() {
   const goBack = () => {
     setDirection('backward');
     setStep((prev) => prev - 1);
+  };
+
+  const handleStepClick = (clickedStep: number) => {
+    // Only allow clicking on completed steps (steps before current step)
+    if (clickedStep < step) {
+      setDirection('backward');
+      setStep(clickedStep);
+    }
   };
 
   // ============================================================
@@ -580,8 +726,8 @@ export default function GetEstimatePage() {
                       <tbody className="divide-y divide-slate-blue-light/50">
                         {results.pricing.features.map((f, i) => (
                           <tr key={i} className="hover:bg-navy/50 transition-colors">
-                            <td className="px-6 py-3 text-sm text-off-white">{f.catalogId}</td>
-                            <td className="px-6 py-3 text-xs text-muted capitalize">{f.categoryId}</td>
+                            <td className="px-6 py-3 text-sm text-off-white">{tf(`${f.catalogId}.name`)}</td>
+                            <td className="px-6 py-3 text-xs text-muted capitalize">{tf(`categories.${f.categoryId}`)}</td>
                             <td className="px-6 py-3 text-sm font-medium text-off-white text-right">${f.price.toLocaleString()}</td>
                           </tr>
                         ))}
@@ -787,7 +933,7 @@ export default function GetEstimatePage() {
                 estimatedCost: results.estimatedCost || (results.pricing ? { min: results.pricing.total * 0.9, max: results.pricing.total * 1.1 } : { min: 10000, max: 20000 }),
                 estimatedTimeline: results.estimatedTimeline,
                 approach: results.approach,
-                features: results.pricing ? results.pricing.features.map((f: any) => f.name) : [],
+                features: results.pricing ? results.pricing.features.map((f: any) => tf(`${f.catalogId}.name`)) : [],
                 techStack: results.techStack || [],
                 strategicInsights: results.strategicInsights || [],
                 matchedSolution: results.matchedSolution,
@@ -844,6 +990,7 @@ export default function GetEstimatePage() {
         <ToolForm
           totalSteps={6}
           currentStep={step}
+          onStepClick={handleStepClick}
           toolColor="green"
           stepLabels={stepLabels}
           stepIcons={STEP_ICONS}
@@ -922,6 +1069,49 @@ export default function GetEstimatePage() {
             {/* ============================================================ */}
             {step === 2 && (
               <div>
+                {/* Pre-filled from Analyzer Banner */}
+                {showAnalyzerBanner && analyzerData && (
+                  <div className="mb-6">
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 flex items-start gap-3">
+                      <Info className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm text-blue-300 font-medium">
+                          {t('prefilled_from_analyzer', { name: analyzerData.ideaName })}
+                        </p>
+                        <p className="text-xs text-muted mt-1">
+                          {t('analyzer_banner.score')} {analyzerData.overallScore}/100 {t('analyzer_banner.separator')} {t('analyzer_banner.complexity')} {analyzerData.complexity}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setShowAnalyzerBanner(false)}
+                        className="text-blue-300 hover:text-white transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pre-filled from ROI Calculator Banner */}
+                {showROIBanner && roiData && (
+                  <div className="mb-6">
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 flex items-start gap-3">
+                      <TrendingUp className="h-5 w-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm text-purple-300 font-medium">
+                          {t('prefilled_from_roi')}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setShowROIBanner(false)}
+                        className="text-purple-300 hover:text-white transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <h2 className="text-h4 text-white mb-2">
                   {t('step2.title')}
                 </h2>
@@ -1207,7 +1397,7 @@ export default function GetEstimatePage() {
                                 />
                                 <div className="flex-1 min-w-0">
                                   <span className="block text-base font-medium text-off-white">
-                                    {feature.name}
+                                    {tf(`${feature.catalogId}.name`)}
                                   </span>
                                   <span className="block text-xs text-muted mt-1 leading-relaxed">
                                     {feature.description}
@@ -1265,7 +1455,7 @@ export default function GetEstimatePage() {
                                 />
                                 <div className="flex-1 min-w-0">
                                   <span className="block text-base font-medium text-off-white">
-                                    {feature.name}
+                                    {tf(`${feature.catalogId}.name`)}
                                   </span>
                                   <span className="block text-xs text-muted mt-1 leading-relaxed">
                                     {feature.description}

@@ -1,35 +1,79 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowRight, ArrowLeft, Briefcase, User, GraduationCap, Palette, MoreHorizontal, Heart, DollarSign, BookOpen, ShoppingCart, Truck, Film, Plane, Home, UtensilsCrossed, Users, Check, Star, Link2, CheckCircle2, RefreshCw } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowLeft,
+  Store,
+  Briefcase,
+  Palette,
+  GraduationCap,
+  Heart as HeartIcon,
+  Users,
+  DollarSign,
+  BookOpen,
+  ShoppingCart,
+  Truck,
+  Film,
+  Plane,
+  Home,
+  UtensilsCrossed,
+  Users as UsersIcon,
+  MoreHorizontal,
+  Check,
+  CheckCircle2,
+  Link2,
+  Sparkles,
+  Zap,
+  Lightbulb,
+  RefreshCw,
+} from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
 import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
-import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
+import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
+import { DiscoveryProgress } from '@/components/ai-tools/DiscoveryProgress';
+import { IdeaDetailPanel } from '@/components/ai-tools/IdeaDetailPanel';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
-import type { Background, Industry } from '@/types/api';
-import type { IdeaLabResponse, IdeaLabIdea } from '@/types/api';
+import type {
+  Persona,
+  Industry,
+  DiscoveryQuestion,
+  DiscoveryAnswer,
+  IdeaLabResponse,
+  IdeaLabIdea,
+} from '@/types/api';
 
 // ============================================================
-// Background options for Step 1
+// Persona options for Step 1
 // ============================================================
-const BACKGROUND_OPTIONS: { value: Background; labelKey: string; icon: typeof Briefcase }[] = [
-  { value: 'entrepreneur', labelKey: 'backgrounds.entrepreneur', icon: Briefcase },
-  { value: 'professional', labelKey: 'backgrounds.professional', icon: User },
-  { value: 'student', labelKey: 'backgrounds.student', icon: GraduationCap },
-  { value: 'creative', labelKey: 'backgrounds.creative', icon: Palette },
-  { value: 'other', labelKey: 'backgrounds.other', icon: MoreHorizontal },
+const PERSONA_OPTIONS: {
+  value: Persona;
+  labelKey: string;
+  subtitleKey: string;
+  icon: typeof Store;
+}[] = [
+  { value: 'small-business', labelKey: 'personas.small_business', subtitleKey: 'personas.small_business_subtitle', icon: Store },
+  { value: 'professional', labelKey: 'personas.professional', subtitleKey: 'personas.professional_subtitle', icon: Briefcase },
+  { value: 'creative', labelKey: 'personas.creative', subtitleKey: 'personas.creative_subtitle', icon: Palette },
+  { value: 'student', labelKey: 'personas.student', subtitleKey: 'personas.student_subtitle', icon: GraduationCap },
+  { value: 'hobby', labelKey: 'personas.hobby', subtitleKey: 'personas.hobby_subtitle', icon: HeartIcon },
+  { value: 'manager', labelKey: 'personas.manager', subtitleKey: 'personas.manager_subtitle', icon: Users },
 ];
 
 // ============================================================
 // Industry options for Step 2
 // ============================================================
-const INDUSTRY_OPTIONS: { value: Industry; labelKey: string; icon: typeof Heart }[] = [
-  { value: 'health-wellness', labelKey: 'industries.health_wellness', icon: Heart },
+const INDUSTRY_OPTIONS: {
+  value: Industry;
+  labelKey: string;
+  icon: typeof HeartIcon;
+}[] = [
+  { value: 'health-wellness', labelKey: 'industries.health_wellness', icon: HeartIcon },
   { value: 'finance-banking', labelKey: 'industries.finance_banking', icon: DollarSign },
   { value: 'education-learning', labelKey: 'industries.education_learning', icon: BookOpen },
   { value: 'ecommerce-retail', labelKey: 'industries.ecommerce_retail', icon: ShoppingCart },
@@ -38,169 +82,90 @@ const INDUSTRY_OPTIONS: { value: Industry; labelKey: string; icon: typeof Heart 
   { value: 'travel-hospitality', labelKey: 'industries.travel_hospitality', icon: Plane },
   { value: 'real-estate', labelKey: 'industries.real_estate', icon: Home },
   { value: 'food-restaurant', labelKey: 'industries.food_restaurant', icon: UtensilsCrossed },
-  { value: 'social-community', labelKey: 'industries.social_community', icon: Users },
+  { value: 'social-community', labelKey: 'industries.social_community', icon: UsersIcon },
   { value: 'other', labelKey: 'industries.other', icon: MoreHorizontal },
 ];
 
 // ============================================================
-// Inspiration prompt keys for Step 3
+// Tag icon and color mapping
 // ============================================================
-const INSPIRATION_PROMPT_KEYS = [
-  'inspiration_prompts.prompt_1',
-  'inspiration_prompts.prompt_2',
-  'inspiration_prompts.prompt_3',
-] as const;
+const TAG_CONFIG: Record<
+  IdeaLabIdea['tag'],
+  { icon: typeof Zap; colorClasses: string; labelKey: string }
+> = {
+  'easiest-to-start': {
+    icon: Zap,
+    colorClasses: 'bg-green-500/15 text-green-400 border-green-500/30',
+    labelKey: 'tag_easiest',
+  },
+  'biggest-impact': {
+    icon: Sparkles,
+    colorClasses: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    labelKey: 'tag_impact',
+  },
+  'most-innovative': {
+    icon: Lightbulb,
+    colorClasses: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+    labelKey: 'tag_innovative',
+  },
+};
+
+// ============================================================
+// Step phases
+// ============================================================
+type Phase =
+  | 'persona'        // Step 1
+  | 'industry'       // Step 2
+  | 'discover-loading' // Brief AI loading
+  | 'questions'      // Dynamic AI questions
+  | 'email'          // Email capture
+  | 'generate-loading' // Full AI loading
+  | 'results';       // Results display
+
+function phaseToStepNumber(phase: Phase, totalQuestions: number, currentQuestion: number): number {
+  switch (phase) {
+    case 'persona': return 1;
+    case 'industry': return 2;
+    case 'discover-loading': return 3;
+    case 'questions': return 3 + currentQuestion;
+    case 'email': return 3 + totalQuestions;
+    case 'generate-loading': return 4 + totalQuestions;
+    case 'results': return 4 + totalQuestions;
+    default: return 1;
+  }
+}
 
 export default function IdeaLabPage() {
   const t = useTranslations('idea_lab');
   const locale = useLocale();
 
-  // Form state
-  const [step, setStep] = useState(1);
+  // ============================================================
+  // State
+  // ============================================================
+  const [phase, setPhase] = useState<Phase>('persona');
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-  const [formData, setFormData] = useState({
-    background: '' as Background | '',
-    industry: '' as Industry | '',
-    problem: '',
-    email: '',
-    whatsapp: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Form data
+  const [persona, setPersona] = useState<Persona | ''>('');
+  const [industry, setIndustry] = useState<Industry | ''>('');
+  const [questions, setQuestions] = useState<DiscoveryQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  // Results
   const [results, setResults] = useState<IdeaLabResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [generationCount, setGenerationCount] = useState(1);
-  const [rateLimitRemaining, setRateLimitRemaining] = useState<number>(3);
 
-  // ============================================================
-  // Navigation helpers
-  // ============================================================
-  const goForward = () => {
-    setDirection('forward');
-    setStep((prev) => prev + 1);
-  };
+  // Detail panel
+  const [selectedIdea, setSelectedIdea] = useState<IdeaLabIdea | null>(null);
 
-  const goBack = () => {
-    setDirection('backward');
-    setStep((prev) => prev - 1);
-  };
+  // Refresh ("Try More Ideas")
+  const [refreshCount, setRefreshCount] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [allPreviousIdeaNames, setAllPreviousIdeaNames] = useState<string[]>([]);
+  const MAX_REFRESHES = 2;
 
-  // ============================================================
-  // Submit handler
-  // ============================================================
-  const handleSubmit = async (emailData: { email: string; whatsapp: boolean }) => {
-    const updatedData = { ...formData, ...emailData };
-    setFormData(updatedData);
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch('/api/ai/idea-lab', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          background: updatedData.background,
-          industry: updatedData.industry,
-          problem: updatedData.problem,
-          email: updatedData.email,
-          whatsapp: updatedData.whatsapp,
-          locale,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setResults(data.data);
-        // Extract rate limit info from headers if available
-        const remaining = res.headers.get('X-RateLimit-Remaining');
-        if (remaining) {
-          setRateLimitRemaining(parseInt(remaining, 10));
-        }
-      } else {
-        setError(data.error?.message || t('error_generate'));
-      }
-    } catch {
-      setError(t('error_generic'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // ============================================================
-  // Generate More Ideas Handler
-  // ============================================================
-  const handleGenerateMore = async () => {
-    if (!results || rateLimitRemaining <= 0) return;
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const existingIdeaNames = results.ideas.map(idea => idea.name);
-
-      const res = await fetch('/api/ai/idea-lab', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          background: formData.background,
-          industry: formData.industry,
-          problem: formData.problem,
-          email: formData.email,
-          whatsapp: formData.whatsapp,
-          locale,
-          existingIdeas: existingIdeaNames,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setResults(data.data);
-        setGenerationCount(prev => prev + 1);
-        // Update rate limit
-        const remaining = res.headers.get('X-RateLimit-Remaining');
-        if (remaining) {
-          setRateLimitRemaining(parseInt(remaining, 10));
-        }
-      } else {
-        setError(data.error?.message || t('error_generate_more'));
-      }
-    } catch {
-      setError(t('error_generic'));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleStartDiscovery = () => {
-    const formSection = document.getElementById('idea-lab-form');
-    if (formSection) {
-      formSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // ============================================================
-  // Loading state
-  // ============================================================
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-navy">
-        <div className="max-w-3xl mx-auto px-4 py-32">
-          <AIThinkingState
-            toolColor="orange"
-            messages={[
-              t('loading_messages.exploring'),
-              t('loading_messages.researching'),
-              t('loading_messages.generating'),
-              t('loading_messages.refining'),
-            ]}
-          />
-        </div>
-      </main>
-    );
-  }
-
-  // Result persistence state
+  // Save/share
   const [isCopied, setIsCopied] = useState(false);
   const { saveResult, copyShareableUrl, savedId } = useResultPersistence('idea-lab');
 
@@ -212,10 +177,251 @@ export default function IdeaLabPage() {
   }, [results, savedId, saveResult]);
 
   // ============================================================
-  // Results state
+  // Navigation helpers
   // ============================================================
-  if (results) {
+  const goForward = useCallback(() => {
+    setDirection('forward');
+  }, []);
 
+  const goBack = useCallback(() => {
+    setDirection('backward');
+  }, []);
+
+  // ============================================================
+  // Discover API call — generates questions
+  // ============================================================
+  const handleDiscoverSubmit = useCallback(async () => {
+    if (!persona || !industry) return;
+
+    goForward();
+    setPhase('discover-loading');
+    setError(null);
+
+    try {
+      const res = await fetch('/api/ai/idea-lab/discover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          persona,
+          industry,
+          locale,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.data?.questions) {
+        setQuestions(data.data.questions);
+        setCurrentQuestionIndex(0);
+        setAnswers({});
+        setPhase('questions');
+      } else {
+        setError(data.error?.message || t('error_discover'));
+        setPhase('industry');
+      }
+    } catch {
+      setError(t('error_generic'));
+      setPhase('industry');
+    }
+  }, [persona, industry, locale, t, goForward]);
+
+  // ============================================================
+  // Generate API call — generates ideas
+  // ============================================================
+  const handleGenerate = useCallback(async (emailData: {
+    email: string;
+    whatsapp: boolean;
+    phone?: string;
+    countryCode?: string;
+  }) => {
+    goForward();
+    setPhase('generate-loading');
+    setError(null);
+
+    // Store email for potential refresh calls
+    try { sessionStorage.setItem('aviniti_idealab_email', emailData.email); } catch { /* ignore */ }
+
+    // Build discovery answers array
+    const discoveryAnswers: DiscoveryAnswer[] = questions.map((q) => ({
+      questionId: q.id,
+      questionText: q.text,
+      answer: answers[q.id] || '',
+    }));
+
+    try {
+      const res = await fetch('/api/ai/idea-lab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          persona,
+          industry,
+          discoveryAnswers,
+          email: emailData.email,
+          whatsapp: emailData.whatsapp,
+          ...(emailData.whatsapp && emailData.phone
+            ? { phone: emailData.phone, countryCode: emailData.countryCode }
+            : {}),
+          locale,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.data?.ideas) {
+        setResults(data.data);
+        // Track generated idea names for potential refresh
+        setAllPreviousIdeaNames(data.data.ideas.map((i: IdeaLabIdea) => i.name));
+        setPhase('results');
+      } else {
+        setError(data.error?.message || t('error_generate'));
+        setPhase('email');
+      }
+    } catch {
+      setError(t('error_generic'));
+      setPhase('email');
+    }
+  }, [persona, industry, questions, answers, locale, t, goForward]);
+
+  // ============================================================
+  // Refresh — generate fresh ideas (limited to MAX_REFRESHES)
+  // ============================================================
+  const handleRefreshIdeas = useCallback(async () => {
+    if (refreshCount >= MAX_REFRESHES || isRefreshing) return;
+
+    setIsRefreshing(true);
+    setError(null);
+
+    const discoveryAnswers: DiscoveryAnswer[] = questions.map((q) => ({
+      questionId: q.id,
+      questionText: q.text,
+      answer: answers[q.id] || '',
+    }));
+
+    // Retrieve stored email from the last submission
+    const storedEmail = sessionStorage.getItem('aviniti_idealab_email') || '';
+
+    try {
+      const res = await fetch('/api/ai/idea-lab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          persona,
+          industry,
+          discoveryAnswers,
+          email: storedEmail,
+          whatsapp: false,
+          locale,
+          previousIdeaNames: allPreviousIdeaNames,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.data?.ideas) {
+        setResults(data.data);
+        const newNames = data.data.ideas.map((i: IdeaLabIdea) => i.name);
+        setAllPreviousIdeaNames((prev) => [...prev, ...newNames]);
+        setRefreshCount((prev) => prev + 1);
+        setSelectedIdea(null);
+      } else {
+        setError(data.error?.message || t('error_generate'));
+      }
+    } catch {
+      setError(t('error_generic'));
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refreshCount, isRefreshing, questions, answers, persona, industry, locale, allPreviousIdeaNames, t]);
+
+  // ============================================================
+  // Question navigation
+  // ============================================================
+  const currentQuestion = questions[currentQuestionIndex] ?? null;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const canAdvanceQuestion = currentQuestion ? !!answers[currentQuestion.id] : false;
+
+  const handleAnswerQuestion = useCallback((questionId: string, answer: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  }, []);
+
+  const handleNextQuestion = useCallback(() => {
+    if (isLastQuestion) {
+      goForward();
+      setPhase('email');
+    } else {
+      goForward();
+      setCurrentQuestionIndex((prev) => prev + 1);
+    }
+  }, [isLastQuestion, goForward]);
+
+  const handlePreviousQuestion = useCallback(() => {
+    if (currentQuestionIndex === 0) {
+      goBack();
+      setPhase('industry');
+    } else {
+      goBack();
+      setCurrentQuestionIndex((prev) => prev - 1);
+    }
+  }, [currentQuestionIndex, goBack]);
+
+  // ============================================================
+  // Scroll to form helper
+  // ============================================================
+  const handleStartDiscovery = () => {
+    const formSection = document.getElementById('idea-lab-form');
+    if (formSection) {
+      formSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // ============================================================
+  // Computed step for ToolForm stepper
+  // ============================================================
+  const totalFormSteps = 3 + questions.length + 1; // persona + industry + questions + email
+  const currentFormStep = phaseToStepNumber(phase, questions.length, currentQuestionIndex);
+
+  // ============================================================
+  // LOADING: Discover (brief)
+  // ============================================================
+  if (phase === 'discover-loading') {
+    return (
+      <main className="min-h-screen bg-navy">
+        <div className="max-w-3xl mx-auto px-4 py-32">
+          <AIThinkingState
+            toolColor="orange"
+            messages={[
+              t('discovery_loading_messages.analyzing'),
+              t('discovery_loading_messages.almost'),
+            ]}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================================
+  // LOADING: Generate (full)
+  // ============================================================
+  if (phase === 'generate-loading') {
+    return (
+      <main className="min-h-screen bg-navy">
+        <div className="max-w-3xl mx-auto px-4 py-32">
+          <AIThinkingState
+            toolColor="orange"
+            messages={[
+              t('generating_messages.analyzing'),
+              t('generating_messages.crafting'),
+            ]}
+          />
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================================
+  // RESULTS
+  // ============================================================
+  if (phase === 'results' && results) {
     const handleCopyLink = async () => {
       const success = await copyShareableUrl();
       if (success) {
@@ -224,20 +430,12 @@ export default function IdeaLabPage() {
       }
     };
 
-    // Resolve the background and industry labels for the results subtitle
-    const backgroundLabel = formData.background
-      ? t(BACKGROUND_OPTIONS.find(b => b.value === formData.background)?.labelKey ?? 'fallback_background')
-      : t('fallback_background');
-    const industryLabel = formData.industry
-      ? t(INDUSTRY_OPTIONS.find(i => i.value === formData.industry)?.labelKey ?? 'fallback_industry')
-      : t('fallback_industry');
-
     return (
       <main className="min-h-screen bg-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Results Header */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 text-orange-300 text-xs font-medium uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tool-orange/15 text-tool-orange-light text-xs font-medium uppercase tracking-wider mb-4">
               <Check className="h-3.5 w-3.5" />
               {t('results_badge')}
             </div>
@@ -245,12 +443,12 @@ export default function IdeaLabPage() {
               {t('results_title')}
             </h2>
             <p className="text-base text-muted mt-3 max-w-xl mx-auto">
-              {t('results_subtitle', { background: backgroundLabel, industry: industryLabel })}
+              {t('results_subtitle', { count: results.ideas.length })}
             </p>
           </div>
 
-          {/* Save Results Button */}
-          <div className="flex justify-center mb-10">
+          {/* Action buttons */}
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
             <button
               onClick={handleCopyLink}
               className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
@@ -271,152 +469,112 @@ export default function IdeaLabPage() {
 
           {/* Idea Cards */}
           <ToolResults toolColor="orange" className="space-y-6 bg-transparent border-0 p-0">
-            {results.ideas.map((idea: IdeaLabIdea, index: number) => (
-              <ToolResultItem key={idea.id}>
-                <article className="bg-slate-blue border border-slate-blue-light rounded-xl p-6 md:p-8 hover:border-orange-500/30 transition-all duration-300 group">
-                  {/* Card header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">
-                          {t('idea_label', { number: index + 1 })}
-                        </span>
-                        {/* Complexity Badge */}
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          idea.complexity === 'simple'
-                            ? 'bg-green-500/15 text-green-400 border border-green-500/30'
-                            : idea.complexity === 'moderate'
-                            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                            : 'bg-red-500/15 text-red-400 border border-red-500/30'
-                        }`}>
-                          {idea.complexity === 'simple' ? t('complexity_simple') :
-                           idea.complexity === 'moderate' ? t('complexity_moderate') :
-                           t('complexity_complex')}
-                        </span>
-                      </div>
-                      <h3 className="text-xl md:text-2xl font-bold text-white">
-                        {idea.name}
-                      </h3>
+            {results.ideas.map((idea: IdeaLabIdea) => {
+              const tagConfig = TAG_CONFIG[idea.tag];
+              const TagIcon = tagConfig.icon;
+
+              return (
+                <ToolResultItem key={idea.id}>
+                  <article className="bg-slate-blue border border-slate-blue-light rounded-xl p-6 md:p-8 hover:border-tool-orange/30 transition-all duration-300 group">
+                    {/* Tag Badge */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${tagConfig.colorClasses}`}
+                      >
+                        <TagIcon className="h-3 w-3" />
+                        {t(tagConfig.labelKey)}
+                      </span>
                     </div>
-                    <button
-                      className="h-9 w-9 rounded-lg flex items-center justify-center text-muted hover:text-orange-400 hover:bg-orange-500/10 transition-colors duration-200 flex-shrink-0"
-                      aria-label={t('bookmark_aria', { name: idea.name })}
-                    >
-                      <Star className="h-5 w-5" />
-                    </button>
-                  </div>
 
-                  {/* Description */}
-                  <p className="text-base text-off-white leading-relaxed">
-                    {idea.description}
-                  </p>
+                    {/* Name */}
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                      {idea.name}
+                    </h3>
 
-                  {/* Features */}
-                  <div className="mt-5">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-3">
-                      {t('key_features')}
-                    </h4>
-                    <ul className="space-y-2">
-                      {idea.features.map((feature: string, fIdx: number) => (
-                        <li key={fIdx} className="flex items-start gap-2.5 text-sm text-muted">
-                          <Check className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
-                          {feature}
+                    {/* Tagline */}
+                    <p className="text-base text-tool-orange font-medium mb-4">
+                      {idea.tagline}
+                    </p>
+
+                    {/* Benefits */}
+                    <ul className="space-y-2 mb-6">
+                      {idea.benefits.map((benefit: string, bIdx: number) => (
+                        <li
+                          key={bIdx}
+                          className="flex items-start gap-2.5 text-sm text-off-white"
+                        >
+                          <Check className="h-4 w-4 text-tool-orange-light mt-0.5 flex-shrink-0" />
+                          {benefit}
                         </li>
                       ))}
                     </ul>
-                  </div>
 
-                  {/* Estimates row */}
-                  <div className="grid grid-cols-2 gap-4 mt-6">
-                    <div className="bg-slate-blue-light/40 rounded-lg p-3">
-                      <span className="text-xs text-muted block">{t('estimated_cost')}</span>
-                      <span className="text-lg font-bold text-white mt-0.5 block">
-                        ${idea.estimatedCost.min.toLocaleString()} - ${idea.estimatedCost.max.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="bg-slate-blue-light/40 rounded-lg p-3">
-                      <span className="text-xs text-muted block">{t('timeline_label')}</span>
-                      <span className="text-lg font-bold text-white mt-0.5 block">
-                        {idea.estimatedTimeline}
-                      </span>
-                    </div>
-                  </div>
+                    {/* Social Proof (subtle) */}
+                    <p className="text-xs text-muted italic mb-5 ps-4 border-s-2 border-tool-orange/30">
+                      {idea.socialProof}
+                    </p>
 
-                  {/* Tech Stack */}
-                  {idea.techStack && idea.techStack.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted mb-2">
-                        {t('tech_stack')}
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {idea.techStack.map((tech: string, techIdx: number) => (
-                          <span
-                            key={techIdx}
-                            className="px-2.5 py-1 rounded-md bg-slate-blue-light/50 text-xs text-off-white border border-slate-blue-light"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Card actions */}
-                  <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                    <a
-                      href={`/ai-analyzer?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}`}
-                      className="h-11 px-5 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
+                    {/* View Details Button */}
+                    <button
+                      onClick={() => setSelectedIdea(idea)}
+                      className="h-11 px-6 bg-tool-orange text-white font-semibold rounded-lg shadow-sm hover:bg-tool-orange/90 hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                      aria-label={t('aria_view_details', { name: idea.name })}
                     >
-                      {t('explore_idea')}
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-                    <a
-                      href={`/get-estimate?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}&ideaFeatures=${encodeURIComponent(idea.features.join(','))}`}
-                      className="h-11 px-5 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 transition-all duration-200 flex items-center justify-center gap-2 flex-1 sm:flex-initial"
-                    >
-                      {t('get_estimate')}
-                    </a>
-                  </div>
-                </article>
-              </ToolResultItem>
-            ))}
+                      {t('view_details')}
+                      <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+                    </button>
+                  </article>
+                </ToolResultItem>
+              );
+            })}
           </ToolResults>
 
-          {/* Generate More Ideas Button */}
-          {rateLimitRemaining > 0 && (
-            <div className="flex flex-col items-center gap-3 mt-8">
-              <button
-                onClick={handleGenerateMore}
-                disabled={isLoading}
-                className="h-11 px-6 bg-transparent text-orange-400 border border-orange-500/30 font-semibold rounded-lg hover:bg-orange-500/10 hover:border-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                {t('generate_more')}
-              </button>
-              <span className="text-xs text-muted">
-                {t('generation_counter', { current: generationCount, total: 3 })}
-              </span>
-            </div>
-          )}
+          {/* Consultation CTA */}
+          <div className="mt-10">
+            <ConsultationCTA projectName={t('results_title')} />
+          </div>
 
-          {/* Cross-sell */}
-          <div className="mt-10 space-y-4">
-            <CrossSellCTA
-              targetTool="ai-analyzer"
-              message={t('cross_sell_analyzer')}
-            />
-            <CrossSellCTA
-              targetTool="get-estimate"
-              message={t('cross_sell_estimate')}
-            />
+          {/* Try More Ideas — Refresh Button */}
+          <div className="mt-10 text-center">
+            {refreshCount < MAX_REFRESHES ? (
+              <div className="space-y-3">
+                <button
+                  onClick={handleRefreshIdeas}
+                  disabled={isRefreshing}
+                  className="h-12 px-8 bg-slate-blue border border-slate-blue-light hover:border-tool-orange/30 hover:bg-slate-blue-light text-off-white font-semibold rounded-xl shadow-sm transition-all duration-200 inline-flex items-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw className={`h-4.5 w-4.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  {isRefreshing ? t('refresh_ideas_loading') : t('refresh_ideas_btn')}
+                </button>
+                <p className="text-xs text-muted">
+                  {t('refresh_ideas_subtitle')}
+                </p>
+                <p className="text-xs text-muted/60">
+                  {t('refresh_count', { current: refreshCount, total: MAX_REFRESHES })}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted italic">
+                {t('refresh_limit_reached')}
+              </p>
+            )}
           </div>
         </div>
+
+        {/* Idea Detail Panel */}
+        {selectedIdea && (
+          <IdeaDetailPanel
+            idea={selectedIdea}
+            isOpen={!!selectedIdea}
+            onClose={() => setSelectedIdea(null)}
+          />
+        )}
       </main>
     );
   }
 
   // ============================================================
-  // Form state (default view)
+  // FORM STATE (persona, industry, questions, email)
   // ============================================================
   return (
     <main className="min-h-screen bg-navy">
@@ -432,12 +590,29 @@ export default function IdeaLabPage() {
 
       {/* Form */}
       <section id="idea-lab-form" className="py-12 md:py-16">
-        <ToolForm totalSteps={4} currentStep={step} toolColor="orange">
-          <StepTransition currentStep={step} direction={direction}>
+        <ToolForm
+          totalSteps={phase === 'questions' || phase === 'email' ? totalFormSteps : 4}
+          currentStep={phase === 'questions' || phase === 'email' ? currentFormStep : phase === 'persona' ? 1 : 2}
+          toolColor="orange"
+        >
+          <StepTransition
+            currentStep={
+              phase === 'persona'
+                ? 1
+                : phase === 'industry'
+                ? 2
+                : phase === 'questions'
+                ? 100 + currentQuestionIndex
+                : phase === 'email'
+                ? 200
+                : 1
+            }
+            direction={direction}
+          >
             {/* ============================================================ */}
-            {/* Step 1: Background */}
+            {/* Step 1: Persona Selection */}
             {/* ============================================================ */}
-            {step === 1 && (
+            {phase === 'persona' && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
                   {t('step1_title')}
@@ -446,34 +621,49 @@ export default function IdeaLabPage() {
                   {t('step1_helper')}
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="radiogroup" aria-label={t('aria_background_selection')}>
-                  {BACKGROUND_OPTIONS.map((option) => {
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  role="radiogroup"
+                  aria-label={t('aria_persona_selection')}
+                >
+                  {PERSONA_OPTIONS.map((option) => {
                     const Icon = option.icon;
-                    const isSelected = formData.background === option.value;
+                    const isSelected = persona === option.value;
                     return (
                       <button
                         key={option.value}
                         role="radio"
                         aria-checked={isSelected}
-                        onClick={() => setFormData((prev) => ({ ...prev, background: option.value }))}
-                        className={`w-full flex items-center gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
+                        onClick={() => setPersona(option.value)}
+                        className={`w-full flex items-start gap-4 p-4 md:p-5 rounded-xl border transition-all duration-200 text-start cursor-pointer ${
                           isSelected
-                            ? 'bg-orange-500/10 border-orange-500/50 ring-1 ring-orange-500/30'
+                            ? 'bg-tool-orange/10 border-tool-orange/50 ring-1 ring-tool-orange/30'
                             : 'bg-slate-blue border-slate-blue-light hover:bg-slate-blue-light/50'
                         }`}
                       >
                         <div
-                          className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                            isSelected ? 'bg-orange-500/20 text-orange-400' : 'bg-slate-blue-light text-muted'
+                          className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isSelected
+                              ? 'bg-tool-orange/20 text-tool-orange-light'
+                              : 'bg-slate-blue-light text-muted'
                           }`}
                         >
                           <Icon className="h-5 w-5" />
                         </div>
-                        <span className={`text-base font-medium ${isSelected ? 'text-white' : 'text-off-white'}`}>
-                          {t(option.labelKey)}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <span
+                            className={`text-base font-medium block ${
+                              isSelected ? 'text-white' : 'text-off-white'
+                            }`}
+                          >
+                            {t(option.labelKey)}
+                          </span>
+                          <span className="text-xs text-muted mt-0.5 block">
+                            {t(option.subtitleKey)}
+                          </span>
+                        </div>
                         {isSelected && (
-                          <div className="ml-auto h-5 w-5 rounded-full bg-orange-500 flex items-center justify-center">
+                          <div className="h-5 w-5 rounded-full bg-tool-orange flex items-center justify-center flex-shrink-0">
                             <Check className="h-3 w-3 text-white" />
                           </div>
                         )}
@@ -484,21 +674,24 @@ export default function IdeaLabPage() {
 
                 <div className="flex justify-end mt-8">
                   <button
-                    onClick={goForward}
-                    disabled={!formData.background}
-                    className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                    onClick={() => {
+                      goForward();
+                      setPhase('industry');
+                    }}
+                    disabled={!persona}
+                    className="h-11 px-6 bg-tool-orange text-white font-semibold rounded-lg shadow-sm hover:bg-tool-orange/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
                     {t('continue_btn')}
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                   </button>
                 </div>
               </div>
             )}
 
             {/* ============================================================ */}
-            {/* Step 2: Industry */}
+            {/* Step 2: Industry Selection */}
             {/* ============================================================ */}
-            {step === 2 && (
+            {phase === 'industry' && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
                   {t('step2_title')}
@@ -507,30 +700,40 @@ export default function IdeaLabPage() {
                   {t('step2_helper')}
                 </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4" role="radiogroup" aria-label={t('aria_industry_selection')}>
+                <div
+                  className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4"
+                  role="radiogroup"
+                  aria-label={t('aria_industry_selection')}
+                >
                   {INDUSTRY_OPTIONS.map((option) => {
                     const Icon = option.icon;
-                    const isSelected = formData.industry === option.value;
+                    const isSelected = industry === option.value;
                     return (
                       <button
                         key={option.value}
                         role="radio"
                         aria-checked={isSelected}
-                        onClick={() => setFormData((prev) => ({ ...prev, industry: option.value }))}
-                        className={`w-full flex items-center gap-3 p-3 md:p-4 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
+                        onClick={() => setIndustry(option.value)}
+                        className={`w-full flex items-center gap-3 p-3 md:p-4 rounded-xl border transition-all duration-200 text-start cursor-pointer ${
                           isSelected
-                            ? 'bg-orange-500/10 border-orange-500/50 ring-1 ring-orange-500/30'
+                            ? 'bg-tool-orange/10 border-tool-orange/50 ring-1 ring-tool-orange/30'
                             : 'bg-slate-blue border-slate-blue-light hover:bg-slate-blue-light/50'
                         }`}
                       >
                         <div
                           className={`h-8 w-8 md:h-10 md:w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? 'bg-orange-500/20 text-orange-400' : 'bg-slate-blue-light text-muted'
+                            isSelected
+                              ? 'bg-tool-orange/20 text-tool-orange-light'
+                              : 'bg-slate-blue-light text-muted'
                           }`}
                         >
                           <Icon className="h-4 w-4 md:h-5 md:w-5" />
                         </div>
-                        <span className={`text-sm md:text-base font-medium ${isSelected ? 'text-white' : 'text-off-white'}`}>
+                        <span
+                          className={`text-sm md:text-base font-medium ${
+                            isSelected ? 'text-white' : 'text-off-white'
+                          }`}
+                        >
                           {t(option.labelKey)}
                         </span>
                       </button>
@@ -540,109 +743,189 @@ export default function IdeaLabPage() {
 
                 <div className="flex items-center justify-between mt-8">
                   <button
-                    onClick={goBack}
+                    onClick={() => {
+                      goBack();
+                      setPhase('persona');
+                    }}
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                     {t('back_btn')}
                   </button>
                   <button
-                    onClick={goForward}
-                    disabled={!formData.industry}
-                    className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                    onClick={handleDiscoverSubmit}
+                    disabled={!industry}
+                    className="h-11 px-6 bg-tool-orange text-white font-semibold rounded-lg shadow-sm hover:bg-tool-orange/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
                     {t('continue_btn')}
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                   </button>
                 </div>
               </div>
             )}
 
             {/* ============================================================ */}
-            {/* Step 3: Problem Description */}
+            {/* Dynamic Questions Phase */}
             {/* ============================================================ */}
-            {step === 3 && (
+            {phase === 'questions' && currentQuestion && (
               <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step3_title')}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  {t('step3_helper')}
-                </p>
-
-                <textarea
-                  value={formData.problem}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, problem: e.target.value }))}
-                  placeholder={t('textarea_placeholder')}
-                  minLength={10}
-                  maxLength={500}
-                  className="w-full min-h-[160px] md:min-h-[200px] p-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-orange-500 focus:text-white focus:outline-none focus:ring-1 focus:ring-orange-500 resize-y transition-all duration-200"
-                />
-
-                <div className="flex justify-end mt-1.5">
-                  <span className={`text-xs ${formData.problem.length < 10 ? 'text-orange-400' : 'text-muted'}`}>
-                    {t('char_counter', { count: formData.problem.length })}
-                    {formData.problem.length > 0 && formData.problem.length < 10 && ` ${t('min_chars_warning')}`}
-                  </span>
+                {/* Progress indicator */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-h4 text-white mb-1">
+                      {t('questions_title')}
+                    </h2>
+                    <p className="text-xs text-muted">
+                      {t('question_of', {
+                        current: currentQuestionIndex + 1,
+                        total: questions.length,
+                      })}
+                    </p>
+                  </div>
+                  <DiscoveryProgress
+                    totalQuestions={questions.length}
+                    answeredCount={Object.keys(answers).length}
+                    isActive={true}
+                  />
                 </div>
 
-                {/* Inspiration section */}
-                <div className="mt-6">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-light mb-3">
-                    {t('need_inspiration')}
-                  </p>
-                  <div className="space-y-2">
-                    {INSPIRATION_PROMPT_KEYS.map((promptKey) => {
-                      const promptText = t(promptKey);
+                {/* Question text */}
+                <p className="text-lg text-off-white font-medium mb-6">
+                  {currentQuestion.text}
+                </p>
+
+                {/* Yes/No type */}
+                {currentQuestion.type === 'yes-no' && (
+                  <div className="grid grid-cols-2 gap-4" role="radiogroup" aria-label={t('aria_question_answer')}>
+                    {['yes', 'no'].map((option) => {
+                      const isSelected = answers[currentQuestion.id] === option;
                       return (
                         <button
-                          key={promptKey}
-                          type="button"
-                          onClick={() => setFormData((prev) => ({ ...prev, problem: promptText }))}
-                          className="w-full text-left p-3 rounded-lg bg-slate-blue-light/30 border border-transparent text-sm text-muted-light italic hover:bg-slate-blue-light/50 hover:border-slate-blue-light hover:text-muted transition-all duration-200"
+                          key={option}
+                          role="radio"
+                          aria-checked={isSelected}
+                          onClick={() =>
+                            handleAnswerQuestion(currentQuestion.id, option)
+                          }
+                          className={`flex items-center justify-center gap-3 p-5 rounded-xl border text-lg font-semibold transition-all duration-200 cursor-pointer ${
+                            isSelected
+                              ? 'bg-tool-orange/10 border-tool-orange/50 ring-1 ring-tool-orange/30 text-white'
+                              : 'bg-slate-blue border-slate-blue-light hover:bg-slate-blue-light/50 text-off-white'
+                          }`}
                         >
-                          &ldquo;{promptText}&rdquo;
+                          {isSelected && (
+                            <Check className="h-5 w-5 text-tool-orange-light" />
+                          )}
+                          {option === 'yes' ? t('yes') : t('no')}
                         </button>
                       );
                     })}
                   </div>
-                </div>
+                )}
 
+                {/* Multiple Choice type */}
+                {currentQuestion.type === 'multiple-choice' &&
+                  currentQuestion.options && (
+                    <div className="space-y-3" role="radiogroup" aria-label={t('aria_question_answer')}>
+                      {currentQuestion.options.map((option) => {
+                        const isSelected =
+                          answers[currentQuestion.id] === option;
+                        return (
+                          <button
+                            key={option}
+                            role="radio"
+                            aria-checked={isSelected}
+                            onClick={() =>
+                              handleAnswerQuestion(currentQuestion.id, option)
+                            }
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 text-start cursor-pointer ${
+                              isSelected
+                                ? 'bg-tool-orange/10 border-tool-orange/50 ring-1 ring-tool-orange/30'
+                                : 'bg-slate-blue border-slate-blue-light hover:bg-slate-blue-light/50'
+                            }`}
+                          >
+                            <div
+                              className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                isSelected
+                                  ? 'border-tool-orange bg-tool-orange'
+                                  : 'border-muted'
+                              }`}
+                            >
+                              {isSelected && (
+                                <Check className="h-3 w-3 text-white" />
+                              )}
+                            </div>
+                            <span
+                              className={`text-sm font-medium ${
+                                isSelected ? 'text-white' : 'text-off-white'
+                              }`}
+                            >
+                              {option}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                {/* Single Line type */}
+                {currentQuestion.type === 'single-line' && (
+                  <div>
+                    <input
+                      type="text"
+                      value={answers[currentQuestion.id] || ''}
+                      onChange={(e) =>
+                        handleAnswerQuestion(currentQuestion.id, e.target.value)
+                      }
+                      placeholder={
+                        currentQuestion.placeholder || t('single_line_placeholder')
+                      }
+                      className="w-full h-12 px-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-orange focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-orange transition-all duration-200"
+                      aria-label={t('aria_question_answer')}
+                    />
+                  </div>
+                )}
+
+                {/* Navigation */}
                 <div className="flex items-center justify-between mt-8">
                   <button
-                    onClick={goBack}
+                    onClick={handlePreviousQuestion}
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                     {t('back_btn')}
                   </button>
                   <button
-                    onClick={goForward}
-                    disabled={formData.problem.trim().length < 10}
-                    className="h-11 px-6 bg-orange-500 text-white font-semibold rounded-lg shadow-sm hover:bg-orange-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                    onClick={handleNextQuestion}
+                    disabled={!canAdvanceQuestion}
+                    className="h-11 px-6 bg-tool-orange text-white font-semibold rounded-lg shadow-sm hover:bg-tool-orange/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                   >
-                    {t('continue_btn')}
-                    <ArrowRight className="h-5 w-5" />
+                    {isLastQuestion ? t('continue_btn') : t('continue_btn')}
+                    <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                   </button>
                 </div>
               </div>
             )}
 
             {/* ============================================================ */}
-            {/* Step 4: Email Capture */}
+            {/* Email Capture Step */}
             {/* ============================================================ */}
-            {step === 4 && (
+            {phase === 'email' && (
               <div>
                 <div className="mb-4">
                   <button
-                    onClick={goBack}
+                    onClick={() => {
+                      goBack();
+                      setCurrentQuestionIndex(questions.length - 1);
+                      setPhase('questions');
+                    }}
                     className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                     {t('back_btn')}
                   </button>
                 </div>
-                <EmailCapture toolColor="orange" onSubmit={handleSubmit} />
+                <EmailCapture toolColor="orange" onSubmit={handleGenerate} />
               </div>
             )}
           </StepTransition>
