@@ -164,10 +164,10 @@ export interface IdeaLabGenerateRequest {
   persona: Persona;
   industry: Industry;
   discoveryAnswers: DiscoveryAnswer[];
-  email: string;
+  name: string;
+  phone: string;
+  email?: string;
   whatsapp: boolean;
-  phone?: string;
-  countryCode?: string;
   locale: 'en' | 'ar';
   /** Names of previously generated ideas to exclude (for refresh) */
   previousIdeaNames?: string[];
@@ -214,8 +214,9 @@ export interface AnalyzerRequest {
   targetAudience?: string;
   industry?: Industry;
   revenueModel?: RevenueModel;
-  email: string;
-  phone?: string;
+  name: string;
+  phone: string;
+  email?: string;
   whatsapp: boolean;
   locale: Locale;
   sourceIdeaId?: string;
@@ -423,8 +424,9 @@ export interface ROICalculatorRequest {
   customerGrowth: GrowthEstimate;
   retentionImprovement: GrowthEstimate;
   monthlyRevenue?: number;
-  email: string;
-  name?: string;
+  name: string;
+  phone: string;
+  email?: string;
   company?: string;
   whatsapp: boolean;
   locale: Locale;
@@ -489,8 +491,9 @@ export interface ROIFromEstimateRequest {
   targetMarket: TargetMarket;
   industry?: Industry;
   businessModel?: BusinessModel;
-  email: string;
-  phone?: string;
+  name: string;
+  phone: string;
+  email?: string;
   whatsapp: boolean;
   locale: Locale;
 }
@@ -502,8 +505,9 @@ export interface ROIStandaloneRequest {
   industry?: Industry;
   businessModel?: BusinessModel;
   budgetRange?: { min: number; max: number };
-  email: string;
-  phone?: string;
+  name: string;
+  phone: string;
+  email?: string;
   whatsapp: boolean;
   locale: Locale;
 }
@@ -607,10 +611,9 @@ export interface ChatResponse {
 
 export interface ContactRequest {
   name: string;
-  email: string;
+  phone: string;
+  email?: string;
   company?: string;
-  phone?: string;
-  countryCode?: string;
   topic: ContactTopic;
   message: string;
   whatsapp: boolean;

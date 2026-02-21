@@ -6,6 +6,7 @@ import { generateJsonContent } from '@/lib/gemini/client';
 import { analyzeIdeaSchema } from '@/lib/utils/validators';
 import { buildAnalyzeIdeaPrompt } from '@/lib/gemini/prompts';
 import type { AnalyzeIdeaResponse } from '@/types/api';
+import { logServerError } from '@/lib/firebase/error-logging';
 
 const RATE_LIMIT = 15;
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('VALIDATION_ERROR', error.issues[0].message, 400);
     }
 
-    console.error('[Analyze Idea API] Error:', error);
+    logServerError('analyze-idea-api', 'Unexpected error in analyze idea handler', error);
     return createErrorResponse('INTERNAL_ERROR', 'Failed to analyze idea. Please try again.', 500);
   }
 }

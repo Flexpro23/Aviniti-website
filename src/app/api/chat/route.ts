@@ -10,6 +10,7 @@ import { generateContent } from '@/lib/gemini/client';
 import { saveChatMessage } from '@/lib/firebase/collections';
 import { chatMessageSchema } from '@/lib/utils/validators';
 import { buildChatbotSystemPrompt } from '@/lib/gemini/prompts';
+import { logServerError } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 30;
@@ -119,7 +120,7 @@ Avi:`;
     }
 
     // Log unexpected errors
-    console.error('[Chat API] Error:', error);
+    logServerError('chat-api', 'Unexpected error in chat handler', error);
 
     // Return generic error
     return createErrorResponse(

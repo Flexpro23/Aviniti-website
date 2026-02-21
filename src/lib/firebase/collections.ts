@@ -64,11 +64,10 @@ export function getExitIntentCapturesCollection() {
 // ============================================================
 
 export interface LeadData {
+  phone: string;
+  name: string;
   email?: string | null;
-  name?: string | null;
   company?: string | null;
-  phone?: string | null;
-  countryCode?: string | null;
   whatsapp: boolean;
   source:
     | 'idea-lab'
@@ -143,10 +142,9 @@ export interface ChatbotConversationData {
 export interface ContactSubmissionData {
   leadId: string;
   name: string;
-  email: string;
+  phone: string;
+  email?: string | null;
   company?: string | null;
-  phone?: string | null;
-  countryCode: string;
   topic: ContactTopic;
   message: string;
   whatsapp: boolean;
@@ -156,7 +154,8 @@ export interface ContactSubmissionData {
 export interface ExitIntentCaptureData {
   leadId: string;
   variant: ExitIntentVariant;
-  email: string;
+  email?: string;
+  phone?: string;
   projectType?: string | null;
   page: string;
 }
@@ -167,7 +166,7 @@ export interface ExitIntentCaptureData {
 
 /**
  * Save or update a lead in Firestore
- * Implements deduplication logic based on email
+ * Implements deduplication logic based on phone number (E.164 format)
  */
 export async function saveLeadToFirestore(
   leadData: Omit<LeadData, 'converted' | 'notes'>
@@ -176,17 +175,13 @@ export async function saveLeadToFirestore(
 
   const now = new Date();
 
-  // Check for existing lead with same email (only if email is provided)
-  let existingLeadsSnapshot: FirebaseFirestore.QuerySnapshot | null = null;
+  // Check for existing lead with same phone number (phone is always provided in E.164 format)
+  const existingLeadsSnapshot = await leadsCollection
+    .where('phone', '==', leadData.phone)
+    .limit(1)
+    .get();
 
-  if (leadData.email) {
-    existingLeadsSnapshot = await leadsCollection
-      .where('email', '==', leadData.email)
-      .limit(1)
-      .get();
-  }
-
-  if (existingLeadsSnapshot && !existingLeadsSnapshot.empty) {
+  if (!existingLeadsSnapshot.empty) {
     // Update existing lead
     const existingLead = existingLeadsSnapshot.docs[0];
     const existingData = existingLead.data();
@@ -195,11 +190,9 @@ export async function saveLeadToFirestore(
     const mergedData = {
       ...leadData,
       updatedAt: now,
-      // Preserve name if new data doesn't have it
-      name: leadData.name || existingData.name || null,
+      // Preserve existing values if new data doesn't have them
+      email: leadData.email || existingData.email || null,
       company: leadData.company || existingData.company || null,
-      phone: leadData.phone || existingData.phone || null,
-      countryCode: leadData.countryCode || existingData.countryCode || null,
       // Merge metadata
       metadata: {
         ...existingData.metadata,

@@ -2,11 +2,20 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, ArrowRight, MessageCircle, Phone, ChevronDown } from 'lucide-react';
+import { X, ArrowRight, MessageCircle, Phone, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { PhoneInput } from 'react-international-phone';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import 'react-international-phone/style.css';
 import { cn } from '@/lib/utils/cn';
 import { Link } from '@/lib/i18n/navigation';
 import { useExitIntent } from './ExitIntentProvider';
+
+function getGeoCountry(): string {
+  if (typeof document === 'undefined') return 'jo';
+  const match = document.cookie.match(/geo-country=([A-Z]{2})/);
+  return match ? match[1].toLowerCase() : 'jo';
+}
 
 type ExitIntentVariant = 'A' | 'B' | 'C' | 'D' | 'E';
 
@@ -22,17 +31,39 @@ async function trackExitIntent(payload: Record<string, unknown>) {
   }
 }
 
-// --- Variant A: Email capture with free consultation ---
+// --- Variant A: Phone capture with free consultation ---
 function VariantA({ onConvert }: { onConvert: () => void }) {
   const t = useTranslations('common');
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [defaultCountry, setDefaultCountry] = useState('jo');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    setDefaultCountry(getGeoCountry());
+  }, []);
+
+  const validatePhone = (value: string) => {
+    if (!value || value.length <= 4) {
+      setPhoneError(t('exit_intent.phone_required'));
+      return false;
+    } else if (!isValidPhoneNumber(value)) {
+      setPhoneError(t('exit_intent.phone_invalid'));
+      return false;
+    }
+    setPhoneError(null);
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!validatePhone(phone)) {
+      setPhoneTouched(true);
+      return;
+    }
 
-    await trackExitIntent({ variant: 'A', action: 'email_capture', email });
+    await trackExitIntent({ variant: 'A', action: 'phone_capture', phone });
     setSubmitted(true);
     onConvert();
   };
@@ -53,17 +84,29 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
         {t('exit_intent.free_consultation_description')}
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="relative">
-          <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('exit_intent.email_placeholder')}
-            className="w-full h-11 ps-10 pe-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
+        <div dir="ltr" className="aviniti-phone-input">
+          <PhoneInput
+            defaultCountry={defaultCountry}
+            value={phone}
+            onChange={(value) => {
+              setPhone(value);
+              if (phoneTouched) validatePhone(value);
+            }}
+            onBlur={() => {
+              setPhoneTouched(true);
+              validatePhone(phone);
+            }}
+            placeholder={t('exit_intent.phone_placeholder')}
+            preferredCountries={[
+              'jo', 'ae', 'sa', 'eg', 'qa', 'kw', 'bh', 'om', 'iq', 'lb', 'ps',
+            ]}
           />
         </div>
+        {phoneTouched && phoneError && (
+          <p className="text-xs text-error" role="alert">
+            {phoneError}
+          </p>
+        )}
         <button
           type="submit"
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
@@ -116,18 +159,41 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
 function VariantC({ onConvert }: { onConvert: () => void }) {
   const t = useTranslations('common');
   const [projectType, setProjectType] = useState('');
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [defaultCountry, setDefaultCountry] = useState('jo');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    setDefaultCountry(getGeoCountry());
+  }, []);
+
+  const validatePhone = (value: string) => {
+    if (!value || value.length <= 4) {
+      setPhoneError(t('exit_intent.phone_required'));
+      return false;
+    } else if (!isValidPhoneNumber(value)) {
+      setPhoneError(t('exit_intent.phone_invalid'));
+      return false;
+    }
+    setPhoneError(null);
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !projectType) return;
+    if (!projectType) return;
+    if (!validatePhone(phone)) {
+      setPhoneTouched(true);
+      return;
+    }
 
     await trackExitIntent({
       variant: 'C',
       action: 'quick_estimate',
       projectType,
-      email,
+      phone,
     });
     setSubmitted(true);
     onConvert();
@@ -170,17 +236,29 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
           </select>
           <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
         </div>
-        <div className="relative">
-          <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('exit_intent.email_placeholder')}
-            className="w-full h-11 ps-10 pe-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
+        <div dir="ltr" className="aviniti-phone-input">
+          <PhoneInput
+            defaultCountry={defaultCountry}
+            value={phone}
+            onChange={(value) => {
+              setPhone(value);
+              if (phoneTouched) validatePhone(value);
+            }}
+            onBlur={() => {
+              setPhoneTouched(true);
+              validatePhone(phone);
+            }}
+            placeholder={t('exit_intent.phone_placeholder')}
+            preferredCountries={[
+              'jo', 'ae', 'sa', 'eg', 'qa', 'kw', 'bh', 'om', 'iq', 'lb', 'ps',
+            ]}
           />
         </div>
+        {phoneTouched && phoneError && (
+          <p className="text-xs text-error" role="alert">
+            {phoneError}
+          </p>
+        )}
         <button
           type="submit"
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"

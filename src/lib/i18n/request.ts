@@ -12,6 +12,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale,
     onError(error) {
       if (process.env.NODE_ENV === 'development') {
+        // Dev-only: i18n errors are expected during builds
         console.error(error);
       }
     },

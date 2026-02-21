@@ -115,7 +115,11 @@
     "select_country_code": "Select country code",
     "invalid_email": "Please enter a valid email address",
     "email_optional": "Optional — enter to receive results by email",
-    "skip": "Skip, show results now"
+    "skip": "Skip, show results now",
+    "welcome_back": "Welcome back!",
+    "continue_with_info": "Continue with {email}",
+    "edit_info": "Edit my info",
+    "using_email": "Using your saved contact information"
   },
   "contact_capture": {
     "title": "Almost There!",
@@ -144,6 +148,9 @@
     "before_you_go": "Before you go...",
     "free_consultation_description": "Get a free consultation with our team. We'll help you find the right solution for your business.",
     "email_placeholder": "Your email address",
+    "phone_placeholder": "Enter your phone number",
+    "phone_required": "Please enter your phone number",
+    "phone_invalid": "Please enter a valid phone number",
     "get_free_consultation": "Get a Free Consultation",
     "see_our_solutions": "See Our Solutions",
     "solutions_description": "Explore how we can help transform your business with tailored technology solutions.",
@@ -266,6 +273,67 @@
     "goto_testimonial": "Go to testimonial {number}",
     "results_nav_aria": "Results section navigation"
   },
+  "journey_tracker": {
+    "aria_label": "AI Tools Journey Progress"
+  },
+  "tool_transition": {
+    "title": "Carrying Your Insights Forward",
+    "subtitle": "Here's what we're bringing from your {fromTool} analysis",
+    "continue": "Continue to {toTool}",
+    "carrying_forward": "Data being transferred",
+    "from_completed": "Completed",
+    "metrics": {
+      "idea_name": "Idea Name",
+      "features_count": "Features",
+      "viability_score": "Viability Score",
+      "complexity": "Complexity",
+      "tech_stack": "Tech Stack",
+      "estimated_cost": "Estimated Cost",
+      "timeline": "Timeline",
+      "roi_percentage": "ROI",
+      "payback_period": "Payback Period"
+    },
+    "carry": {
+      "idea_description": "Idea description",
+      "feature_list": "Feature list",
+      "benefits": "Key benefits",
+      "impact_metrics": "Impact metrics",
+      "original_idea": "Original idea analysis",
+      "tech_recommendations": "Tech recommendations",
+      "complexity_assessment": "Complexity assessment",
+      "cost_breakdown": "Cost breakdown",
+      "features_selected": "Selected features",
+      "project_approach": "Project approach",
+      "roi_analysis": "ROI analysis",
+      "market_opportunity": "Market opportunity",
+      "revenue_model": "Revenue model"
+    }
+  },
+  "nudges": {
+    "dismiss": "Dismiss",
+    "analyzer": {
+      "high_score": "Great viability score! Get a detailed cost and timeline estimate for your idea.",
+      "high_score_cta": "Get Estimate",
+      "low_score": "Consider exploring alternative ideas that might have better market potential.",
+      "low_score_cta": "Explore Ideas",
+      "high_competition": "High competition detected. A custom build can help you differentiate.",
+      "high_competition_cta": "Get Custom Estimate"
+    },
+    "estimate": {
+      "high_cost": "Significant investment ahead — validate the ROI before committing.",
+      "high_cost_cta": "Calculate ROI",
+      "matched_solution": "A ready-made solution matches your needs! Check our solutions catalog.",
+      "matched_solution_cta": "View Solutions"
+    },
+    "roi": {
+      "fast_payback": "Fast payback period! This project is worth pursuing. Let's get started.",
+      "fast_payback_cta": "Book a Call",
+      "slow_payback": "Consider optimizing the project scope to improve returns.",
+      "slow_payback_cta": "Optimize Estimate",
+      "strong_roi": "Excellent ROI projection! This is a strong investment opportunity.",
+      "strong_roi_cta": "Get Detailed Estimate"
+    }
+  },
   "charts": {
     "costDistribution": "Cost Distribution",
     "total": "Total: ${amount}",
@@ -291,5 +359,20 @@
     "score": "Score",
     "weeks": "Weeks",
     "noData": "No data available"
+  },
+  "source_insights": {
+    "title_from_idea_lab": "Insights from Idea Lab",
+    "title_from_analyzer": "Insights from AI Analyzer",
+    "title_from_estimate": "Insights from Get Estimate",
+    "idea_name": "Idea",
+    "features_count": "{count} features identified",
+    "benefits_count": "{count} benefits found",
+    "overall_score": "Viability Score",
+    "complexity": "Complexity",
+    "tech_stack": "Suggested Stack",
+    "estimated_cost": "Estimated Cost",
+    "timeline": "Timeline",
+    "approach": "Approach",
+    "matched_solution": "Matched Solution"
   }
 }

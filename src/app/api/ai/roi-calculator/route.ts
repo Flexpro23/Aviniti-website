@@ -16,6 +16,7 @@ import { roiFormSchemaV2 } from '@/lib/utils/validators';
 import { buildROIPromptV2 } from '@/lib/gemini/prompts';
 import { roiResponseSchemaV2 } from '@/lib/gemini/schemas';
 import type { ROICalculatorResponseV2 } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 5;
@@ -87,10 +88,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!result.success || !result.data) {
-        console.error(
-          `[ROI Calculator API] Gemini call failed (attempt ${attempt + 1}):`,
-          result.error || 'No data returned'
-        );
+        logServerWarning('roi-calculator-api', `Gemini call failed (attempt ${attempt + 1})`, { error: result.error || 'No data returned' });
         lastError = result.error || 'AI service returned no data';
         continue;
       }
@@ -98,10 +96,7 @@ export async function POST(request: NextRequest) {
       // Validate AI response against schema
       const parseResult = roiResponseSchemaV2.safeParse(result.data);
       if (!parseResult.success) {
-        console.error(
-          `[ROI Calculator API] Validation failed (attempt ${attempt + 1}):`,
-          JSON.stringify(parseResult.error.issues, null, 2)
-        );
+        logServerWarning('roi-calculator-api', `Validation failed (attempt ${attempt + 1})`, { issues: parseResult.error.issues });
         lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
         continue;
       }
@@ -111,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      console.error(`[ROI Calculator API] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
+      logServerError('roi-calculator-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -126,7 +121,9 @@ export async function POST(request: NextRequest) {
       const metadata = extractRequestMetadata(request);
 
       const leadData: Omit<LeadData, 'converted' | 'notes'> = {
-        email: validatedData.email,
+        name: validatedData.name,
+        phone: validatedData.phone,
+        email: validatedData.email || null,
         whatsapp: validatedData.whatsapp ?? false,
         source: 'roi-calculator' as const,
         locale: locale,
@@ -166,7 +163,7 @@ export async function POST(request: NextRequest) {
         status: 'completed',
       });
     } catch (saveError) {
-      console.error('[ROI Calculator API] Failed to save to Firestore (non-fatal):', saveError);
+      logServerWarning('roi-calculator-api', 'Failed to save to Firestore (non-fatal)', { error: saveError instanceof Error ? saveError.message : String(saveError) });
     }
 
     // 6. Return success response
@@ -190,7 +187,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[ROI Calculator API] Error:', error);
+    logServerError('roi-calculator-api', 'Unexpected error in ROI calculator handler', error);
 
     // Return generic error
     return createErrorResponse(

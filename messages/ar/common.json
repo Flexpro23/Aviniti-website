@@ -115,7 +115,11 @@
     "select_country_code": "اختر رمز الدولة",
     "invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح",
     "email_optional": "اختياري — أدخل بريدك الإلكتروني لاستلام النتائج",
-    "skip": "تخطي، اعرض النتائج الآن"
+    "skip": "تخطي، اعرض النتائج الآن",
+    "welcome_back": "!مرحباً بعودتك",
+    "continue_with_info": "متابعة بـ {email}",
+    "edit_info": "تعديل بياناتي",
+    "using_email": "استخدام بيانات الاتصال المحفوظة"
   },
   "contact_capture": {
     "title": "!أوشكت على الانتهاء",
@@ -144,6 +148,9 @@
     "before_you_go": "قبل أن تغادر...",
     "free_consultation_description": "احصل على استشارة مجانية مع فريقنا. سنساعدك في إيجاد الحل المناسب لعملك.",
     "email_placeholder": "عنوان بريدك الإلكتروني",
+    "phone_placeholder": "أدخل رقم هاتفك",
+    "phone_required": "يرجى إدخال رقم هاتفك",
+    "phone_invalid": "يرجى إدخال رقم هاتف صالح",
     "get_free_consultation": "احصل على استشارة مجانية",
     "see_our_solutions": "شاهد حلولنا",
     "solutions_description": "اكتشف كيف يمكننا المساعدة في تحويل أعمالك بحلول تقنية مخصصة.",
@@ -266,6 +273,67 @@
     "goto_testimonial": "الذهاب للشهادة {number}",
     "results_nav_aria": "التنقل بين أقسام النتائج"
   },
+  "journey_tracker": {
+    "aria_label": "تقدم رحلة أدوات الذكاء الاصطناعي"
+  },
+  "tool_transition": {
+    "title": "نقل رؤاك إلى الأمام",
+    "subtitle": "إليك ما ننقله من تحليل {fromTool} الخاص بك",
+    "continue": "متابعة إلى {toTool}",
+    "carrying_forward": "البيانات المنقولة",
+    "from_completed": "مكتمل",
+    "metrics": {
+      "idea_name": "اسم الفكرة",
+      "features_count": "الميزات",
+      "viability_score": "درجة الجدوى",
+      "complexity": "التعقيد",
+      "tech_stack": "مجموعة التقنيات",
+      "estimated_cost": "التكلفة التقديرية",
+      "timeline": "الجدول الزمني",
+      "roi_percentage": "العائد على الاستثمار",
+      "payback_period": "فترة الاسترداد"
+    },
+    "carry": {
+      "idea_description": "وصف الفكرة",
+      "feature_list": "قائمة الميزات",
+      "benefits": "الفوائد الرئيسية",
+      "impact_metrics": "مقاييس التأثير",
+      "original_idea": "تحليل الفكرة الأصلية",
+      "tech_recommendations": "التوصيات التقنية",
+      "complexity_assessment": "تقييم التعقيد",
+      "cost_breakdown": "تفصيل التكاليف",
+      "features_selected": "الميزات المختارة",
+      "project_approach": "نهج المشروع",
+      "roi_analysis": "تحليل العائد على الاستثمار",
+      "market_opportunity": "فرصة السوق",
+      "revenue_model": "نموذج الإيرادات"
+    }
+  },
+  "nudges": {
+    "dismiss": "إخفاء",
+    "analyzer": {
+      "high_score": "درجة جدوى رائعة! احصل على تقدير مفصل للتكلفة والجدول الزمني لفكرتك.",
+      "high_score_cta": "احصل على تقدير",
+      "low_score": "فكر في استكشاف أفكار بديلة قد تمتلك إمكانات سوقية أفضل.",
+      "low_score_cta": "استكشف أفكاراً",
+      "high_competition": "تم رصد منافسة عالية. البناء المخصص يمكن أن يساعدك على التميز.",
+      "high_competition_cta": "احصل على تقدير مخصص"
+    },
+    "estimate": {
+      "high_cost": "استثمار كبير في الأفق — تحقق من العائد على الاستثمار قبل الالتزام.",
+      "high_cost_cta": "احسب العائد",
+      "matched_solution": "حل جاهز يتطابق مع احتياجاتك! تصفح كتالوج حلولنا.",
+      "matched_solution_cta": "عرض الحلول"
+    },
+    "roi": {
+      "fast_payback": "فترة استرداد سريعة! هذا المشروع يستحق المتابعة. لنبدأ.",
+      "fast_payback_cta": "احجز مكالمة",
+      "slow_payback": "فكر في تحسين نطاق المشروع لتحسين العوائد.",
+      "slow_payback_cta": "تحسين التقدير",
+      "strong_roi": "توقعات عائد ممتازة! هذه فرصة استثمارية قوية.",
+      "strong_roi_cta": "احصل على تقدير مفصل"
+    }
+  },
   "charts": {
     "costDistribution": "توزيع التكاليف",
     "total": "الإجمالي: ${amount}",
@@ -291,5 +359,20 @@
     "score": "النتيجة",
     "weeks": "أسابيع",
     "noData": "لا توجد بيانات متاحة"
+  },
+  "source_insights": {
+    "title_from_idea_lab": "رؤى من مختبر الأفكار",
+    "title_from_analyzer": "رؤى من محلل الأفكار",
+    "title_from_estimate": "رؤى من تقدير التكلفة",
+    "idea_name": "الفكرة",
+    "features_count": "{count} ميزة تم تحديدها",
+    "benefits_count": "{count} فائدة تم اكتشافها",
+    "overall_score": "درجة الجدوى",
+    "complexity": "التعقيد",
+    "tech_stack": "التقنيات المقترحة",
+    "estimated_cost": "التكلفة المقدرة",
+    "timeline": "الجدول الزمني",
+    "approach": "النهج",
+    "matched_solution": "الحل المطابق"
   }
 }

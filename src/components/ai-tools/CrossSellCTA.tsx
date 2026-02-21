@@ -7,6 +7,7 @@
  * Props:
  * - targetTool: Slug of tool to promote (idea-lab, ai-analyzer, etc.)
  * - message: Custom message for this cross-sell
+ * - fromTool: Optional source tool slug — appended as ?fromTool= query param
  */
 
 'use client';
@@ -16,6 +17,7 @@ import { Link, useRouter } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
 import { useTranslations } from 'next-intl';
+import type { ToolSlug } from '@/lib/utils/transition-metrics';
 
 interface CrossSellCTAProps {
   targetTool: 'idea-lab' | 'ai-analyzer' | 'get-estimate' | 'roi-calculator';
@@ -24,6 +26,8 @@ interface CrossSellCTAProps {
   estimateData?: Record<string, unknown>;
   analyzerData?: Record<string, unknown>;
   roiData?: Record<string, unknown>;
+  /** Source tool slug — when provided, appended as &fromTool={slug} to all navigation URLs */
+  fromTool?: ToolSlug;
 }
 
 const toolConfig = {
@@ -60,7 +64,7 @@ const colorClasses = {
   purple: 'bg-tool-purple/10 border-tool-purple/30',
 };
 
-export function CrossSellCTA({ targetTool, message, className, estimateData, analyzerData, roiData }: CrossSellCTAProps) {
+export function CrossSellCTA({ targetTool, message, className, estimateData, analyzerData, roiData, fromTool }: CrossSellCTAProps) {
   const router = useRouter();
   const t = useTranslations('common');
   const tool = toolConfig[targetTool];
@@ -68,6 +72,10 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
   const toolName = t(`ai_tools.${tool.nameKey}.name`);
   const toolDescription = t(`ai_tools.${tool.nameKey}.description`);
   const tryToolText = t('ai_tools.try_tool', { tool: toolName });
+
+  /** Appends &fromTool={fromTool} when a source slug is provided */
+  const withFromTool = (base: string) =>
+    fromTool ? `${base}&fromTool=${fromTool}` : base;
 
   return (
     <div
@@ -103,7 +111,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_roi_estimate_data', JSON.stringify(estimateData));
-            router.push(tool.href + '?fromEstimate=true');
+            router.push(withFromTool(tool.href + '?fromEstimate=true'));
           }}
         >
           {tryToolText}
@@ -116,7 +124,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_estimate_roi_data', JSON.stringify(roiData));
-            router.push(tool.href + '?fromROI=true');
+            router.push(withFromTool(tool.href + '?fromROI=true'));
           }}
         >
           {tryToolText}
@@ -129,7 +137,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_estimate_analyzer_data', JSON.stringify(analyzerData));
-            router.push(tool.href + '?fromAnalyzer=true');
+            router.push(withFromTool(tool.href + '?fromAnalyzer=true'));
           }}
         >
           {tryToolText}
@@ -142,7 +150,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           className="w-full mt-4"
           rightIcon={<ArrowRight className="rtl:rotate-180" />}
         >
-          <Link href={tool.href}>{tryToolText}</Link>
+          <Link href={fromTool ? `${tool.href}?fromTool=${fromTool}` : tool.href}>{tryToolText}</Link>
         </Button>
       )}
     </div>

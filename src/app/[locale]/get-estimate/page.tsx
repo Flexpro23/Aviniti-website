@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
+import { logClientWarning } from '@/lib/utils/client-error-logger';
 import {
   ArrowRight,
   ArrowLeft,
@@ -29,7 +30,8 @@ import {
   X,
   TrendingUp,
 } from 'lucide-react';
-import { Link } from '@/lib/i18n/navigation';
+import { ContactCapture } from '@/components/shared/ContactCapture';
+import type { ContactCaptureData } from '@/components/shared/ContactCapture';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
@@ -37,12 +39,17 @@ import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ProcessingState } from '@/components/ai-tools/ProcessingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
+import { ToolTransition } from '@/components/ai-tools/ToolTransition';
+import { getTransitionMetrics } from '@/lib/utils/transition-metrics';
+import type { ToolSlug } from '@/lib/utils/transition-metrics';
 import { TimelinePhases } from '@/components/ai-tools/TimelinePhases';
 import { StrategicInsights } from '@/components/ai-tools/StrategicInsights';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { TechStackToggle } from '@/components/ai-tools/TechStackToggle';
 import { EstimateHeroVisual } from '@/components/ai-tools/EstimateHeroVisual';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
+import { SmartNudge } from '@/components/ai-tools/SmartNudge';
+import { SourceInsightsCard } from '@/components/ai-tools/SourceInsightsCard';
 
 const CostBreakdownChart = dynamic(
   () => import('@/components/ai-tools/charts/CostBreakdownChart').then((mod) => ({ default: mod.CostBreakdownChart })),
@@ -53,6 +60,8 @@ const PDFReport = dynamic(
   { ssr: false }
 );
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+import { useUserContact } from '@/hooks/useUserContact';
+import { useSmartNudges } from '@/hooks/useSmartNudges';
 import { getNextDiscountThreshold } from '@/lib/pricing/calculator';
 import type {
   ProjectType,
@@ -62,7 +71,6 @@ import type {
   AIFeature,
   AnalyzeIdeaResponse,
   GenerateFeaturesResponse,
-  PricingBreakdown,
 } from '@/types/api';
 
 // ============================================================
@@ -97,6 +105,7 @@ const IMPACT_COLORS = {
 
 export default function GetEstimatePage() {
   const t = useTranslations('get_estimate');
+  const tCommon = useTranslations('common');
   const tf = useTranslations('features');
   const locale = useLocale();
   const searchParams = useSearchParams();
@@ -112,6 +121,11 @@ export default function GetEstimatePage() {
   // Check for pre-fill from ROI Calculator
   const fromROI = searchParams.get('fromROI') === 'true';
 
+  // Transition screen state
+  const [showTransition, setShowTransition] = useState(false);
+  const [transitionSource, setTransitionSource] = useState<ToolSlug | null>(null);
+  const [transitionSessionData, setTransitionSessionData] = useState<Record<string, unknown>>({});
+
   // Form state
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
@@ -123,6 +137,15 @@ export default function GetEstimatePage() {
   const [description, setDescription] = useState(
     fromIdea ? `${ideaName}\n\n${ideaDescription}` : ''
   );
+
+  // Idea Lab rich data — stored for SourceInsightsCard display and generate-features enrichment
+  const [ideaLabData, setIdeaLabData] = useState<{
+    ideaName: string;
+    features?: string[];
+    benefits?: string[];
+    impactMetrics?: string[];
+    source: 'idea-lab';
+  } | null>(null);
 
   // Analyzer data state
   const [analyzerData, setAnalyzerData] = useState<{
@@ -154,16 +177,8 @@ export default function GetEstimatePage() {
   const [selectedFeatureIds, setSelectedFeatureIds] = useState<Set<string>>(new Set());
   const [isGeneratingFeatures, setIsGeneratingFeatures] = useState(false);
 
-  // Step 5: Contact Info
-  const [contactInfo, setContactInfo] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    whatsapp: false,
-  });
-
-  // Form validation errors
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  // Step 5: Contact Info (stored after ContactCapture submission)
+  const [contactData, setContactData] = useState<ContactCaptureData | null>(null);
 
   // Step 6: Results
   const [isLoading, setIsLoading] = useState(false);
@@ -181,6 +196,15 @@ export default function GetEstimatePage() {
   const [isCopied, setIsCopied] = useState(false);
   const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('estimate', locale);
 
+  // Shared contact store — persists across all AI tools
+  const { updateContact } = useUserContact();
+
+  // Smart nudges based on results
+  const { nudges, dismissNudge } = useSmartNudges(
+    'get-estimate',
+    results as unknown as Record<string, unknown> | null
+  );
+
   // Save result when it arrives
   useEffect(() => {
     if (results && !savedId) {
@@ -197,6 +221,8 @@ export default function GetEstimatePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedResult]);
 
+  // Note: ContactCapture handles its own geo-based pre-fill internally
+
   // Ref prevents React Strict Mode double-execution from clearing sessionStorage
   const prefillLoadedRef = useRef(false);
 
@@ -204,20 +230,34 @@ export default function GetEstimatePage() {
   useEffect(() => {
     if (prefillLoadedRef.current || !fromIdea) return;
     prefillLoadedRef.current = true;
-    
+
     try {
       const stored = sessionStorage.getItem('aviniti_estimate_idealab_data');
       if (stored) {
         const ideaData = JSON.parse(stored);
         sessionStorage.removeItem('aviniti_estimate_idealab_data');
-        
+
         // Build a rich description from idea data
         const parts = [ideaData.ideaName || ideaName];
         if (ideaData.ideaDescription) parts.push(ideaData.ideaDescription);
         if (ideaData.features?.length) parts.push('Key features:\n' + ideaData.features.map((f: string) => '- ' + f).join('\n'));
         if (ideaData.benefits?.length) parts.push('Expected benefits:\n' + ideaData.benefits.map((b: string) => '- ' + b).join('\n'));
-        
+
         setDescription(parts.filter(Boolean).join('\n\n'));
+
+        // Store the Idea Lab data for SourceInsightsCard and generate-features enrichment
+        setIdeaLabData({
+          ideaName: ideaData.ideaName || ideaName,
+          features: ideaData.features,
+          benefits: ideaData.benefits,
+          impactMetrics: ideaData.impactMetrics,
+          source: 'idea-lab',
+        });
+
+        // Show transition screen with Idea Lab data
+        setTransitionSessionData(ideaData);
+        setTransitionSource('idea-lab');
+        setShowTransition(true);
         return; // Don't fall through to other prefill handlers
       }
     } catch {
@@ -256,9 +296,14 @@ export default function GetEstimatePage() {
         // Start at step 2 (description) since we have the idea text and can auto-detect project type
         setStep(2);
         setShowAnalyzerBanner(true);
+
+        // Show transition screen with analyzer data
+        setTransitionSessionData(data);
+        setTransitionSource('ai-analyzer');
+        setShowTransition(true);
       }
     } catch (e) {
-      console.error('Failed to load analyzer data:', e);
+      logClientWarning('get-estimate', 'Failed to load analyzer data from sessionStorage', { error: e instanceof Error ? e.message : String(e) });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromAnalyzer]);
@@ -276,9 +321,9 @@ export default function GetEstimatePage() {
         sessionStorage.removeItem('aviniti_estimate_roi_data');
 
         // Pre-fill description from ROI data
-        const description = data.originalIdea || data.ideaDescription || data.executiveSummary || '';
-        if (description && typeof description === 'string') {
-          setDescription(description);
+        const roiDescription = data.originalIdea || data.ideaDescription || data.executiveSummary || '';
+        if (roiDescription && typeof roiDescription === 'string') {
+          setDescription(roiDescription);
         }
 
         // Auto-detect project type from tech stack if available
@@ -296,13 +341,18 @@ export default function GetEstimatePage() {
         }
 
         // Skip to step 2 if we have a description
-        if (description) {
+        if (roiDescription) {
           setStep(2);
           setShowROIBanner(true);
         }
+
+        // Show transition screen with ROI data
+        setTransitionSessionData(data);
+        setTransitionSource('roi-calculator');
+        setShowTransition(true);
       }
     } catch (e) {
-      console.error('Failed to load ROI data:', e);
+      logClientWarning('get-estimate', 'Failed to load ROI data from sessionStorage', { error: e instanceof Error ? e.message : String(e) });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromROI]);
@@ -419,6 +469,9 @@ export default function GetEstimatePage() {
           ),
           questions,
           locale,
+          ...(ideaLabData?.features?.length
+            ? { ideaLabFeatures: ideaLabData.features }
+            : {}),
         }),
       });
 
@@ -473,64 +526,25 @@ export default function GetEstimatePage() {
   };
 
   // ============================================================
-  // Validation helpers
+  // Step 5 -> Step 6: Generate full estimate (via ContactCapture)
   // ============================================================
-  const validateEmail = (email: string): boolean => {
-    if (!email) return true; // Optional field
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  const handleContactSubmit = async (data: ContactCaptureData) => {
+    // Store contact data for use in results (e.g. PDF report)
+    setContactData(data);
 
-  const validatePhone = (phone: string): boolean => {
-    if (!phone) return false; // Required field
-    const digitsOnly = phone.replace(/\D/g, '');
-    return digitsOnly.length >= 10;
-  };
-
-  const handleFieldBlur = (field: string) => {
-    const errors: Record<string, string> = {};
-
-    if (field === 'email' && contactInfo.email && !validateEmail(contactInfo.email)) {
-      errors.email = t('errors.invalid_email');
-    }
-
-    if (field === 'phone' && !validatePhone(contactInfo.phone)) {
-      errors.phone = t('errors.phone_required');
-    }
-
-    setFormErrors((prev) => ({ ...prev, ...errors }));
-  };
-
-  // ============================================================
-  // Step 5 -> Step 6: Generate full estimate
-  // ============================================================
-  const handleSubmit = async () => {
-    // Validate before submitting
-    const errors: Record<string, string> = {};
-
-    if (!contactInfo.name.trim()) {
-      errors.name = t('errors.name_required');
-    }
-
-    if (!validatePhone(contactInfo.phone)) {
-      errors.phone = t('errors.phone_required');
-    }
-
-    if (contactInfo.email && !validateEmail(contactInfo.email)) {
-      errors.email = t('errors.invalid_email');
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
+    // Persist contact info to the shared store (single email capture across tools)
+    updateContact({
+      name: data.name,
+      email: data.email || undefined,
+      phone: data.phone,
+      whatsapp: data.whatsapp,
+    });
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
     setIsLoading(true);
     setError(null);
-    setFormErrors({});
     setDirection('forward');
     setStep(6);
 
@@ -547,11 +561,24 @@ export default function GetEstimatePage() {
           questions,
           selectedFeatureIds: getSelectedFeatures().map(f => f.catalogId).filter(Boolean),
           selectedFeatures: getSelectedFeatures(),
-          name: contactInfo.name,
-          email: contactInfo.email || undefined,
-          phone: contactInfo.phone,
-          whatsapp: contactInfo.whatsapp,
+          name: data.name,
+          email: data.email || undefined,
+          phone: data.phone,
+          whatsapp: data.whatsapp,
           locale,
+          ...(analyzerData
+            ? {
+                sourceContext: {
+                  source: 'analyzer',
+                  ideaName: analyzerData.ideaName,
+                  overallScore: analyzerData.overallScore,
+                  complexity: analyzerData.complexity,
+                  suggestedTechStack: analyzerData.techStack,
+                  challenges: analyzerData.challenges,
+                  recommendations: analyzerData.recommendations,
+                },
+              }
+            : {}),
         }),
         signal: controller.signal,
       });
@@ -567,12 +594,12 @@ export default function GetEstimatePage() {
         setStep(5);
         return;
       }
-      const data = await res.json();
+      const respData = await res.json();
 
-      if (data.success) {
-        setResults(data.data);
+      if (respData.success) {
+        setResults(respData.data);
       } else {
-        setError(data.error?.message || t('errors.generation_failed'));
+        setError(respData.error?.message || t('errors.generation_failed'));
         setStep(5);
       }
     } catch (err) {
@@ -630,6 +657,27 @@ export default function GetEstimatePage() {
     const option = PROJECT_TYPE_OPTIONS.find((o) => o.value === projectType);
     return option ? t(`step1.project_type.${option.labelKey}`) : '';
   };
+
+  // ============================================================
+  // Transition screen — shown when arriving from another tool
+  // ============================================================
+  if (showTransition && transitionSource) {
+    const transitionData = getTransitionMetrics(
+      transitionSource,
+      'get-estimate',
+      transitionSessionData,
+      tCommon
+    );
+    return (
+      <ToolTransition
+        fromTool={transitionSource}
+        toTool="get-estimate"
+        metrics={transitionData.metrics}
+        carryForwardItems={transitionData.carryForwardItems}
+        onContinue={() => setShowTransition(false)}
+      />
+    );
+  }
 
   // ============================================================
   // Loading state (Step 6 processing) — Premium full-page experience
@@ -745,6 +793,39 @@ export default function GetEstimatePage() {
               </ToolResultItem>
             </ToolResults>
           </div>
+
+          {/* Source Insights Card — shown when arriving from AI Analyzer */}
+          {analyzerData && (
+            <div className="mt-2 mb-6">
+              <SourceInsightsCard
+                source="analyzer"
+                data={{
+                  ideaName: analyzerData.ideaName,
+                  overallScore: analyzerData.overallScore,
+                  complexity: analyzerData.complexity,
+                  suggestedTechStack: analyzerData.techStack,
+                }}
+              />
+            </div>
+          )}
+
+          {/* Smart Nudges — shown after Summary Cards */}
+          {nudges.length > 0 && (
+            <div className="space-y-3 mt-2 mb-8">
+              {nudges.map((nudge) => (
+                <SmartNudge
+                  key={nudge.id}
+                  id={nudge.id}
+                  variant={nudge.variant}
+                  message={tCommon(nudge.messageKey)}
+                  ctaLabel={tCommon(nudge.ctaKey)}
+                  targetHref={nudge.targetHref}
+                  onDismiss={dismissNudge}
+                  icon={nudge.icon}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Tech Stack — Collapsible */}
           {results.techStack && results.techStack.length > 0 && (
@@ -940,8 +1021,8 @@ export default function GetEstimatePage() {
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <PDFReport
                 results={results}
-                userName={contactInfo.name}
-                userEmail={contactInfo.email}
+                userName={contactData?.name || ''}
+                userEmail={contactData?.email || ''}
                 className="flex-1 h-12 px-6 text-base shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99]"
               />
               <button
@@ -1588,13 +1669,6 @@ export default function GetEstimatePage() {
             {/* ============================================================ */}
             {step === 5 && (
               <div>
-                <h2 className="text-h4 text-white mb-2">
-                  {t('step5.title')}
-                </h2>
-                <p className="text-sm text-muted mb-6">
-                  {t('step5.description')}
-                </p>
-
                 {/* What You'll Get — Deliverables Card */}
                 <div className="bg-tool-green/5 border border-tool-green/20 rounded-lg p-4 mb-6">
                   <h4 className="text-sm font-semibold text-tool-green-light mb-3">
@@ -1647,137 +1721,20 @@ export default function GetEstimatePage() {
                   </div>
                 </details>
 
-                <div className="space-y-4">
-                  {/* Name */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="est-name" className="block text-sm font-medium text-off-white">
-                      {t('step4.form.name_label')} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      id="est-name"
-                      type="text"
-                      required
-                      value={contactInfo.name}
-                      onChange={(e) => {
-                        setContactInfo((prev) => ({ ...prev, name: e.target.value }));
-                        if (formErrors.name) {
-                          setFormErrors((prev) => ({ ...prev, name: '' }));
-                        }
-                      }}
-                      onBlur={() => handleFieldBlur('name')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
-                        formErrors.name ? 'border-red-500' : 'border-slate-blue-light'
-                      }`}
-                      placeholder={t('step4.form.name_placeholder')}
-                    />
-                    {formErrors.name && (
-                      <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>
-                    )}
-                  </div>
+                {/* ContactCapture component — handles name, phone, email, whatsapp */}
+                <ContactCapture
+                  toolColor="green"
+                  onSubmit={handleContactSubmit}
+                  isLoading={isLoading}
+                />
 
-                  {/* Email */}
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="est-email"
-                      className="block text-sm font-medium text-off-white"
-                    >
-                      {t('step4.form.email_label')} <span className="text-muted text-xs">{t('step4.form.email_optional')}</span>
-                    </label>
-                    <input
-                      id="est-email"
-                      type="email"
-                      value={contactInfo.email}
-                      onChange={(e) => {
-                        setContactInfo((prev) => ({ ...prev, email: e.target.value }));
-                        if (formErrors.email) {
-                          setFormErrors((prev) => ({ ...prev, email: '' }));
-                        }
-                      }}
-                      onBlur={() => handleFieldBlur('email')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
-                        formErrors.email ? 'border-red-500' : 'border-slate-blue-light'
-                      }`}
-                      placeholder={t('step4.form.email_placeholder')}
-                    />
-                    {formErrors.email && (
-                      <p className="text-xs text-red-400 mt-1">{formErrors.email}</p>
-                    )}
-                  </div>
-
-                  {/* Phone */}
-                  <div className="space-y-1.5">
-                    <label
-                      htmlFor="est-phone"
-                      className="block text-sm font-medium text-off-white"
-                    >
-                      {t('step4.form.phone_label')} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      id="est-phone"
-                      required
-                      type="tel"
-                      value={contactInfo.phone}
-                      onChange={(e) => {
-                        setContactInfo((prev) => ({ ...prev, phone: e.target.value }));
-                        if (formErrors.phone) {
-                          setFormErrors((prev) => ({ ...prev, phone: '' }));
-                        }
-                      }}
-                      onBlur={() => handleFieldBlur('phone')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
-                        formErrors.phone ? 'border-red-500' : 'border-slate-blue-light'
-                      }`}
-                      placeholder={t('step4.form.phone_placeholder')}
-                    />
-                    {formErrors.phone && (
-                      <p className="text-xs text-red-400 mt-1">{formErrors.phone}</p>
-                    )}
-                    <p className="text-xs text-muted">{t('step4.form.phone_hint')}</p>
-                  </div>
-
-                  {/* WhatsApp checkbox */}
-                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-slate-blue-light hover:border-tool-green/30 hover:bg-tool-green/5 transition-all duration-150">
-                    <input
-                      type="checkbox"
-                      checked={contactInfo.whatsapp}
-                      onChange={(e) =>
-                        setContactInfo((prev) => ({
-                          ...prev,
-                          whatsapp: e.target.checked,
-                        }))
-                      }
-                      className="h-5 w-5 rounded border-2 border-slate-blue-light bg-transparent checked:bg-tool-green checked:border-tool-green transition-colors duration-200"
-                    />
-                    <span className="text-sm text-off-white">
-                      {t('step4.form.whatsapp_label')}
-                    </span>
-                  </label>
-
-                  {/* Privacy note */}
-                  <p className="text-xs text-muted">
-                    {t('step4.form.privacy_text')}{' '}
-                    <Link href="/privacy-policy" className="text-tool-green-light hover:underline">
-                      {t('step4.form.privacy_link')}
-                    </Link>
-                    {t('step4.form.privacy_suffix')}
-                  </p>
-                </div>
-
-                <div className="flex justify-between mt-8">
+                <div className="flex justify-start mt-6">
                   <button
                     onClick={goBack}
                     className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                   >
                     <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                     {t('buttons.back')}
-                  </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!contactInfo.name.trim() || !contactInfo.phone.trim()}
-                    className="h-12 px-8 bg-tool-green text-white font-semibold rounded-lg shadow-md hover:bg-tool-green/90 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2 text-lg"
-                  >
-                    <Sparkles className="h-5 w-5" />
-                    {t('step4.form.submit')}
                   </button>
                 </div>
               </div>

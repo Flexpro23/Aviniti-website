@@ -8,27 +8,42 @@
  * - toolColor: Accent color
  * - onSubmit: Callback with email and whatsapp preference
  * - isLoading: Loading state
+ * - prefillData: Optional contact data to pre-populate fields
+ * - showWelcomeBack: When true and prefillData.email exists, shows a compact
+ *   "Welcome back" card instead of the full form. User can still click "Edit"
+ *   to reveal the pre-populated form.
  */
 
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { Mail, MessageCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
 import { CountryCodePicker } from './CountryCodePicker';
 
+interface PrefillData {
+  email?: string;
+  phone?: string;
+  countryCode?: string;
+  whatsapp?: boolean;
+}
+
 interface EmailCaptureProps {
   toolColor: 'orange' | 'blue' | 'green' | 'purple';
   onSubmit: (data: { email: string; whatsapp: boolean; phone?: string; countryCode?: string }) => void;
   isLoading?: boolean;
+  prefillData?: PrefillData;
+  showWelcomeBack?: boolean;
 }
 
 export function EmailCapture({
   toolColor,
   onSubmit,
   isLoading = false,
+  prefillData,
+  showWelcomeBack = false,
 }: EmailCaptureProps) {
   const t = useTranslations('common');
   const [email, setEmail] = useState('');
@@ -36,6 +51,19 @@ export function EmailCapture({
   const [whatsapp, setWhatsapp] = useState(false);
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+962'); // Default Jordan
+
+  // Controls whether the edit form is shown instead of the welcome-back card
+  const [showEditForm, setShowEditForm] = useState(false);
+
+  // Pre-populate form fields when prefillData changes (e.g. on first mount)
+  useEffect(() => {
+    if (prefillData) {
+      if (prefillData.email) setEmail(prefillData.email);
+      if (prefillData.phone) setPhone(prefillData.phone);
+      if (prefillData.countryCode) setCountryCode(prefillData.countryCode);
+      if (prefillData.whatsapp !== undefined) setWhatsapp(prefillData.whatsapp);
+    }
+  }, [prefillData]);
 
   const validateEmail = (value: string) => {
     if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -59,6 +87,71 @@ export function EmailCapture({
     onSubmit({ email: '', whatsapp: false });
   };
 
+  // ============================================================
+  // Welcome-back card — shown when showWelcomeBack=true,
+  // prefillData has an email, and user has not clicked "Edit"
+  // ============================================================
+  if (showWelcomeBack && prefillData?.email && !showEditForm) {
+    return (
+      <div className="space-y-4">
+        {/* Heading */}
+        <div className="text-center">
+          <h3 className="text-h4 text-white mb-2">{t('email_capture.welcome_back')}</h3>
+          <p className="text-sm text-muted">{t('email_capture.using_email')}</p>
+        </div>
+
+        {/* Contact info preview */}
+        <div className="bg-slate-blue border border-slate-blue-light rounded-lg p-4 flex items-center gap-3">
+          <Mail className="h-5 w-5 text-muted flex-shrink-0" aria-hidden="true" />
+          <span className="text-sm text-off-white truncate">{prefillData.email}</span>
+          {prefillData.whatsapp && prefillData.phone && (
+            <>
+              <span className="text-muted" aria-hidden="true">•</span>
+              <MessageCircle className="h-4 w-4 text-[#25D366] flex-shrink-0" aria-hidden="true" />
+              <span
+                className="text-sm text-off-white"
+                style={{ direction: 'ltr', unicodeBidi: 'embed' }}
+              >
+                {prefillData.countryCode} {prefillData.phone}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Continue button */}
+        <Button
+          type="button"
+          size="lg"
+          toolColor={toolColor}
+          className="w-full"
+          onClick={() =>
+            onSubmit({
+              email: prefillData.email!,
+              whatsapp: prefillData.whatsapp || false,
+              ...(prefillData.whatsapp && prefillData.phone
+                ? { phone: prefillData.phone, countryCode: prefillData.countryCode }
+                : {}),
+            })
+          }
+        >
+          {t('email_capture.continue_with_info', { email: prefillData.email })}
+        </Button>
+
+        {/* Edit link */}
+        <button
+          type="button"
+          onClick={() => setShowEditForm(true)}
+          className="w-full text-sm text-muted hover:text-off-white transition-colors duration-200 py-2"
+        >
+          {t('email_capture.edit_info')}
+        </button>
+      </div>
+    );
+  }
+
+  // ============================================================
+  // Standard form (also used when user clicks "Edit")
+  // ============================================================
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Heading */}

@@ -12,6 +12,7 @@ import { ideaLabDiscoverSchema } from '@/lib/utils/validators';
 import { buildIdeaLabDiscoverPrompt } from '@/lib/gemini/prompts/idea-lab-discover';
 import { ideaLabDiscoverResponseSchema } from '@/lib/gemini/schemas';
 import type { IdeaLabDiscoverResponse } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration — shared with generate endpoint (6 per 24h for refreshes)
 const RATE_LIMIT = 6;
@@ -74,10 +75,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!result.success || !result.data) {
-        console.error(
-          `[Idea Lab Discover] Gemini call failed (attempt ${attempt + 1}):`,
-          result.error || 'No data returned'
-        );
+        logServerWarning('idea-lab-discover-api', `Gemini call failed (attempt ${attempt + 1})`, { error: result.error || 'No data returned' });
         lastError = result.error || 'AI service returned no data';
         continue; // try again
       }
@@ -85,10 +83,7 @@ export async function POST(request: NextRequest) {
       // 4. Validate AI response
       const validated = ideaLabDiscoverResponseSchema.safeParse(result.data);
       if (!validated.success) {
-        console.error(
-          `[Idea Lab Discover] Validation failed (attempt ${attempt + 1}):`,
-          JSON.stringify(validated.error.issues, null, 2)
-        );
+        logServerWarning('idea-lab-discover-api', `Validation failed (attempt ${attempt + 1})`, { issues: validated.error.issues });
         lastError = `Validation: ${validated.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
         continue; // try again
       }
@@ -102,7 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     // All attempts failed
-    console.error(`[Idea Lab Discover] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
+    logServerError('idea-lab-discover-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
     return createErrorResponse(
       'AI_UNAVAILABLE',
       'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -120,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Idea Lab Discover] Unexpected error:', error);
+    logServerError('idea-lab-discover-api', 'Unexpected error in discover handler', error);
 
     // Return generic error
     return createErrorResponse(

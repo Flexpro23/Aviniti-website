@@ -8,6 +8,7 @@ import {
 } from '@/lib/utils/api-helpers';
 import { saveLeadToFirestore, saveExitIntentCapture } from '@/lib/firebase/collections';
 import { exitIntentFormSchema } from '@/lib/utils/validators';
+import { logServerError } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 1;
@@ -40,9 +41,24 @@ export async function POST(request: NextRequest) {
     const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
     let leadId = '';
 
-    // Only save lead if email is provided
-    if (validatedData.email) {
+    // Save lead if phone or email is provided
+    if (validatedData.phone) {
       leadId = await saveLeadToFirestore({
+        phone: validatedData.phone,
+        name: '',
+        email: validatedData.email || null,
+        whatsapp: false,
+        source: 'exit-intent',
+        locale: locale,
+        projectType: validatedData.projectType,
+        metadata: {
+          ipCountry: undefined,
+        },
+      });
+    } else if (validatedData.email) {
+      leadId = await saveLeadToFirestore({
+        phone: '',
+        name: '',
         email: validatedData.email,
         whatsapp: false,
         source: 'exit-intent',
@@ -58,7 +74,8 @@ export async function POST(request: NextRequest) {
     await saveExitIntentCapture({
       leadId: leadId || 'anonymous',
       variant: validatedData.variant,
-      email: validatedData.email || '',
+      email: validatedData.email || undefined,
+      phone: validatedData.phone || undefined,
       projectType: validatedData.projectType || null,
       page: validatedData.sourcePage,
     });
@@ -86,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Exit Intent API] Error:', error);
+    logServerError('exit-intent-api', 'Unexpected error in exit intent handler', error);
 
     // Return generic error
     return createErrorResponse(

@@ -2,6 +2,7 @@
 // Server-only - API key must never be exposed to client
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Ensure this file is only used server-side
 if (typeof window !== 'undefined') {
@@ -234,7 +235,7 @@ export async function generateContent(
 
   // All retries failed
   const processingTimeMs = Date.now() - startTime;
-  console.error('[Gemini Client] All retries failed:', lastError?.message);
+  logServerError('gemini-client', 'All retries failed', lastError);
 
   return {
     text: '',
@@ -309,10 +310,7 @@ export async function generateJsonContent<T = unknown>(
         data,
       };
     } catch (parseError) {
-      console.error(
-        '[Gemini Client] JSON parse failed. Raw text (first 500 chars):',
-        result.text.slice(0, 500)
-      );
+      logServerWarning('gemini-client', 'JSON parse failed', { rawTextSample: result.text.slice(0, 500) });
       return {
         ...result,
         success: false,

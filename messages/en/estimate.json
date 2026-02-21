@@ -106,7 +106,8 @@
     "review_project_type": "Project Type",
     "review_description": "Description",
     "review_features": "Features Selected",
-    "review_questions": "Questions Answered"
+    "review_questions": "Questions Answered",
+    "welcome_back": "Welcome back, {name}! Your saved contact info has been filled in."
   },
   "feature_impact": {
     "cost": "Cost",

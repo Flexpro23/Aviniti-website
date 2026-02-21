@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Sparkles, X, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { usePrefersReducedMotion } from '@/lib/motion/hooks';
+import { logClientError } from '@/lib/utils/client-error-logger';
 import type { ChatMessage } from '@/types/api';
 
 interface ChatSession {
@@ -128,7 +129,7 @@ export default function ChatbotWidget() {
         }));
       }
     } catch (error) {
-      console.error('Chat error:', error);
+      logClientError('chatbot-widget', 'Failed to send chat message', error);
       // Add error message
       const errorMessage: ChatMessage = {
         role: 'assistant',

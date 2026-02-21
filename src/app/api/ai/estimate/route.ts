@@ -17,6 +17,7 @@ import { buildEstimatePrompt } from '@/lib/gemini/prompts';
 import { estimateCreativeSchema } from '@/lib/gemini/schemas';
 import { calculateEstimate, distributeAcrossPhases, PHASE_COST_RATIOS } from '@/lib/pricing/calculator';
 import type { EstimateResponse, EstimatePhase } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 5;
@@ -67,6 +68,17 @@ export async function POST(request: NextRequest) {
     const sanitizedDescription = sanitizePromptInput(validatedData.description, 2000);
     const inputLanguage = detectInputLanguage(validatedData.description);
 
+    // Extract optional sourceContext (not validated by Zod schema — passed through as-is)
+    const sourceContext = body.sourceContext as {
+      source: 'analyzer';
+      ideaName: string;
+      overallScore: number;
+      complexity?: string;
+      suggestedTechStack?: string[];
+      challenges?: string[];
+      recommendations?: string[];
+    } | undefined;
+
     const prompt = buildEstimatePrompt({
       projectType: validatedData.projectType,
       description: sanitizedDescription,
@@ -77,6 +89,7 @@ export async function POST(request: NextRequest) {
       totalTimelineDays: pricing.totalTimelineDays,
       locale,
       inputLanguage,
+      sourceContext,
     });
 
     const result = await generateJsonContent(prompt, {
@@ -96,7 +109,7 @@ export async function POST(request: NextRequest) {
     // 5. Validate AI creative response
     const aiParsed = estimateCreativeSchema.safeParse(result.data);
     if (!aiParsed.success) {
-      console.error('[Estimate API] Invalid AI response:', aiParsed.error.message);
+      logServerWarning('estimate-api', 'Invalid AI response', { error: aiParsed.error.message });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Received an incomplete response. Please try again.',
@@ -185,7 +198,7 @@ export async function POST(request: NextRequest) {
         status: 'completed',
       });
     } catch (saveError) {
-      console.error('[Estimate API] Failed to save to Firestore (non-fatal):', saveError);
+      logServerWarning('estimate-api', 'Failed to save to Firestore (non-fatal)', { error: saveError instanceof Error ? saveError.message : String(saveError) });
     }
 
     // 9. Return success response
@@ -206,7 +219,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error('[Estimate API] Error:', error);
+    logServerError('estimate-api', 'Unexpected error in estimate handler', error);
 
     return createErrorResponse(
       'INTERNAL_ERROR',

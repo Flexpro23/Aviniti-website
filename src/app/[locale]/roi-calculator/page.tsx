@@ -27,11 +27,19 @@ import {
 } from 'lucide-react';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
-import { EmailCapture } from '@/components/ai-tools/EmailCapture';
+import { ContactCapture } from '@/components/shared/ContactCapture';
+import type { ContactCaptureData } from '@/components/shared/ContactCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
+import { SmartNudge } from '@/components/ai-tools/SmartNudge';
+import { SourceInsightsCard } from '@/components/ai-tools/SourceInsightsCard';
+import { ToolTransition } from '@/components/ai-tools/ToolTransition';
+import { getTransitionMetrics } from '@/lib/utils/transition-metrics';
+import type { ToolSlug } from '@/lib/utils/transition-metrics';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+import { useUserContact } from '@/hooks/useUserContact';
+import { useSmartNudges } from '@/hooks/useSmartNudges';
 
 const ROIProjectionChart = dynamic(
   () => import('@/components/ai-tools/charts/ROIProjectionChart').then((mod) => ({ default: mod.ROIProjectionChart })),
@@ -351,12 +359,18 @@ function ROILoadingScreen({ messages }: { messages: string[] }) {
 
 export default function ROICalculatorPage() {
   const t = useTranslations('roi_calculator');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const searchParams = useSearchParams();
 
   // Mode detection
   const [mode, setMode] = useState<'from-estimate' | 'standalone'>('standalone');
   const [estimateData, setEstimateData] = useState<EstimateData | null>(null);
+
+  // Transition screen state
+  const [showTransition, setShowTransition] = useState(false);
+  const [transitionSource, setTransitionSource] = useState<ToolSlug | null>(null);
+  const [transitionSessionData, setTransitionSessionData] = useState<Record<string, unknown>>({});
 
   // Standalone form state
   const [ideaDescription, setIdeaDescription] = useState('');
@@ -376,6 +390,15 @@ export default function ROICalculatorPage() {
   // Result persistence
   const [isCopied, setIsCopied] = useState(false);
   const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('roi-calculator', locale);
+
+  // Shared contact store — persists across all AI tools
+  const { contact, hasContact, updateContact } = useUserContact();
+
+  // Smart nudges based on results
+  const { nudges, dismissNudge } = useSmartNudges(
+    'roi-calculator',
+    results as unknown as Record<string, unknown> | null
+  );
 
   // Save result when it changes
   useEffect(() => {
@@ -406,15 +429,20 @@ export default function ROICalculatorPage() {
         if (stored) {
           const ideaData = JSON.parse(stored);
           sessionStorage.removeItem('aviniti_roi_idealab_data');
-          
+
           // Pre-fill the idea description with rich context from the Idea Lab
           const descriptionParts = [ideaData.ideaName || ''];
           if (ideaData.ideaDescription) descriptionParts.push(ideaData.ideaDescription);
           if (ideaData.features?.length) descriptionParts.push('Key features: ' + ideaData.features.join(', '));
           if (ideaData.benefits?.length) descriptionParts.push('Benefits: ' + ideaData.benefits.join(', '));
-          
+
           setIdeaDescription(descriptionParts.filter(Boolean).join('\n\n'));
           setMode('standalone'); // Use standalone mode but with pre-filled data
+
+          // Show transition screen
+          setTransitionSessionData(ideaData);
+          setTransitionSource('idea-lab');
+          setShowTransition(true);
           return;
         }
       } catch {
@@ -431,6 +459,11 @@ export default function ROICalculatorPage() {
           setEstimateData(parsed);
           setMode('from-estimate');
           sessionStorage.removeItem('aviniti_roi_estimate_data');
+
+          // Show transition screen with estimate data
+          setTransitionSessionData(parsed as unknown as Record<string, unknown>);
+          setTransitionSource('get-estimate');
+          setShowTransition(true);
           return;
         }
       } catch {
@@ -443,23 +476,29 @@ export default function ROICalculatorPage() {
   }, [searchParams, t]);
 
   // Submit handler
-  const handleSubmit = async (emailData?: { email: string; whatsapp: boolean; phone?: string; countryCode?: string }) => {
-    const finalEmail = emailData?.email || email;
-    const finalWhatsapp = emailData?.whatsapp ?? whatsapp;
-    const finalPhone = emailData?.phone;
-    const finalCountryCode = emailData?.countryCode;
+  const handleSubmit = async (contactData?: ContactCaptureData) => {
+    const finalName = contactData?.name || '';
+    const finalPhone = contactData?.phone || '';
+    const finalEmail = contactData?.email || email;
+    const finalWhatsapp = contactData?.whatsapp ?? whatsapp;
     setEmail(finalEmail);
     setWhatsapp(finalWhatsapp);
     setStep('loading');
     setError(null);
 
-    // In the from-estimate flow the form never collects a country code, so
-    // default to Jordan (+962) when WhatsApp is requested but no code is present.
-    const resolvedCountryCode = finalCountryCode ?? (finalWhatsapp ? '+962' : undefined);
+    // Persist contact info to the shared store (single contact capture across tools)
+    if (finalPhone) {
+      updateContact({
+        name: finalName,
+        phone: finalPhone,
+        ...(finalEmail ? { email: finalEmail } : {}),
+        whatsapp: finalWhatsapp,
+      });
+    }
 
-    const phoneFields = finalWhatsapp && finalPhone ? {
+    const phoneFields = finalPhone ? {
+      name: finalName,
       phone: finalPhone,
-      countryCode: resolvedCountryCode,
     } : {};
 
     try {
@@ -481,7 +520,7 @@ export default function ROICalculatorPage() {
           targetMarket,
           industry: industry || undefined,
           businessModel: businessModel || undefined,
-          email: finalEmail,
+          email: finalEmail || undefined,
           whatsapp: finalWhatsapp,
           ...phoneFields,
           locale,
@@ -494,7 +533,7 @@ export default function ROICalculatorPage() {
           industry: industry || undefined,
           businessModel: businessModel || undefined,
           budgetRange: budgetMin && budgetMax ? { min: Number(budgetMin), max: Number(budgetMax) } : undefined,
-          email: finalEmail,
+          email: finalEmail || undefined,
           whatsapp: finalWhatsapp,
           ...phoneFields,
           locale,
@@ -550,6 +589,27 @@ export default function ROICalculatorPage() {
     if (mode === 'standalone' && ideaDescription.length < 20) return false;
     return true;
   };
+
+  // ============================================================
+  // Transition screen — shown when arriving from another tool
+  // ============================================================
+  if (showTransition && transitionSource) {
+    const transitionData = getTransitionMetrics(
+      transitionSource,
+      'roi-calculator',
+      transitionSessionData,
+      tCommon
+    );
+    return (
+      <ToolTransition
+        fromTool={transitionSource}
+        toTool="roi-calculator"
+        metrics={transitionData.metrics}
+        carryForwardItems={transitionData.carryForwardItems}
+        onContinue={() => setShowTransition(false)}
+      />
+    );
+  }
 
   // ============================================================
   // Loading State — Premium Processing Experience
@@ -655,6 +715,34 @@ export default function ROICalculatorPage() {
               </ToolResults>
             </div>
           </section>
+
+          {/* Source Insights Card — shown when arriving from Get Estimate */}
+          {mode === 'from-estimate' && estimateData && (
+            <div className="mb-6">
+              <SourceInsightsCard
+                source="estimate"
+                data={estimateData as unknown as Record<string, unknown>}
+              />
+            </div>
+          )}
+
+          {/* Smart Nudges — shown after Hero Stats */}
+          {nudges.length > 0 && (
+            <div className="space-y-3 -mt-4 mb-10">
+              {nudges.map((nudge) => (
+                <SmartNudge
+                  key={nudge.id}
+                  id={nudge.id}
+                  variant={nudge.variant}
+                  message={tCommon(nudge.messageKey)}
+                  ctaLabel={tCommon(nudge.ctaKey)}
+                  targetHref={nudge.targetHref}
+                  onDismiss={dismissNudge}
+                  icon={nudge.icon}
+                />
+              ))}
+            </div>
+          )}
 
           {/* ===== Section 2: Market Opportunity ===== */}
           <section id="roi-market" className="scroll-mt-20 mb-10">
@@ -967,7 +1055,10 @@ export default function ROICalculatorPage() {
               {t('results.back')}
             </button>
           </div>
-          <EmailCapture toolColor="purple" onSubmit={handleSubmit} />
+          <ContactCapture
+            toolColor="purple"
+            onSubmit={handleSubmit}
+          />
         </div>
       </div>
     );

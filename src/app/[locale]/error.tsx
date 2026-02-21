@@ -15,6 +15,7 @@ import { Link } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { duration } from '@/lib/motion/tokens';
+import { logClientError } from '@/lib/utils/client-error-logger';
 
 export default function Error({
   error,
@@ -28,7 +29,7 @@ export default function Error({
 
   useEffect(() => {
     // Log the error to error reporting service
-    console.error('Error boundary caught:', error);
+    logClientError('error-boundary', 'Error boundary caught unhandled error', error, { digest: error.digest });
   }, [error]);
 
   return (

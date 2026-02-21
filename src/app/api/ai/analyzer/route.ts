@@ -16,6 +16,7 @@ import { analyzerFormSchema } from '@/lib/utils/validators';
 import { buildAnalyzerPrompt } from '@/lib/gemini/prompts';
 import { analyzerResponseSchema } from '@/lib/gemini/schemas';
 import type { AnalyzerResponse } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 3;
@@ -61,6 +62,15 @@ export async function POST(request: NextRequest) {
     const sanitizedIdea = sanitizePromptInput(validatedData.idea, 2000);
     const inputLanguage = detectInputLanguage(validatedData.idea);
 
+    // Extract optional sourceContext (not validated by Zod schema — passed through as-is)
+    const sourceContext = body.sourceContext as {
+      source: 'idea-lab';
+      ideaName: string;
+      features?: string[];
+      benefits?: string[];
+      impactMetrics?: string[];
+    } | undefined;
+
     const prompt = buildAnalyzerPrompt({
       idea: sanitizedIdea,
       targetAudience: validatedData.targetAudience,
@@ -68,6 +78,7 @@ export async function POST(request: NextRequest) {
       revenueModel: validatedData.revenueModel,
       locale,
       inputLanguage,
+      sourceContext,
     });
 
     // 4. Call Gemini with retry on validation failure
@@ -86,10 +97,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!result.success || !result.data) {
-        console.error(
-          `[Analyzer API] Gemini call failed (attempt ${attempt + 1}):`,
-          result.error || 'No data returned'
-        );
+        logServerWarning('analyzer-api', `Gemini call failed (attempt ${attempt + 1})`, { error: result.error || 'No data returned' });
         lastError = result.error || 'AI service returned no data';
         continue;
       }
@@ -97,10 +105,7 @@ export async function POST(request: NextRequest) {
       // Validate AI response against schema
       const parseResult = analyzerResponseSchema.safeParse(result.data);
       if (!parseResult.success) {
-        console.error(
-          `[Analyzer API] Validation failed (attempt ${attempt + 1}):`,
-          JSON.stringify(parseResult.error.issues, null, 2)
-        );
+        logServerWarning('analyzer-api', `Validation failed (attempt ${attempt + 1})`, { issues: parseResult.error.issues });
         lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
         continue;
       }
@@ -110,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      console.error(`[Analyzer API] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
+      logServerError('analyzer-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -125,8 +130,9 @@ export async function POST(request: NextRequest) {
       const metadata = extractRequestMetadata(request);
 
       const leadId = await saveLeadToFirestore({
-        email: validatedData.email,
-        phone: validatedData.phone || null,
+        name: validatedData.name,
+        phone: validatedData.phone,
+        email: validatedData.email || null,
         whatsapp: validatedData.whatsapp,
         source: 'analyzer',
         locale: locale,
@@ -155,7 +161,7 @@ export async function POST(request: NextRequest) {
         status: 'completed',
       });
     } catch (saveError) {
-      console.error('[Analyzer API] Failed to save to Firestore (non-fatal):', saveError);
+      logServerWarning('analyzer-api', 'Failed to save to Firestore (non-fatal)', { error: saveError instanceof Error ? saveError.message : String(saveError) });
     }
 
     // 5. Return success response
@@ -179,7 +185,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Analyzer API] Error:', error);
+    logServerError('analyzer-api', 'Unexpected error in analyzer handler', error);
 
     // Return generic error
     return createErrorResponse(

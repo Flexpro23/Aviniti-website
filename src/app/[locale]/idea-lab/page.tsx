@@ -34,11 +34,13 @@ import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
 import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
-import { EmailCapture } from '@/components/ai-tools/EmailCapture';
+import { ContactCapture } from '@/components/shared/ContactCapture';
+import type { ContactCaptureData } from '@/components/shared/ContactCapture';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { DiscoveryProgress } from '@/components/ai-tools/DiscoveryProgress';
 import { IdeaDetailPanel } from '@/components/ai-tools/IdeaDetailPanel';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+import { useUserContact } from '@/hooks/useUserContact';
 import type {
   Persona,
   Industry,
@@ -170,6 +172,9 @@ export default function IdeaLabPage() {
   const [isCopied, setIsCopied] = useState(false);
   const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('idea-lab', locale);
 
+  // Shared contact store — persists across all AI tools
+  const { updateContact } = useUserContact();
+
   // Save result when it changes
   useEffect(() => {
     if (results && !savedId) {
@@ -249,18 +254,26 @@ export default function IdeaLabPage() {
   // ============================================================
   // Generate API call — generates ideas
   // ============================================================
-  const handleGenerate = useCallback(async (emailData: {
-    email: string;
-    whatsapp: boolean;
-    phone?: string;
-    countryCode?: string;
-  }) => {
+  const handleGenerate = useCallback(async (contactData: ContactCaptureData) => {
     goForward();
     setPhase('generate-loading');
     setError(null);
 
-    // Store email for potential refresh calls
-    try { localStorage.setItem('aviniti_idealab_email', emailData.email); } catch { /* ignore */ }
+    // Persist contact info to the shared store (single contact capture across tools)
+    updateContact({
+      name: contactData.name,
+      phone: contactData.phone,
+      ...(contactData.email ? { email: contactData.email } : {}),
+      whatsapp: contactData.whatsapp,
+    });
+
+    // Store phone (primary identifier) and email for potential refresh calls
+    try {
+      localStorage.setItem('aviniti_idealab_phone', contactData.phone);
+      if (contactData.email) {
+        localStorage.setItem('aviniti_idealab_email', contactData.email);
+      }
+    } catch { /* ignore */ }
 
     // Build discovery answers array
     const discoveryAnswers: DiscoveryAnswer[] = questions.map((q) => ({
@@ -277,11 +290,10 @@ export default function IdeaLabPage() {
           persona,
           industry,
           discoveryAnswers,
-          email: emailData.email,
-          whatsapp: emailData.whatsapp,
-          ...(emailData.whatsapp && emailData.phone
-            ? { phone: emailData.phone, countryCode: emailData.countryCode }
-            : {}),
+          name: contactData.name,
+          phone: contactData.phone,
+          ...(contactData.email ? { email: contactData.email } : {}),
+          whatsapp: contactData.whatsapp,
           locale,
         }),
       });
@@ -328,7 +340,8 @@ export default function IdeaLabPage() {
       answer: answers[q.id] || '',
     }));
 
-    // Retrieve stored email from the last submission
+    // Retrieve stored contact info from the last submission
+    const storedPhone = localStorage.getItem('aviniti_idealab_phone') || '';
     const storedEmail = localStorage.getItem('aviniti_idealab_email') || '';
 
     try {
@@ -339,7 +352,8 @@ export default function IdeaLabPage() {
           persona,
           industry,
           discoveryAnswers,
-          email: storedEmail,
+          phone: storedPhone,
+          ...(storedEmail ? { email: storedEmail } : {}),
           whatsapp: false,
           locale,
           previousIdeaNames: allPreviousIdeaNames,
@@ -956,7 +970,7 @@ export default function IdeaLabPage() {
             )}
 
             {/* ============================================================ */}
-            {/* Email Capture Step */}
+            {/* Contact Capture Step */}
             {/* ============================================================ */}
             {phase === 'email' && (
               <div>
@@ -973,7 +987,10 @@ export default function IdeaLabPage() {
                     {t('back_btn')}
                   </button>
                 </div>
-                <EmailCapture toolColor="orange" onSubmit={handleGenerate} />
+                <ContactCapture
+                  toolColor="orange"
+                  onSubmit={handleGenerate}
+                />
               </div>
             )}
           </StepTransition>

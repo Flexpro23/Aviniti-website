@@ -8,6 +8,8 @@ import { LocaleUpdater } from '@/components/layout/LocaleUpdater';
 import { SkipToContent } from '@/components/layout/SkipToContent';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { getHomepageSchema } from '@/components/seo/structured-data';
 import '../globals.css';
 
 const inter = Inter({
@@ -56,6 +58,9 @@ export default async function LocaleLayout({
       className="dark"
       suppressHydrationWarning
     >
+      <head>
+        <JsonLd data={getHomepageSchema(locale)} />
+      </head>
       <body className="bg-navy text-off-white antialiased">
         <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} ${locale === 'ar' ? 'font-arabic' : 'font-sans'}`}>
           <NextIntlClientProvider messages={messages}>

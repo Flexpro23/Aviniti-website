@@ -30,3 +30,13 @@ export type {
   ContactSubmissionData,
   ExitIntentCaptureData,
 } from './collections';
+
+// Error logging (server-only)
+export {
+  logServerError,
+  logServerWarning,
+  logServerInfo,
+  getErrorLogsCollection,
+} from './error-logging';
+
+export type { ErrorSeverity, ErrorLogEntry } from './error-logging';

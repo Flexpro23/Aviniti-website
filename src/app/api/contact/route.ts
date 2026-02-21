@@ -10,6 +10,7 @@ import {
 } from '@/lib/utils/api-helpers';
 import { saveLeadToFirestore, saveContactSubmission } from '@/lib/firebase/collections';
 import { contactFormSchema } from '@/lib/utils/validators';
+import { logServerError } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 3;
@@ -51,11 +52,10 @@ export async function POST(request: NextRequest) {
 
     // Save lead
     const leadId = await saveLeadToFirestore({
-      email: validatedData.email,
       name: validatedData.name,
+      phone: validatedData.phone,
+      email: validatedData.email || null,
       company: validatedData.company || null,
-      phone: validatedData.phone || null,
-      countryCode: validatedData.countryCode || null,
       whatsapp: validatedData.whatsapp,
       source: 'contact',
       locale: locale,
@@ -69,10 +69,9 @@ export async function POST(request: NextRequest) {
     await saveContactSubmission({
       leadId,
       name: validatedData.name,
-      email: validatedData.email,
+      phone: validatedData.phone,
+      email: validatedData.email || null,
       company: validatedData.company || null,
-      phone: validatedData.phone || null,
-      countryCode: validatedData.countryCode || 'JO',
       topic: validatedData.topic,
       message: validatedData.message,
       whatsapp: validatedData.whatsapp,
@@ -104,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Contact API] Error:', error);
+    logServerError('contact-api', 'Unexpected error in contact form handler', error);
 
     // Return generic error
     return createErrorResponse(

@@ -30,12 +30,20 @@ import {
   Award,
 } from 'lucide-react';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
-import { EmailCapture } from '@/components/ai-tools/EmailCapture';
+import { ContactCapture } from '@/components/shared/ContactCapture';
+import type { ContactCaptureData } from '@/components/shared/ContactCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { ScoreGauge } from '@/components/ai-tools/ScoreGauge';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
+import { SmartNudge } from '@/components/ai-tools/SmartNudge';
+import { ToolTransition } from '@/components/ai-tools/ToolTransition';
+import { SourceInsightsCard } from '@/components/ai-tools/SourceInsightsCard';
+import { getTransitionMetrics } from '@/lib/utils/transition-metrics';
+import type { ToolSlug } from '@/lib/utils/transition-metrics';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+import { useUserContact } from '@/hooks/useUserContact';
+import { useSmartNudges } from '@/hooks/useSmartNudges';
 
 const AnalyzerRadarChart = dynamic(
   () => import('@/components/ai-tools/charts/AnalyzerRadarChart').then((mod) => ({ default: mod.AnalyzerRadarChart })),
@@ -347,6 +355,7 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
 
 export default function AIAnalyzerPage() {
   const t = useTranslations('ai_analyzer');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const isRTL = locale === 'ar';
   const searchParams = useSearchParams();
@@ -365,16 +374,40 @@ export default function AIAnalyzerPage() {
     targetAudience: '',
     industry: '' as string,
     revenueModel: '' as string,
-    email: '',
+    name: '',
+    phone: '',
+    email: undefined as string | undefined,
     whatsapp: false,
-    phone: undefined as string | undefined,
-    countryCode: undefined as string | undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<AnalyzerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+
+  // Idea Lab source data — carried forward for API context + SourceInsightsCard display
+  const [ideaLabSourceData, setIdeaLabSourceData] = useState<{
+    ideaName: string;
+    ideaDescription?: string;
+    features?: string[];
+    benefits?: string[];
+    impactMetrics?: string[];
+    source: 'idea-lab';
+  } | null>(null);
+
+  // Transition screen state
+  const [showTransition, setShowTransition] = useState(false);
+  const [transitionSource, setTransitionSource] = useState<ToolSlug | null>(null);
+  const [transitionSessionData, setTransitionSessionData] = useState<Record<string, unknown>>({});
   const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('ai-analyzer', locale);
+
+  // Shared contact store — persists across all AI tools
+  const { contact, hasContact, updateContact } = useUserContact();
+
+  // Smart nudges based on results
+  const { nudges, dismissNudge } = useSmartNudges(
+    'ai-analyzer',
+    results as unknown as Record<string, unknown> | null
+  );
 
   // Navigation
   const goForward = useCallback(() => {
@@ -389,11 +422,19 @@ export default function AIAnalyzerPage() {
 
   // Submit handler
   const handleSubmit = useCallback(
-    async (emailData: { email: string; whatsapp: boolean; phone?: string; countryCode?: string }) => {
-      const updatedData = { ...formData, ...emailData };
+    async (contactData: ContactCaptureData) => {
+      const updatedData = { ...formData, ...contactData };
       setFormData(updatedData);
       setIsLoading(true);
       setError(null);
+
+      // Persist contact info to the shared store (single contact capture across tools)
+      updateContact({
+        name: contactData.name,
+        phone: contactData.phone,
+        ...(contactData.email ? { email: contactData.email } : {}),
+        whatsapp: contactData.whatsapp,
+      });
 
       try {
         const res = await fetch('/api/ai/analyzer', {
@@ -401,16 +442,25 @@ export default function AIAnalyzerPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             idea: updatedData.idea,
-            email: updatedData.email,
+            name: updatedData.name,
+            phone: updatedData.phone,
             whatsapp: updatedData.whatsapp,
-            ...(updatedData.whatsapp && updatedData.phone ? {
-              phone: updatedData.phone,
-              countryCode: updatedData.countryCode,
-            } : {}),
+            ...(updatedData.email ? { email: updatedData.email } : {}),
             ...(updatedData.targetAudience ? { targetAudience: updatedData.targetAudience } : {}),
             ...(updatedData.industry ? { industry: updatedData.industry } : {}),
             ...(updatedData.revenueModel ? { revenueModel: updatedData.revenueModel } : {}),
             locale,
+            ...(ideaLabSourceData
+              ? {
+                  sourceContext: {
+                    source: 'idea-lab',
+                    ideaName: ideaLabSourceData.ideaName,
+                    features: ideaLabSourceData.features,
+                    benefits: ideaLabSourceData.benefits,
+                    impactMetrics: ideaLabSourceData.impactMetrics,
+                  },
+                }
+              : {}),
           }),
         });
 
@@ -437,7 +487,7 @@ export default function AIAnalyzerPage() {
         setIsLoading(false);
       }
     },
-    [formData, locale, t]
+    [formData, locale, t, updateContact]
   );
 
   const handleStartAnalysis = useCallback(() => {
@@ -466,6 +516,70 @@ export default function AIAnalyzerPage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedResult]);
+
+  // Transition screen — show when arriving from Idea Lab
+  // Also reads the full idea data from sessionStorage for API context enrichment
+  useEffect(() => {
+    if (!fromIdea) return;
+
+    // Attempt to read the richer sessionStorage payload written by IdeaDetailPanel
+    try {
+      const stored = sessionStorage.getItem('aviniti_analyzer_idealab_data');
+      if (stored) {
+        const parsed = JSON.parse(stored) as {
+          ideaName: string;
+          ideaDescription?: string;
+          features?: string[];
+          benefits?: string[];
+          impactMetrics?: string[];
+          source: 'idea-lab';
+        };
+        sessionStorage.removeItem('aviniti_analyzer_idealab_data');
+        setIdeaLabSourceData(parsed);
+
+        // Build transition session data from the richer payload
+        const ideaData: Record<string, unknown> = { ideaName: parsed.ideaName };
+        if (parsed.ideaDescription) ideaData.ideaDescription = parsed.ideaDescription;
+        if (parsed.features) ideaData.features = parsed.features;
+        setTransitionSessionData(ideaData);
+      } else {
+        // Fall back to URL params if sessionStorage key is not present
+        const ideaData: Record<string, unknown> = { ideaName };
+        if (ideaDescription) ideaData.ideaDescription = ideaDescription;
+        setTransitionSessionData(ideaData);
+      }
+    } catch {
+      // Fall back to URL params on parse error
+      const ideaData: Record<string, unknown> = { ideaName };
+      if (ideaDescription) ideaData.ideaDescription = ideaDescription;
+      setTransitionSessionData(ideaData);
+    }
+
+    setTransitionSource('idea-lab');
+    setShowTransition(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount only
+
+  // ============================================================
+  // Transition screen — shown when arriving from another tool
+  // ============================================================
+  if (showTransition && transitionSource) {
+    const transitionData = getTransitionMetrics(
+      transitionSource,
+      'ai-analyzer',
+      transitionSessionData,
+      tCommon
+    );
+    return (
+      <ToolTransition
+        fromTool={transitionSource}
+        toTool="ai-analyzer"
+        metrics={transitionData.metrics}
+        carryForwardItems={transitionData.carryForwardItems}
+        onContinue={() => setShowTransition(false)}
+      />
+    );
+  }
 
   // ============================================================
   // LOADING STATE
@@ -635,6 +749,34 @@ export default function AIAnalyzerPage() {
               </div>
             </motion.div>
           </section>
+
+          {/* Source Insights Card — shown when arriving from Idea Lab */}
+          {ideaLabSourceData && (
+            <div className="mt-6 mb-4">
+              <SourceInsightsCard
+                source="idea-lab"
+                data={ideaLabSourceData as unknown as Record<string, unknown>}
+              />
+            </div>
+          )}
+
+          {/* Smart Nudges — shown after Overview */}
+          {nudges.length > 0 && (
+            <div className="space-y-3 mt-6 mb-4">
+              {nudges.map((nudge) => (
+                <SmartNudge
+                  key={nudge.id}
+                  id={nudge.id}
+                  variant={nudge.variant}
+                  message={tCommon(nudge.messageKey)}
+                  ctaLabel={tCommon(nudge.ctaKey)}
+                  targetHref={nudge.targetHref}
+                  onDismiss={dismissNudge}
+                  icon={nudge.icon}
+                />
+              ))}
+            </div>
+          )}
 
           {/* ====================================================
               SECTION 2: VISUAL SCORE BREAKDOWN — Radar + Bars
@@ -1319,7 +1461,11 @@ export default function AIAnalyzerPage() {
                       {t('buttons_back')}
                     </button>
                   </div>
-                  <EmailCapture toolColor="blue" onSubmit={handleSubmit} />
+                  <ContactCapture
+                    toolColor="blue"
+                    onSubmit={handleSubmit}
+                    isLoading={isLoading}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

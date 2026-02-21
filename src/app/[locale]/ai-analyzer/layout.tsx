@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
+import { JourneyTracker } from '@/components/ai-tools/JourneyTracker';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://aviniti.app';
 
@@ -50,5 +51,10 @@ export default async function AIAnalyzerLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <>{children}</>;
+  return (
+    <>
+      <JourneyTracker currentTool="ai-analyzer" />
+      {children}
+    </>
+  );
 }

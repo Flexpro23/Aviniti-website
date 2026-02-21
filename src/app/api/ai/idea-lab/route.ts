@@ -16,6 +16,7 @@ import { ideaLabGenerateSchema } from '@/lib/utils/validators';
 import { buildIdeaLabPrompt } from '@/lib/gemini/prompts/idea-lab';
 import { ideaLabResponseSchema } from '@/lib/gemini/schemas';
 import type { IdeaLabResponse } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration — 6 per 24h to allow discover + generate + 2 refreshes + buffer
 const RATE_LIMIT = 6;
@@ -89,10 +90,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (!result.success || !result.data) {
-        console.error(
-          `[Idea Lab Generate] Gemini call failed (attempt ${attempt + 1}):`,
-          result.error || 'No data returned'
-        );
+        logServerWarning('idea-lab-api', `Gemini call failed (attempt ${attempt + 1})`, { error: result.error || 'No data returned' });
         lastError = result.error || 'AI service returned no data';
         continue;
       }
@@ -100,10 +98,7 @@ export async function POST(request: NextRequest) {
       // 4. Validate AI response
       const parseResult = ideaLabResponseSchema.safeParse(result.data);
       if (!parseResult.success) {
-        console.error(
-          `[Idea Lab Generate] Validation failed (attempt ${attempt + 1}):`,
-          JSON.stringify(parseResult.error.issues, null, 2)
-        );
+        logServerWarning('idea-lab-api', `Validation failed (attempt ${attempt + 1})`, { issues: parseResult.error.issues });
         lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
         continue;
       }
@@ -113,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      console.error(`[Idea Lab Generate] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
+      logServerError('idea-lab-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -128,8 +123,9 @@ export async function POST(request: NextRequest) {
       const metadata = extractRequestMetadata(request);
 
       const leadId = await saveLeadToFirestore({
-        email: validatedData.email,
-        phone: validatedData.phone || null,
+        name: validatedData.name,
+        phone: validatedData.phone,
+        email: validatedData.email || null,
         whatsapp: validatedData.whatsapp,
         source: 'idea-lab',
         locale: locale,
@@ -154,7 +150,7 @@ export async function POST(request: NextRequest) {
         status: 'completed',
       });
     } catch (saveError) {
-      console.error('[Idea Lab API] Failed to save to Firestore (non-fatal):', saveError);
+      logServerWarning('idea-lab-api', 'Failed to save to Firestore (non-fatal)', { error: saveError instanceof Error ? saveError.message : String(saveError) });
     }
 
     // 6. Return success response
@@ -178,7 +174,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Idea Lab API] Error:', error);
+    logServerError('idea-lab-api', 'Unexpected error in idea lab handler', error);
 
     // Return generic error
     return createErrorResponse(

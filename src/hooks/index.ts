@@ -11,3 +11,8 @@ export {
   removeLocalStorage,
   clearLocalStorage,
 } from './useLocalStorage';
+export { useUserContact } from './useUserContact';
+export type { UserContact } from './useUserContact';
+export { useJourneyProgress } from './useJourneyProgress';
+export type { ToolSlug } from './useJourneyProgress';
+export { useSmartNudges } from './useSmartNudges';

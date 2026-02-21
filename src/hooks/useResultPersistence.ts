@@ -14,6 +14,7 @@
 
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { logClientWarning } from '@/lib/utils/client-error-logger';
 
 interface PersistedResult<T = any> {
   id: string;
@@ -57,7 +58,7 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool'], loc
 
       return id;
     } catch (error) {
-      console.error('Error saving result:', error);
+      logClientWarning('useResultPersistence', 'Error saving result', { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   };
@@ -80,7 +81,7 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool'], loc
 
       return result;
     } catch (error) {
-      console.error('Error loading result:', error);
+      logClientWarning('useResultPersistence', 'Error loading result', { error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   };
@@ -136,7 +137,7 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool'], loc
       await navigator.clipboard.writeText(url);
       return true;
     } catch (error) {
-      console.error('Error copying to clipboard:', error);
+      logClientWarning('useResultPersistence', 'Error copying to clipboard', { error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   };
@@ -176,7 +177,7 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool'], loc
         }
       });
     } catch (error) {
-      console.error('Error cleaning up expired results:', error);
+      logClientWarning('useResultPersistence', 'Error cleaning up expired results', { error: error instanceof Error ? error.message : String(error) });
     }
   };
 

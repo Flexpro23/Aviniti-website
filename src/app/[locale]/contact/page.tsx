@@ -1,15 +1,19 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Mail, MapPin, Clock, MessageCircle, Send, Calendar, CheckCircle } from 'lucide-react';
 import { Container, Section, Card, CardContent, Input, Textarea, Checkbox, Button } from '@/components/ui';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { PhoneInput } from 'react-international-phone';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import 'react-international-phone/style.css';
 
 interface FormData {
   name: string;
+  phone: string;
   email: string;
   company: string;
   topic: string;
@@ -19,6 +23,7 @@ interface FormData {
 
 interface FormErrors {
   name?: string;
+  phone?: string;
   email?: string;
   topic?: string;
   message?: string;
@@ -26,6 +31,7 @@ interface FormErrors {
 
 const initialFormData: FormData = {
   name: '',
+  phone: '',
   email: '',
   company: '',
   topic: '',
@@ -43,6 +49,13 @@ export default function ContactPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [ticketId, setTicketId] = useState('');
 
+  // Auto-detect country from Vercel geo cookie
+  const [defaultCountry, setDefaultCountry] = useState('jo');
+  useEffect(() => {
+    const match = document.cookie.match(/geo-country=([A-Z]{2})/);
+    if (match) setDefaultCountry(match[1].toLowerCase());
+  }, []);
+
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -50,7 +63,15 @@ export default function ContactPage() {
       newErrors.name = t('errors.name_required');
     }
 
-    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // Phone is required and must be valid
+    if (!formData.phone || formData.phone.length <= 4) {
+      newErrors.phone = t('form.phone_error');
+    } else if (!isValidPhoneNumber(formData.phone)) {
+      newErrors.phone = t('form.phone_error');
+    }
+
+    // Email is optional — only validate format if provided
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = t('errors.email_required');
     }
 
@@ -79,7 +100,15 @@ export default function ContactPage() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+          company: formData.company || undefined,
+          topic: formData.topic,
+          message: formData.message,
+          whatsapp: formData.whatsapp,
+        }),
       });
 
       if (response.ok) {
@@ -173,40 +202,71 @@ export default function ContactPage() {
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                    {/* Name & Email Row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Input
-                        label={t('form.name_label')}
-                        placeholder={t('form.name_placeholder')}
-                        required
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, name: e.target.value }))
-                        }
-                        error={errors.name}
-                      />
-                      <Input
-                        label={t('form.email_label')}
-                        type="email"
-                        placeholder={t('form.email_placeholder')}
-                        required
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, email: e.target.value }))
-                        }
-                        error={errors.email}
-                      />
+                    {/* Name */}
+                    <Input
+                      label={t('form.name_label')}
+                      placeholder={t('form.name_placeholder')}
+                      required
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, name: e.target.value }))
+                      }
+                      error={errors.name}
+                    />
+
+                    {/* Phone (Required) */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-off-white">
+                        {t('form.phone_label')}
+                        <span className="text-error ms-1" aria-label={t('form.aria_required')}>*</span>
+                      </label>
+                      <div dir="ltr" className="aviniti-phone-input">
+                        <PhoneInput
+                          defaultCountry={defaultCountry}
+                          value={formData.phone}
+                          onChange={(value) =>
+                            setFormData((prev) => ({ ...prev, phone: value }))
+                          }
+                          disabled={isSubmitting}
+                          placeholder={t('form.phone_placeholder')}
+                          preferredCountries={[
+                            'jo', 'ae', 'sa', 'eg', 'qa', 'kw', 'bh', 'om', 'iq', 'lb', 'ps',
+                          ]}
+                        />
+                      </div>
+                      {errors.phone && (
+                        <p className="text-xs text-error" role="alert">
+                          {errors.phone}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Company */}
-                    <Input
-                      label={t('form.company_label')}
-                      placeholder={t('form.company_placeholder')}
-                      value={formData.company}
-                      onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, company: e.target.value }))
-                      }
-                    />
+                    {/* Email (Optional) & Company (Optional) Row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <Input
+                          label={t('form.email_label')}
+                          type="email"
+                          placeholder={t('form.email_placeholder')}
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData((prev) => ({ ...prev, email: e.target.value }))
+                          }
+                          error={errors.email}
+                        />
+                        <p className="text-xs text-muted-light mt-1.5">
+                          {t('form.email_optional_hint')}
+                        </p>
+                      </div>
+                      <Input
+                        label={t('form.company_label')}
+                        placeholder={t('form.company_placeholder')}
+                        value={formData.company}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, company: e.target.value }))
+                        }
+                      />
+                    </div>
 
                     {/* Topic Select */}
                     <div className="w-full space-y-2">

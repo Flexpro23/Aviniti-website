@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { logClientWarning } from '@/lib/utils/client-error-logger';
 
 /**
  * SSR-safe localStorage hook with JSON serialization
@@ -35,7 +36,7 @@ export function useLocalStorage<T>(
         setStoredValue(JSON.parse(item));
       }
     } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
+      logClientWarning('useLocalStorage', `Error reading localStorage key "${key}"`, { error: error instanceof Error ? error.message : String(error) });
     } finally {
       setIsHydrated(true);
     }
@@ -58,7 +59,7 @@ export function useLocalStorage<T>(
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        console.error(`Error setting localStorage key "${key}":`, error);
+        logClientWarning('useLocalStorage', `Error setting localStorage key "${key}"`, { error: error instanceof Error ? error.message : String(error) });
       }
     },
     [key, storedValue]
@@ -81,7 +82,7 @@ export function removeLocalStorage(key: string): void {
   try {
     window.localStorage.removeItem(key);
   } catch (error) {
-    console.error(`Error removing localStorage key "${key}":`, error);
+    logClientWarning('useLocalStorage', `Error removing localStorage key "${key}"`, { error: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -97,6 +98,6 @@ export function clearLocalStorage(): void {
   try {
     window.localStorage.clear();
   } catch (error) {
-    console.error('Error clearing localStorage:', error);
+    logClientWarning('useLocalStorage', 'Error clearing localStorage', { error: error instanceof Error ? error.message : String(error) });
   }
 }

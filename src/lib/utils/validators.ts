@@ -1,6 +1,7 @@
 // Zod schemas for form validation across the website
 
 import { z } from 'zod';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 import type {
   Background,
   Industry,
@@ -28,15 +29,15 @@ export const emailSchema = z
 
 /**
  * Phone validation schema
- * Accepts international format with or without + prefix
+ * Uses libphonenumber-js for robust international phone validation
  */
 export const phoneSchema = z
   .string()
   .min(8, 'Phone number is too short')
   .max(20, 'Phone number is too long')
-  .regex(
-    /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}$/,
-    'Please enter a valid phone number with country code'
+  .refine(
+    (val) => isValidPhoneNumber(val),
+    'Please enter a valid phone number'
   );
 
 /**
@@ -57,48 +58,12 @@ export const companySchema = z
   .optional();
 
 /**
- * Optional phone with required country code when phone is provided
+ * WhatsApp preference — simple boolean flag.
+ * Phone is always required separately; whatsapp just indicates delivery preference.
  */
-export const optionalPhoneSchema = z
-  .object({
-    phone: phoneSchema.optional(),
-    countryCode: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      // If phone is provided, country code must be provided
-      if (data.phone && data.phone.length > 0) {
-        return !!data.countryCode;
-      }
-      return true;
-    },
-    {
-      message: 'Country code is required when phone number is provided',
-      path: ['countryCode'],
-    }
-  );
-
-/**
- * WhatsApp opt-in with phone requirement
- */
-export const whatsappWithPhoneSchema = z
-  .object({
-    whatsapp: z.boolean(),
-    phone: phoneSchema.optional(),
-  })
-  .refine(
-    (data) => {
-      // If whatsapp is true, phone must be provided
-      if (data.whatsapp) {
-        return !!data.phone && data.phone.length > 0;
-      }
-      return true;
-    },
-    {
-      message: 'Phone number is required for WhatsApp delivery',
-      path: ['phone'],
-    }
-  );
+export const whatsappSchema = z.object({
+  whatsapp: z.boolean().default(false),
+});
 
 // ============================================================
 // Idea Lab — Discovery Wizard Schemas
@@ -145,20 +110,18 @@ const discoveryAnswerSchema = z.object({
 });
 
 /** Schema for the /api/ai/idea-lab (generate) endpoint */
-export const ideaLabGenerateSchema = z
-  .object({
-    persona: personaEnum,
-    industry: industryEnumShared,
-    discoveryAnswers: z.array(discoveryAnswerSchema).min(3).max(10),
-    email: emailSchema,
-    phone: phoneSchema.optional(),
-    countryCode: z.string().optional(),
-    whatsapp: z.boolean().default(false),
-    locale: z.enum(['en', 'ar']),
-    /** Names of previously generated ideas to exclude (for refresh) */
-    previousIdeaNames: z.array(z.string()).optional(),
-  })
-  .and(whatsappWithPhoneSchema);
+export const ideaLabGenerateSchema = z.object({
+  persona: personaEnum,
+  industry: industryEnumShared,
+  discoveryAnswers: z.array(discoveryAnswerSchema).min(3).max(10),
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  phone: phoneSchema,
+  whatsapp: z.boolean().default(false),
+  locale: z.enum(['en', 'ar']),
+  /** Names of previously generated ideas to exclude (for refresh) */
+  previousIdeaNames: z.array(z.string()).optional(),
+});
 
 export type IdeaLabGenerateData = z.infer<typeof ideaLabGenerateSchema>;
 
@@ -166,49 +129,48 @@ export type IdeaLabGenerateData = z.infer<typeof ideaLabGenerateSchema>;
 // AI Analyzer Form Schema
 // ============================================================
 
-export const analyzerFormSchema = z
-  .object({
-    idea: z
-      .string()
-      .min(30, 'Please describe your idea in at least 30 characters for a meaningful analysis')
-      .max(2000, 'Description cannot exceed 2000 characters'),
-    targetAudience: z
-      .string()
-      .max(200, 'Please keep your target audience description under 200 characters')
-      .optional(),
-    industry: z
-      .enum([
-        'health-wellness',
-        'finance-banking',
-        'education-learning',
-        'ecommerce-retail',
-        'logistics-delivery',
-        'entertainment-media',
-        'travel-hospitality',
-        'real-estate',
-        'food-restaurant',
-        'social-community',
-        'other',
-      ] as const)
-      .optional(),
-    revenueModel: z
-      .enum([
-        'subscription',
-        'freemium',
-        'one-time-purchase',
-        'in-app-purchases',
-        'advertising',
-        'marketplace-commission',
-        'enterprise-licensing',
-        'unsure',
-      ] as const)
-      .optional(),
-    email: emailSchema,
-    phone: phoneSchema.optional(),
-    whatsapp: z.boolean().default(false),
-    sourceIdeaId: z.string().max(20).optional(),
-  })
-  .and(whatsappWithPhoneSchema);
+export const analyzerFormSchema = z.object({
+  idea: z
+    .string()
+    .min(30, 'Please describe your idea in at least 30 characters for a meaningful analysis')
+    .max(2000, 'Description cannot exceed 2000 characters'),
+  targetAudience: z
+    .string()
+    .max(200, 'Please keep your target audience description under 200 characters')
+    .optional(),
+  industry: z
+    .enum([
+      'health-wellness',
+      'finance-banking',
+      'education-learning',
+      'ecommerce-retail',
+      'logistics-delivery',
+      'entertainment-media',
+      'travel-hospitality',
+      'real-estate',
+      'food-restaurant',
+      'social-community',
+      'other',
+    ] as const)
+    .optional(),
+  revenueModel: z
+    .enum([
+      'subscription',
+      'freemium',
+      'one-time-purchase',
+      'in-app-purchases',
+      'advertising',
+      'marketplace-commission',
+      'enterprise-licensing',
+      'unsure',
+    ] as const)
+    .optional(),
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  phone: phoneSchema,
+  whatsapp: z.boolean().default(false),
+  sourceIdeaId: z.string().max(20).optional(),
+});
 
 export type AnalyzerFormData = z.infer<typeof analyzerFormSchema>;
 
@@ -266,14 +228,13 @@ export const estimateFormSchema = z
     selectedFeatures: z.array(aiFeatureSchema).optional(),
     name: nameSchema,
     email: emailSchema.optional().or(z.literal('')),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+    phone: phoneSchema,
     whatsapp: z.boolean().default(false),
   })
   .refine(
     (data) => (data.selectedFeatureIds && data.selectedFeatureIds.length > 0) || (data.selectedFeatures && data.selectedFeatures.length > 0),
     { message: 'Please select at least one feature', path: ['selectedFeatureIds'] }
-  )
-  .and(whatsappWithPhoneSchema);
+  );
 
 export type EstimateFormData = z.infer<typeof estimateFormSchema>;
 
@@ -339,8 +300,9 @@ export const roiFormSchema = z.object({
       .optional(),
   }),
   monthlyRevenue: z.number().nonnegative().optional(),
-  email: emailSchema,
-  name: nameSchema.optional(),
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  phone: phoneSchema,
   company: companySchema,
   whatsapp: z.boolean().default(false),
 });
@@ -420,11 +382,9 @@ const roiFromEstimateSchema = z.object({
   targetMarket: targetMarketEnum,
   industry: industryEnum.optional(),
   businessModel: businessModelEnum.optional(),
-  email: emailSchema,
-  phone: phoneSchema.optional(),
-  // countryCode is optional in the from-estimate flow (the form does not collect it).
-  // Defaults to Jordan (+962) since this is primarily a Jordanian market product.
-  countryCode: z.string().optional().default('+962'),
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  phone: phoneSchema,
   whatsapp: z.boolean().default(false),
   locale: z.enum(['en', 'ar']),
 });
@@ -445,8 +405,9 @@ const roiStandaloneSchema = z.object({
     message: 'budgetRange.min must be less than or equal to budgetRange.max',
     path: ['min'],
   }).optional(),
-  email: emailSchema,
-  phone: phoneSchema.optional(),
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  phone: phoneSchema,
   whatsapp: z.boolean().default(false),
   locale: z.enum(['en', 'ar']),
 });
@@ -462,27 +423,24 @@ export type ROIFormDataV2 = z.infer<typeof roiFormSchemaV2>;
 // Contact Form Schema
 // ============================================================
 
-export const contactFormSchema = z
-  .object({
-    name: nameSchema,
-    email: emailSchema,
-    company: companySchema,
-    phone: phoneSchema.optional(),
-    countryCode: z.string().optional(),
-    topic: z.enum([
-      'general-inquiry',
-      'project-discussion',
-      'partnership',
-      'support',
-      'other',
-    ] as const).describe('Please select a topic'),
-    message: z
-      .string()
-      .min(10, 'Please enter a message (at least 10 characters)')
-      .max(2000, 'Message cannot exceed 2000 characters'),
-    whatsapp: z.boolean().default(false),
-  })
-  .and(optionalPhoneSchema);
+export const contactFormSchema = z.object({
+  name: nameSchema,
+  email: emailSchema.optional().or(z.literal('')),
+  company: companySchema,
+  phone: phoneSchema,
+  topic: z.enum([
+    'general-inquiry',
+    'project-discussion',
+    'partnership',
+    'support',
+    'other',
+  ] as const).describe('Please select a topic'),
+  message: z
+    .string()
+    .min(10, 'Please enter a message (at least 10 characters)')
+    .max(2000, 'Message cannot exceed 2000 characters'),
+  whatsapp: z.boolean().default(false),
+});
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
 
@@ -493,6 +451,7 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 export const exitIntentFormSchema = z.object({
   variant: z.enum(['A', 'B', 'C', 'D', 'E'] as const),
   email: emailSchema.optional(),
+  phone: phoneSchema.optional(),
   projectType: z.enum(['mobile', 'web', 'ai', 'cloud', 'fullstack'] as const).optional(),
   sourcePage: z.string().max(200),
 });

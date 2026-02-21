@@ -7,6 +7,7 @@ import {
   getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { emailSchema } from '@/lib/utils/validators';
+import { logServerError } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration: 3 subscription attempts per IP per hour
 const RATE_LIMIT = 3;
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log unexpected errors
-    console.error('[Newsletter API] Error:', error);
+    logServerError('newsletter-api', 'Unexpected error in newsletter handler', error);
 
     // Return generic error
     return createErrorResponse(

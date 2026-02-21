@@ -106,7 +106,8 @@
     "review_project_type": "نوع المشروع",
     "review_description": "الوصف",
     "review_features": "الميزات المختارة",
-    "review_questions": "الأسئلة المجابة"
+    "review_questions": "الأسئلة المجابة",
+    "welcome_back": "!مرحباً بعودتك، {name}. تم تعبئة بيانات الاتصال المحفوظة."
   },
   "feature_impact": {
     "cost": "التكلفة",

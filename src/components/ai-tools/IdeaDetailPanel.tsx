@@ -16,6 +16,7 @@ import {
   Check,
   Calendar,
   MessageCircle,
+  Search,
 } from 'lucide-react';
 import type { IdeaLabIdea } from '@/types/api';
 
@@ -38,6 +39,22 @@ export function IdeaDetailPanel({ idea, isOpen, onClose }: IdeaDetailPanelProps)
   const t = useTranslations('idea_lab');
   const locale = useLocale();
   const router = useRouter();
+
+  const handleAnalyzeIdea = () => {
+    sessionStorage.setItem(
+      'aviniti_analyzer_idealab_data',
+      JSON.stringify({
+        ideaName: idea.name,
+        ideaDescription: idea.description,
+        features: idea.features,
+        benefits: idea.benefits,
+        impactMetrics: idea.impactMetrics,
+        howItWorks: idea.howItWorks,
+        source: 'idea-lab',
+      })
+    );
+    router.push(`/${locale}/ai-analyzer?fromIdea=true&ideaName=${encodeURIComponent(idea.name)}&ideaDescription=${encodeURIComponent(idea.description)}`);
+  };
 
   const handleGetEstimate = () => {
     // Store rich idea data in sessionStorage for Get Estimate
@@ -259,6 +276,25 @@ export function IdeaDetailPanel({ idea, isOpen, onClose }: IdeaDetailPanelProps)
                     {t('detail_cta_section_subtitle')}
                   </p>
                 </div>
+
+                {/* Analyze This Idea CTA */}
+                <button
+                  onClick={handleAnalyzeIdea}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-200 group text-start"
+                >
+                  <div className="h-10 w-10 rounded-lg bg-blue-500/15 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500/25 transition-colors">
+                    <Search className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-white block">
+                      {t('detail_cta_analyze')}
+                    </span>
+                    <span className="text-xs text-muted block mt-0.5">
+                      {t('detail_cta_analyze_desc')}
+                    </span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-blue-400 group-hover:translate-x-1 transition-transform flex-shrink-0 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                </button>
 
                 {/* ROI Calculator CTA */}
                 <button

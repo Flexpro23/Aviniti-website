@@ -8,6 +8,7 @@ import { buildGenerateFeaturesPrompt } from '@/lib/gemini/prompts';
 import { generateFeaturesAISchema } from '@/lib/gemini/schemas';
 import { buildCompressedCatalog, getFeatureById } from '@/lib/data/feature-catalog';
 import type { GenerateFeaturesResponse, AIFeature } from '@/types/api';
+import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
 const RATE_LIMIT = 15;
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
@@ -40,6 +41,11 @@ export async function POST(request: NextRequest) {
     const inputLanguage = detectInputLanguage(validatedData.description);
     const compressedCatalog = buildCompressedCatalog();
 
+    // Extract optional ideaLabFeatures (not validated by Zod schema — passed through as-is)
+    const ideaLabFeatures = Array.isArray(body.ideaLabFeatures)
+      ? (body.ideaLabFeatures as string[])
+      : undefined;
+
     const prompt = buildGenerateFeaturesPrompt({
       projectType: validatedData.projectType,
       description: sanitizedDescription,
@@ -48,6 +54,7 @@ export async function POST(request: NextRequest) {
       locale,
       compressedCatalog,
       inputLanguage,
+      ideaLabFeatures,
     });
 
     const result = await generateJsonContent(prompt, {
@@ -57,7 +64,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success || !result.data) {
-      console.error('[Generate Features API] AI generation failed:', result.error || 'Unknown error');
+      logServerWarning('generate-features-api', 'AI generation failed', { error: result.error || 'Unknown error' });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few moments.',
@@ -69,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Validate the AI response against our schema
     const aiParsed = generateFeaturesAISchema.safeParse(result.data);
     if (!aiParsed.success) {
-      console.error('[Generate Features API] Invalid AI response structure:', aiParsed.error.message);
+      logServerWarning('generate-features-api', 'Invalid AI response structure', { error: aiParsed.error.message });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Received an incomplete response. Please try again.',
@@ -138,7 +145,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('VALIDATION_ERROR', error.issues[0].message, 400);
     }
 
-    console.error('[Generate Features API] Error:', error);
+    logServerError('generate-features-api', 'Unexpected error in generate features handler', error);
     return createErrorResponse('INTERNAL_ERROR', 'Failed to generate features. Please try again.', 500);
   }
 }
