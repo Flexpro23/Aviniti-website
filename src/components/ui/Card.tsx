@@ -4,6 +4,7 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
 import { cardHover } from '@/lib/motion/variants';
+import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 
 /* ============================================================
    CARD COMPONENT
@@ -19,6 +20,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', toolColor, hover = false, children, ...props }, ref) => {
+    const prefersReducedMotion = usePrefersReducedMotion();
     const baseStyles = 'rounded-lg p-6 transition-all duration-300';
 
     const variantStyles = {
@@ -43,8 +45,11 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           className={cn(baseStyles, variantStyles[variant], className)}
           variants={cardHover}
           initial="rest"
-          whileHover="hover"
-          {...(props as any)}
+          whileHover={prefersReducedMotion ? undefined : "hover"}
+          {...(props as Omit<
+            React.ComponentPropsWithoutRef<'div'>,
+            'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
+          >)}
         >
           {children}
         </motion.div>

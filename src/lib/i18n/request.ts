@@ -37,6 +37,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       privacy_policy: (await import(`../../../messages/${locale}/privacy-policy.json`)).default,
       terms_of_service: (await import(`../../../messages/${locale}/terms-of-service.json`)).default,
       features: (await import(`../../../messages/${locale}/features.json`)).default,
+      about: (await import(`../../../messages/${locale}/about.json`)).default,
     },
   };
 });

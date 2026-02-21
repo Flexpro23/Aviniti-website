@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/lib/i18n/routing';
 import { LocaleUpdater } from '@/components/layout/LocaleUpdater';
+import { SkipToContent } from '@/components/layout/SkipToContent';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import '../globals.css';
@@ -56,13 +57,14 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="bg-navy text-off-white antialiased">
-        <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} font-sans`}>
+        <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} ${locale === 'ar' ? 'font-arabic' : 'font-sans'}`}>
           <NextIntlClientProvider messages={messages}>
             <LocaleUpdater />
+            <SkipToContent />
             <Navbar />
-            <div className="pt-16">
+            <main id="main-content" className="pt-16">
               {children}
-            </div>
+            </main>
             <Footer />
           </NextIntlClientProvider>
         </div>

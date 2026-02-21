@@ -14,10 +14,11 @@ export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
   showPercentage?: boolean;
   toolColor?: 'orange' | 'blue' | 'green' | 'purple';
+  label?: string;
 }
 
 export const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
-  ({ className, value, max = 100, showPercentage = false, toolColor, ...props }, ref) => {
+  ({ className, value, max = 100, showPercentage = false, toolColor, label, ...props }, ref) => {
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
     const fillColor = toolColor
@@ -33,7 +34,7 @@ export const ProgressBar = React.forwardRef<HTMLDivElement, ProgressBarProps>(
       <div ref={ref} className={cn('w-full space-y-2', className)} {...props}>
         {showPercentage && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted">Progress</span>
+            <span className="text-muted">{label}</span>
             <span className="font-semibold text-off-white tabular-nums">{Math.round(percentage)}%</span>
           </div>
         )}

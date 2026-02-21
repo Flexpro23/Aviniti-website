@@ -27,8 +27,9 @@ const STORAGE_PREFIX = 'aviniti_result_';
 const EXPIRATION_DAYS = 30;
 const EXPIRATION_MS = EXPIRATION_DAYS * 24 * 60 * 60 * 1000;
 
-export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
+export function useResultPersistence<T = any>(tool: PersistedResult['tool'], locale: string = 'en') {
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [loadedResult, setLoadedResult] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -85,18 +86,14 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
   };
 
   /**
-   * Get shareable URL for saved result
+   * Get shareable URL for saved result.
+   * Accepts an explicit ID; falls back to the currently tracked savedId.
    */
   const getShareableUrl = (id?: string): string | null => {
     const resultId = id || savedId;
     if (!resultId) return null;
 
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    // Extract current locale from the URL pathname (e.g. /en/get-estimate → "en")
-    const locale =
-      typeof window !== 'undefined'
-        ? window.location.pathname.split('/')[1] || 'en'
-        : 'en';
     const toolPaths = {
       estimate: '/get-estimate',
       'roi-calculator': '/roi-calculator',
@@ -108,10 +105,31 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
   };
 
   /**
-   * Copy shareable URL to clipboard
+   * Copy shareable URL to clipboard.
+   *
+   * If results have not been persisted yet (savedId is null), this function
+   * saves them first — synchronously — then builds the URL from the returned
+   * ID.  This eliminates the race condition where the user clicks "Share"
+   * before the useEffect-triggered save has had a chance to flush.
+   *
+   * @param currentResults - The current result data, used as a fallback when
+   *   savedId is null so the save can happen inline.
    */
-  const copyShareableUrl = async (id?: string): Promise<boolean> => {
-    const url = getShareableUrl(id);
+  const copyShareableUrl = async (currentResults?: T): Promise<boolean> => {
+    let idToUse = savedId;
+
+    // If there is no persisted ID yet but we have results available, save them
+    // right now and use the returned ID directly — no need to wait for React
+    // state to update.
+    if (!idToUse && currentResults !== undefined) {
+      try {
+        idToUse = saveResult(currentResults);
+      } catch {
+        return false;
+      }
+    }
+
+    const url = getShareableUrl(idToUse ?? undefined);
     if (!url) return false;
 
     try {
@@ -178,13 +196,16 @@ export function useResultPersistence<T = any>(tool: PersistedResult['tool']) {
 
       if (result && result.tool === tool) {
         setSavedId(resultId);
+        setLoadedResult(result.data);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tool]);
 
   return {
     saveResult,
     loadResult,
+    loadedResult,
     getShareableUrl,
     copyShareableUrl,
     deleteResult,

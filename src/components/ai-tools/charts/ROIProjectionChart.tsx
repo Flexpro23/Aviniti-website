@@ -11,9 +11,11 @@
 
 import { motion } from 'framer-motion';
 import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { duration } from '@/lib/motion/tokens';
 import { formatCurrency } from '@/lib/i18n/formatters';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { MonthlyProjection, Currency, ROITimelinePoint } from '@/types/api';
 
 interface ROIProjectionChartProps {
@@ -33,16 +35,27 @@ const formatYAxis = (value: number): string => {
   return `$${value}`;
 };
 
-const CustomTooltip = ({ active, payload, label, currency, locale }: any) => {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; name: string; color?: string; dataKey?: string }>;
+  label?: string;
+  currency?: string;
+  locale?: 'en' | 'ar';
+  monthLabel?: (label: string) => string;
+}
+
+const CustomTooltip = ({ active, payload, label, currency, locale, monthLabel }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-slate-blue border border-slate-blue-light rounded-lg p-3 shadow-lg">
-        <p className="text-sm font-semibold text-white mb-2">Month {label}</p>
-        {payload.map((entry: any, index: number) => (
+        <p className="text-sm font-semibold text-white mb-2">
+          {monthLabel ? monthLabel(label ?? '') : `Month ${label}`}
+        </p>
+        {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4 text-xs">
             <span className="text-muted">{entry.name}:</span>
             <span className="font-semibold" style={{ color: entry.color }}>
-              {formatCurrency(entry.value, currency, locale)}
+              {formatCurrency(entry.value, (currency ?? 'USD') as Currency, locale ?? 'en')}
             </span>
           </div>
         ))}
@@ -59,11 +72,28 @@ export function ROIProjectionChart({
   locale = 'en',
   className,
 }: ROIProjectionChartProps) {
-  // Determine which data format we're using
+  // Hooks must be called unconditionally before any early return.
+  const t = useTranslations('common.charts');
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const chartHeight = isMobile ? 240 : 320;
+
+  // Determine which data format we're using.
   const isV2 = !!projectionV2 && projectionV2.length > 0;
   const dataPoints = isV2 ? projectionV2 : projection;
 
-  if (!dataPoints || dataPoints.length === 0) return null;
+  // Render a translated placeholder instead of returning null silently.
+  if (!dataPoints || dataPoints.length === 0) {
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-center rounded-lg border border-slate-blue-light bg-slate-blue/20 p-8 text-center text-sm text-muted',
+          className
+        )}
+      >
+        {t('noData')}
+      </div>
+    );
+  }
 
   const chartData = isV2
     ? (dataPoints as ROITimelinePoint[]).map((p) => ({
@@ -80,7 +110,17 @@ export function ROIProjectionChart({
       }));
 
   const totalMonths = chartData.length;
-  const breakEvenMonth = chartData.find((p) => p.net >= 0)?.month || totalMonths;
+
+  // Break-even: the first month where net position turns non-negative.
+  // If no such month exists within the projection window, use null to avoid
+  // showing a misleading break-even point at the end of the period.
+  const breakEvenPoint = chartData.find((p) => p.net >= 0);
+  const breakEvenMonth: number | null = breakEvenPoint ? breakEvenPoint.month : null;
+
+  const breakevenLabel =
+    breakEvenMonth !== null
+      ? t('breakeven', { month: breakEvenMonth })
+      : t('breakevenNotReached');
 
   // Adaptive X-axis ticks
   const getXTicks = (): number[] => {
@@ -97,12 +137,12 @@ export function ROIProjectionChart({
   };
 
   const titleText = isV2
-    ? `${totalMonths}-Month Financial Projection`
-    : '12-Month ROI Projection';
+    ? t('monthProjection', { months: totalMonths })
+    : t('roiProjection');
 
-  const investmentLabel = isV2 ? 'Cumulative Investment' : 'Cumulative Cost';
-  const revenueLabel = isV2 ? 'Cumulative Revenue' : 'Cumulative Savings';
-  const netLabel = isV2 ? 'Net Position' : 'Net ROI';
+  const investmentLabel = isV2 ? t('cumulativeInvestment') : t('cumulativeCost');
+  const revenueLabel = isV2 ? t('cumulativeRevenue') : t('cumulativeSavings');
+  const netLabel = isV2 ? t('netPosition') : t('netROI');
 
   return (
     <motion.div
@@ -111,16 +151,29 @@ export function ROIProjectionChart({
       transition={{ duration: duration.slow, delay: 0.3 }}
       className={cn('space-y-4', className)}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-base font-semibold text-white">{titleText}</h4>
-        <div className="px-3 py-1 rounded-full bg-tool-purple/10 border border-tool-purple/30">
-          <span className="text-xs font-semibold text-tool-purple">
-            Break-even: Month {breakEvenMonth}
+        <div
+          className={cn(
+            'px-3 py-1 rounded-full border',
+            breakEvenMonth !== null
+              ? 'bg-tool-purple/10 border-tool-purple/30'
+              : 'bg-warning/10 border-warning/30'
+          )}
+        >
+          <span
+            className={cn(
+              'text-xs font-semibold',
+              breakEvenMonth !== null ? 'text-tool-purple' : 'text-warning'
+            )}
+          >
+            {breakevenLabel}
           </span>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={320}>
+      <div role="img" aria-label={titleText}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -149,7 +202,7 @@ export function ROIProjectionChart({
             axisLine={{ stroke: '#475569' }}
             tickFormatter={formatYAxis}
           />
-          <Tooltip content={<CustomTooltip currency={currency} locale={locale} />} />
+          <Tooltip content={<CustomTooltip currency={currency} locale={locale} monthLabel={(label) => t('month', { label })} />} />
           <Legend
             wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
             iconType="line"
@@ -185,23 +238,24 @@ export function ROIProjectionChart({
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-3 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
         <div className="p-3 rounded-lg bg-success/10 border border-success/30 text-center">
-          <p className="text-xs text-muted mb-1">{isV2 ? 'Total Revenue' : 'Year 1 Savings'}</p>
+          <p className="text-xs text-muted mb-1">{isV2 ? t('totalRevenue') : t('year1Savings')}</p>
           <p className="text-sm font-bold text-success">
             {formatCurrency(chartData[chartData.length - 1].revenue, currency as Currency, locale)}
           </p>
         </div>
         <div className="p-3 rounded-lg bg-error/10 border border-error/30 text-center">
-          <p className="text-xs text-muted mb-1">Total {isV2 ? 'Investment' : 'Cost'}</p>
+          <p className="text-xs text-muted mb-1">{isV2 ? t('totalInvestment') : t('totalCost')}</p>
           <p className="text-sm font-bold text-error">
             {formatCurrency(chartData[chartData.length - 1].investment, currency as Currency, locale)}
           </p>
         </div>
         <div className="p-3 rounded-lg bg-tool-purple/10 border border-tool-purple/30 text-center">
-          <p className="text-xs text-muted mb-1">Net {isV2 ? 'Position' : 'ROI'}</p>
+          <p className="text-xs text-muted mb-1">{isV2 ? t('netPosition') : t('netROI')}</p>
           <p className="text-sm font-bold text-tool-purple">
             {formatCurrency(chartData[chartData.length - 1].net, currency as Currency, locale)}
           </p>

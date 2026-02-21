@@ -1,32 +1,16 @@
 // Prompt builders for Gemini AI tool integrations
 
 import type {
-  Background,
   Industry,
   ProjectType,
-  ProcessType,
-  ProcessIssue,
-  Currency,
-  GrowthEstimate,
   TargetMarket,
   BusinessModel,
   ROICalculatorRequestV2,
 } from '@/types/api';
 
 // ============================================================
-// Background and Industry Labels
+// Industry Labels
 // ============================================================
-
-const BACKGROUND_LABELS: Record<Background, { en: string; ar: string }> = {
-  entrepreneur: {
-    en: 'Entrepreneur / Business Owner',
-    ar: 'رائد أعمال / صاحب عمل',
-  },
-  professional: { en: 'Professional / Employee', ar: 'محترف / موظف' },
-  student: { en: 'Student / Academic', ar: 'طالب / أكاديمي' },
-  creative: { en: 'Creative / Freelancer', ar: 'مبدع / مستقل' },
-  other: { en: 'Other', ar: 'أخرى' },
-};
 
 const INDUSTRY_LABELS: Record<Industry, { en: string; ar: string }> = {
   'health-wellness': {
@@ -70,79 +54,6 @@ const INDUSTRY_LABELS: Record<Industry, { en: string; ar: string }> = {
 };
 
 // ============================================================
-// Idea Lab Prompt
-// ============================================================
-
-export function buildIdeaLabPrompt(data: {
-  background: Background;
-  industry: Industry;
-  problem: string;
-  locale: 'en' | 'ar';
-  existingIdeas?: string[];
-}): string {
-  const locale = data.locale;
-  const backgroundLabel = BACKGROUND_LABELS[data.background][locale];
-  const industryLabel = INDUSTRY_LABELS[data.industry][locale];
-
-  const existingIdeasNote = data.existingIdeas && data.existingIdeas.length > 0
-    ? `\n\nIMPORTANT: The user has already seen these ideas: ${data.existingIdeas.join(', ')}. DO NOT suggest any of these ideas again. Generate completely different concepts that approach the problem from new angles.`
-    : '';
-
-  return `You are a creative AI product strategist for Aviniti, an AI and app development company based in Amman, Jordan.
-
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including app names, descriptions, features, and tech stack labels — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
-
-A visitor has described their background, industry interest, and a problem they want to solve. Your job is to generate 5-6 unique, creative, and viable app ideas that address their problem.
-
-USER CONTEXT:
-- Background: ${backgroundLabel}
-- Industry: ${industryLabel}
-- Problem/Opportunity: ${data.problem}
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}${existingIdeasNote}
-
-INSTRUCTIONS:
-1. Generate exactly 5-6 app ideas.
-2. Each idea must have:
-   - A creative, memorable app name (2-3 words max)
-   - A concise description (1-2 sentences)
-   - 3-5 key features (short phrases)
-   - An estimated cost range in USD (realistic for a development company)
-   - An estimated timeline (in weeks)
-   - A complexity level: "simple", "moderate", or "complex"
-   - A recommended tech stack (3-5 technologies like "React Native", "Firebase", "Node.js", "AI/ML", etc.)
-3. Ideas should be diverse -- cover different approaches to the problem.
-4. At least one idea should be a simpler MVP (lower cost, faster timeline, "simple" complexity).
-5. At least one idea should be more ambitious (higher cost, more features, "complex" complexity).
-6. If any idea closely matches one of our Ready-Made Solutions, note the match:
-   - Delivery App: $10,000 / 35 days
-   - Kindergarten Management: $8,000 / 35 days
-   - Hypermarket System: $15,000 / 35 days
-   - Office Suite: $8,000 / 35 days
-   - Gym Management: $25,000 / 60 days
-   - Airbnb Clone: $15,000 / 35 days
-   - Hair Transplant AI: $18,000 / 35 days
-7. Cost estimates should range from $5,000 to $50,000 depending on complexity.
-8. Timeline estimates should range from 4 to 20 weeks.
-OUTPUT FORMAT:
-Respond with valid JSON matching this schema:
-{
-  "ideas": [
-    {
-      "id": "idea-1",
-      "name": "string",
-      "description": "string",
-      "features": ["string"],
-      "estimatedCost": { "min": number, "max": number },
-      "estimatedTimeline": "string",
-      "matchedSolution": { "slug": "string", "name": "string", "startingPrice": number, "deploymentTimeline": "string", "featureMatchPercentage": number } | null,
-      "complexity": "simple" | "moderate" | "complex",
-      "techStack": ["string"]
-    }
-  ]
-}`;
-}
-
-// ============================================================
 // Analyzer Prompt
 // ============================================================
 
@@ -152,15 +63,17 @@ export function buildAnalyzerPrompt(data: {
   industry?: Industry;
   revenueModel?: string;
   locale: 'en' | 'ar';
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const locale = data.locale;
+  const outputLang = data.inputLanguage || locale;
   const industryLabel = data.industry
     ? INDUSTRY_LABELS[data.industry][locale]
     : 'Not specified';
 
   return `You are an expert startup and app idea analyst for Aviniti, an AI and app development company.
 
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including idea name, summary, analysis, findings, recommendations, competitor names, tech stack items — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including idea name, summary, analysis, findings, recommendations, competitor names, tech stack items — MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. This is determined by the language of the user's input and is NON-NEGOTIABLE. Do NOT mix languages.
 
 A visitor has described an app idea they want validated. Perform a comprehensive analysis covering market potential, technical feasibility, monetization strategies, and competitive landscape. Provide an overall viability score from 0-100.
 
@@ -169,7 +82,7 @@ USER INPUT:
 - Target Audience: ${data.targetAudience || 'Not specified'}
 - Industry: ${industryLabel}
 - Preferred Revenue Model: ${data.revenueModel || 'Not specified'}
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Output language: ${outputLang === 'ar' ? 'Arabic' : 'English'}
 
 SCORING GUIDELINES:
 - 80-100: Excellent -- strong market, clear differentiation, manageable complexity
@@ -246,12 +159,14 @@ export function buildAnalyzeIdeaPrompt(data: {
   projectType: ProjectType;
   description: string;
   locale: 'en' | 'ar';
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const locale = data.locale;
+  const outputLang = data.inputLanguage || locale;
 
   return `You are an expert project analyst for Aviniti, an AI and app development company based in Amman, Jordan.
 
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value — summary, questions, and context explanations — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. Every string value — summary, questions, and context explanations — MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. This is determined by the language of the user's input and is NON-NEGOTIABLE. Do NOT mix languages.
 
 A potential client has described their project idea in plain language. They are NOT technical -- they are a regular person who wants to build an app. Your job is to:
 1. Understand what they want to build
@@ -263,7 +178,7 @@ IMPORTANT: The questions must be simple YES/NO questions that a non-technical pe
 USER INPUT:
 - Project Type: ${data.projectType}
 - Description: ${data.description}
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Output language: ${outputLang === 'ar' ? 'Arabic' : 'English'}
 
 QUESTION GUIDELINES:
 - Ask 3-5 questions maximum
@@ -302,8 +217,10 @@ export function buildGenerateFeaturesPrompt(data: {
   questions: { id: string; question: string; context: string }[];
   locale: 'en' | 'ar';
   compressedCatalog: string;
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const locale = data.locale;
+  const outputLang = data.inputLanguage || locale;
 
   const answeredQuestions = data.questions
     .map((q) => `- ${q.question}: ${data.answers[q.id] ? 'YES' : 'NO'}`)
@@ -311,7 +228,7 @@ export function buildGenerateFeaturesPrompt(data: {
 
   return `You are an expert product manager for Aviniti, an AI and app development company based in Amman, Jordan.
 
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value — including feature selection reasons — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. Every string value — including feature selection reasons — MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. This is determined by the language of the user's input and is NON-NEGOTIABLE. Do NOT mix languages.
 
 Based on the user's project description and their answers to clarifying questions, select features from Aviniti's official feature catalog.
 
@@ -357,8 +274,10 @@ export function buildEstimatePrompt(data: {
   totalCost: number;
   totalTimelineDays: number;
   locale: 'en' | 'ar';
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const locale = data.locale;
+  const outputLang = data.inputLanguage || locale;
 
   const answeredQuestions = data.questions
     .map((q) => `- ${q.question}: ${data.answers[q.id] ? 'YES' : 'NO'}`)
@@ -369,7 +288,7 @@ export function buildEstimatePrompt(data: {
 
   return `You are an expert software project consultant for Aviniti, an AI and app development company based in Amman, Jordan.
 
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including project name, alternative names, summary, phase descriptions, insights, tech stack items, and recommendations — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including project name, alternative names, summary, phase descriptions, insights, tech stack items, and recommendations — MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. This is determined by the language of the user's input and is NON-NEGOTIABLE. Do NOT mix languages.
 
 You are generating the CREATIVE content for a "Project Blueprint" report. Pricing has already been calculated deterministically — you do NOT need to estimate costs. Focus on naming, strategy, and insights.
 
@@ -382,7 +301,7 @@ ${answeredQuestions}
 ${featureIdList}
 - Pre-calculated Total: $${data.totalCost.toLocaleString()} USD
 - Pre-calculated Timeline: ~${totalWeeks} weeks (${data.totalTimelineDays} business days)
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Output language: ${outputLang === 'ar' ? 'Arabic' : 'English'}
 
 YOUR TASK:
 1. Give the project a creative, memorable name (2-4 words).
@@ -431,85 +350,6 @@ OUTPUT FORMAT (valid JSON):
 }
 
 // ============================================================
-// ROI Calculator Prompt
-// ============================================================
-
-export function buildROIPrompt(data: {
-  processType: ProcessType;
-  customProcess?: string;
-  hoursPerWeek: number;
-  employees: number;
-  hourlyCost: number;
-  currency: Currency;
-  issues: ProcessIssue[];
-  customerGrowth: GrowthEstimate;
-  retentionImprovement: GrowthEstimate;
-  monthlyRevenue?: number;
-  locale: 'en' | 'ar';
-}): string {
-  const locale = data.locale;
-
-  return `You are an expert business analyst and ROI calculator for Aviniti, an AI and app development company.
-
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including the "aiInsight" field and every generated text string — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
-
-A business visitor wants to understand the potential return on investment from building an app to replace a manual process. Using the data they provided, calculate a comprehensive ROI analysis.
-
-BUSINESS DATA:
-- Process to replace: ${data.processType}${data.customProcess ? ` (${data.customProcess})` : ''}
-- Hours per week on this process: ${data.hoursPerWeek}
-- Employees involved: ${data.employees}
-- Hourly cost per employee: ${data.currency} ${data.hourlyCost}
-- Current issues: ${data.issues.join(', ') || 'None specified'}
-- Could serve more customers with app: ${data.customerGrowth.answer}${data.customerGrowth.percentage ? ` (${data.customerGrowth.percentage}%)` : ''}
-- Could improve retention with app: ${data.retentionImprovement.answer}${data.retentionImprovement.percentage ? ` (${data.retentionImprovement.percentage}%)` : ''}
-- Monthly revenue: ${data.monthlyRevenue ? data.currency + ' ' + data.monthlyRevenue : 'Not provided'}
-- Currency: ${data.currency}
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}
-
-CALCULATION METHODOLOGY:
-1. Labor Savings: Assume app automation replaces 60-80% of manual hours. Calculate annual labor cost savings.
-2. Error Reduction: Based on issues selected, estimate 10-25% additional savings from reduced errors, rework, and missed opportunities.
-3. Revenue Increase: If customer growth or retention is "yes", calculate projected revenue increase based on provided percentages and monthly revenue.
-4. Time Recovery: Calculate total hours per year recovered from automation.
-5. Payback Period: Estimate app development cost (based on process complexity) and calculate months until cumulative savings exceed cost.
-6. ROI Percentage: (Annual Savings / App Cost) * 100.
-7. Monthly projections: Month-by-month cumulative savings vs cumulative cost for 12 months.
-8. AI Insight: Generate a 2-4 sentence summary highlighting the biggest opportunity and actionable next step.
-
-APP COST ESTIMATION (for payback calculation):
-- Simple process automation: $8,000-$15,000
-- Medium complexity (with integrations): $15,000-$25,000
-- Complex (AI/ML, multiple systems): $25,000-$45,000
-Use midpoint for payback calculation.
-
-All monetary values must be in ${data.currency}.
-
-OUTPUT FORMAT:
-Respond with valid JSON matching this exact schema:
-{
-  "annualROI": number,
-  "paybackPeriodMonths": number,
-  "roiPercentage": number,
-  "breakdown": {
-    "laborSavings": number,
-    "errorReduction": number,
-    "revenueIncrease": number,
-    "timeRecovered": number
-  },
-  "yearlyProjection": [
-    { "month": 1, "cumulativeSavings": number, "cumulativeCost": number, "netROI": number }
-  ],
-  "costVsReturn": {
-    "appCost": { "min": number, "max": number },
-    "year1Return": number,
-    "year3Return": number
-  },
-  "aiInsight": "string"
-}`;
-}
-
-// ============================================================
 // ROI Calculator V2 Prompt (AI-Driven)
 // ============================================================
 
@@ -534,8 +374,9 @@ const BUSINESS_MODEL_LABELS: Record<BusinessModel, { en: string; ar: string }> =
   'unsure': { en: 'Not specified', ar: 'غير محدد' },
 };
 
-export function buildROIPromptV2(data: ROICalculatorRequestV2): string {
+export function buildROIPromptV2(data: ROICalculatorRequestV2, inputLanguage?: 'en' | 'ar'): string {
   const locale = data.locale === 'ar' ? 'ar' : 'en';
+  const outputLang = inputLanguage || locale;
   const marketLabel = TARGET_MARKET_LABELS[data.targetMarket][locale];
   const industryLabel = data.industry ? INDUSTRY_LABELS[data.industry][locale] : 'Not specified';
   const businessModelLabel = data.businessModel ? BUSINESS_MODEL_LABELS[data.businessModel][locale] : 'Not specified';
@@ -584,7 +425,7 @@ IMPORTANT: Estimate development cost based on the idea's complexity. Use a reali
 
   return `You are an expert business analyst and ROI forecasting specialist for Aviniti, an AI and app development company based in Amman, Jordan.
 
-LANGUAGE RULE: Your ENTIRE output MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including project name, executive summary, market analysis, recommendations, risk descriptions, opportunity descriptions, and scenario assumptions — MUST be in ${locale === 'ar' ? 'Arabic' : 'English'}. This is determined by the user's chosen site language and is NON-NEGOTIABLE. Do NOT switch language based on input text. Do NOT mix languages.
+LANGUAGE RULE: Your ENTIRE output MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. Every string value in the JSON — including project name, executive summary, market analysis, recommendations, risk descriptions, opportunity descriptions, and scenario assumptions — MUST be in ${outputLang === 'ar' ? 'Arabic' : 'English'}. This is determined by the language of the user's input and is NON-NEGOTIABLE. Do NOT mix languages.
 
 A visitor wants to understand the potential return on investment for building a mobile/web application. Generate a comprehensive ROI analysis.
 
@@ -594,7 +435,7 @@ MARKET CONTEXT:
 - Target Market: ${marketLabel}
 - Industry: ${industryLabel}
 - Business Model Preference: ${businessModelLabel}
-- Output language: ${locale === 'ar' ? 'Arabic' : 'English'}
+- Output language: ${outputLang === 'ar' ? 'Arabic' : 'English'}
 
 ANALYSIS METHODOLOGY:
 

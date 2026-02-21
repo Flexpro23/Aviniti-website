@@ -6,11 +6,15 @@ import {
   createSuccessResponse,
   extractRequestMetadata,
   hashIP,
+  sanitizePromptInput,
+  detectInputLanguage,
+  getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collections';
 import { analyzerFormSchema } from '@/lib/utils/validators';
 import { buildAnalyzerPrompt } from '@/lib/gemini/prompts';
+import { analyzerResponseSchema } from '@/lib/gemini/schemas';
 import type { AnalyzerResponse } from '@/types/api';
 
 // Rate limiting configuration
@@ -18,6 +22,7 @@ const RATE_LIMIT = 3;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.3;
 const TIMEOUT_MS = 60000; // 60 seconds
+const MAX_AI_ATTEMPTS = 2;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -30,11 +35,15 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `analyzer:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
+
+    // Resolve locale early so we can use it for the rate-limit error message
+    // before the full locale-dependent processing block below.
+    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
 
     if (!rateLimitResult.allowed) {
       const retryAfter = Math.ceil(
@@ -42,29 +51,66 @@ export async function POST(request: NextRequest) {
       );
       return createErrorResponse(
         'RATE_LIMITED',
-        "You've used AI Analyzer 3 times today. Come back tomorrow for 3 more free sessions, or book a call for unlimited analysis.",
+        getLocalizedRateLimitMessage(locale),
         429,
         { retryAfter }
       );
     }
 
-    // 3. Build prompt and call Gemini
-    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+    // 3. Sanitize user input and detect language
+    const sanitizedIdea = sanitizePromptInput(validatedData.idea, 2000);
+    const inputLanguage = detectInputLanguage(validatedData.idea);
+
     const prompt = buildAnalyzerPrompt({
-      idea: validatedData.idea,
+      idea: sanitizedIdea,
       targetAudience: validatedData.targetAudience,
       industry: validatedData.industry,
       revenueModel: validatedData.revenueModel,
       locale,
+      inputLanguage,
     });
 
-    const result = await generateJsonContent<AnalyzerResponse>(prompt, {
-      temperature: TEMPERATURE,
-      maxOutputTokens: 4096,
-      timeoutMs: TIMEOUT_MS,
-    });
+    // 4. Call Gemini with retry on validation failure
+    let validated: { success: true; data: AnalyzerResponse } | null = null;
+    let lastError: string | undefined;
 
-    if (!result.success || !result.data) {
+    for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
+      if (attempt > 0) {
+        console.log(`[Analyzer API] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+      }
+
+      const result = await generateJsonContent<AnalyzerResponse>(prompt, {
+        temperature: TEMPERATURE,
+        maxOutputTokens: 4096,
+        timeoutMs: TIMEOUT_MS,
+      });
+
+      if (!result.success || !result.data) {
+        console.error(
+          `[Analyzer API] Gemini call failed (attempt ${attempt + 1}):`,
+          result.error || 'No data returned'
+        );
+        lastError = result.error || 'AI service returned no data';
+        continue;
+      }
+
+      // Validate AI response against schema
+      const parseResult = analyzerResponseSchema.safeParse(result.data);
+      if (!parseResult.success) {
+        console.error(
+          `[Analyzer API] Validation failed (attempt ${attempt + 1}):`,
+          JSON.stringify(parseResult.error.issues, null, 2)
+        );
+        lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
+        continue;
+      }
+
+      validated = { success: true, data: parseResult.data as unknown as AnalyzerResponse };
+      break;
+    }
+
+    if (!validated) {
+      console.error(`[Analyzer API] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -102,7 +148,7 @@ export async function POST(request: NextRequest) {
           industry: validatedData.industry,
           revenueModel: validatedData.revenueModel,
         },
-        response: result.data as unknown as Record<string, unknown>,
+        response: validated.data as unknown as Record<string, unknown>,
         processingTimeMs,
         model: 'gemini-3-flash-preview',
         locale: locale,
@@ -113,7 +159,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Return success response
-    const response = createSuccessResponse(result.data);
+    const response = createSuccessResponse(validated.data);
 
     // Copy rate limit headers to response
     headers.forEach((value, key) => {

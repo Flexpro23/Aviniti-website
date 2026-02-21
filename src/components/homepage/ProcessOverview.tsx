@@ -16,6 +16,7 @@ import {
   Rocket,
   HeadphonesIcon,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -24,52 +25,29 @@ import { staggerContainer, fadeInUp } from '@/lib/motion/variants';
 import { motion } from 'framer-motion';
 
 interface ProcessStep {
-  icon: React.ReactNode;
+  Icon: LucideIcon;
   titleKey: string;
   descriptionKey: string;
 }
 
+const STEPS: ProcessStep[] = [
+  { Icon: Search, titleKey: 'step_1_title', descriptionKey: 'step_1_description' },
+  { Icon: Palette, titleKey: 'step_2_title', descriptionKey: 'step_2_description' },
+  { Icon: Code, titleKey: 'step_3_title', descriptionKey: 'step_3_description' },
+  { Icon: TestTube, titleKey: 'step_4_title', descriptionKey: 'step_4_description' },
+  { Icon: Rocket, titleKey: 'step_5_title', descriptionKey: 'step_5_description' },
+  { Icon: HeadphonesIcon, titleKey: 'step_6_title', descriptionKey: 'step_6_description' },
+];
+
 export function ProcessOverview() {
   const t = useTranslations('home.process');
 
-  const steps: ProcessStep[] = [
-    {
-      icon: <Search className="w-6 h-6" />,
-      titleKey: 'step_1_title',
-      descriptionKey: 'step_1_description',
-    },
-    {
-      icon: <Palette className="w-6 h-6" />,
-      titleKey: 'step_2_title',
-      descriptionKey: 'step_2_description',
-    },
-    {
-      icon: <Code className="w-6 h-6" />,
-      titleKey: 'step_3_title',
-      descriptionKey: 'step_3_description',
-    },
-    {
-      icon: <TestTube className="w-6 h-6" />,
-      titleKey: 'step_4_title',
-      descriptionKey: 'step_4_description',
-    },
-    {
-      icon: <Rocket className="w-6 h-6" />,
-      titleKey: 'step_5_title',
-      descriptionKey: 'step_5_description',
-    },
-    {
-      icon: <HeadphonesIcon className="w-6 h-6" />,
-      titleKey: 'step_6_title',
-      descriptionKey: 'step_6_description',
-    },
-  ];
-
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy" aria-labelledby="process-heading">
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="process-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -91,19 +69,19 @@ export function ProcessOverview() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 relative z-10">
-            {steps.map((step, index) => (
+            {STEPS.map((step, index) => (
               <motion.div key={index} variants={fadeInUp} className="relative">
                 <div className="flex flex-col items-center text-center">
                   {/* Step Number & Icon */}
                   <div className="relative mb-4">
                     {/* Number Badge */}
-                    <div className="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-bronze text-white text-sm font-bold flex items-center justify-center shadow-lg z-10">
+                    <div className="absolute -top-2 -start-2 w-7 h-7 rounded-full bg-bronze text-white text-sm font-bold flex items-center justify-center shadow-lg z-10">
                       {index + 1}
                     </div>
 
                     {/* Icon Container */}
                     <div className="w-16 h-16 rounded-xl bg-slate-blue border border-slate-blue-light flex items-center justify-center text-bronze">
-                      {step.icon}
+                      <step.Icon className="w-6 h-6" />
                     </div>
                   </div>
 

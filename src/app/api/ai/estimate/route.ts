@@ -6,6 +6,9 @@ import {
   createSuccessResponse,
   extractRequestMetadata,
   hashIP,
+  sanitizePromptInput,
+  detectInputLanguage,
+  getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collections';
@@ -32,11 +35,15 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `estimate:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
+
+    // Resolve locale early so we can use it for the rate-limit error message
+    // before the full locale-dependent processing block below.
+    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
 
     if (!rateLimitResult.allowed) {
       const retryAfter = Math.ceil(
@@ -44,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
       return createErrorResponse(
         'RATE_LIMITED',
-        "You've used Get AI Estimate 5 times today. Come back tomorrow for more free estimates, or book a call for a detailed consultation.",
+        getLocalizedRateLimitMessage(locale),
         429,
         { retryAfter }
       );
@@ -56,17 +63,20 @@ export async function POST(request: NextRequest) {
 
     const pricing = calculateEstimate(featureIds);
 
-    // 4. Build prompt for creative content (AI does NOT set costs)
-    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+    // 4. Sanitize input and build prompt for creative content (AI does NOT set costs)
+    const sanitizedDescription = sanitizePromptInput(validatedData.description, 2000);
+    const inputLanguage = detectInputLanguage(validatedData.description);
+
     const prompt = buildEstimatePrompt({
       projectType: validatedData.projectType,
-      description: validatedData.description,
+      description: sanitizedDescription,
       answers: validatedData.answers,
       questions: validatedData.questions,
       selectedFeatureIds: featureIds,
       totalCost: pricing.total,
       totalTimelineDays: pricing.totalTimelineDays,
       locale,
+      inputLanguage,
     });
 
     const result = await generateJsonContent(prompt, {

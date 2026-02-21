@@ -21,8 +21,9 @@
 
 import Image from 'next/image';
 import { Mail, Phone, MessageCircle, MapPin, Linkedin, Facebook, Instagram, Twitter } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
-import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/lib/i18n/navigation';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { cn } from '@/lib/utils/cn';
 import { footerSections, legalLinks, socialLinks } from '@/lib/data/navigation';
 
@@ -36,9 +37,6 @@ const socialIconMap: Record<string, React.ReactNode> = {
 
 export function Footer() {
   const t = useTranslations('common');
-  const currentLocale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -52,10 +50,10 @@ export function Footer() {
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Section: Logo + Description */}
         <div className="mb-12">
-          <Link href="/" className="inline-block">
+          <Link href="/" className="inline-block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-navy">
             <Image
               src="/logo/logo.svg"
-              alt="Aviniti"
+              alt={t('accessibility.logo_alt')}
               width={100}
               height={24}
               className="h-6 w-auto"
@@ -70,7 +68,7 @@ export function Footer() {
         </div>
 
         {/* Link Columns Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-8">
           {/* Quick Links, AI Tools, Resources Columns */}
           {footerSections.map((section) => (
             <nav
@@ -109,7 +107,7 @@ export function Footer() {
                   aria-label={t('footer.emailAria')}
                 >
                   <Mail className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                  aliodat@aviniti.app
+                  <span dir="ltr" className="[unicode-bidi:embed]">aliodat@aviniti.app</span>
                 </a>
               </li>
               <li>
@@ -119,7 +117,7 @@ export function Footer() {
                   aria-label={t('footer.phoneAria')}
                 >
                   <Phone className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                  +962 79 068 5302
+                  <span dir="ltr" className="[unicode-bidi:embed]">+962 79 068 5302</span>
                 </a>
               </li>
               <li>
@@ -176,7 +174,7 @@ export function Footer() {
             </p>
 
             {/* Legal Links */}
-            <div className="flex items-center gap-4 order-2 md:order-2">
+            <nav aria-label={t('accessibility.legal_navigation')} className="flex items-center gap-4 order-2 md:order-2">
               {legalLinks.map((link, index) => (
                 <span key={link.href} className="flex items-center gap-4">
                   <Link
@@ -192,29 +190,11 @@ export function Footer() {
                   )}
                 </span>
               ))}
-            </div>
+            </nav>
 
             {/* Language Switcher */}
-            <div className="flex items-center gap-2 text-sm order-3 md:order-3">
-              <button
-                onClick={() => router.replace(pathname, { locale: 'en' })}
-                className={cn(
-                  'hover:text-bronze transition-colors',
-                  currentLocale === 'en' ? 'text-off-white font-medium' : 'text-muted'
-                )}
-              >
-                EN
-              </button>
-              <span className="text-slate-blue-light">|</span>
-              <button
-                onClick={() => router.replace(pathname, { locale: 'ar' })}
-                className={cn(
-                  'hover:text-bronze transition-colors',
-                  currentLocale === 'ar' ? 'text-off-white font-medium' : 'text-muted'
-                )}
-              >
-                عربي
-              </button>
+            <div className="order-3 md:order-3">
+              <LanguageSwitcher />
             </div>
           </div>
         </div>

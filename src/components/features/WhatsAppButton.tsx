@@ -4,11 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const WHATSAPP_NUMBER = '962790685302';
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  'Hi, I\'m interested in Aviniti\'s services',
-);
 const PULSE_KEY = 'avi_whatsapp_pulse_shown';
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -28,15 +26,30 @@ export default function WhatsAppButton() {
   const t = useTranslations('common');
   const [showTooltip, setShowTooltip] = useState(false);
   const [shouldPulse, setShouldPulse] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const whatsappMessage = encodeURIComponent(t('whatsapp.general_message'));
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const hasShownPulse = localStorage.getItem(PULSE_KEY);
+
+    let hasShownPulse = false;
+    try {
+      hasShownPulse = !!localStorage.getItem(PULSE_KEY);
+    } catch {
+      // localStorage is unavailable (e.g. private browsing on some browsers).
+      // Treat as if the pulse has already been shown so it doesn't loop.
+      hasShownPulse = true;
+    }
+
     if (!hasShownPulse) {
       setShouldPulse(true);
       // Mark as shown after the animation completes
       const timer = setTimeout(() => {
-        localStorage.setItem(PULSE_KEY, 'true');
+        try {
+          localStorage.setItem(PULSE_KEY, 'true');
+        } catch {
+          // Silently ignore — the tooltip dismiss is non-critical.
+        }
         setShouldPulse(false);
       }, 3000);
       return () => clearTimeout(timer);
@@ -49,7 +62,7 @@ export default function WhatsAppButton() {
       <AnimatePresence>
         {showTooltip && (
           <motion.div
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap"
+            className="absolute bottom-full start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 mb-2 whitespace-nowrap"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
@@ -58,7 +71,7 @@ export default function WhatsAppButton() {
             <div className="bg-slate-blue border border-slate-blue-light rounded-lg px-3 py-1.5 text-xs text-off-white shadow-lg">
               {t('whatsapp.chat_label')}
             </div>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+            <div className="absolute top-full start-1/2 ltr:-translate-x-1/2 rtl:translate-x-1/2 -mt-px">
               <div className="border-4 border-transparent border-t-slate-blue" />
             </div>
           </motion.div>
@@ -67,7 +80,7 @@ export default function WhatsAppButton() {
 
       {/* Button */}
       <a
-        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`}
         target="_blank"
         rel="noopener noreferrer"
         onMouseEnter={() => setShowTooltip(true)}
@@ -79,8 +92,8 @@ export default function WhatsAppButton() {
         )}
         aria-label={t('whatsapp.chat_aria')}
       >
-        {/* Pulse ring for first visit */}
-        {shouldPulse && (
+        {/* Pulse ring for first visit (respects reduced motion) */}
+        {shouldPulse && !prefersReducedMotion && (
           <span className="absolute inset-0 rounded-full bg-[#25D366]/30 animate-ping" />
         )}
 

@@ -14,6 +14,8 @@ interface SectionHeadingProps {
   subtitle?: string;
   align?: 'start' | 'center';
   className?: string;
+  /** Optional id for the heading (used for aria-labelledby on section) */
+  id?: string;
 }
 
 export function SectionHeading({
@@ -22,6 +24,7 @@ export function SectionHeading({
   subtitle,
   align = 'center',
   className,
+  id,
 }: SectionHeadingProps) {
   const alignClass = align === 'center' ? 'text-center' : 'text-start';
 
@@ -32,8 +35,8 @@ export function SectionHeading({
           {label}
         </SectionLabel>
       )}
-      <h2 className="text-h2 text-white mt-3">{title}</h2>
-      {subtitle && <p className="text-lg text-muted mt-4 max-w-2xl mx-auto leading-relaxed">{subtitle}</p>}
+      <h2 id={id} className="text-h2 text-white mt-3">{title}</h2>
+      {subtitle && <p className={cn('text-lg text-muted mt-4 max-w-2xl leading-relaxed', align === 'center' && 'mx-auto')}>{subtitle}</p>}
       {/* Decorative accent */}
       <div className={cn(
         'mt-6 h-0.5 w-12 rounded-full bg-bronze',

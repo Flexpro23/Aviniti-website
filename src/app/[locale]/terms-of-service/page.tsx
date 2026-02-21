@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { Container, Section } from '@/components/ui';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
@@ -14,6 +15,7 @@ export async function generateMetadata({
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: getAlternateLinks('/terms-of-service'),
   };
 }
 
@@ -27,7 +29,7 @@ export default async function TermsOfServicePage({
   const t = await getTranslations({ locale, namespace: 'terms_of_service' });
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -40,13 +42,84 @@ export default async function TermsOfServicePage({
         <Container>
           <div className="max-w-3xl mx-auto">
             <h1 className="text-h2 text-white mb-4">{t('title')}</h1>
-            <p className="text-sm text-muted mb-12">
+            <p className="text-sm text-muted mb-6">
               {t('lastUpdated')}
             </p>
 
+            <nav
+              aria-label="Table of contents"
+              className="mb-12 bg-slate-blue border border-slate-blue-light rounded-xl p-4"
+            >
+              <h2 className="text-sm font-semibold text-white mb-3">
+                {t('toc_title')}
+              </h2>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#agreement-to-terms" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('agreementToTerms.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#services" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('services.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#project-engagement" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('projectEngagement.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#payment-terms" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('paymentTerms.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#intellectual-property" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('intellectualProperty.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#confidentiality" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('confidentiality.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#warranties" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('warranties.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#limitation-of-liability" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('limitationOfLiability.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#termination" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('termination.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#governing-law" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('governingLaw.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#modifications" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('modifications.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('contactInfo.heading')}
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
             <div className="space-y-10 text-muted leading-relaxed">
               {/* Agreement to Terms */}
-              <section>
+              <section id="agreement-to-terms">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('agreementToTerms.heading')}
                 </h2>
@@ -55,7 +128,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Services */}
-              <section>
+              <section id="services">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('services.heading')}
                 </h2>
@@ -72,7 +145,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Project Engagement */}
-              <section>
+              <section id="project-engagement">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('projectEngagement.heading')}
                 </h2>
@@ -100,7 +173,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Payment Terms */}
-              <section>
+              <section id="payment-terms">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('paymentTerms.heading')}
                 </h2>
@@ -135,7 +208,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Intellectual Property */}
-              <section>
+              <section id="intellectual-property">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('intellectualProperty.heading')}
                 </h2>
@@ -156,7 +229,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Confidentiality */}
-              <section>
+              <section id="confidentiality">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('confidentiality.heading')}
                 </h2>
@@ -165,7 +238,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Warranties and Disclaimers */}
-              <section>
+              <section id="warranties">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('warranties.heading')}
                 </h2>
@@ -186,7 +259,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Limitation of Liability */}
-              <section>
+              <section id="limitation-of-liability">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('limitationOfLiability.heading')}
                 </h2>
@@ -195,7 +268,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Termination */}
-              <section>
+              <section id="termination">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('termination.heading')}
                 </h2>
@@ -216,7 +289,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Governing Law */}
-              <section>
+              <section id="governing-law">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('governingLaw.heading')}
                 </h2>
@@ -224,7 +297,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Modifications */}
-              <section>
+              <section id="modifications">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('modifications.heading')}
                 </h2>
@@ -232,7 +305,7 @@ export default async function TermsOfServicePage({
               </section>
 
               {/* Contact */}
-              <section>
+              <section id="contact">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('contactInfo.heading')}
                 </h2>
@@ -253,6 +326,8 @@ export default async function TermsOfServicePage({
                     {t('contactInfo.websiteLabel')}{' '}
                     <a
                       href="https://aviniti.app"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
                       aviniti.app
@@ -264,6 +339,6 @@ export default async function TermsOfServicePage({
           </div>
         </Container>
       </Section>
-    </main>
+    </div>
   );
 }

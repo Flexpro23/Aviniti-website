@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Check, TrendingUp, Users, Zap, Clock, Target, Lightbulb } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -7,6 +8,7 @@ import { Container, Section, Card, CardContent, Badge } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { ContentLanguageNotice } from '@/components/shared/ContentLanguageNotice';
 
 interface CaseStudyDetail {
   slug: string;
@@ -221,6 +223,7 @@ export async function generateMetadata({
   return {
     title: `${study.title} - ${t('meta.case_study_suffix')}`,
     description: study.excerpt,
+    alternates: getAlternateLinks(`/case-studies/${slug}`),
     openGraph: {
       title: study.title,
       description: study.excerpt,
@@ -244,7 +247,7 @@ export default async function CaseStudyDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -261,13 +264,13 @@ export default async function CaseStudyDetailPage({
               href="/case-studies"
               className="inline-flex items-center gap-2 text-muted hover:text-bronze transition-colors mb-8"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               {t('page.all_case_studies')}
             </Link>
 
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <Badge variant="default">{study.industry}</Badge>
+              <Badge variant="default">{t(`industries.${study.industry}`)}</Badge>
               <Badge variant="outline">{study.duration}</Badge>
             </div>
 
@@ -279,6 +282,15 @@ export default async function CaseStudyDetailPage({
             <p className="text-lg text-muted mt-4 max-w-3xl">
               {study.heroDescription}
             </p>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Content Language Notice */}
+      <Section padding="compact">
+        <Container>
+          <div className="max-w-4xl mx-auto">
+            <ContentLanguageNotice namespace="case_studies" />
           </div>
         </Container>
       </Section>
@@ -317,7 +329,7 @@ export default async function CaseStudyDetailPage({
               <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center">
                 <Target className="h-5 w-5 text-red-400" />
               </div>
-              <h2 className="text-h3 text-white">{study.challenge.title}</h2>
+              <h2 className="text-h3 text-white">{t('detail.challenge')}</h2>
             </div>
             <p className="text-muted mb-6">{study.challenge.description}</p>
             <ul className="space-y-3">
@@ -342,7 +354,7 @@ export default async function CaseStudyDetailPage({
               <div className="h-10 w-10 rounded-lg bg-bronze/10 flex items-center justify-center">
                 <Lightbulb className="h-5 w-5 text-bronze" />
               </div>
-              <h2 className="text-h3 text-white">{study.solution.title}</h2>
+              <h2 className="text-h3 text-white">{t('detail.solution')}</h2>
             </div>
             <p className="text-muted mb-6">{study.solution.description}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -368,7 +380,7 @@ export default async function CaseStudyDetailPage({
               <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-green-400" />
               </div>
-              <h2 className="text-h3 text-white">{study.results.title}</h2>
+              <h2 className="text-h3 text-white">{t('detail.results')}</h2>
             </div>
             <p className="text-muted mb-8">{study.results.description}</p>
 
@@ -434,6 +446,6 @@ export default async function CaseStudyDetailPage({
         primaryCTA={{ label: t('detail.cta_primary'), href: '/contact' }}
         secondaryCTA={{ label: t('detail.cta_secondary'), href: '/solutions' }}
       />
-    </main>
+    </div>
   );
 }

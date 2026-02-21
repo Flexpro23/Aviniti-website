@@ -19,6 +19,7 @@ import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { Link } from '@/lib/i18n/navigation';
 import { staggerContainer, fadeInUp } from '@/lib/motion/variants';
+import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 import { motion } from 'framer-motion';
 
 type ToolColor = 'orange' | 'blue' | 'green' | 'purple';
@@ -33,6 +34,7 @@ interface AITool {
 
 export function AIToolsSpotlight() {
   const t = useTranslations('home.ai_tools');
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const tools: AITool[] = [
     {
@@ -100,10 +102,11 @@ export function AIToolsSpotlight() {
   };
 
   return (
-    <Section className="bg-navy-dark">
+    <Section className="bg-navy-dark" aria-labelledby="ai-tools-heading">
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="ai-tools-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -136,7 +139,7 @@ export function AIToolsSpotlight() {
                   </div>
                   {/* Arrow connector (not for last item) */}
                   {index < tools.length - 1 && (
-                    <ChevronRight className={`h-4 w-4 ${colorClasses.text} opacity-50`} />
+                    <ChevronRight className={`h-4 w-4 ${colorClasses.text} opacity-50 rtl:rotate-180`} />
                   )}
                 </div>
               );
@@ -234,7 +237,7 @@ export function AIToolsSpotlight() {
                           className={`
                             absolute inset-0 rounded-xl blur-xl opacity-30
                             ${colorClasses.bg}
-                            animate-pulse
+                            animate-pulse motion-reduce:animate-none
                           `}
                           style={{
                             width: '80px',
@@ -249,12 +252,9 @@ export function AIToolsSpotlight() {
                             ${colorClasses.bg} ${colorClasses.text}
                             border ${colorClasses.border}
                           `}
-                          animate={{
-                            scale: [1, 1.05, 1],
-                          }}
+                          whileHover={prefersReducedMotion ? undefined : { scale: [1, 1.05, 1] }}
                           transition={{
-                            duration: 2,
-                            repeat: Infinity,
+                            duration: 0.4,
                             ease: 'easeInOut',
                           }}
                         >

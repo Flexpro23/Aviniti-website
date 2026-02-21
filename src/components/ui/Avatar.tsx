@@ -27,7 +27,12 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     };
 
     const showFallback = !src || imgError;
-    const initials = fallback || alt.charAt(0).toUpperCase();
+    const initials = fallback || alt
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join('');
 
     return (
       <div

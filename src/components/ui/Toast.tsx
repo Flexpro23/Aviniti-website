@@ -2,20 +2,25 @@
 
 import * as React from 'react';
 import { Toaster as Sonner } from 'sonner';
+import { useLocale } from 'next-intl';
 
 /* ============================================================
    TOAST COMPONENT
    Pre-configured Sonner wrapper with dark theme
+   RTL-aware: positions toasts at inline-end (right in LTR, left in RTL)
    ============================================================ */
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 export const Toaster = ({ ...props }: ToasterProps) => {
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
+
   return (
     <Sonner
       theme="dark"
       className="toaster group"
-      position="top-right"
+      position={isRTL ? 'top-left' : 'top-right'}
       toastOptions={{
         classNames: {
           toast:

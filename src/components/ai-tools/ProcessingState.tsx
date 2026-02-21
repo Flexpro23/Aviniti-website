@@ -28,6 +28,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
   const t = useTranslations('common');
   const [processingPhase, setProcessingPhase] = useState(0);
   const [showCancel, setShowCancel] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const phaseTimers = [
@@ -46,6 +47,18 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
     }
   }, [onCancel]);
 
+  // Asymptotic progress — never exceeds ~90%, plateaus smoothly
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      // k=15 means ~63% at 15s, ~78% at 25s, plateaus near 90%
+      const newProgress = Math.min(90, 90 * (1 - Math.exp(-elapsed / 15)));
+      setProgress(newProgress);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   const defaultMessages = [
     t('processing.messages.scope'),
     t('processing.messages.costs'),
@@ -56,7 +69,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
   const processingMessages = messages || defaultMessages;
 
   return (
-    <main className="min-h-screen bg-navy relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen bg-navy relative overflow-hidden flex items-center justify-center">
       {/* Ambient background effects */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Large radial gradient pulse — bronze warmth */}
@@ -146,7 +159,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
         {/* Premium morphing bars animation */}
         <AIThinkingState toolColor="orange" messages={processingMessages} hideProgress />
 
-        {/* Overall progress bar - smooth 20s fill */}
+        {/* Overall progress bar - asymptotic curve, caps at ~90% */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -155,12 +168,12 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
         >
           <div className="relative w-full h-[2px] rounded-full bg-slate-blue-light/30">
             <motion.div
-              className="absolute left-0 top-0 h-full rounded-full bg-bronze shadow-[0_0_8px_rgba(192,132,96,0.4)]"
+              className="absolute start-0 top-0 h-full rounded-full bg-bronze shadow-[0_0_8px_rgba(192,132,96,0.4)]"
               initial={{ width: '0%' }}
-              animate={{ width: '100%' }}
+              animate={{ width: `${progress}%` }}
               transition={{
-                duration: 20,
-                ease: 'linear',
+                duration: 0.3,
+                ease: 'easeOut',
               }}
             />
           </div>
@@ -213,7 +226,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="ml-auto"
+                    className="ms-auto"
                   >
                     <CheckCircle2 className="h-3 w-3 text-bronze-light" />
                   </motion.div>
@@ -233,6 +246,7 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
           >
             <button
               onClick={onCancel}
+              aria-label={t('processing.cancel')}
               className="text-sm text-muted hover:text-off-white underline underline-offset-4 transition-colors duration-200"
             >
               {t('processing.cancel')}
@@ -240,6 +254,6 @@ export function ProcessingState({ featureCount, messages, onCancel }: Processing
           </motion.div>
         )}
       </div>
-    </main>
+    </div>
   );
 }

@@ -271,7 +271,7 @@ import { Button } from '@/components/ui';
   <ModalTrigger asChild>
     <Button>Open Modal</Button>
   </ModalTrigger>
-  <ModalContent>
+  <ModalContent closeLabel={t('ui.close_label')}>
     <ModalHeader>
       <ModalTitle>Confirm Action</ModalTitle>
       <ModalDescription>
@@ -288,7 +288,7 @@ import { Button } from '@/components/ui';
 </Modal>
 
 // Desktop-only modal (no mobile sheet)
-<ModalContent mobileSheet={false}>
+<ModalContent mobileSheet={false} closeLabel={t('ui.close_label')}>
   ...
 </ModalContent>
 ```
@@ -422,10 +422,10 @@ Animated horizontal progress indicator.
 ```tsx
 import { ProgressBar } from '@/components/ui';
 
-<ProgressBar value={65} showPercentage />
+<ProgressBar value={65} showPercentage label={t('ui.progress_aria')} />
 
 // With tool color
-<ProgressBar value={80} toolColor="green" showPercentage />
+<ProgressBar value={80} toolColor="green" showPercentage label={t('ui.progress_aria')} />
 ```
 
 ### 20. Avatar

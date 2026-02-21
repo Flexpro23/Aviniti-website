@@ -12,8 +12,7 @@ import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils/cn';
-import { fadeIn, fadeInUp, staggerContainer } from '@/lib/motion/variants';
+import { fadeIn, staggerContainer } from '@/lib/motion/variants';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { duration } from '@/lib/motion/tokens';
 
@@ -29,10 +28,9 @@ export default function NotFound() {
   ];
 
   return (
-    <main
-      id="main-content"
+    <div
       className="min-h-[70vh] flex items-center justify-center px-4 py-16"
-      aria-label="Page not found"
+      aria-label={t('aria_page_not_found')}
     >
       <div className="max-w-[560px] mx-auto text-center">
         {/* Large 404 Number (Decorative) */}
@@ -96,7 +94,7 @@ export default function NotFound() {
             initial="hidden"
             animate="visible"
             className="flex flex-col items-center gap-3"
-            aria-label="Suggested pages"
+            aria-label={t('aria_suggested_pages')}
           >
             {helpfulLinks.map((link, index) => (
               <motion.div key={link.href} variants={fadeIn}>
@@ -115,6 +113,6 @@ export default function NotFound() {
           </motion.nav>
         </motion.div>
       </div>
-    </main>
+    </div>
   );
 }

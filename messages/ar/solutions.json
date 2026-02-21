@@ -175,6 +175,8 @@
     "cta_heading": "مستعد للبدء؟",
     "cta_subtitle": "احصل على هذا الحل لعملك في أقل من 35 يوماً.",
     "view_all": "عرض جميع الحلول",
-    "not_found_title": "الحل غير موجود - Aviniti"
+    "not_found_title": "الحل غير موجود - Aviniti",
+    "timeline_week": "الأسبوع {week}",
+    "timeline_weeks_range": "الأسبوع {start}-{end}"
   }
 }

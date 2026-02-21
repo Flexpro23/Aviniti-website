@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `contact:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();

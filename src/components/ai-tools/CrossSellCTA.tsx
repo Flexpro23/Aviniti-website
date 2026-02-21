@@ -100,7 +100,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           variant="secondary"
           size="lg"
           className="w-full mt-4"
-          rightIcon={<ArrowRight />}
+          rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_roi_estimate_data', JSON.stringify(estimateData));
             router.push(tool.href + '?fromEstimate=true');
@@ -113,7 +113,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           variant="secondary"
           size="lg"
           className="w-full mt-4"
-          rightIcon={<ArrowRight />}
+          rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_estimate_roi_data', JSON.stringify(roiData));
             router.push(tool.href + '?fromROI=true');
@@ -126,7 +126,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           variant="secondary"
           size="lg"
           className="w-full mt-4"
-          rightIcon={<ArrowRight />}
+          rightIcon={<ArrowRight className="rtl:rotate-180" />}
           onClick={() => {
             sessionStorage.setItem('aviniti_estimate_analyzer_data', JSON.stringify(analyzerData));
             router.push(tool.href + '?fromAnalyzer=true');
@@ -140,7 +140,7 @@ export function CrossSellCTA({ targetTool, message, className, estimateData, ana
           variant="secondary"
           size="lg"
           className="w-full mt-4"
-          rightIcon={<ArrowRight />}
+          rightIcon={<ArrowRight className="rtl:rotate-180" />}
         >
           <Link href={tool.href}>{tryToolText}</Link>
         </Button>

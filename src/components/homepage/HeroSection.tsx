@@ -669,7 +669,7 @@ function JourneyDeviceShowcase({
   return (
     <div
       ref={containerRef}
-      className="relative h-[500px] sm:h-[550px] w-full flex items-center justify-center"
+      className="relative h-[400px] sm:h-[500px] md:h-[550px] w-full flex items-center justify-center"
       onMouseEnter={() => {
         isHovering.current = true;
       }}
@@ -824,7 +824,7 @@ function JourneyDeviceShowcase({
 
         {/* Phone Frame (always visible) */}
         <motion.div
-          className="relative w-[240px] h-[490px] sm:w-[260px] sm:h-[520px] lg:w-[220px] lg:h-[460px] lg:ms-8 z-10"
+          className="relative w-[180px] h-[370px] sm:w-[240px] sm:h-[490px] md:w-[260px] md:h-[520px] lg:w-[220px] lg:h-[460px] lg:ms-8 z-10"
           style={{
             perspective: 1000,
             transformStyle: 'preserve-3d',
@@ -858,7 +858,7 @@ function JourneyDeviceShowcase({
                   <div className="w-[14px] h-[7px] rounded-[1px] border border-off-white/30 p-[1px]">
                     <div className="w-[70%] h-full rounded-[0.5px] bg-off-white/40" />
                   </div>
-                  <div className="w-[1px] h-[3px] bg-off-white/30 rounded-r-sm" />
+                  <div className="w-[1px] h-[3px] bg-off-white/30 rounded-e-sm" />
                 </div>
               </div>
             </div>
@@ -973,7 +973,7 @@ function JourneyDeviceShowcase({
               type="button"
               onClick={() => jumpToStage(i)}
               aria-label={stageKeys[i].title}
-              className="group relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all duration-300 overflow-hidden whitespace-nowrap"
+              className="group relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-all duration-300 overflow-hidden whitespace-nowrap min-h-[44px] min-w-[44px]"
               style={{
                 background: isActive
                   ? 'rgba(26, 35, 50, 0.8)'
@@ -1091,15 +1091,11 @@ export function HeroSection() {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <div className="relative overflow-hidden rounded-lg group">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => {
-                    document.getElementById('ai-tools')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                >
-                  {t('cta_primary')}
-                  <ArrowDown className="w-5 h-5 transition-transform duration-200 group-hover:translate-y-1" />
+                <Button asChild variant="primary" size="lg">
+                  <Link href="/ai-analyzer">
+                    {t('cta_primary')}
+                    <ArrowDown className="w-5 h-5 transition-transform duration-200 group-hover:translate-y-1" />
+                  </Link>
                 </Button>
                 {/* Periodic light sweep */}
                 <motion.div
@@ -1124,7 +1120,7 @@ export function HeroSection() {
                 className="group inline-flex items-center gap-2 text-muted hover:text-off-white transition-colors text-sm"
               >
                 {t('cta_tertiary')}
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
               </Link>
             </motion.div>
           </motion.div>

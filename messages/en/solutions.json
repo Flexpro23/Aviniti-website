@@ -175,6 +175,8 @@
     "cta_heading": "Ready to Get Started?",
     "cta_subtitle": "Get this solution deployed for your business in as little as 35 days.",
     "view_all": "View All Solutions",
-    "not_found_title": "Solution Not Found - Aviniti"
+    "not_found_title": "Solution Not Found - Aviniti",
+    "timeline_week": "Week {week}",
+    "timeline_weeks_range": "Week {start}-{end}"
   }
 }

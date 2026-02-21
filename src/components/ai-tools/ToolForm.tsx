@@ -47,6 +47,13 @@ const textColorClasses = {
   purple: 'text-tool-purple-light',
 };
 
+const ringColorClasses = {
+  orange: 'ring-tool-orange/20',
+  blue: 'ring-tool-blue/20',
+  green: 'ring-tool-green/20',
+  purple: 'ring-tool-purple/20',
+};
+
 export function ToolForm({
   totalSteps,
   currentStep,
@@ -86,7 +93,7 @@ export function ToolForm({
                         toolColor === 'purple' && 'hover:ring-tool-purple/30',
                         'hover:scale-105'
                       )}
-                      aria-label={`Go back to step ${step}${stepLabels?.[step - 1] ? `: ${stepLabels[step - 1]}` : ''}`}
+                      aria-label={t('accessibility.go_back_to_step', { step, label: stepLabels?.[step - 1] ?? '' })}
                     >
                       <Check className="h-4 w-4" />
                     </button>
@@ -98,7 +105,7 @@ export function ToolForm({
                         'text-sm font-semibold',
                         'transition-all duration-300',
                         step === currentStep
-                          ? `${colorClasses[toolColor]} text-white ring-4 ring-${toolColor}/20`
+                          ? `${colorClasses[toolColor]} text-white ring-4 ${ringColorClasses[toolColor]}`
                           : 'bg-slate-blue-light text-muted'
                       )}
                     >

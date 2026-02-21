@@ -82,7 +82,7 @@ export function ToolHero({
           <Button
             size="lg"
             toolColor={toolColor}
-            rightIcon={<ArrowRight />}
+            rightIcon={<ArrowRight className="rtl:rotate-180" />}
             onClick={onCTAClick}
           >
             {ctaText}

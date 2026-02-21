@@ -73,17 +73,18 @@ export function FAQAccordionSection() {
           <div className="relative">
             <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted" />
             <input
+              id="faq-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('page.search_placeholder')}
-              className="w-full bg-slate-blue border border-slate-blue-light rounded-xl ps-12 pe-12 py-3 text-off-white placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-bronze/50 focus:border-bronze transition-all"
+              className="w-full bg-slate-blue border border-slate-blue-light rounded-xl ps-12 pe-12 py-3 text-off-white placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze/50 focus-visible:border-bronze transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute end-4 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
-                aria-label="Clear search"
+                aria-label={t('page.aria_clear_search')}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -92,7 +93,7 @@ export function FAQAccordionSection() {
 
           {/* Category Filter Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {['all', 'general', 'pricing', 'process', 'technology', 'support'].map((catKey) => (
+            {(['all', ...faqCategories.map((item) => item.slug)] as string[]).map((catKey) => (
               <button
                 key={catKey}
                 onClick={() => setActiveCategory(catKey)}
@@ -129,7 +130,7 @@ export function FAQAccordionSection() {
                       </div>
 
                       {/* Questions Accordion */}
-                      <Accordion type="single" collapsible className="w-full">
+                      <Accordion type="multiple" className="w-full">
                         {category.questions.map((q, index) => {
                           // Parse keys: "faq.pricing.q1.question" -> "pricing.q1.question"
                           const questionKeyParts = q.questionKey.replace('faq.', '');

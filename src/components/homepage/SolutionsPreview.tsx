@@ -114,6 +114,7 @@ const colorConfig: Record<AccentColor, {
 export function SolutionsPreview() {
   const t = useTranslations('home.solutions');
   const st = useTranslations('solutions');
+  const ct = useTranslations('common');
   const locale = useLocale();
   const isRTL = locale === 'ar';
 
@@ -209,6 +210,18 @@ export function SolutionsPreview() {
         {/* Scroll track */}
         <div
           ref={scrollRef}
+          role="region"
+          aria-label={t('scroll_region_aria')}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              handleScroll(isRTL ? 'end' : 'start');
+            } else if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              handleScroll(isRTL ? 'start' : 'end');
+            }
+          }}
           className="flex gap-5 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory px-6 sm:px-10 lg:px-20 pb-4"
         >
           {solutions.map((solution, index) => {
@@ -344,7 +357,7 @@ export function SolutionsPreview() {
               bg-slate-blue/90 backdrop-blur-sm border border-slate-blue-light
               text-muted hover:text-white hover:border-bronze/30
               transition-all duration-200 shadow-lg"
-            aria-label="Scroll back"
+            aria-label={ct('accessibility.scroll_back')}
           >
             <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
           </button>
@@ -359,7 +372,7 @@ export function SolutionsPreview() {
               bg-slate-blue/90 backdrop-blur-sm border border-slate-blue-light
               text-muted hover:text-white hover:border-bronze/30
               transition-all duration-200 shadow-lg"
-            aria-label="Scroll forward"
+            aria-label={ct('accessibility.scroll_forward')}
           >
             <ChevronRight className="w-5 h-5 rtl:rotate-180" />
           </button>
@@ -373,7 +386,7 @@ export function SolutionsPreview() {
             <Button asChild variant="secondary" size="lg">
               <Link href="/solutions">
                 {t('view_all')}
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 rtl:rotate-180" />
               </Link>
             </Button>
           </div>

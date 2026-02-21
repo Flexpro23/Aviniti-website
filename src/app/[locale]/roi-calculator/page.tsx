@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -29,9 +30,17 @@ import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { EmailCapture } from '@/components/ai-tools/EmailCapture';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
-import { ROIProjectionChart } from '@/components/ai-tools/charts/ROIProjectionChart';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+
+const ROIProjectionChart = dynamic(
+  () => import('@/components/ai-tools/charts/ROIProjectionChart').then((mod) => ({ default: mod.ROIProjectionChart })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-white/5" /> }
+);
+const ROIPDFReport = dynamic(
+  () => import('@/components/ai-tools/ROIPDFReport').then((mod) => ({ default: mod.ROIPDFReport })),
+  { ssr: false }
+);
 import type {
   TargetMarket,
   BusinessModel,
@@ -47,12 +56,7 @@ const TARGET_MARKETS: TargetMarket[] = ['mena', 'gcc', 'north-america', 'europe'
 const BUSINESS_MODELS: BusinessModel[] = ['subscription', 'marketplace', 'ecommerce', 'saas', 'on-demand', 'freemium', 'one-time-license', 'advertising', 'unsure'];
 const INDUSTRIES: Industry[] = ['health-wellness', 'finance-banking', 'education-learning', 'ecommerce-retail', 'logistics-delivery', 'entertainment-media', 'travel-hospitality', 'real-estate', 'food-restaurant', 'social-community', 'other'];
 
-const INSPIRATION_EXAMPLES = [
-  'A delivery app for local restaurants in Amman with real-time tracking',
-  'An AI-powered tutoring platform for students in the GCC',
-  'A gym management SaaS for fitness chains across the Middle East',
-  'A marketplace connecting freelance designers with businesses',
-];
+// Inspiration examples are loaded from translations (see roi-calculator.json "inspiration.examples")
 
 // ============================================================
 // Types
@@ -82,6 +86,7 @@ function getLoadingPhases(t: (key: string) => string) {
       label: t('analysis.steps.market_analysis.label'),
       detail: t('analysis.steps.market_analysis.detail'),
       color: 'text-blue-400',
+      bgColor: 'bg-blue-400',
       bg: 'bg-blue-500/10',
       border: 'border-blue-500/20',
     },
@@ -90,6 +95,7 @@ function getLoadingPhases(t: (key: string) => string) {
       label: t('analysis.steps.revenue_modeling.label'),
       detail: t('analysis.steps.revenue_modeling.detail'),
       color: 'text-emerald-400',
+      bgColor: 'bg-emerald-400',
       bg: 'bg-emerald-500/10',
       border: 'border-emerald-500/20',
     },
@@ -98,6 +104,7 @@ function getLoadingPhases(t: (key: string) => string) {
       label: t('analysis.steps.financial_projection.label'),
       detail: t('analysis.steps.financial_projection.detail'),
       color: 'text-purple-400',
+      bgColor: 'bg-purple-400',
       bg: 'bg-purple-500/10',
       border: 'border-purple-500/20',
     },
@@ -106,6 +113,7 @@ function getLoadingPhases(t: (key: string) => string) {
       label: t('analysis.steps.roi_calculation.label'),
       detail: t('analysis.steps.roi_calculation.detail'),
       color: 'text-amber-400',
+      bgColor: 'bg-amber-400',
       bg: 'bg-amber-500/10',
       border: 'border-amber-500/20',
     },
@@ -114,6 +122,7 @@ function getLoadingPhases(t: (key: string) => string) {
       label: t('analysis.steps.strategy_insights.label'),
       detail: t('analysis.steps.strategy_insights.detail'),
       color: 'text-rose-400',
+      bgColor: 'bg-rose-400',
       bg: 'bg-rose-500/10',
       border: 'border-rose-500/20',
     },
@@ -147,7 +156,7 @@ function ROILoadingScreen({ messages }: { messages: string[] }) {
   }, [activePhase]);
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       <div className="max-w-2xl mx-auto px-4 py-20 sm:py-28">
         {/* Header */}
         <motion.div
@@ -276,7 +285,7 @@ function ROILoadingScreen({ messages }: { messages: string[] }) {
                       {[0, 1, 2].map((dot) => (
                         <motion.div
                           key={dot}
-                          className={`h-1.5 w-1.5 rounded-full ${phase.color.replace('text-', 'bg-')}`}
+                          className={`h-1.5 w-1.5 rounded-full ${phase.bgColor}`}
                           animate={{ opacity: [0.3, 1, 0.3] }}
                           transition={{
                             duration: 1,
@@ -332,7 +341,7 @@ function ROILoadingScreen({ messages }: { messages: string[] }) {
           {t('analysis.time_estimate')}
         </motion.p>
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -366,7 +375,7 @@ export default function ROICalculatorPage() {
 
   // Result persistence
   const [isCopied, setIsCopied] = useState(false);
-  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('roi-calculator');
+  const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('roi-calculator', locale);
 
   // Save result when it changes
   useEffect(() => {
@@ -374,6 +383,15 @@ export default function ROICalculatorPage() {
       saveResult(results);
     }
   }, [results, savedId, saveResult]);
+
+  // Hydrate results from shareable URL
+  useEffect(() => {
+    if (loadedResult && !results) {
+      setResults(loadedResult);
+      setStep('results');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedResult]);
 
   // Mode detection on mount (ref prevents React Strict Mode double-execution)
   const modeDetectedRef = useRef(false);
@@ -435,9 +453,13 @@ export default function ROICalculatorPage() {
     setStep('loading');
     setError(null);
 
+    // In the from-estimate flow the form never collects a country code, so
+    // default to Jordan (+962) when WhatsApp is requested but no code is present.
+    const resolvedCountryCode = finalCountryCode ?? (finalWhatsapp ? '+962' : undefined);
+
     const phoneFields = finalWhatsapp && finalPhone ? {
       phone: finalPhone,
-      countryCode: finalCountryCode,
+      countryCode: resolvedCountryCode,
     } : {};
 
     try {
@@ -485,6 +507,16 @@ export default function ROICalculatorPage() {
         body: JSON.stringify(body),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('errors.calculation_failed'));
+        } catch {
+          setError(t('errors.calculation_failed'));
+        }
+        setStep('form');
+        return;
+      }
       const data = await res.json();
 
       if (data.success) {
@@ -506,7 +538,7 @@ export default function ROICalculatorPage() {
   };
 
   const handleCopyLink = async () => {
-    const success = await copyShareableUrl();
+    const success = await copyShareableUrl(results ?? undefined);
     if (success) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
@@ -559,7 +591,7 @@ export default function ROICalculatorPage() {
     );
 
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         <ResultsNav sections={navSections} />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -759,10 +791,10 @@ export default function ROICalculatorPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-blue-light">
-                        <th className="text-left py-3 px-2 text-muted font-medium">{t('results.cost_category')}</th>
-                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year1')}</th>
-                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year2')}</th>
-                        <th className="text-right py-3 px-2 text-muted font-medium">{t('results.cost_year3')}</th>
+                        <th className="text-start py-3 px-2 text-muted font-medium">{t('results.cost_category')}</th>
+                        <th className="text-end py-3 px-2 text-muted font-medium">{t('results.cost_year1')}</th>
+                        <th className="text-end py-3 px-2 text-muted font-medium">{t('results.cost_year2')}</th>
+                        <th className="text-end py-3 px-2 text-muted font-medium">{t('results.cost_year3')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -772,16 +804,16 @@ export default function ROICalculatorPage() {
                             <p className="text-white font-medium">{item.category}</p>
                             <p className="text-xs text-muted mt-0.5">{item.description}</p>
                           </td>
-                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year1)}</td>
-                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year2)}</td>
-                          <td className="py-3 px-2 text-right text-white font-medium">{formatMoney(item.year3)}</td>
+                          <td className="py-3 px-2 text-end text-white font-medium">{formatMoney(item.year1)}</td>
+                          <td className="py-3 px-2 text-end text-white font-medium">{formatMoney(item.year2)}</td>
+                          <td className="py-3 px-2 text-end text-white font-medium">{formatMoney(item.year3)}</td>
                         </tr>
                       ))}
                       <tr className="border-t-2 border-purple-500/30">
                         <td className="py-3 px-2 text-white font-bold">{t('results.cost_total')}</td>
-                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year1)}</td>
-                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year2)}</td>
-                        <td className="py-3 px-2 text-right text-purple-300 font-bold">{formatMoney(costTotals.year3)}</td>
+                        <td className="py-3 px-2 text-end text-purple-300 font-bold">{formatMoney(costTotals.year1)}</td>
+                        <td className="py-3 px-2 text-end text-purple-300 font-bold">{formatMoney(costTotals.year2)}</td>
+                        <td className="py-3 px-2 text-end text-purple-300 font-bold">{formatMoney(costTotals.year3)}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -876,6 +908,7 @@ export default function ROICalculatorPage() {
 
           {/* ===== Actions ===== */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+            <ROIPDFReport results={results} />
             <button
               onClick={handleCopyLink}
               className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
@@ -915,7 +948,7 @@ export default function ROICalculatorPage() {
             <ConsultationCTA projectName={results.projectName} />
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -924,7 +957,7 @@ export default function ROICalculatorPage() {
   // ============================================================
   if (step === 'email') {
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         <div className="max-w-xl mx-auto px-4 py-32">
           <div className="mb-4">
             <button
@@ -936,7 +969,7 @@ export default function ROICalculatorPage() {
           </div>
           <EmailCapture toolColor="purple" onSubmit={handleSubmit} />
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -944,7 +977,7 @@ export default function ROICalculatorPage() {
   // Form State
   // ============================================================
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Hero */}
       <ToolHero
         toolSlug="roi-calculator"
@@ -985,11 +1018,11 @@ export default function ROICalculatorPage() {
                   </div>
                   <div>
                     <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.timeline_label')}</p>
-                    <p className="text-white font-semibold mt-1">{estimateData.estimatedTimeline.weeks} weeks</p>
+                    <p className="text-white font-semibold mt-1">{t('from_estimate.weeks_count', { count: estimateData.estimatedTimeline.weeks })}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.features_label')}</p>
-                    <p className="text-white font-semibold mt-1">{estimateData.features.length} features</p>
+                    <p className="text-white font-semibold mt-1">{t('from_estimate.features_count', { count: estimateData.features.length })}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted uppercase tracking-wider">{t('from_estimate.approach_label')}</p>
@@ -1008,8 +1041,8 @@ export default function ROICalculatorPage() {
 
               {/* Target Market */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <label id="roi-target-market-label" className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-labelledby="roi-target-market-label">
                   {TARGET_MARKETS.map((m) => (
                     <button
                       key={m}
@@ -1028,11 +1061,12 @@ export default function ROICalculatorPage() {
 
               {/* Optional: Business Model */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
+                <label htmlFor="roi-from-estimate-business-model-select" className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
                 <select
+                  id="roi-from-estimate-business-model-select"
                   value={businessModel}
                   onChange={(e) => setBusinessModel(e.target.value as BusinessModel)}
-                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200"
                 >
                   <option value="">{t('standalone.business_model_hint')}</option>
                   {BUSINESS_MODELS.map((m) => (
@@ -1048,7 +1082,7 @@ export default function ROICalculatorPage() {
                 className="w-full h-12 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
               >
                 {t('from_estimate.cta')}
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 rtl:rotate-180" />
               </button>
             </div>
           )}
@@ -1063,14 +1097,15 @@ export default function ROICalculatorPage() {
 
               {/* Idea Description */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.idea_label')}</label>
+                <label htmlFor="roi-idea-input" className="block text-sm font-medium text-off-white mb-2">{t('standalone.idea_label')}</label>
                 <textarea
+                  id="roi-idea-input"
                   value={ideaDescription}
                   onChange={(e) => setIdeaDescription(e.target.value)}
                   placeholder={t('standalone.idea_placeholder')}
                   rows={4}
                   maxLength={2000}
-                  className="w-full px-3 py-2.5 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200 resize-none"
+                  className="w-full px-3 py-2.5 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200 resize-none"
                 />
                 <div className="flex justify-between mt-1">
                   <p className="text-xs text-muted">{t('standalone.idea_hint')}</p>
@@ -1083,11 +1118,11 @@ export default function ROICalculatorPage() {
                 <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-4">
                   <p className="text-xs font-medium text-purple-300 mb-2">{t('inspiration.title')}</p>
                   <div className="space-y-2">
-                    {INSPIRATION_EXAMPLES.map((ex, i) => (
+                    {(t.raw('inspiration.examples') as string[]).map((ex, i) => (
                       <button
                         key={i}
                         onClick={() => setIdeaDescription(ex)}
-                        className="block w-full text-left text-xs text-muted hover:text-off-white transition-colors p-2 rounded hover:bg-purple-500/10"
+                        className="block w-full text-start text-xs text-muted hover:text-off-white transition-colors p-2 rounded hover:bg-purple-500/10"
                       >
                         &ldquo;{ex}&rdquo;
                       </button>
@@ -1098,9 +1133,9 @@ export default function ROICalculatorPage() {
 
               {/* Target Market */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
+                <label id="roi-standalone-target-market-label" className="block text-sm font-medium text-off-white mb-2">{t('standalone.target_market_label')}</label>
                 <p className="text-xs text-muted mb-2">{t('standalone.target_market_hint')}</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-labelledby="roi-standalone-target-market-label">
                   {TARGET_MARKETS.map((m) => (
                     <button
                       key={m}
@@ -1119,11 +1154,12 @@ export default function ROICalculatorPage() {
 
               {/* Industry */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.industry_label')}</label>
+                <label htmlFor="roi-industry-select" className="block text-sm font-medium text-off-white mb-2">{t('standalone.industry_label')}</label>
                 <select
+                  id="roi-industry-select"
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value as Industry)}
-                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200"
                 >
                   <option value="">{t('standalone.industry_hint')}</option>
                   {INDUSTRIES.map((ind) => (
@@ -1134,11 +1170,12 @@ export default function ROICalculatorPage() {
 
               {/* Business Model */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
+                <label htmlFor="roi-business-model-select" className="block text-sm font-medium text-off-white mb-2">{t('standalone.business_model_label')}</label>
                 <select
+                  id="roi-business-model-select"
                   value={businessModel}
                   onChange={(e) => setBusinessModel(e.target.value as BusinessModel)}
-                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                  className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200"
                 >
                   <option value="">{t('standalone.business_model_hint')}</option>
                   {BUSINESS_MODELS.map((m) => (
@@ -1149,23 +1186,41 @@ export default function ROICalculatorPage() {
 
               {/* Budget Range */}
               <div>
-                <label className="block text-sm font-medium text-off-white mb-2">{t('standalone.budget_label')}</label>
+                <label htmlFor="roi-budget-min-input" className="block text-sm font-medium text-off-white mb-2">{t('standalone.budget_label')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <input
+                    id="roi-budget-min-input"
                     type="number"
                     value={budgetMin}
-                    onChange={(e) => setBudgetMin(e.target.value)}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      // Clamp: if user enters a negative number, reset to 0
+                      if (raw !== '' && Number(raw) < 0) {
+                        setBudgetMin('0');
+                      } else {
+                        setBudgetMin(raw);
+                      }
+                    }}
                     placeholder={t('standalone.budget_min_placeholder')}
                     min={0}
-                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200"
                   />
                   <input
+                    id="roi-budget-max-input"
                     type="number"
                     value={budgetMax}
-                    onChange={(e) => setBudgetMax(e.target.value)}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      // Clamp: if user enters a negative number, reset to 0
+                      if (raw !== '' && Number(raw) < 0) {
+                        setBudgetMax('0');
+                      } else {
+                        setBudgetMax(raw);
+                      }
+                    }}
                     placeholder={t('standalone.budget_max_placeholder')}
                     min={0}
-                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+                    className="w-full h-11 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus-visible:border-purple-500 focus-visible:ring-1 focus-visible:ring-purple-500 focus-visible:outline-none transition-all duration-200"
                   />
                 </div>
                 <p className="text-xs text-muted mt-1">{t('standalone.budget_hint')}</p>
@@ -1173,17 +1228,28 @@ export default function ROICalculatorPage() {
 
               {/* CTA */}
               <button
-                onClick={() => setStep('email')}
+                onClick={() => {
+                  // Cross-validate budget range: if both are set and min > max, swap them
+                  if (budgetMin !== '' && budgetMax !== '') {
+                    const minVal = Number(budgetMin);
+                    const maxVal = Number(budgetMax);
+                    if (minVal > maxVal) {
+                      setBudgetMin(budgetMax);
+                      setBudgetMax(budgetMin);
+                    }
+                  }
+                  setStep('email');
+                }}
                 disabled={!canSubmitForm()}
                 className="w-full h-12 bg-purple-500 text-white font-semibold rounded-lg shadow-sm hover:bg-purple-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
               >
                 {t('standalone.cta')}
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 rtl:rotate-180" />
               </button>
             </div>
           )}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

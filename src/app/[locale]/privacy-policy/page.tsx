@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { Container, Section } from '@/components/ui';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
@@ -14,6 +15,7 @@ export async function generateMetadata({
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: getAlternateLinks('/privacy-policy'),
   };
 }
 
@@ -27,7 +29,7 @@ export default async function PrivacyPolicyPage({
   const t = await getTranslations({ locale, namespace: 'privacy_policy' });
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -40,13 +42,79 @@ export default async function PrivacyPolicyPage({
         <Container>
           <div className="max-w-3xl mx-auto">
             <h1 className="text-h2 text-white mb-4">{t('title')}</h1>
-            <p className="text-sm text-muted mb-12">
+            <p className="text-sm text-muted mb-6">
               {t('lastUpdated')}
             </p>
 
+            <nav
+              aria-label="Table of contents"
+              className="mb-12 bg-slate-blue border border-slate-blue-light rounded-xl p-4"
+            >
+              <h2 className="text-sm font-semibold text-white mb-3">
+                {t('toc_title')}
+              </h2>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#introduction" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('introduction.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#information-collection" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('informationWeCollect.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#data-usage" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('howWeUse.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#information-sharing" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('informationSharing.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#data-security" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('dataSecurity.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#data-retention" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('dataRetention.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#your-rights" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('yourRights.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#third-party-links" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('thirdPartyLinks.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#childrens-privacy" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('childrensPrivacy.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#changes" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('changes.heading')}
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact-us" className="text-sm text-muted hover:text-bronze transition-colors">
+                    {t('contactUs.heading')}
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
             <div className="space-y-10 text-muted leading-relaxed">
               {/* Introduction */}
-              <section>
+              <section id="introduction">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('introduction.heading')}
                 </h2>
@@ -55,7 +123,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Information We Collect */}
-              <section>
+              <section id="information-collection">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('informationWeCollect.heading')}
                 </h2>
@@ -88,7 +156,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* How We Use Your Information */}
-              <section>
+              <section id="data-usage">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('howWeUse.heading')}
                 </h2>
@@ -105,7 +173,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Information Sharing */}
-              <section>
+              <section id="information-sharing">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('informationSharing.heading')}
                 </h2>
@@ -133,7 +201,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Data Security */}
-              <section>
+              <section id="data-security">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('dataSecurity.heading')}
                 </h2>
@@ -141,7 +209,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Data Retention */}
-              <section>
+              <section id="data-retention">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('dataRetention.heading')}
                 </h2>
@@ -149,7 +217,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Your Rights */}
-              <section>
+              <section id="your-rights">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('yourRights.heading')}
                 </h2>
@@ -191,7 +259,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Third-Party Links */}
-              <section>
+              <section id="third-party-links">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('thirdPartyLinks.heading')}
                 </h2>
@@ -199,7 +267,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Children's Privacy */}
-              <section>
+              <section id="childrens-privacy">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('childrensPrivacy.heading')}
                 </h2>
@@ -207,7 +275,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Changes to This Policy */}
-              <section>
+              <section id="changes">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('changes.heading')}
                 </h2>
@@ -215,7 +283,7 @@ export default async function PrivacyPolicyPage({
               </section>
 
               {/* Contact Us */}
-              <section>
+              <section id="contact-us">
                 <h2 className="text-xl font-semibold text-white mb-4">
                   {t('contactUs.heading')}
                 </h2>
@@ -236,6 +304,8 @@ export default async function PrivacyPolicyPage({
                     {t('contactUs.websiteLabel')}{' '}
                     <a
                       href="https://aviniti.app"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-bronze hover:text-bronze-light transition-colors"
                     >
                       aviniti.app
@@ -247,6 +317,6 @@ export default async function PrivacyPolicyPage({
           </div>
         </Container>
       </Section>
-    </main>
+    </div>
   );
 }

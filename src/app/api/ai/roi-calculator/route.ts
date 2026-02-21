@@ -6,11 +6,15 @@ import {
   createSuccessResponse,
   extractRequestMetadata,
   hashIP,
+  sanitizePromptInput,
+  detectInputLanguage,
+  getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { saveLeadToFirestore, saveAISubmission, type LeadData } from '@/lib/firebase/collections';
 import { roiFormSchemaV2 } from '@/lib/utils/validators';
 import { buildROIPromptV2 } from '@/lib/gemini/prompts';
+import { roiResponseSchemaV2 } from '@/lib/gemini/schemas';
 import type { ROICalculatorResponseV2 } from '@/types/api';
 
 // Rate limiting configuration
@@ -19,6 +23,7 @@ const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.3;
 const MAX_OUTPUT_TOKENS = 8192;
 const TIMEOUT_MS = 60000; // 60 seconds
+const MAX_AI_ATTEMPTS = 2;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -31,11 +36,15 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `roi-calculator:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
+
+    // Resolve locale early so we can use it for the rate-limit error message
+    // before the full locale-dependent processing block below.
+    const locale = validatedData.locale === 'ar' ? 'ar' : 'en';
 
     if (!rateLimitResult.allowed) {
       const retryAfter = Math.ceil(
@@ -43,23 +52,66 @@ export async function POST(request: NextRequest) {
       );
       return createErrorResponse(
         'RATE_LIMITED',
-        "You've used ROI Calculator 5 times today. Come back tomorrow for more free calculations, or book a call for a detailed ROI analysis.",
+        getLocalizedRateLimitMessage(locale),
         429,
         { retryAfter }
       );
     }
 
-    // 3. Build prompt and call Gemini
-    const locale = validatedData.locale === 'ar' ? 'ar' : 'en';
-    const prompt = buildROIPromptV2(validatedData);
+    // 3. Sanitize user input and detect language
+    const inputText = validatedData.mode === 'standalone'
+      ? validatedData.ideaDescription
+      : validatedData.projectSummary || '';
+    const inputLanguage = detectInputLanguage(inputText);
 
-    const result = await generateJsonContent<ROICalculatorResponseV2>(prompt, {
-      temperature: TEMPERATURE,
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      timeoutMs: TIMEOUT_MS,
-    });
+    // Sanitize free-text input for standalone mode
+    const sanitizedData = validatedData.mode === 'standalone'
+      ? { ...validatedData, ideaDescription: sanitizePromptInput(validatedData.ideaDescription, 2000) }
+      : validatedData;
 
-    if (!result.success || !result.data) {
+    const prompt = buildROIPromptV2(sanitizedData, inputLanguage);
+
+    // 4. Call Gemini with retry on validation failure
+    let validated: { success: true; data: ROICalculatorResponseV2 } | null = null;
+    let lastError: string | undefined;
+
+    for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
+      if (attempt > 0) {
+        console.log(`[ROI Calculator API] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+      }
+
+      const result = await generateJsonContent<ROICalculatorResponseV2>(prompt, {
+        temperature: TEMPERATURE,
+        maxOutputTokens: MAX_OUTPUT_TOKENS,
+        timeoutMs: TIMEOUT_MS,
+      });
+
+      if (!result.success || !result.data) {
+        console.error(
+          `[ROI Calculator API] Gemini call failed (attempt ${attempt + 1}):`,
+          result.error || 'No data returned'
+        );
+        lastError = result.error || 'AI service returned no data';
+        continue;
+      }
+
+      // Validate AI response against schema
+      const parseResult = roiResponseSchemaV2.safeParse(result.data);
+      if (!parseResult.success) {
+        console.error(
+          `[ROI Calculator API] Validation failed (attempt ${attempt + 1}):`,
+          JSON.stringify(parseResult.error.issues, null, 2)
+        );
+        lastError = `Validation: ${parseResult.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('; ')}`;
+        continue;
+      }
+
+      validated = { success: true, data: parseResult.data as unknown as ROICalculatorResponseV2 };
+      break;
+    }
+
+    if (!validated) {
+      console.error(`[ROI Calculator API] All ${MAX_AI_ATTEMPTS} attempts failed. Last error:`, lastError);
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
@@ -69,7 +121,7 @@ export async function POST(request: NextRequest) {
 
     const processingTimeMs = Date.now() - startTime;
 
-    // 4. Save to Firestore (non-blocking — don't fail the request if save fails)
+    // 5. Save to Firestore (non-blocking — don't fail the request if save fails)
     try {
       const metadata = extractRequestMetadata(request);
 
@@ -107,7 +159,7 @@ export async function POST(request: NextRequest) {
         tool: 'roi-calculator',
         leadId,
         request: submissionRequest,
-        response: result.data as unknown as Record<string, unknown>,
+        response: validated.data as unknown as Record<string, unknown>,
         processingTimeMs,
         model: 'gemini-3-flash-preview',
         locale: locale,
@@ -117,8 +169,8 @@ export async function POST(request: NextRequest) {
       console.error('[ROI Calculator API] Failed to save to Firestore (non-fatal):', saveError);
     }
 
-    // 5. Return success response
-    const response = createSuccessResponse(result.data);
+    // 6. Return success response
+    const response = createSuccessResponse(validated.data);
 
     // Copy rate limit headers to response
     headers.forEach((value, key) => {

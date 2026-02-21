@@ -37,10 +37,11 @@ export function ServicesOverview() {
   const t = useTranslations('home.services');
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy" aria-labelledby="services-heading">
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="services-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -125,7 +126,7 @@ export function ServicesOverview() {
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {t(`${service.slug}.technologies`)
-                        .split(', ')
+                        .split(/[,،]\s*/)
                         .map((tech) => (
                           <span
                             key={tech}
@@ -155,7 +156,7 @@ export function ServicesOverview() {
                       variant="ghost"
                       size="sm"
                       className="w-full justify-center"
-                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                      rightIcon={<ArrowRight className="w-4 h-4 rtl:rotate-180" />}
                     >
                       <Link href="/get-estimate">{t('card_cta')}</Link>
                     </Button>
@@ -173,7 +174,7 @@ export function ServicesOverview() {
               asChild
               variant="secondary"
               size="lg"
-              rightIcon={<ArrowRight className="w-5 h-5" />}
+              rightIcon={<ArrowRight className="w-5 h-5 rtl:rotate-180" />}
             >
               <Link href="/solutions">{t('cta')}</Link>
             </Button>

@@ -53,7 +53,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className
             )}
             aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={cn(errorId, helperId)}
+            aria-describedby={[error ? errorId : '', helperText ? helperId : ''].filter(Boolean).join(' ') || undefined}
             {...props}
           />
         </div>

@@ -8,6 +8,8 @@
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need to know about working with Aviniti",
     "search_placeholder": "Search questions...",
+    "clear_search": "Clear search",
+    "aria_clear_search": "Clear search",
     "search_no_results": "No matching questions found. Try a different search term.",
     "categories": {
       "all": "All Questions",

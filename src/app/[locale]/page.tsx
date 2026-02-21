@@ -14,6 +14,7 @@ import {
   CaseStudiesPreview,
   FinalCTA,
 } from '@/components/homepage';
+import { SectionDivider } from '@/components/shared/SectionDivider';
 
 /**
  * Homepage - Main landing page
@@ -71,35 +72,54 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* 1. Hero Section */}
       <HeroSection />
+
+      {/* Glow divider — strong visual break after hero */}
+      <SectionDivider variant="glow" />
 
       {/* 2. AI Tools Spotlight */}
       <div id="ai-tools">
         <AIToolsSpotlight />
       </div>
 
+      <SectionDivider variant="line" />
+
       {/* 3. Company Logos - Immediate credibility */}
       <CompanyLogos />
+
+      <SectionDivider variant="gradient" />
 
       {/* 4. Services Overview */}
       <ServicesOverview />
 
+      <SectionDivider variant="line" />
+
       {/* 5. Solutions Preview */}
       <SolutionsPreview />
+
+      <SectionDivider variant="glow" />
 
       {/* 6. Testimonials - Social proof after showing what we offer */}
       <Testimonials />
 
+      <SectionDivider variant="line" />
+
       {/* 7. Trust Indicators - Enhanced with count-up animations */}
       <TrustIndicators />
+
+      <SectionDivider variant="gradient" />
 
       {/* 8. Live Apps Showcase */}
       <LiveAppsShowcase />
 
+      <SectionDivider variant="line" />
+
       {/* 9. Why Choose Us */}
       <WhyChooseUs />
+
+      <SectionDivider variant="glow" />
 
       {/* 10. Case Studies Preview */}
       <CaseStudiesPreview />
@@ -110,8 +130,10 @@ export default async function HomePage({
       {/* Optional: Process Overview (uncomment to enable) */}
       {/* <ProcessOverview /> */}
 
+      <SectionDivider variant="line" />
+
       {/* 11. Final CTA */}
       <FinalCTA />
-    </main>
+    </div>
   );
 }

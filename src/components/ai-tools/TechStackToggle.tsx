@@ -17,7 +17,7 @@ export function TechStackToggle({ techStack }: TechStackToggleProps) {
     <div className="rounded-xl border border-slate-blue-light bg-slate-blue/50 overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 px-6 py-4 text-left hover:bg-slate-blue-light/20 transition-colors duration-200"
+        className="w-full flex items-center gap-3 px-6 py-4 text-start hover:bg-slate-blue-light/20 transition-colors duration-200"
       >
         <div className="h-8 w-8 rounded-lg bg-tool-blue/15 flex items-center justify-center flex-shrink-0">
           <Code2 className="h-5 w-5 text-tool-blue-light" />

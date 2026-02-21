@@ -10,6 +10,7 @@
 import { Shield, Lock, FileText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Container } from '@/components/ui/Container';
+import { SectionHeading } from '@/components/shared/SectionHeading';
 import { useScrollReveal, useCountUp } from '@/lib/motion/hooks';
 
 interface TrustMetric {
@@ -42,9 +43,24 @@ export function TrustIndicators() {
 
   return (
     <section className="relative py-16 lg:py-20 bg-navy-dark">
-      {/* Top gradient border */}
-      <div className="absolute top-0 inset-x-0 h-px section-divider" aria-hidden="true" />
+      {/* Subtle radial glow for visual depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: 'radial-gradient(ellipse 80% 50% at 50% 50%, rgba(192,132,96,0.03) 0%, transparent 70%)',
+        }}
+      />
       <Container>
+        {/* Section Heading */}
+        <SectionHeading
+          label={t('heading.label')}
+          title={t('heading.title')}
+          subtitle={t('heading.subtitle')}
+          align="center"
+          className="mb-12"
+        />
+
         <div ref={ref}>
           {/* Metrics Row */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-10">

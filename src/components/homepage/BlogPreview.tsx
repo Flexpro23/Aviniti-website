@@ -65,10 +65,11 @@ export function BlogPreview() {
   };
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy" aria-labelledby="blog-heading">
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="blog-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -90,11 +91,11 @@ export function BlogPreview() {
                   {/* Meta Info */}
                   <div className="flex items-center gap-4 text-xs text-muted">
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5" />
+                      <Calendar className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>{formatDate(post.date)}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>{post.readingTime} {t('min_read')}</span>
                     </div>
                   </div>
@@ -112,7 +113,7 @@ export function BlogPreview() {
                   <Button asChild variant="ghost" size="sm" className="w-full">
                     <Link href={`/blog/${post.slug}`}>
                       {t('read_more')}
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                     </Link>
                   </Button>
                 </CardFooter>
@@ -127,7 +128,7 @@ export function BlogPreview() {
             <Button asChild variant="secondary" size="lg">
               <Link href="/blog">
                 {t('view_all')}
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 rtl:rotate-180" />
               </Link>
             </Button>
           </div>

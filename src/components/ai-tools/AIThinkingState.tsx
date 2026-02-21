@@ -18,7 +18,8 @@ import { easing } from '@/lib/motion/tokens';
 
 interface AIThinkingStateProps {
   toolColor: 'orange' | 'blue' | 'green' | 'purple';
-  messages?: string[];
+  /** Required for i18n: pass translated messages (e.g. t('analyzing.msg_1'), t('analyzing.msg_2'), ...) */
+  messages: string[];
   hideProgress?: boolean;
   className?: string;
 }
@@ -63,7 +64,7 @@ export function AIThinkingState({
   const [phaseIndex, setPhaseIndex] = useState(0);
   const colors = toolColorMap[toolColor];
 
-  const processingMessages = messages || ['Analyzing...', 'Almost ready...'];
+  const processingMessages = messages;
 
   useEffect(() => {
     const totalPhases = processingMessages.length;
@@ -83,7 +84,7 @@ export function AIThinkingState({
   }, [processingMessages.length]);
 
   return (
-    <div className={cn('py-20 flex flex-col items-center justify-center', className)}>
+    <div className={cn('py-20 flex flex-col items-center justify-center', className)} data-thinking-state>
 
       {/* Central Animation Container */}
       <div className="relative mb-12" style={{ width: 120, height: 120 }}>
@@ -163,7 +164,7 @@ export function AIThinkingState({
           animate={{ opacity: 1 }}
         >
           <motion.div
-            className="absolute top-0 left-0 w-[2px] h-full"
+            className="absolute top-0 start-0 w-[2px] h-full"
             style={{
               background: `linear-gradient(to bottom, transparent, ${colors.light}60, transparent)`,
               filter: 'blur(3px)',
@@ -187,7 +188,7 @@ export function AIThinkingState({
             style={{ backgroundColor: '#1e2d40' }}
           />
           <motion.div
-            className="absolute left-0 top-0 h-full rounded-full"
+            className="absolute start-0 top-0 h-full rounded-full"
             style={{
               backgroundColor: colors.primary,
               boxShadow: `0 0 8px ${colors.primary}50`,
@@ -256,7 +257,7 @@ export function AIThinkingState({
       {/* Reduced Motion Fallback */}
       <style jsx>{`
         @media (prefers-reduced-motion: reduce) {
-          * {
+          [data-thinking-state] * {
             animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;

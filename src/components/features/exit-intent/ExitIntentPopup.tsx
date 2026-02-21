@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, ArrowRight, MessageCircle, Phone } from 'lucide-react';
+import { X, Mail, ArrowRight, MessageCircle, Phone, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
+import { Link } from '@/lib/i18n/navigation';
 import { useExitIntent } from './ExitIntentProvider';
 
 type ExitIntentVariant = 'A' | 'B' | 'C' | 'D' | 'E';
@@ -53,14 +54,14 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+          <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('exit_intent.email_placeholder')}
-            className="w-full h-11 pl-10 pr-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all"
+            className="w-full h-11 ps-10 pe-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
           />
         </div>
         <button
@@ -68,7 +69,7 @@ function VariantA({ onConvert }: { onConvert: () => void }) {
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           {t('exit_intent.get_free_consultation')}
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </button>
       </form>
     </div>
@@ -90,22 +91,22 @@ function VariantB({ onConvert }: { onConvert: () => void }) {
         {t('exit_intent.solutions_description')}
       </p>
       <div className="space-y-3">
-        <a
+        <Link
           href="/solutions"
           onClick={() => handleClick('/solutions')}
           className="flex items-center justify-between w-full h-11 px-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white hover:border-bronze hover:text-bronze transition-colors"
         >
           {t('exit_intent.browse_solutions')}
-          <ArrowRight className="h-4 w-4" />
-        </a>
-        <a
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+        </Link>
+        <Link
           href="/get-estimate"
           onClick={() => handleClick('/get-estimate')}
           className="flex items-center justify-between w-full h-11 px-4 bg-gradient-to-r from-bronze to-bronze-hover rounded-lg text-sm text-white font-medium hover:opacity-90 transition-opacity"
         >
           {t('exit_intent.get_free_estimate')}
-          <ArrowRight className="h-4 w-4" />
-        </a>
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+        </Link>
       </div>
     </div>
   );
@@ -150,31 +151,34 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
         {t('exit_intent.quick_estimate_description')}
       </p>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <select
-          value={projectType}
-          onChange={(e) => setProjectType(e.target.value)}
-          required
-          className="w-full h-11 px-3 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all appearance-none cursor-pointer"
-        >
-          <option value="" disabled>
-            {t('exit_intent.select_project_type')}
-          </option>
-          <option value="web-app">{t('exit_intent.web_application')}</option>
-          <option value="mobile-app">{t('exit_intent.mobile_application')}</option>
-          <option value="ai-integration">{t('exit_intent.ai_ml_solution')}</option>
-          <option value="cloud-infra">{t('exit_intent.saas_platform')}</option>
-          <option value="e-commerce">{t('exit_intent.e_commerce')}</option>
-          <option value="other">{t('exit_intent.other')}</option>
-        </select>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+          <select
+            value={projectType}
+            onChange={(e) => setProjectType(e.target.value)}
+            required
+            className="w-full h-11 ps-3 pe-10 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all appearance-none cursor-pointer"
+          >
+            <option value="" disabled>
+              {t('exit_intent.select_project_type')}
+            </option>
+            <option value="web-app">{t('exit_intent.web_application')}</option>
+            <option value="mobile-app">{t('exit_intent.mobile_application')}</option>
+            <option value="ai-integration">{t('exit_intent.ai_ml_solution')}</option>
+            <option value="cloud-infra">{t('exit_intent.saas_platform')}</option>
+            <option value="e-commerce">{t('exit_intent.e_commerce')}</option>
+            <option value="other">{t('exit_intent.other')}</option>
+          </select>
+          <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
+        </div>
+        <div className="relative">
+          <Mail className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('exit_intent.email_placeholder')}
-            className="w-full h-11 pl-10 pr-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus:border-bronze focus:ring-1 focus:ring-bronze outline-none transition-all"
+            className="w-full h-11 ps-10 pe-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
           />
         </div>
         <button
@@ -182,7 +186,7 @@ function VariantC({ onConvert }: { onConvert: () => void }) {
           className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           {t('exit_intent.get_my_estimate')}
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </button>
       </form>
     </div>
@@ -204,7 +208,7 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
         {t('exit_intent.blog_description')}
       </p>
       <div className="space-y-3">
-        <a
+        <Link
           href="/blog/ai-transforming-business-2025"
           onClick={() => handleClick('ai-transforming-business-2025')}
           className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
@@ -213,8 +217,8 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
             {t('exit_intent.blog_post_1_title')}
           </p>
           <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_1_read_time')}</p>
-        </a>
-        <a
+        </Link>
+        <Link
           href="/blog/choosing-right-tech-stack"
           onClick={() => handleClick('choosing-right-tech-stack')}
           className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
@@ -223,7 +227,7 @@ function VariantD({ onConvert }: { onConvert: () => void }) {
             {t('exit_intent.blog_post_2_title')}
           </p>
           <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_2_read_time')}</p>
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -237,6 +241,8 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
     onConvert();
   };
 
+  const whatsappMessage = encodeURIComponent(t('exit_intent.whatsapp_message'));
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold text-off-white">{t('exit_intent.still_deciding')}</h2>
@@ -245,7 +251,7 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
       </p>
       <div className="space-y-3">
         <a
-          href="https://wa.me/962790685302?text=Hi%2C%20I%27m%20interested%20in%20Aviniti%27s%20services"
+          href={`https://wa.me/962790685302?text=${whatsappMessage}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => handleClick('whatsapp')}
@@ -254,14 +260,14 @@ function VariantE({ onConvert }: { onConvert: () => void }) {
           <MessageCircle className="h-4 w-4" />
           {t('exit_intent.chat_on_whatsapp')}
         </a>
-        <a
+        <Link
           href="/contact?booking=true"
           onClick={() => handleClick('book_call')}
           className="flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity"
         >
           <Phone className="h-4 w-4" />
           {t('exit_intent.book_a_call')}
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -280,6 +286,8 @@ const VARIANT_MAP: Record<ExitIntentVariant, React.FC<{ onConvert: () => void }>
 export default function ExitIntentPopup() {
   const t = useTranslations('common');
   const { isVisible, variant, dismiss, markConverted } = useExitIntent();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
@@ -290,8 +298,18 @@ export default function ExitIntentPopup() {
 
   useEffect(() => {
     if (isVisible) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Focus the close button after animation
+      const timer = setTimeout(() => {
+        const closeBtn = modalRef.current?.querySelector<HTMLElement>('button');
+        closeBtn?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
     }
 
     return () => {
@@ -300,13 +318,36 @@ export default function ExitIntentPopup() {
     };
   }, [isVisible, handleEscape]);
 
+  // Focus trap
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab' || !modalRef.current) return;
+
+    const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input:not([disabled]), select, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+  }, []);
+
   const VariantComponent = VARIANT_MAP[variant];
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -323,6 +364,8 @@ export default function ExitIntentPopup() {
 
           {/* Modal */}
           <motion.div
+            ref={modalRef}
+            onKeyDown={handleKeyDown}
             className={cn(
               'relative z-10 w-full max-w-md',
               'bg-slate-blue border border-slate-blue-light',
@@ -339,10 +382,10 @@ export default function ExitIntentPopup() {
             {/* Close button */}
             <button
               onClick={dismiss}
-              className="absolute top-3 right-3 h-8 w-8 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
+              className="absolute top-3 end-3 h-10 w-10 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
               aria-label={t('exit_intent.close_popup_aria')}
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
 
             {/* Variant content */}

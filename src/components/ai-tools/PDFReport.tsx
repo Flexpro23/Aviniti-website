@@ -78,9 +78,34 @@ function formatCurrency(n: number): string {
   return '$' + n.toLocaleString('en-US');
 }
 
+// Extract weeks from a duration string.
+// Handles: "4-6 weeks", "2 weeks", "14 days", "2-3 months", "2 months"
+// Range values (e.g. "4-6") are averaged. Falls back to 4 weeks when unparseable.
 function parseWeeks(duration: string): number {
-  const match = duration.match(/(\d+)/);
-  return match ? parseInt(match[1], 10) : 4;
+  const avg = (min: number, max: number) => (min + max) / 2;
+
+  const weeksMatch = duration.match(/(\d+)(?:-(\d+))?\s*weeks?/i);
+  if (weeksMatch) {
+    const min = parseInt(weeksMatch[1], 10);
+    const max = weeksMatch[2] ? parseInt(weeksMatch[2], 10) : min;
+    return avg(min, max);
+  }
+
+  const daysMatch = duration.match(/(\d+)(?:-(\d+))?\s*days?/i);
+  if (daysMatch) {
+    const min = parseInt(daysMatch[1], 10);
+    const max = daysMatch[2] ? parseInt(daysMatch[2], 10) : min;
+    return avg(min, max) / 7;
+  }
+
+  const monthsMatch = duration.match(/(\d+)(?:-(\d+))?\s*months?/i);
+  if (monthsMatch) {
+    const min = parseInt(monthsMatch[1], 10);
+    const max = monthsMatch[2] ? parseInt(monthsMatch[2], 10) : min;
+    return avg(min, max) * 4.33;
+  }
+
+  return 4;
 }
 
 function generateRefId(): string {
@@ -507,7 +532,7 @@ const ExecutiveSummaryPage = ({ results, userName, t, isArabic }: { results: Est
 
       {/* Matched Solution */}
       {results.matchedSolution && (
-        <View style={s.cardBronzeLeft}>
+        <View style={[s.cardBronzeLeft, isArabic ? { borderLeftWidth: 0, borderRightWidth: 3, borderRightColor: C.bronze } : {}]}>
           <Text style={[s.sectionSubtitle, { marginBottom: 6 }]}>{t('pdf.recommended_approach')}</Text>
           <View style={s.matchRow}>
             <Text style={s.textMuted}>{t('pdf.ready_made_solution')}</Text>
@@ -664,7 +689,7 @@ const StrategicInsightsPage = ({ results, userName, t, isArabic }: { results: Es
 
       {grouped.length > 0 ? (
         grouped.map((insight, i) => (
-          <View key={i} style={[s.insightCard, { borderLeftWidth: 3, borderLeftColor: colorMap[insight.type] }]}>
+          <View key={i} style={[s.insightCard, isArabic ? { borderRightWidth: 3, borderRightColor: colorMap[insight.type] } : { borderLeftWidth: 3, borderLeftColor: colorMap[insight.type] }]}>
             <Text style={[s.insightLabel, { color: colorMap[insight.type] }]}>{labelMap[insight.type]}</Text>
             <Text style={s.insightTitle}>{insight.title}</Text>
             <Text style={s.insightDesc}>{insight.description}</Text>
@@ -696,7 +721,7 @@ const StrategicInsightsPage = ({ results, userName, t, isArabic }: { results: Es
 };
 
 // PAGE: Features & Pricing (only when catalog pricing is available)
-const FeaturesPricingPage = ({ pricing, userName, t, isArabic }: { pricing: PricingBreakdown; userName?: string; t: (key: string, values?: Record<string, string | number>) => string; isArabic: boolean }) => {
+const FeaturesPricingPage = ({ pricing, userName, t, tf, isArabic }: { pricing: PricingBreakdown; userName?: string; t: (key: string, values?: Record<string, string | number>) => string; tf: (key: string) => string; isArabic: boolean }) => {
   return (
     <Page size="A4" style={[s.contentPage, isArabic ? { fontFamily: 'Tajawal' } : {}]}>
       <PageHeader t={t} />
@@ -710,40 +735,40 @@ const FeaturesPricingPage = ({ pricing, userName, t, isArabic }: { pricing: Pric
         <Text style={{ fontSize: 9, color: C.muted, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{t('pdf.price')}</Text>
       </View>
 
-      {pricing.features.map((f, i) => (
+      {pricing?.features?.length > 0 && pricing.features.map((f, i) => (
         <View key={i} style={i % 2 === 0 ? s.tableRow : s.tableRowAlt}>
-          <Text style={{ fontSize: 9, color: C.offWhite, flex: 1 }}>{f.catalogId}</Text>
-          <Text style={{ fontSize: 9, color: C.muted, width: 80, textTransform: 'capitalize' }}>{f.categoryId}</Text>
-          <Text style={{ fontSize: 9, color: C.bronzeLight, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(f.price)}</Text>
+          <Text style={{ fontSize: 9, color: C.offWhite, flex: 1 }}>{(() => { try { return tf(`${f.catalogId}.name`); } catch { return (f.catalogId ?? '').replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()); } })()}</Text>
+          <Text style={{ fontSize: 9, color: C.muted, width: 80, textTransform: 'capitalize' }}>{(f.categoryId ?? '').replace(/-/g, ' ')}</Text>
+          <Text style={{ fontSize: 9, color: C.bronzeLight, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(f.price ?? 0)}</Text>
         </View>
       ))}
 
       {/* Subtotal row */}
       <View style={{ flexDirection: 'row', paddingVertical: 8, paddingHorizontal: 10, borderTopWidth: 1, borderTopColor: C.slateBorder, marginTop: 4 }}>
         <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>{t('pdf.subtotal')}</Text>
-        <Text style={{ fontSize: 10, color: C.offWhite, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.subtotal)}</Text>
+        <Text style={{ fontSize: 10, color: C.offWhite, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.subtotal ?? 0)}</Text>
       </View>
 
       {/* Design surcharge */}
       <View style={{ flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 10 }}>
         <Text style={{ fontSize: 10, color: C.muted, flex: 1 }}>{t('pdf.design_ux')}</Text>
-        <Text style={{ fontSize: 10, color: C.offWhite, width: 70, textAlign: 'right' }}>+{formatCurrency(pricing.designSurcharge)}</Text>
+        <Text style={{ fontSize: 10, color: C.offWhite, width: 70, textAlign: 'right' }}>+{formatCurrency(pricing.designSurcharge ?? 0)}</Text>
       </View>
 
       {/* Bundle discount */}
-      {pricing.bundleDiscount > 0 && (
+      {(pricing.bundleDiscount ?? 0) > 0 && (
         <View style={{ flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 10 }}>
           <Text style={{ fontSize: 10, color: C.green, flex: 1 }}>
-            {t('pdf.bundle_discount', { percent: Math.round(pricing.bundleDiscountPercent * 100) })}
+            {t('pdf.bundle_discount', { percent: Math.round((pricing.bundleDiscountPercent ?? 0) * 100) })}
           </Text>
-          <Text style={{ fontSize: 10, color: C.green, width: 70, textAlign: 'right' }}>-{formatCurrency(pricing.bundleDiscount)}</Text>
+          <Text style={{ fontSize: 10, color: C.green, width: 70, textAlign: 'right' }}>-{formatCurrency(pricing.bundleDiscount ?? 0)}</Text>
         </View>
       )}
 
       {/* Total */}
       <View style={s.tableTotal}>
         <Text style={{ fontSize: 12, color: C.offWhite, fontWeight: 'bold', flex: 1 }}>{t('pdf.total')}</Text>
-        <Text style={{ fontSize: 12, color: C.bronze, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.total)}</Text>
+        <Text style={{ fontSize: 12, color: C.bronze, fontWeight: 'bold', width: 70, textAlign: 'right' }}>{formatCurrency(pricing.total ?? 0)}</Text>
       </View>
 
       <PageFooter userName={userName} t={t} />
@@ -775,8 +800,8 @@ const NextStepsPage = ({ results, userName, t, isArabic }: { results: EstimateRe
             <Text style={s.stepTitle}>{step.title}</Text>
             <Text style={s.stepDesc}>{step.desc}</Text>
             {i === 1 && (
-              <Link src="https://calendly.com/ali-aviniti/30min" style={{ marginTop: 3 }}>
-                <Text style={{ fontSize: 9, color: C.bronzeLight, textDecoration: 'underline' }}>calendly.com/ali-aviniti/30min</Text>
+              <Link src="https://calendly.com/aliodat-aviniti/30min" style={{ marginTop: 3 }}>
+                <Text style={{ fontSize: 9, color: C.bronzeLight, textDecoration: 'underline' }}>calendly.com/aliodat-aviniti/30min</Text>
               </Link>
             )}
           </View>
@@ -805,7 +830,7 @@ const NextStepsPage = ({ results, userName, t, isArabic }: { results: EstimateRe
         </View>
         <View style={s.contactRow}>
           <Text style={s.contactLabel}>{t('pdf.calendly_label')}</Text>
-          <Link src="https://calendly.com/ali-aviniti/30min"><Text style={s.contactLink}>calendly.com/ali-aviniti/30min</Text></Link>
+          <Link src="https://calendly.com/aliodat-aviniti/30min"><Text style={s.contactLink}>calendly.com/aliodat-aviniti/30min</Text></Link>
         </View>
       </View>
 
@@ -829,12 +854,14 @@ const EstimatePDFDocument = ({
   userName,
   userEmail,
   t,
+  tf,
   isArabic,
 }: {
   results: EstimateResponse;
   userName?: string;
   userEmail?: string;
   t: (key: string, values?: Record<string, string | number>) => string;
+  tf: (key: string) => string;
   isArabic: boolean;
 }) => (
   <Document
@@ -846,7 +873,7 @@ const EstimatePDFDocument = ({
     <CoverPage results={results} userName={userName} t={t} isArabic={isArabic} />
     <ExecutiveSummaryPage results={results} userName={userName} t={t} isArabic={isArabic} />
     {results.pricing && results.pricing.features.length > 0 && (
-      <FeaturesPricingPage pricing={results.pricing} userName={userName} t={t} isArabic={isArabic} />
+      <FeaturesPricingPage pricing={results.pricing} userName={userName} t={t} tf={tf} isArabic={isArabic} />
     )}
     <PhasesTimelinePage results={results} userName={userName} t={t} isArabic={isArabic} />
     <CostAnalysisPage results={results} userName={userName} t={t} isArabic={isArabic} />
@@ -868,6 +895,7 @@ interface PDFReportProps {
 export function PDFReport({ results, userName, userEmail, className }: PDFReportProps) {
   const [isClient, setIsClient] = useState(false);
   const t = useTranslations('get_estimate');
+  const tf = useTranslations('features');
 
   useEffect(() => {
     setIsClient(true);
@@ -893,28 +921,38 @@ export function PDFReport({ results, userName, userEmail, className }: PDFReport
 
   return (
     <PDFDownloadLink
-      document={<EstimatePDFDocument results={results} userName={userName} userEmail={userEmail} t={t} isArabic={arabic} />}
+      document={<EstimatePDFDocument results={results} userName={userName} userEmail={userEmail} t={t} tf={tf} isArabic={arabic} />}
       fileName={filename}
       className={cn(
         'h-11 px-5 bg-bronze hover:bg-bronze-hover text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center gap-2',
         className
       )}
     >
-      {({ loading }) => (
-        <>
-          {loading ? (
-            <>
-              <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              {t('pdf.generating')}
-            </>
-          ) : (
-            <>
-              <Download className="h-5 w-5" />
-              {t('pdf.download')}
-            </>
-          )}
-        </>
-      )}
+      {({ loading, error }) => {
+        if (error) {
+          return (
+            <span className="inline-flex items-center gap-2 opacity-60 cursor-not-allowed">
+              <FileText className="h-5 w-5" />
+              {t('pdf.error')}
+            </span>
+          );
+        }
+        return (
+          <>
+            {loading ? (
+              <>
+                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                {t('pdf.generating')}
+              </>
+            ) : (
+              <>
+                <Download className="h-5 w-5" />
+                {t('pdf.download')}
+              </>
+            )}
+          </>
+        );
+      }}
     </PDFDownloadLink>
   );
 }

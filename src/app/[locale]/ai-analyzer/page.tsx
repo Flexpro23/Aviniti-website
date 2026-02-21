@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -34,9 +35,20 @@ import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { ScoreGauge } from '@/components/ai-tools/ScoreGauge';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
-import { AnalyzerRadarChart } from '@/components/ai-tools/charts/AnalyzerRadarChart';
-import { ScoreBreakdownBars } from '@/components/ai-tools/charts/ScoreBreakdownBars';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
+
+const AnalyzerRadarChart = dynamic(
+  () => import('@/components/ai-tools/charts/AnalyzerRadarChart').then((mod) => ({ default: mod.AnalyzerRadarChart })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse motion-reduce:animate-none rounded-xl bg-white/5" /> }
+);
+const ScoreBreakdownBars = dynamic(
+  () => import('@/components/ai-tools/charts/ScoreBreakdownBars').then((mod) => ({ default: mod.ScoreBreakdownBars })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse motion-reduce:animate-none rounded-xl bg-white/5" /> }
+);
+const AnalyzerPDFReport = dynamic(
+  () => import('@/components/ai-tools/AnalyzerPDFReport').then((mod) => ({ default: mod.AnalyzerPDFReport })),
+  { ssr: false }
+);
 import type { AnalyzerResponse } from '@/types/api';
 
 // ============================================================
@@ -156,29 +168,29 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
     t('loading_compiling'),
   ];
 
-  // Progress simulation
+  // Asymptotic progress simulation — never exceeds ~92%
+  // Uses 1 - e^(-t/k) curve: fast initial climb, then gradual plateau
   useEffect(() => {
-    const duration = 30000; // 30 seconds
-    const interval = 50;
-    const increment = (interval / duration) * 100;
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      // k=12 means ~63% at 12s, ~86% at 24s, plateaus near 92%
+      const newProgress = Math.min(92, 92 * (1 - Math.exp(-elapsed / 12)));
+      setProgress(newProgress);
+    }, 100);
 
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + increment;
-        return next >= 100 ? 100 : next;
-      });
-    }, interval);
-
-    return () => clearInterval(timer);
+    return () => clearInterval(interval);
   }, []);
 
-  // Phase transitions
+  // Phase transitions — time-based, independent of progress value
   useEffect(() => {
-    const phaseInterval = setInterval(() => {
-      setCurrentPhase((prev) => (prev < 3 ? prev + 1 : prev));
-    }, 7500); // 7.5 seconds per phase
+    const phaseTimers = [
+      setTimeout(() => setCurrentPhase(1), 4000),   // Phase 2 at 4s
+      setTimeout(() => setCurrentPhase(2), 10000),  // Phase 3 at 10s
+      setTimeout(() => setCurrentPhase(3), 18000),  // Phase 4 at 18s
+    ];
 
-    return () => clearInterval(phaseInterval);
+    return () => phaseTimers.forEach(clearTimeout);
   }, []);
 
   // Message rotation
@@ -191,18 +203,18 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
   }, [messages.length]);
 
   return (
-    <main className="min-h-screen bg-navy flex items-center justify-center px-4">
+    <div className="min-h-screen bg-navy flex items-center justify-center px-4">
       <div className="max-w-2xl w-full">
         {/* Pulsing Orb */}
         <div className="flex justify-center mb-12">
           <div className="relative">
             {/* Outer glow rings */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-2xl animate-pulse" />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 blur-2xl animate-pulse motion-reduce:animate-none" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 blur-3xl animate-pulse motion-reduce:animate-none" style={{ animationDelay: '1s' }} />
 
             {/* Main orb */}
             <div className="relative h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 via-cyan-500 to-blue-600 flex items-center justify-center shadow-2xl shadow-blue-500/50">
-              <Sparkles className="h-10 w-10 text-white animate-pulse" />
+              <Sparkles className="h-10 w-10 text-white animate-pulse motion-reduce:animate-none" />
             </div>
           </div>
         </div>
@@ -283,7 +295,7 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
                       <PhaseIcon
                         className={`h-5 w-5 ${
                           status === 'active' ? phase.iconColor : 'text-muted'
-                        } ${status === 'active' ? 'animate-pulse' : ''}`}
+                        } ${status === 'active' ? 'animate-pulse motion-reduce:animate-none' : ''}`}
                       />
                     )}
                   </div>
@@ -325,7 +337,7 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
           {t('loading_reassurance')}
         </p>
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -336,6 +348,7 @@ function AnalyzerLoadingScreen({ t }: AnalyzerLoadingScreenProps) {
 export default function AIAnalyzerPage() {
   const t = useTranslations('ai_analyzer');
   const locale = useLocale();
+  const isRTL = locale === 'ar';
   const searchParams = useSearchParams();
 
   // Check for pre-fill from Idea Lab
@@ -349,6 +362,9 @@ export default function AIAnalyzerPage() {
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
   const [formData, setFormData] = useState({
     idea: fromIdea ? `${ideaName}\n\n${ideaDescription}` : '',
+    targetAudience: '',
+    industry: '' as string,
+    revenueModel: '' as string,
     email: '',
     whatsapp: false,
     phone: undefined as string | undefined,
@@ -358,7 +374,7 @@ export default function AIAnalyzerPage() {
   const [results, setResults] = useState<AnalyzerResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('ai-analyzer');
+  const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('ai-analyzer', locale);
 
   // Navigation
   const goForward = useCallback(() => {
@@ -391,10 +407,23 @@ export default function AIAnalyzerPage() {
               phone: updatedData.phone,
               countryCode: updatedData.countryCode,
             } : {}),
+            ...(updatedData.targetAudience ? { targetAudience: updatedData.targetAudience } : {}),
+            ...(updatedData.industry ? { industry: updatedData.industry } : {}),
+            ...(updatedData.revenueModel ? { revenueModel: updatedData.revenueModel } : {}),
             locale,
           }),
         });
 
+        if (!res.ok) {
+          try {
+            const errorData = await res.json();
+            setError(errorData.error?.message || t('errors.failed'));
+          } catch {
+            setError(t('errors.failed'));
+          }
+          setIsLoading(false);
+          return;
+        }
         const data = await res.json();
 
         if (data.success) {
@@ -429,6 +458,15 @@ export default function AIAnalyzerPage() {
     }
   }, [results, savedId, saveResult]);
 
+  // Hydrate results from shareable URL
+  useEffect(() => {
+    if (loadedResult && !results) {
+      setResults(loadedResult);
+      setStep(3);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedResult]);
+
   // ============================================================
   // LOADING STATE
   // ============================================================
@@ -443,7 +481,7 @@ export default function AIAnalyzerPage() {
     const { categories } = results;
 
     const handleCopyLink = async () => {
-      const success = await copyShareableUrl();
+      const success = await copyShareableUrl(results);
       if (success) {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
@@ -497,7 +535,7 @@ export default function AIAnalyzerPage() {
     ];
 
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         {/* Sticky Navigation */}
         <ResultsNav sections={navSections} toolColor="blue" />
 
@@ -937,7 +975,7 @@ export default function AIAnalyzerPage() {
                   {results.recommendations.map((rec: string, i: number) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: isRTL ? 10 : -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + i * 0.1 }}
                       className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-500/5 to-transparent border border-blue-500/10 hover:border-blue-500/20 transition-colors duration-200"
@@ -948,7 +986,7 @@ export default function AIAnalyzerPage() {
                       <div className="flex-1">
                         <p className="text-sm text-off-white leading-relaxed">{rec}</p>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted flex-shrink-0 mt-0.5" />
+                      <ChevronRight className="h-4 w-4 text-muted flex-shrink-0 mt-0.5 rtl:rotate-180" />
                     </motion.div>
                   ))}
                 </div>
@@ -957,9 +995,9 @@ export default function AIAnalyzerPage() {
           </section>
 
           {/* ====================================================
-              ACTION BUTTONS: Save/Share
+              ACTION BUTTONS: Save/Share + PDF Download
               ==================================================== */}
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center gap-4 mb-10 flex-wrap">
             <button
               onClick={handleCopyLink}
               className="h-11 px-6 bg-slate-blue-light hover:bg-slate-blue-light/80 text-off-white rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2"
@@ -976,6 +1014,7 @@ export default function AIAnalyzerPage() {
                 </>
               )}
             </button>
+            <AnalyzerPDFReport results={results} />
           </div>
 
           {/* ====================================================
@@ -1003,7 +1042,7 @@ export default function AIAnalyzerPage() {
             <ConsultationCTA projectName={results.ideaName} />
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -1011,7 +1050,7 @@ export default function AIAnalyzerPage() {
   // FORM STATE (DEFAULT VIEW)
   // ============================================================
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Custom Hero */}
       <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden">
         {/* Background effects */}
@@ -1065,7 +1104,7 @@ export default function AIAnalyzerPage() {
               className="h-12 px-8 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 inline-flex items-center gap-2 text-base"
             >
               {t('hero_cta')}
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5 rtl:rotate-180" />
             </button>
           </motion.div>
 
@@ -1173,7 +1212,8 @@ export default function AIAnalyzerPage() {
                     placeholder={t('form_textarea_placeholder')}
                     minLength={30}
                     maxLength={2000}
-                    className="w-full min-h-[200px] md:min-h-[260px] p-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-blue-500 focus:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y transition-all duration-200"
+                    id="analyzer-idea-input"
+                    className="w-full min-h-[200px] md:min-h-[260px] p-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-blue-500 focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 resize-y transition-all duration-200"
                   />
 
                   <div className="flex justify-end mt-1.5">
@@ -1187,6 +1227,69 @@ export default function AIAnalyzerPage() {
                     </span>
                   </div>
 
+                  {/* Optional fields for better analysis */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div>
+                      <label htmlFor="analyzer-target-audience-input" className="block text-xs font-medium text-muted mb-1.5">
+                        {t('step1.target_audience_label')}
+                      </label>
+                      <input
+                        id="analyzer-target-audience-input"
+                        type="text"
+                        value={formData.targetAudience}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, targetAudience: e.target.value }))}
+                        placeholder={t('step1.target_audience_placeholder')}
+                        maxLength={200}
+                        className="w-full h-10 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:border-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 transition-all duration-200"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="analyzer-industry-select" className="block text-xs font-medium text-muted mb-1.5">
+                        {t('step1.industry_label')}
+                      </label>
+                      <select
+                        id="analyzer-industry-select"
+                        value={formData.industry}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, industry: e.target.value }))}
+                        className="w-full h-10 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white hover:border-gray-700 focus-visible:border-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 transition-all duration-200"
+                      >
+                        <option value="">—</option>
+                        <option value="health-wellness">{t('step1.industries.health_wellness')}</option>
+                        <option value="finance-banking">{t('step1.industries.finance_banking')}</option>
+                        <option value="education-learning">{t('step1.industries.education_learning')}</option>
+                        <option value="ecommerce-retail">{t('step1.industries.ecommerce_retail')}</option>
+                        <option value="logistics-delivery">{t('step1.industries.logistics_delivery')}</option>
+                        <option value="entertainment-media">{t('step1.industries.entertainment_media')}</option>
+                        <option value="travel-hospitality">{t('step1.industries.travel_hospitality')}</option>
+                        <option value="real-estate">{t('step1.industries.real_estate')}</option>
+                        <option value="food-restaurant">{t('step1.industries.food_restaurant')}</option>
+                        <option value="social-community">{t('step1.industries.social_community')}</option>
+                        <option value="other">{t('step1.industries.other')}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="analyzer-revenue-model-select" className="block text-xs font-medium text-muted mb-1.5">
+                        {t('step1.revenue_model_label')}
+                      </label>
+                      <select
+                        id="analyzer-revenue-model-select"
+                        value={formData.revenueModel}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, revenueModel: e.target.value }))}
+                        className="w-full h-10 px-3 bg-slate-blue border border-slate-blue-light rounded-lg text-sm text-off-white hover:border-gray-700 focus-visible:border-blue-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 transition-all duration-200"
+                      >
+                        <option value="">—</option>
+                        <option value="subscription">{t('step1.revenue_models.subscription')}</option>
+                        <option value="freemium">{t('step1.revenue_models.freemium')}</option>
+                        <option value="one-time-purchase">{t('step1.revenue_models.one_time')}</option>
+                        <option value="in-app-purchases">{t('step1.revenue_models.in_app')}</option>
+                        <option value="advertising">{t('step1.revenue_models.advertising')}</option>
+                        <option value="marketplace-commission">{t('step1.revenue_models.commission')}</option>
+                        <option value="enterprise-licensing">{t('step1.revenue_models.enterprise')}</option>
+                        <option value="unsure">{t('step1.revenue_models.unsure')}</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div className="flex justify-end mt-8">
                     <button
                       onClick={goForward}
@@ -1194,7 +1297,7 @@ export default function AIAnalyzerPage() {
                       className="h-11 px-6 bg-blue-500 text-white font-semibold rounded-lg shadow-sm hover:bg-blue-600 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
                     >
                       {t('buttons_continue')}
-                      <ArrowRight className="h-5 w-5" />
+                      <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                     </button>
                   </div>
                 </motion.div>
@@ -1212,7 +1315,7 @@ export default function AIAnalyzerPage() {
                       onClick={goBack}
                       className="text-sm font-medium text-muted hover:text-off-white transition-colors duration-200 flex items-center gap-1.5"
                     >
-                      <ArrowLeft className="h-4 w-4" />
+                      <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                       {t('buttons_back')}
                     </button>
                   </div>
@@ -1238,6 +1341,6 @@ export default function AIAnalyzerPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

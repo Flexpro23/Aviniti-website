@@ -61,7 +61,7 @@ export const Stepper = React.forwardRef<HTMLDivElement, StepperProps>(
                       'bg-bronze border-bronze text-white cursor-pointer',
                       'hover:ring-2 hover:ring-bronze/30 hover:scale-105'
                     )}
-                    aria-label={`Go back to step ${stepNumber}: ${step.label}`}
+                    aria-label={t('accessibility.go_back_to_step', { step: stepNumber, label: step.label })}
                     role="button"
                     tabIndex={0}
                   >

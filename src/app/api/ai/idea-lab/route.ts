@@ -6,6 +6,9 @@ import {
   createSuccessResponse,
   extractRequestMetadata,
   hashIP,
+  sanitizePromptInput,
+  detectInputLanguage,
+  getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collections';
@@ -31,11 +34,15 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting (shared key with discover endpoint)
     const clientIP = getClientIP(request);
     const rateLimitKey = `idea-lab:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
+
+    // Resolve locale early so we can use it for the rate-limit error message
+    // before the full locale-dependent processing block below.
+    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
 
     if (!rateLimitResult.allowed) {
       const retryAfter = Math.ceil(
@@ -43,20 +50,27 @@ export async function POST(request: NextRequest) {
       );
       return createErrorResponse(
         'RATE_LIMITED',
-        "You've used Idea Lab 3 times today. Come back tomorrow for 3 more free sessions, or book a call for unlimited brainstorming.",
+        getLocalizedRateLimitMessage(locale),
         429,
         { retryAfter }
       );
     }
 
-    // 3. Build prompt and call Gemini (with retry on validation failure)
-    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+    // 3. Sanitize discovery answers and detect language
+    const sanitizedAnswers = validatedData.discoveryAnswers.map(a => ({
+      ...a,
+      answer: sanitizePromptInput(a.answer, 500),
+    }));
+    const allAnswerText = validatedData.discoveryAnswers.map(a => a.answer).join(' ');
+    const inputLanguage = detectInputLanguage(allAnswerText);
+
     const prompt = buildIdeaLabPrompt({
       persona: validatedData.persona,
       industry: validatedData.industry,
-      discoveryAnswers: validatedData.discoveryAnswers,
+      discoveryAnswers: sanitizedAnswers,
       locale,
       previousIdeaNames: validatedData.previousIdeaNames,
+      inputLanguage,
     });
 
     const MAX_AI_ATTEMPTS = 2;

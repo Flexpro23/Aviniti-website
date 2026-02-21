@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { ZodError } from 'zod';
 import { checkRateLimit, getClientIP, setRateLimitHeaders } from '@/lib/utils/rate-limit';
-import { createErrorResponse, createSuccessResponse, hashIP } from '@/lib/utils/api-helpers';
+import { createErrorResponse, createSuccessResponse, hashIP, sanitizePromptInput, detectInputLanguage } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { generateFeaturesSchema } from '@/lib/utils/validators';
 import { buildGenerateFeaturesPrompt } from '@/lib/gemini/prompts';
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `generate-features:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
@@ -36,15 +36,18 @@ export async function POST(request: NextRequest) {
     }
 
     const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+    const sanitizedDescription = sanitizePromptInput(validatedData.description, 2000);
+    const inputLanguage = detectInputLanguage(validatedData.description);
     const compressedCatalog = buildCompressedCatalog();
 
     const prompt = buildGenerateFeaturesPrompt({
       projectType: validatedData.projectType,
-      description: validatedData.description,
+      description: sanitizedDescription,
       answers: validatedData.answers,
       questions: validatedData.questions,
       locale,
       compressedCatalog,
+      inputLanguage,
     });
 
     const result = await generateJsonContent(prompt, {
@@ -87,12 +90,24 @@ export async function POST(request: NextRequest) {
         const catalogFeature = getFeatureById(sel.catalogId);
         if (!catalogFeature) {
           console.warn(`[Generate Features API] Unknown catalogId: ${sel.catalogId}`);
+          results.push({
+            id: `${category === 'must-have' ? 'mh' : 'en'}-${idx + 1}`,
+            name: sel.catalogId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            description: sel.reason,
+            category,
+            catalogId: sel.catalogId,
+            price: 0,
+            timelineDays: 0,
+            costImpact: 'low',
+            timeImpact: 'low',
+            reason: sel.reason,
+          });
           continue;
         }
         catalogMatchCount++;
         results.push({
           id: `${category === 'must-have' ? 'mh' : 'en'}-${idx + 1}`,
-          name: sel.catalogId,
+          name: catalogFeature.id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
           description: sel.reason,
           category,
           catalogId: catalogFeature.id,

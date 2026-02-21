@@ -76,7 +76,7 @@ export function Navbar() {
             >
               <Image
                 src="/logo/logo.svg"
-                alt="Aviniti"
+                alt={t('accessibility.logo_alt')}
                 width={120}
                 height={32}
                 priority

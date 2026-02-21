@@ -52,11 +52,17 @@ export function buildIdeaLabDiscoverPrompt(data: {
   persona: Persona;
   industry: Industry;
   locale: 'en' | 'ar';
+  /** Detected or explicitly supplied language of the user's prior input */
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const lang = data.locale === 'ar' ? 'ar' : 'en';
   const personaLabel = PERSONA_LABELS[data.persona][lang];
   const industryLabel = INDUSTRY_LABELS[data.industry][lang];
-  const outputLanguage = data.locale === 'ar' ? 'Arabic' : 'English';
+  // inputLanguage takes priority over locale so that question text always matches
+  // the language the user is typing in, which is the same rule the generate
+  // endpoint follows.
+  const outputLang = data.inputLanguage || data.locale;
+  const outputLanguage = outputLang === 'ar' ? 'Arabic' : 'English';
 
   return `You are a friendly discovery consultant for Aviniti, helping everyday people find opportunities where technology could improve their daily life or work. You are NOT talking to tech-savvy people or entrepreneurs — you are talking to regular people who may have never considered building an app or digital tool.
 

@@ -12,5 +12,3 @@ export { ToolResults, ToolResultItem } from './ToolResults';
 export { EmailCapture } from './EmailCapture';
 export { CrossSellCTA } from './CrossSellCTA';
 export { ScoreGauge } from './ScoreGauge';
-export { ROIChart } from './ROIChart';
-export { ComparisonBars } from './ComparisonBars';

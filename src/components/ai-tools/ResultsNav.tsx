@@ -64,7 +64,7 @@ export function ResultsNav({ sections, toolColor = 'orange' }: ResultsNavProps) 
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-navy/90 backdrop-blur-md border-b border-slate-blue-light/30">
+    <div className="fixed top-16 inset-x-0 z-50 bg-navy/90 backdrop-blur-md border-b border-slate-blue-light/30">
       <div className="max-w-4xl mx-auto px-4">
         <nav className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-hide">
           {sections.map(({ id, label }) => (

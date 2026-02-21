@@ -12,9 +12,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { pageTransition } from '@/lib/motion/variants';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { usePathname } from '@/lib/i18n/navigation';
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const prefersReducedMotion = useReducedMotion();
+  const pathname = usePathname();
 
   // If user prefers reduced motion, skip animation
   if (prefersReducedMotion) {
@@ -24,6 +26,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        key={pathname}
         initial="initial"
         animate="animate"
         exit="exit"

@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "title": "About Aviniti — AI-Powered App Development Company",
+    "description": "Learn about Aviniti, a Jordanian AI and app development company turning ideas into reality."
+  },
+  "hero": {
+    "badge": "About Us",
+    "title": "Turning Ideas Into Reality",
+    "description": "Aviniti is an AI-powered app development company based in Jordan, dedicated to helping businesses launch exceptional digital products — faster, smarter, and more affordably."
+  },
+  "mission": {
+    "label": "Our Mission",
+    "title": "Empowering Businesses Through Technology",
+    "description": "We believe every great business deserves a great app. Our mission is to democratize access to world-class software development by combining cutting-edge AI with deep engineering expertise.",
+    "values": [
+      {
+        "title": "Innovation First",
+        "description": "We leverage AI at every step — from idea validation to development — to deliver smarter solutions faster."
+      },
+      {
+        "title": "Quality Without Compromise",
+        "description": "Every app we build is production-grade, scalable, and designed to grow with your business."
+      },
+      {
+        "title": "Client Partnership",
+        "description": "We don't just build apps — we become your technology partner, invested in your long-term success."
+      },
+      {
+        "title": "Transparency",
+        "description": "No hidden fees, no surprises. You get clear timelines, honest estimates, and regular progress updates."
+      }
+    ]
+  },
+  "approach": {
+    "label": "Our Approach",
+    "title": "AI-Enhanced Development",
+    "description": "We use our proprietary AI tools to analyze your idea, estimate costs, and plan architecture before writing a single line of code — saving you time and money.",
+    "steps": [
+      {
+        "title": "Validate",
+        "description": "AI-powered idea analysis and market validation"
+      },
+      {
+        "title": "Estimate",
+        "description": "Instant, transparent cost and timeline estimates"
+      },
+      {
+        "title": "Design",
+        "description": "User-centric UI/UX with rapid prototyping"
+      },
+      {
+        "title": "Build",
+        "description": "Agile development with weekly deliverables"
+      },
+      {
+        "title": "Launch",
+        "description": "App store deployment and go-to-market support"
+      },
+      {
+        "title": "Grow",
+        "description": "Ongoing maintenance, analytics, and iteration"
+      }
+    ]
+  },
+  "stats": {
+    "label": "By the Numbers",
+    "items": [
+      { "value": "50+", "label": "Projects Delivered" },
+      { "value": "4", "label": "AI-Powered Tools" },
+      { "value": "7", "label": "Ready-Made Solutions" },
+      { "value": "98%", "label": "Client Satisfaction" }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Build Something Great?",
+    "description": "Whether you have a fully formed idea or just a spark of inspiration, we're here to help bring it to life.",
+    "primary": "Get a Free Estimate",
+    "secondary": "Try Our AI Tools"
+  }
+}

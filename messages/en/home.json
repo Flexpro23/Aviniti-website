@@ -1,5 +1,6 @@
 {
   "hero": {
+    "scroll_cta_aria": "Scroll to services section",
     "label": "AI-POWERED APP DEVELOPMENT",
     "title": "Turn Your Ideas Into Powerful Apps",
     "title_line1": "Turn Your Ideas Into",
@@ -30,7 +31,12 @@
     "metric_4_label": "Day Average Delivery",
     "badge_1": "SOC 2 Certified",
     "badge_2": "Data Encrypted",
-    "badge_3": "GDPR Compliant"
+    "badge_3": "GDPR Compliant",
+    "heading": {
+      "label": "Our Track Record",
+      "title": "Numbers That Speak",
+      "subtitle": "Proven results that demonstrate our commitment to excellence"
+    }
   },
   "company_logos": {
     "title": "Trusted by Growing Businesses",
@@ -41,6 +47,7 @@
     "label": "CLIENT SUCCESS STORIES",
     "title": "What Our Clients Say",
     "subtitle": "Real feedback from real clients who have launched successful applications with Aviniti",
+    "carousel_aria": "Client testimonials carousel",
     "testimonial_1_quote": "Aviniti delivered our gym management app ahead of schedule and exceeded all expectations. The AI-powered features have revolutionized how we manage member engagement and retention.",
     "testimonial_1_name": "Ahmad Al-Rashidi",
     "testimonial_1_role": "CEO",
@@ -150,12 +157,15 @@
     "label": "READY-MADE SOLUTIONS",
     "title": "Launch Faster with Ready-Made Solutions",
     "subtitle": "Pre-built app solutions customized for your business. Launch in weeks, not months.",
+    "scroll_region_aria": "Ready-made solutions carousel",
     "starting_from": "Starting from",
     "delivery": "days delivery",
     "view_all": "View All Solutions",
     "learn_more": "Learn More",
     "demo_available": "Live Demo",
-    "more_features": "more features"
+    "more_features": "more features",
+    "scroll_back": "Scroll back",
+    "scroll_forward": "Scroll forward"
   },
   "apps": {
     "label": "OUR PORTFOLIO",
@@ -174,7 +184,8 @@
     "reason_3_title": "Transparent Pricing",
     "reason_3_description": "No hidden fees, no surprises. Get your AI-powered estimate before we start.",
     "reason_4_title": "Ongoing Support",
-    "reason_4_description": "We don't disappear after launch. Continuous support and updates."
+    "reason_4_description": "We don't disappear after launch. Continuous support and updates.",
+    "cta": "Get Started Today"
   },
   "case_studies": {
     "label": "SUCCESS STORIES",
@@ -201,7 +212,8 @@
     "cta_primary": "Get AI Estimate",
     "cta_secondary": "Book a Call",
     "whatsapp_label": "Prefer WhatsApp?",
-    "whatsapp_cta": "Chat with us now"
+    "whatsapp_cta": "Chat with us now",
+    "whatsapp_message": "Hi, I'm interested in Aviniti's services. Can we discuss my project?"
   },
   "blog": {
     "title": "Latest from Our Blog",

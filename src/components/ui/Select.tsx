@@ -26,6 +26,7 @@ export const SelectTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { label?: string; error?: string }
 >(({ className, children, label, error, ...props }, ref) => {
   const triggerId = React.useId();
+  const errorId = error ? `${triggerId}-error` : undefined;
 
   return (
     <div className="w-full space-y-2">
@@ -37,6 +38,8 @@ export const SelectTrigger = React.forwardRef<
       <SelectPrimitive.Trigger
         ref={ref}
         id={triggerId}
+        aria-describedby={errorId}
+        aria-invalid={error ? 'true' : undefined}
         className={cn(
           'flex h-11 w-full items-center justify-between rounded-lg border bg-navy-light px-3 py-2 text-base text-off-white',
           'placeholder:text-muted-light',
@@ -57,7 +60,7 @@ export const SelectTrigger = React.forwardRef<
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       {error && (
-        <p className="text-sm text-error" role="alert">
+        <p id={errorId} className="text-sm text-error" role="alert">
           {error}
         </p>
       )}

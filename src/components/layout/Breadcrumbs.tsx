@@ -11,7 +11,7 @@
 
 import { ChevronRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
@@ -23,10 +23,13 @@ interface BreadcrumbItem {
 
 export function Breadcrumbs() {
   const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations('common');
 
-  // Don't show breadcrumbs on homepage
-  if (pathname === '/') {
+  // Don't show breadcrumbs on homepage.
+  // usePathname from next/navigation includes the locale prefix (e.g. /en, /ar),
+  // so we must check against the locale-prefixed root as well as bare '/'.
+  if (pathname === '/' || pathname === `/${locale}` || pathname === `/${locale}/`) {
     return null;
   }
 
@@ -45,6 +48,7 @@ export function Breadcrumbs() {
 
   // Known segment-to-translation-key mapping
   const segmentKeys: Record<string, string> = {
+    about: 'footer.aboutUs',
     solutions: 'nav.solutions',
     'case-studies': 'nav.case_studies',
     blog: 'nav.blog',
@@ -79,7 +83,9 @@ export function Breadcrumbs() {
     });
   });
 
-  // Generate JSON-LD structured data
+  // Generate JSON-LD structured data.
+  // The homepage breadcrumb item (href '/') maps to /${locale}, all others
+  // already contain locale-relative paths that become /${locale}${item.href}.
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -87,7 +93,12 @@ export function Breadcrumbs() {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      ...(item.href && { item: `https://aviniti.app${item.href}` }),
+      ...(item.href && {
+        item:
+          item.href === '/'
+            ? `https://aviniti.app/${locale}`
+            : `https://aviniti.app/${locale}${item.href}`,
+      }),
     })),
   };
 
@@ -100,8 +111,8 @@ export function Breadcrumbs() {
       />
 
       {/* Breadcrumb Navigation */}
-      <nav aria-label="Breadcrumb" className="pt-4 pb-2">
-        <ol className="flex items-center gap-2 text-sm">
+      <nav aria-label={t('accessibility.breadcrumb')} className="pt-4 pb-2">
+        <ol className="flex items-center gap-2 text-sm overflow-x-auto scrollbar-hide">
           {breadcrumbItems.map((item, index) => (
             <li key={item.label} className="flex items-center gap-2">
               {index > 0 && (
@@ -117,7 +128,7 @@ export function Breadcrumbs() {
               ) : (
                 <Link
                   href={item.href!}
-                  className="text-muted hover:text-bronze transition-colors duration-200"
+                  className="text-muted hover:text-bronze transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze focus-visible:ring-offset-2 focus-visible:ring-offset-navy rounded-sm"
                 >
                   {item.label}
                 </Link>

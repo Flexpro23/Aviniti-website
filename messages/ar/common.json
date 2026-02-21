@@ -64,7 +64,9 @@
     "en": "English",
     "ar": "العربية",
     "switch": "تغيير اللغة",
-    "options": "خيارات اللغة"
+    "options": "خيارات اللغة",
+    "switch_to_en": "التبديل إلى الإنجليزية",
+    "switch_to_ar": "التبديل إلى العربية"
   },
   "accessibility": {
     "skip_to_content": "تخطي إلى المحتوى الرئيسي",
@@ -74,7 +76,15 @@
     "mainNavigation": "التنقل الرئيسي",
     "navigationMenu": "قائمة التنقل",
     "languageOptions": "خيارات اللغة",
-    "loading": "جارٍ التحميل..."
+    "loading": "جارٍ التحميل...",
+    "logo_alt": "شعار أفينيتي",
+    "scroll_back": "تمرير للخلف",
+    "scroll_forward": "تمرير للأمام",
+    "main_navigation": "التنقل الرئيسي",
+    "breadcrumb": "مسار التنقل",
+    "page_loading": "جارٍ تحميل الصفحة",
+    "go_back_to_step": "العودة إلى الخطوة {step}: {label}",
+    "legal_navigation": "التنقل القانوني"
   },
   "loading": "جارٍ التحميل...",
   "loading_aria": "جارٍ تحميل محتوى الصفحة",
@@ -102,7 +112,10 @@
     "submitting": "جارٍ إرسال النتائج...",
     "privacy": "نحن نحترم خصوصيتك. سيتم استخدام بريدك الإلكتروني فقط لإرسال نتائجك.",
     "no_countries_found": "لم يتم العثور على دول",
-    "select_country_code": "اختر رمز الدولة"
+    "select_country_code": "اختر رمز الدولة",
+    "invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح",
+    "email_optional": "اختياري — أدخل بريدك الإلكتروني لاستلام النتائج",
+    "skip": "تخطي، اعرض النتائج الآن"
   },
   "exit_intent": {
     "thank_you": "شكراً لك!",
@@ -137,6 +150,7 @@
     "no_pressure_description": "لا ضغط. دعنا نتحدث بسرعة لنرى إن كنا الخيار المناسب لمشروعك.",
     "chat_on_whatsapp": "تحدث عبر واتساب",
     "book_a_call": "احجز مكالمة",
+    "whatsapp_message": "مرحباً، أنا مهتم بخدمات أفينيتي",
     "special_offer_aria": "عرض خاص",
     "close_popup_aria": "إغلاق النافذة"
   },
@@ -206,6 +220,7 @@
   "newsletter": {
     "subscribe_error": "فشل الاشتراك. يرجى المحاولة مرة أخرى.",
     "email_aria": "عنوان البريد الإلكتروني",
+    "email_placeholder": "your@email.com",
     "subscribe_aria": "الاشتراك في النشرة الإخبارية",
     "subscribing": "جارٍ الاشتراك...",
     "subscribed": "تم الاشتراك!",
@@ -215,15 +230,45 @@
     "label": "مشاركة:",
     "linkedin_aria": "مشاركة على LinkedIn",
     "whatsapp_aria": "مشاركة على واتساب",
-    "copy_link_aria": "نسخ الرابط"
+    "copy_link_aria": "نسخ الرابط",
+    "link_copied": "تم نسخ الرابط",
+    "copy_failed": "فشل نسخ الرابط"
   },
   "ui": {
     "loading_text": "جارٍ التحميل...",
     "loading_aria": "جارٍ التحميل",
     "progress_aria": "التقدم",
+    "close_label": "إغلاق",
     "required_aria": "مطلوب",
     "prev_testimonial": "الشهادة السابقة",
     "next_testimonial": "الشهادة التالية",
-    "goto_testimonial": "الذهاب للشهادة {number}"
+    "goto_testimonial": "الذهاب للشهادة {number}",
+    "results_nav_aria": "التنقل بين أقسام النتائج"
+  },
+  "charts": {
+    "costDistribution": "توزيع التكاليف",
+    "total": "الإجمالي: ${amount}",
+    "projectTimeline": "الجدول الزمني للمشروع",
+    "totalWeeks": "الإجمالي: {weeks} أسابيع",
+    "duration": "المدة: {duration}",
+    "phase": "المرحلة {number}",
+    "monthProjection": "التوقعات المالية لـ {months} شهر",
+    "roiProjection": "توقعات العائد على الاستثمار لـ 12 شهر",
+    "cumulativeInvestment": "الاستثمار التراكمي",
+    "cumulativeRevenue": "الإيرادات التراكمية",
+    "cumulativeCost": "التكلفة التراكمية",
+    "cumulativeSavings": "الوفورات التراكمية",
+    "netPosition": "الموقف الصافي",
+    "netROI": "صافي العائد على الاستثمار",
+    "breakeven": "نقطة التعادل: الشهر {month}",
+    "breakevenNotReached": "لم يتم الوصول لنقطة التعادل ضمن فترة التوقعات",
+    "totalRevenue": "إجمالي الإيرادات",
+    "year1Savings": "وفورات السنة الأولى",
+    "totalInvestment": "إجمالي الاستثمار",
+    "totalCost": "إجمالي التكلفة",
+    "month": "الشهر {label}",
+    "score": "النتيجة",
+    "weeks": "أسابيع",
+    "noData": "لا توجد بيانات متاحة"
   }
 }

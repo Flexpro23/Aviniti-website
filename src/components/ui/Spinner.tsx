@@ -35,7 +35,7 @@ export const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
     return (
       <svg
         ref={ref}
-        className={cn('animate-spin', sizeStyles[size], colorStyles, className)}
+        className={cn('animate-spin motion-reduce:animate-none', sizeStyles[size], colorStyles, className)}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

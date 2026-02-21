@@ -44,7 +44,7 @@ export function CaseStudiesPreview() {
       metricLabel: 'metric_1_label',
       excerptKey: 'case_1_excerpt',
       icon: <ShoppingCart className="w-5 h-5" />,
-      accentColor: 'rgb(34, 197, 94)', // green
+      accentColor: '#4A7A5B', // var(--color-tool-green)
     },
     {
       slug: 'healthcare-ai',
@@ -54,7 +54,7 @@ export function CaseStudiesPreview() {
       metricLabel: 'metric_2_label',
       excerptKey: 'case_2_excerpt',
       icon: <Activity className="w-5 h-5" />,
-      accentColor: 'rgb(59, 130, 246)', // blue
+      accentColor: '#5B7A9A', // var(--color-tool-blue)
     },
     {
       slug: 'logistics-delivery',
@@ -64,15 +64,24 @@ export function CaseStudiesPreview() {
       metricLabel: 'metric_3_label',
       excerptKey: 'case_3_excerpt',
       icon: <Truck className="w-5 h-5" />,
-      accentColor: 'rgb(249, 115, 22)', // orange
+      accentColor: '#9A6A3C', // var(--color-tool-orange)
     },
   ];
 
   return (
-    <Section className="bg-navy-dark">
+    <Section className="bg-navy-dark relative" aria-labelledby="case-studies-heading">
+      {/* Subtle diagonal gradient for visual differentiation */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: 'linear-gradient(135deg, rgba(192,132,96,0.02) 0%, transparent 50%, rgba(192,132,96,0.01) 100%)',
+        }}
+      />
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="case-studies-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -135,7 +144,7 @@ export function CaseStudiesPreview() {
                   <Button asChild variant="ghost" size="sm" className="w-full">
                     <Link href={`/case-studies/${study.slug}`}>
                       {t('read_study')}
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                     </Link>
                   </Button>
                 </CardFooter>
@@ -150,7 +159,7 @@ export function CaseStudiesPreview() {
             <Button asChild variant="secondary" size="lg">
               <Link href="/case-studies">
                 {t('view_all')}
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 rtl:rotate-180" />
               </Link>
             </Button>
           </div>

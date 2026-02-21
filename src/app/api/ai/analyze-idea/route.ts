@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { ZodError } from 'zod';
 import { checkRateLimit, getClientIP, setRateLimitHeaders } from '@/lib/utils/rate-limit';
-import { createErrorResponse, createSuccessResponse, hashIP } from '@/lib/utils/api-helpers';
+import { createErrorResponse, createSuccessResponse, hashIP, sanitizePromptInput, detectInputLanguage, getLocalizedRateLimitMessage } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { analyzeIdeaSchema } from '@/lib/utils/validators';
 import { buildAnalyzeIdeaPrompt } from '@/lib/gemini/prompts';
@@ -20,24 +20,30 @@ export async function POST(request: NextRequest) {
     // Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `analyze-idea:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     const headers = new Headers();
     setRateLimitHeaders(headers, rateLimitResult);
 
+    // Resolve locale early so we can use it for the rate-limit error message
+    // before the full locale-dependent processing block below.
+    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
+
     if (!rateLimitResult.allowed) {
       return createErrorResponse(
         'RATE_LIMITED',
-        'Too many requests. Please wait a moment before trying again.',
+        getLocalizedRateLimitMessage(locale),
         429
       );
     }
+    const sanitizedDescription = sanitizePromptInput(validatedData.description, 2000);
+    const inputLanguage = detectInputLanguage(validatedData.description);
 
-    const locale = (body.locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar';
     const prompt = buildAnalyzeIdeaPrompt({
       projectType: validatedData.projectType,
-      description: validatedData.description,
+      description: sanitizedDescription,
       locale,
+      inputLanguage,
     });
 
     const result = await generateJsonContent<AnalyzeIdeaResponse>(prompt, {

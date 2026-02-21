@@ -27,6 +27,12 @@
     "timeline": "Timeline",
     "key_metric": "Key Result"
   },
+  "industries": {
+    "Logistics": "Logistics",
+    "E-Commerce": "E-Commerce",
+    "Education": "Education",
+    "Healthcare": "Healthcare"
+  },
   "detail": {
     "overview": "Overview",
     "challenge": "The Challenge",
@@ -70,6 +76,11 @@
       "key_metric": "$120K",
       "key_metric_label": "Annual cost savings"
     }
+  },
+  "contentNotice": {
+    "title": "Content Language Notice",
+    "message": "Case studies are currently available in English only. We're working on adding Arabic content soon.",
+    "dismiss": "Got it"
   },
   "empty": {
     "title": "No case studies found",

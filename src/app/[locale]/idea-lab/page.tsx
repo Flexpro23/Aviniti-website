@@ -149,6 +149,7 @@ export default function IdeaLabPage() {
   const [persona, setPersona] = useState<Persona | ''>('');
   const [industry, setIndustry] = useState<Industry | ''>('');
   const [questions, setQuestions] = useState<DiscoveryQuestion[]>([]);
+  const [contextSummary, setContextSummary] = useState<string>('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
@@ -167,7 +168,7 @@ export default function IdeaLabPage() {
 
   // Save/share
   const [isCopied, setIsCopied] = useState(false);
-  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('idea-lab');
+  const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('idea-lab', locale);
 
   // Save result when it changes
   useEffect(() => {
@@ -175,6 +176,15 @@ export default function IdeaLabPage() {
       saveResult(results);
     }
   }, [results, savedId, saveResult]);
+
+  // Hydrate results from shareable URL
+  useEffect(() => {
+    if (loadedResult && !results) {
+      setResults(loadedResult);
+      setPhase('results');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedResult]);
 
   // ============================================================
   // Navigation helpers
@@ -208,10 +218,21 @@ export default function IdeaLabPage() {
         }),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('error_discover'));
+        } catch {
+          setError(t('error_discover'));
+        }
+        setPhase('industry');
+        return;
+      }
       const data = await res.json();
 
       if (data.success && data.data?.questions) {
         setQuestions(data.data.questions);
+        setContextSummary(data.data.contextSummary || '');
         setCurrentQuestionIndex(0);
         setAnswers({});
         setPhase('questions');
@@ -239,7 +260,7 @@ export default function IdeaLabPage() {
     setError(null);
 
     // Store email for potential refresh calls
-    try { sessionStorage.setItem('aviniti_idealab_email', emailData.email); } catch { /* ignore */ }
+    try { localStorage.setItem('aviniti_idealab_email', emailData.email); } catch { /* ignore */ }
 
     // Build discovery answers array
     const discoveryAnswers: DiscoveryAnswer[] = questions.map((q) => ({
@@ -265,6 +286,16 @@ export default function IdeaLabPage() {
         }),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('error_generate'));
+        } catch {
+          setError(t('error_generate'));
+        }
+        setPhase('email');
+        return;
+      }
       const data = await res.json();
 
       if (data.success && data.data?.ideas) {
@@ -298,7 +329,7 @@ export default function IdeaLabPage() {
     }));
 
     // Retrieve stored email from the last submission
-    const storedEmail = sessionStorage.getItem('aviniti_idealab_email') || '';
+    const storedEmail = localStorage.getItem('aviniti_idealab_email') || '';
 
     try {
       const res = await fetch('/api/ai/idea-lab', {
@@ -315,6 +346,15 @@ export default function IdeaLabPage() {
         }),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('error_generate'));
+        } catch {
+          setError(t('error_generate'));
+        }
+        return;
+      }
       const data = await res.json();
 
       if (data.success && data.data?.ideas) {
@@ -385,7 +425,7 @@ export default function IdeaLabPage() {
   // ============================================================
   if (phase === 'discover-loading') {
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         <div className="max-w-3xl mx-auto px-4 py-32">
           <AIThinkingState
             toolColor="orange"
@@ -395,7 +435,7 @@ export default function IdeaLabPage() {
             ]}
           />
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -404,7 +444,7 @@ export default function IdeaLabPage() {
   // ============================================================
   if (phase === 'generate-loading') {
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         <div className="max-w-3xl mx-auto px-4 py-32">
           <AIThinkingState
             toolColor="orange"
@@ -414,7 +454,7 @@ export default function IdeaLabPage() {
             ]}
           />
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -423,7 +463,7 @@ export default function IdeaLabPage() {
   // ============================================================
   if (phase === 'results' && results) {
     const handleCopyLink = async () => {
-      const success = await copyShareableUrl();
+      const success = await copyShareableUrl(results);
       if (success) {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
@@ -431,7 +471,7 @@ export default function IdeaLabPage() {
     };
 
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Results Header */}
           <div className="text-center mb-10">
@@ -569,7 +609,7 @@ export default function IdeaLabPage() {
             onClose={() => setSelectedIdea(null)}
           />
         )}
-      </main>
+      </div>
     );
   }
 
@@ -577,7 +617,7 @@ export default function IdeaLabPage() {
   // FORM STATE (persona, industry, questions, email)
   // ============================================================
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Hero */}
       <ToolHero
         toolSlug="idea-lab"
@@ -769,6 +809,13 @@ export default function IdeaLabPage() {
             {/* ============================================================ */}
             {phase === 'questions' && currentQuestion && (
               <div>
+                {/* Context summary from the discover API */}
+                {contextSummary && (
+                  <p className="text-sm text-tool-orange-light bg-tool-orange/10 border border-tool-orange/20 rounded-lg px-4 py-3 mb-6">
+                    {contextSummary}
+                  </p>
+                )}
+
                 {/* Progress indicator */}
                 <div className="flex items-center justify-between mb-6">
                   <div>
@@ -872,6 +919,7 @@ export default function IdeaLabPage() {
                 {currentQuestion.type === 'single-line' && (
                   <div>
                     <input
+                      id="idea-lab-question-input"
                       type="text"
                       value={answers[currentQuestion.id] || ''}
                       onChange={(e) =>
@@ -880,7 +928,7 @@ export default function IdeaLabPage() {
                       placeholder={
                         currentQuestion.placeholder || t('single_line_placeholder')
                       }
-                      className="w-full h-12 px-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-orange focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-orange transition-all duration-200"
+                      className="w-full h-12 px-4 bg-slate-blue border border-slate-blue-light rounded-xl text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-orange focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-orange transition-all duration-200"
                       aria-label={t('aria_question_answer')}
                     />
                   </div>
@@ -946,6 +994,6 @@ export default function IdeaLabPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

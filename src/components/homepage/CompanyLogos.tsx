@@ -97,7 +97,7 @@ const COMPANIES: CompanyStyle[] = [
 ];
 
 const ROW_1 = COMPANIES.slice(0, 4);
-const ROW_2 = COMPANIES.slice(3, 7);
+const ROW_2 = COMPANIES.slice(4);
 const ROW_1_ITEMS = [...ROW_1, ...ROW_1, ...ROW_1];
 const ROW_2_ITEMS = [...ROW_2, ...ROW_2, ...ROW_2];
 
@@ -144,7 +144,7 @@ export function CompanyLogos() {
     setSpotlightVisible(false);
   }, []);
 
-  const baseOpacity = prefersReducedMotion ? 1 : isTouchDevice ? 0.4 : 0.15;
+  const baseOpacity = prefersReducedMotion ? 1 : isTouchDevice ? 0.55 : 0.3;
 
   return (
     <Section className="bg-navy-dark overflow-hidden">
@@ -239,19 +239,13 @@ function MarqueeRow({
 
   return (
     <div className="relative">
-      {/* Gradient fade edges */}
+      {/* Gradient fade edges — direction adapts to LTR/RTL reading order */}
       <div
-        className="absolute inset-y-0 start-0 w-24 sm:w-32 z-20 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to right, #0F1419 0%, transparent 100%)',
-        }}
+        className="absolute inset-y-0 start-0 w-24 sm:w-32 z-20 pointer-events-none ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-[var(--color-navy-dark)] to-transparent"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-y-0 end-0 w-24 sm:w-32 z-20 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to left, #0F1419 0%, transparent 100%)',
-        }}
+        className="absolute inset-y-0 end-0 w-24 sm:w-32 z-20 pointer-events-none ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-[var(--color-navy-dark)] to-transparent"
         aria-hidden="true"
       />
 
@@ -299,6 +293,7 @@ function CompanyName({
   ariaHidden,
 }: CompanyNameProps) {
   const ref = useRef<HTMLSpanElement>(null);
+  const rafRef = useRef<number>(0);
   const [isHovered, setIsHovered] = useState(false);
   const [magneticOffset, setMagneticOffset] = useState({ x: 0, y: 0 });
 
@@ -307,22 +302,30 @@ function CompanyName({
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>) => {
       if (!canInteract) return;
-      const el = ref.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      setMagneticOffset({
-        x: (e.clientX - cx) * 0.25,
-        y: (e.clientY - cy) * 0.25,
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const el = ref.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        setMagneticOffset({
+          x: (e.clientX - cx) * 0.25,
+          y: (e.clientY - cy) * 0.25,
+        });
       });
     },
     [canInteract]
   );
 
   const handleMouseLeave = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
     setIsHovered(false);
     setMagneticOffset({ x: 0, y: 0 });
+  }, []);
+
+  useEffect(() => {
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   // Determine responsive font size via CSS clamp

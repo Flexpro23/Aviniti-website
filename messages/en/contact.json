@@ -10,10 +10,12 @@
     "form_title": "Send us a message",
     "calendly_title": "Or book a free consultation",
     "calendly_description": "Schedule a 30-minute call to discuss your project",
-    "calendly_cta": "Book a Call"
+    "calendly_cta": "Book a Call",
+    "calendly_aria": "Book a free 30-minute consultation"
   },
   "form": {
     "name_label": "Your Name",
+    "topic_placeholder": "Choose a topic...",
     "name_placeholder": "John Smith",
     "email_label": "Email Address",
     "email_placeholder": "john@company.com",
@@ -23,6 +25,7 @@
     "phone_placeholder": "+962 79 123 4567",
     "country_code_label": "Country Code",
     "topic_label": "What's this about?",
+    "aria_required": "required",
     "topics": {
       "general": "General Inquiry",
       "project": "New Project Discussion",
@@ -35,7 +38,8 @@
     "message_placeholder": "Tell us about your project or question...",
     "whatsapp_label": "Also contact me via WhatsApp",
     "submit": "Send Message",
-    "submitting": "Sending..."
+    "submitting": "Sending...",
+    "send_another": "Send another message"
   },
   "success": {
     "title": "Message Sent!",

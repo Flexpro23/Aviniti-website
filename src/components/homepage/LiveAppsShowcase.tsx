@@ -24,7 +24,15 @@ export function LiveAppsShowcase() {
   const at = useTranslations('apps');
 
   return (
-    <Section className="bg-navy-dark">
+    <Section className="bg-navy-dark relative">
+      {/* Subtle top-down gradient overlay for visual depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.01) 100%)',
+        }}
+      />
       <Container>
         <ScrollReveal>
           <SectionHeading

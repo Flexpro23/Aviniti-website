@@ -132,6 +132,8 @@ export const ideaLabDiscoverSchema = z.object({
   persona: personaEnum.describe('Please select who you are'),
   industry: industryEnumShared.describe('Please select an industry'),
   locale: z.enum(['en', 'ar']),
+  /** Explicit input language override supplied by the client */
+  inputLanguage: z.enum(['en', 'ar']).optional(),
 });
 
 export type IdeaLabDiscoverData = z.infer<typeof ideaLabDiscoverSchema>;
@@ -420,6 +422,9 @@ const roiFromEstimateSchema = z.object({
   businessModel: businessModelEnum.optional(),
   email: emailSchema,
   phone: phoneSchema.optional(),
+  // countryCode is optional in the from-estimate flow (the form does not collect it).
+  // Defaults to Jordan (+962) since this is primarily a Jordanian market product.
+  countryCode: z.string().optional().default('+962'),
   whatsapp: z.boolean().default(false),
   locale: z.enum(['en', 'ar']),
 });
@@ -436,6 +441,9 @@ const roiStandaloneSchema = z.object({
   budgetRange: z.object({
     min: z.number().nonnegative(),
     max: z.number().positive(),
+  }).refine((d) => d.min <= d.max, {
+    message: 'budgetRange.min must be less than or equal to budgetRange.max',
+    path: ['min'],
   }).optional(),
   email: emailSchema,
   phone: phoneSchema.optional(),

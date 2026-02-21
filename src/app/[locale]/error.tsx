@@ -8,9 +8,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { duration } from '@/lib/motion/tokens';
 
 export default function Error({
   error,
@@ -20,6 +24,7 @@ export default function Error({
   reset: () => void;
 }) {
   const t = useTranslations('errors');
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     // Log the error to error reporting service
@@ -27,11 +32,15 @@ export default function Error({
   }, [error]);
 
   return (
-    <main
-      id="main-content"
+    <div
       className="min-h-[60vh] flex items-center justify-center px-4 py-16"
     >
-      <div className="max-w-md mx-auto text-center">
+      <motion.div
+        className="max-w-md mx-auto text-center"
+        initial={prefersReducedMotion ? {} : { opacity: 0, y: 15 }}
+        animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+        transition={{ duration: duration.slow }}
+      >
         {/* Error Icon */}
         <div className="flex justify-center mb-6">
           <div className="h-16 w-16 rounded-full bg-error/10 flex items-center justify-center">
@@ -63,10 +72,10 @@ export default function Error({
             {t('generic.cta.try_again')}
           </Button>
           <Button asChild variant="secondary" size="lg">
-            <a href="/">{t('generic.cta.home')}</a>
+            <Link href="/">{t('generic.cta.home')}</Link>
           </Button>
         </div>
-      </div>
-    </main>
+      </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
-// Simple in-memory rate limiter
-// For production, consider using Redis or Upstash for distributed rate limiting
+// In-memory rate limiter
+// TODO: For multi-instance production deployments, upgrade to Upstash Redis
+// Install @upstash/ratelimit and @upstash/redis, then use Redis-backed limiter
 
 interface RateLimitRecord {
   count: number;

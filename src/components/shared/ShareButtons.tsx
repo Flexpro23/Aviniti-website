@@ -8,7 +8,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Linkedin, MessageCircle, Link as LinkIcon, Check } from 'lucide-react';
+import { Linkedin, MessageCircle, Link as LinkIcon, Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
@@ -27,14 +27,41 @@ export function ShareButtons({
 }: ShareButtonsProps) {
   const t = useTranslations('common');
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   const handleCopyLink = async () => {
+    // Attempt 1: modern Clipboard API (requires secure context)
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
+      } catch {
+        // Fall through to textarea fallback
+      }
+    }
+
+    // Attempt 2: legacy execCommand fallback for insecure contexts / older browsers
     try {
-      await navigator.clipboard.writeText(url);
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      // Keep the textarea off-screen so it doesn't cause a visual flash
+      textarea.style.position = 'fixed';
+      textarea.style.top = '-9999px';
+      textarea.style.left = '-9999px';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy:', error);
+    } catch {
+      // Both approaches failed — show an error indicator
+      setCopyFailed(true);
+      setTimeout(() => setCopyFailed(false), 2000);
     }
   };
 
@@ -100,16 +127,30 @@ export function ShareButtons({
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze',
           copied
             ? 'bg-success/20 text-success'
+            : copyFailed
+            ? 'bg-error/20 text-error'
             : 'text-muted hover:bg-slate-blue-light hover:text-white'
         )}
         aria-label={t('share.copy_link_aria')}
       >
         {copied ? (
           <Check className="h-4 w-4" aria-hidden="true" />
+        ) : copyFailed ? (
+          <X className="h-4 w-4" aria-hidden="true" />
         ) : (
           <LinkIcon className="h-4 w-4" aria-hidden="true" />
         )}
       </button>
+      {copied && (
+        <span className="sr-only" aria-live="polite">
+          {t('share.link_copied')}
+        </span>
+      )}
+      {copyFailed && (
+        <span className="sr-only" aria-live="polite">
+          {t('share.copy_failed')}
+        </span>
+      )}
     </div>
   );
 }

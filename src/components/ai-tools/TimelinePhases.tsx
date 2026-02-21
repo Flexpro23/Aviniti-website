@@ -110,7 +110,7 @@ export function TimelinePhases({
       <motion.div
         variants={prefersReducedMotion ? {} : lineVariants}
         className={cn(
-          'absolute left-4 top-4 w-0.5 origin-top',
+          'absolute start-4 top-4 w-0.5 origin-top',
           colors.line
         )}
         style={{

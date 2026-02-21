@@ -32,7 +32,7 @@ export const Divider = React.forwardRef<HTMLHRElement, DividerProps>(
           'border-0 my-4',
           variant === 'solid'
             ? 'h-px bg-slate-blue-light'
-            : 'h-px bg-gradient-to-r from-transparent via-slate-blue-light to-transparent',
+            : 'h-px bg-gradient-to-r from-transparent via-slate-blue-light to-transparent rtl:bg-gradient-to-l',
           className
         )}
         {...props}

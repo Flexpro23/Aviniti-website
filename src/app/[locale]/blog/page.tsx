@@ -8,6 +8,7 @@ import { Container, Section, Card, CardHeader, CardTitle, CardDescription, CardC
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { ContentLanguageNotice } from '@/components/shared/ContentLanguageNotice';
 
 interface BlogPost {
   slug: string;
@@ -16,7 +17,7 @@ interface BlogPost {
   category: string;
   author: string;
   date: string;
-  readTime: string;
+  readTime: number;
   featured?: boolean;
 }
 
@@ -29,7 +30,7 @@ const blogPosts: BlogPost[] = [
     category: 'AI',
     author: 'Aviniti Team',
     date: '2025-03-15',
-    readTime: '8 min read',
+    readTime: 8,
     featured: true,
   },
   {
@@ -40,7 +41,7 @@ const blogPosts: BlogPost[] = [
     category: 'Tutorials',
     author: 'Aviniti Team',
     date: '2025-03-01',
-    readTime: '12 min read',
+    readTime: 12,
   },
   {
     slug: 'building-scalable-delivery-apps',
@@ -50,7 +51,7 @@ const blogPosts: BlogPost[] = [
     category: 'Mobile',
     author: 'Aviniti Team',
     date: '2025-02-18',
-    readTime: '10 min read',
+    readTime: 10,
   },
   {
     slug: 'web-app-performance-optimization',
@@ -60,7 +61,7 @@ const blogPosts: BlogPost[] = [
     category: 'Web',
     author: 'Aviniti Team',
     date: '2025-02-05',
-    readTime: '15 min read',
+    readTime: 15,
   },
   {
     slug: 'future-of-ai-powered-business-tools',
@@ -70,7 +71,7 @@ const blogPosts: BlogPost[] = [
     category: 'AI',
     author: 'Aviniti Team',
     date: '2025-01-20',
-    readTime: '7 min read',
+    readTime: 7,
   },
 ];
 
@@ -105,7 +106,7 @@ export default function BlogPage() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -131,17 +132,18 @@ export default function BlogPage() {
             <div className="relative">
               <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted" />
               <input
+                id="blog-search-input"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t('page.search_placeholder')}
-                className="w-full bg-slate-blue border border-slate-blue-light rounded-xl ps-12 pe-12 py-3 text-off-white placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-bronze/50 focus:border-bronze transition-all"
+                className="w-full bg-slate-blue border border-slate-blue-light rounded-xl ps-12 pe-12 py-3 text-off-white placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze/50 focus-visible:border-bronze transition-all"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
                   className="absolute end-4 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
-                  aria-label="Clear search"
+                  aria-label={t('page.aria_clear_search')}
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -175,6 +177,7 @@ export default function BlogPage() {
       {/* Blog Posts Grid */}
       <Section>
         <Container>
+          <ContentLanguageNotice namespace="blog" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts.map((post) => (
               <ScrollReveal key={post.slug}>
@@ -187,7 +190,7 @@ export default function BlogPage() {
                   <CardHeader className="pt-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="default" size="sm">
-                        {post.category}
+                        {t(`page.categories.${post.category.toLowerCase()}`)}
                       </Badge>
                       {post.featured && (
                         <Badge variant="outline" size="sm">
@@ -218,7 +221,7 @@ export default function BlogPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {post.readTime}
+                        {t('post.reading_time', { minutes: post.readTime })}
                       </span>
                     </div>
                     <Link
@@ -226,7 +229,7 @@ export default function BlogPage() {
                       className="text-bronze text-sm font-medium hover:text-bronze-light transition-colors flex items-center gap-1"
                     >
                       {t('post.read')}
-                      <ArrowRight className="h-3 w-3" />
+                      <ArrowRight className="h-3 w-3 rtl:rotate-180" />
                     </Link>
                   </CardFooter>
                 </Card>
@@ -279,6 +282,6 @@ export default function BlogPage() {
           </ScrollReveal>
         </Container>
       </Section>
-    </main>
+    </div>
   );
 }

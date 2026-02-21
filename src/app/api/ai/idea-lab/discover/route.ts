@@ -5,6 +5,7 @@ import {
   createErrorResponse,
   createSuccessResponse,
   hashIP,
+  getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
 import { generateJsonContent } from '@/lib/gemini/client';
 import { ideaLabDiscoverSchema } from '@/lib/utils/validators';
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting (shared key with generate endpoint)
     const clientIP = getClientIP(request);
     const rateLimitKey = `idea-lab:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
@@ -40,17 +41,23 @@ export async function POST(request: NextRequest) {
       );
       return createErrorResponse(
         'RATE_LIMITED',
-        "You've used Idea Lab 3 times today. Come back tomorrow for 3 more free sessions, or book a call for unlimited brainstorming.",
+        getLocalizedRateLimitMessage(validatedData.locale),
         429,
         { retryAfter }
       );
     }
 
-    // 3. Build prompt and call Gemini (with retry on validation failure)
+    // 3. Resolve output language and build prompt (with retry on validation failure)
+    // The discover step has no free-text body to analyse yet, so we cannot
+    // run detectInputLanguage() on actual user input here. Instead we accept
+    // an explicit `inputLanguage` from the client (e.g. carried forward from a
+    // prior session) and let the prompt builder fall back to `locale` when it
+    // is absent. This is the same contract as the generate endpoint.
     const prompt = buildIdeaLabDiscoverPrompt({
       persona: validatedData.persona,
       industry: validatedData.industry,
       locale: validatedData.locale,
+      inputLanguage: validatedData.inputLanguage,
     });
 
     let lastError: string | undefined;

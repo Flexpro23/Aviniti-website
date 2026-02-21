@@ -78,11 +78,29 @@ export const TabsTriggerUnderline = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & { layoutId?: string }
 >(({ className, layoutId = 'activeTab', ...props }, ref) => {
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const [isActive, setIsActive] = React.useState(false);
+
+  // Observe data-state attribute changes to track selection (not just focus)
+  React.useEffect(() => {
+    const node = triggerRef.current;
+    if (!node) return;
+
+    const update = () => setIsActive(node.getAttribute('data-state') === 'active');
+    update();
+
+    const observer = new MutationObserver(update);
+    observer.observe(node, { attributes: true, attributeFilter: ['data-state'] });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <TabsPrimitive.Trigger
-      ref={ref}
+      ref={(node) => {
+        triggerRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+      }}
       className={cn(
         'relative inline-flex items-center justify-center whitespace-nowrap px-4 py-3 text-sm font-medium',
         'transition-colors duration-200',
@@ -92,14 +110,13 @@ export const TabsTriggerUnderline = React.forwardRef<
         'data-[state=active]:text-white',
         className
       )}
-      onFocus={(e) => setIsActive(e.currentTarget.getAttribute('data-state') === 'active')}
       {...props}
     >
       {props.children}
       {isActive && (
         <motion.div
           layoutId={layoutId}
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-bronze"
+          className="absolute bottom-0 inset-x-0 h-0.5 bg-bronze"
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       )}

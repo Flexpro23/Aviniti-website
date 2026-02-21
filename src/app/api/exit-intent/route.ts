@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting (1 per session per IP)
     const clientIP = getClientIP(request);
     const rateLimitKey = `exit-intent:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();

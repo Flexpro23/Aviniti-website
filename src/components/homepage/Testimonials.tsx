@@ -10,12 +10,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { fadeInUp } from '@/lib/motion/variants';
+import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 import { cn } from '@/lib/utils/cn';
 
 interface Testimonial {
@@ -67,6 +68,9 @@ const AUTO_ROTATE_INTERVAL = 6000; // 6 seconds
 export function Testimonials() {
   const t = useTranslations('home.testimonials');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isRTL = locale === 'ar';
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef(0);
@@ -93,14 +97,13 @@ export function Testimonials() {
     touchEndX.current = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX.current;
 
-    // Swipe threshold: 50px
-    if (Math.abs(diff) > 50) {
+    // Swipe threshold: 50px (RTL: swipe directions are reversed)
+    const threshold = 50;
+    if (Math.abs(diff) > threshold) {
       if (diff > 0) {
-        // Swiped left → go to next
-        goToNext();
+        isRTL ? goToPrevious() : goToNext();
       } else {
-        // Swiped right → go to previous
-        goToPrevious();
+        isRTL ? goToNext() : goToPrevious();
       }
     }
 
@@ -110,16 +113,24 @@ export function Testimonials() {
 
   // Auto-rotate effect
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || prefersReducedMotion) return;
 
     const interval = setInterval(goToNext, AUTO_ROTATE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, goToNext]);
+  }, [isPaused, prefersReducedMotion, goToNext]);
 
   const currentTestimonial = TESTIMONIALS[currentIndex];
 
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy relative">
+      {/* Subtle center glow for visual emphasis */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,255,255,0.015) 0%, transparent 70%)',
+        }}
+      />
       <Container>
         <ScrollReveal>
           <SectionHeading
@@ -133,6 +144,9 @@ export function Testimonials() {
 
         <div
           className="relative max-w-4xl mx-auto"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label={t('carousel_aria')}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
@@ -212,22 +226,22 @@ export function Testimonials() {
             </AnimatePresence>
           </div>
 
-          {/* Navigation Arrows */}
-          <div className="absolute top-1/2 -translate-y-1/2 inset-x-0 flex items-center justify-between pointer-events-none px-0 lg:-mx-16">
+          {/* Navigation Arrows - hidden on mobile, visible on md+ */}
+          <div className="absolute top-1/2 -translate-y-1/2 inset-x-0 hidden md:flex items-center justify-between pointer-events-none px-0 lg:-mx-16">
             <button
               onClick={goToPrevious}
-              className="pointer-events-auto w-12 h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
+              className="pointer-events-auto w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
               aria-label={tCommon('ui.prev_testimonial')}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6 rtl:rotate-180" />
             </button>
 
             <button
               onClick={goToNext}
-              className="pointer-events-auto w-12 h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
+              className="pointer-events-auto w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-slate-blue/60 backdrop-blur-sm border border-slate-blue-light/30 flex items-center justify-center text-off-white hover:bg-slate-blue hover:border-bronze transition-all duration-300 hover:scale-110"
               aria-label={tCommon('ui.next_testimonial')}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6 rtl:rotate-180" />
             </button>
           </div>
 
@@ -237,15 +251,19 @@ export function Testimonials() {
               <button
                 key={testimonial.id}
                 onClick={() => goToIndex(index)}
-                className={cn(
-                  'transition-all duration-300',
-                  index === currentIndex
-                    ? 'w-8 h-2 rounded-full bg-bronze'
-                    : 'w-2 h-2 rounded-full bg-slate-blue-light hover:bg-bronze/60'
-                )}
+                className="p-2 flex items-center justify-center min-h-[44px] min-w-[44px] transition-all duration-300"
                 aria-label={tCommon('ui.goto_testimonial', { number: index + 1 })}
                 aria-current={index === currentIndex ? 'true' : 'false'}
-              />
+              >
+                <span
+                  className={cn(
+                    'block transition-all duration-300 rounded-full',
+                    index === currentIndex
+                      ? 'w-8 h-2 bg-bronze'
+                      : 'w-2 h-2 bg-slate-blue-light hover:bg-bronze/60'
+                  )}
+                />
+              </button>
             ))}
           </div>
         </div>

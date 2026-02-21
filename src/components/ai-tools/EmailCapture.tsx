@@ -32,17 +32,31 @@ export function EmailCapture({
 }: EmailCaptureProps) {
   const t = useTranslations('common');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [whatsapp, setWhatsapp] = useState(false);
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+962'); // Default Jordan
 
+  const validateEmail = (value: string) => {
+    if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setEmailError(t('email_capture.invalid_email'));
+    } else {
+      setEmailError(null);
+    }
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (emailError) return;
     onSubmit({
       email,
       whatsapp,
       ...(whatsapp && phone ? { phone, countryCode } : {}),
     });
+  };
+
+  const handleSkip = () => {
+    onSubmit({ email: '', whatsapp: false });
   };
 
   return (
@@ -58,7 +72,7 @@ export function EmailCapture({
       {/* Email Input */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-off-white mb-2">
-          {t('email_capture.email_label')} *
+          {t('email_capture.email_label')}
         </label>
         <div className="relative">
           <Mail
@@ -70,19 +84,25 @@ export function EmailCapture({
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            onBlur={() => validateEmail(email)}
             disabled={isLoading}
             placeholder={t('email_capture.email_placeholder')}
             className={cn(
               'w-full h-12 ps-11 pe-4 rounded-lg',
               'bg-navy border border-slate-blue-light',
               'text-sm text-off-white placeholder:text-muted-light',
-              'focus:border-bronze focus:ring-1 focus:ring-bronze',
+              'focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze',
               'transition-all duration-200',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           />
         </div>
+        {emailError && (
+          <p className="text-xs text-error mt-1" role="alert">{emailError}</p>
+        )}
+        <p className="text-xs text-muted-light mt-1.5">
+          {t('email_capture.email_optional')}
+        </p>
       </div>
 
       {/* WhatsApp Checkbox */}
@@ -161,11 +181,23 @@ export function EmailCapture({
         size="lg"
         toolColor={toolColor}
         isLoading={isLoading}
-        disabled={isLoading || (whatsapp && !phone.trim())}
+        disabled={isLoading || !!emailError || (whatsapp && !phone.trim())}
         className="w-full"
       >
         {isLoading ? t('email_capture.submitting') : t('email_capture.submit')}
       </Button>
+
+      {/* Skip Button */}
+      {!email && !whatsapp && (
+        <button
+          type="button"
+          onClick={handleSkip}
+          disabled={isLoading}
+          className="w-full text-sm text-muted hover:text-off-white transition-colors duration-200 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {t('email_capture.skip')}
+        </button>
+      )}
 
       {/* Privacy Note */}
       <p className="text-xs text-muted-light text-center">

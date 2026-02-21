@@ -64,7 +64,9 @@
     "en": "English",
     "ar": "العربية",
     "switch": "Switch language",
-    "options": "Language options"
+    "options": "Language options",
+    "switch_to_en": "Switch to English",
+    "switch_to_ar": "Switch to Arabic"
   },
   "accessibility": {
     "skip_to_content": "Skip to main content",
@@ -74,7 +76,15 @@
     "mainNavigation": "Main navigation",
     "navigationMenu": "Navigation menu",
     "languageOptions": "Language options",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "logo_alt": "Aviniti logo",
+    "scroll_back": "Scroll back",
+    "scroll_forward": "Scroll forward",
+    "main_navigation": "Main navigation",
+    "breadcrumb": "Breadcrumb navigation",
+    "page_loading": "Page loading",
+    "go_back_to_step": "Go back to step {step}: {label}",
+    "legal_navigation": "Legal navigation"
   },
   "loading": "Loading...",
   "loading_aria": "Loading page content",
@@ -102,7 +112,10 @@
     "submitting": "Sending Results...",
     "privacy": "We respect your privacy. Your email will only be used to send your results.",
     "no_countries_found": "No countries found",
-    "select_country_code": "Select country code"
+    "select_country_code": "Select country code",
+    "invalid_email": "Please enter a valid email address",
+    "email_optional": "Optional — enter to receive results by email",
+    "skip": "Skip, show results now"
   },
   "exit_intent": {
     "thank_you": "Thank you!",
@@ -137,6 +150,7 @@
     "no_pressure_description": "No pressure. Let's have a quick chat to see if we're the right fit for your project.",
     "chat_on_whatsapp": "Chat on WhatsApp",
     "book_a_call": "Book a Call",
+    "whatsapp_message": "Hi, I'm interested in Aviniti's services",
     "special_offer_aria": "Special offer",
     "close_popup_aria": "Close popup"
   },
@@ -206,6 +220,7 @@
   "newsletter": {
     "subscribe_error": "Failed to subscribe. Please try again.",
     "email_aria": "Email address",
+    "email_placeholder": "your@email.com",
     "subscribe_aria": "Subscribe to newsletter",
     "subscribing": "Subscribing...",
     "subscribed": "Subscribed!",
@@ -215,15 +230,45 @@
     "label": "Share:",
     "linkedin_aria": "Share on LinkedIn",
     "whatsapp_aria": "Share on WhatsApp",
-    "copy_link_aria": "Copy link to clipboard"
+    "copy_link_aria": "Copy link to clipboard",
+    "link_copied": "Link copied to clipboard",
+    "copy_failed": "Failed to copy link"
   },
   "ui": {
     "loading_text": "Loading...",
     "loading_aria": "Loading",
     "progress_aria": "Progress",
+    "close_label": "Close",
     "required_aria": "required",
     "prev_testimonial": "Previous testimonial",
     "next_testimonial": "Next testimonial",
-    "goto_testimonial": "Go to testimonial {number}"
+    "goto_testimonial": "Go to testimonial {number}",
+    "results_nav_aria": "Results section navigation"
+  },
+  "charts": {
+    "costDistribution": "Cost Distribution",
+    "total": "Total: ${amount}",
+    "projectTimeline": "Project Timeline",
+    "totalWeeks": "Total: {weeks} weeks",
+    "duration": "Duration: {duration}",
+    "phase": "Phase {number}",
+    "monthProjection": "{months}-Month Financial Projection",
+    "roiProjection": "12-Month ROI Projection",
+    "cumulativeInvestment": "Cumulative Investment",
+    "cumulativeRevenue": "Cumulative Revenue",
+    "cumulativeCost": "Cumulative Cost",
+    "cumulativeSavings": "Cumulative Savings",
+    "netPosition": "Net Position",
+    "netROI": "Net ROI",
+    "breakeven": "Break-even: Month {month}",
+    "breakevenNotReached": "Break-even not reached within projection period",
+    "totalRevenue": "Total Revenue",
+    "year1Savings": "Year 1 Savings",
+    "totalInvestment": "Total Investment",
+    "totalCost": "Total Cost",
+    "month": "Month {label}",
+    "score": "Score",
+    "weeks": "Weeks",
+    "noData": "No data available"
   }
 }

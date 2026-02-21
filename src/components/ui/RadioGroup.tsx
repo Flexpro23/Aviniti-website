@@ -10,9 +10,17 @@ import { cn } from '@/lib/utils/cn';
    Using Radix UI with bronze dot indicator
    ============================================================ */
 
+export interface RadioGroupProps
+  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> {
+  /** Accessible label for the group. Passed directly to the Radix root as aria-label. */
+  'aria-label'?: string;
+  /** Associates the group with an existing visible label element by its id. */
+  'aria-labelledby'?: string;
+}
+
 export const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
+  RadioGroupProps
 >(({ className, ...props }, ref) => {
   return <RadioGroupPrimitive.Root className={cn('grid gap-2', className)} {...props} ref={ref} />;
 });

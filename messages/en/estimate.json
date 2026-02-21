@@ -94,6 +94,8 @@
     }
   },
   "step5": {
+    "title": "Where should we send your Project Blueprint?",
+    "description": "We'll email you the full report with a downloadable PDF.",
     "deliverables_title": "What You'll Get",
     "deliverable_cost": "Detailed cost breakdown by phase",
     "deliverable_timeline": "Week-by-week project timeline",
@@ -308,6 +310,7 @@
     "calendly_label": "Calendly:",
     "loading": "Loading PDF...",
     "generating": "Generating PDF...",
+    "error": "Download failed",
     "download": "Download PDF Report",
     "confidential": "Confidential",
     "page_of": "Page {page} of {total}",

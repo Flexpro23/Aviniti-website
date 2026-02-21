@@ -11,6 +11,7 @@
     "subtitle": "Expert perspectives on AI, mobile development, web technologies, and digital transformation.",
     "search_placeholder": "Search articles...",
     "search_no_results": "No articles found matching your search.",
+    "aria_clear_search": "Clear search",
     "categories": {
       "all": "All",
       "ai": "AI",
@@ -53,6 +54,11 @@
     "title": "No articles found",
     "description": "Try adjusting your search or filters",
     "cta": "View All Articles"
+  },
+  "contentNotice": {
+    "title": "Content Language Notice",
+    "message": "Blog articles are currently available in English only. We're working on adding Arabic content soon.",
+    "dismiss": "Got it"
   },
   "newsletter": {
     "title": "Subscribe to our newsletter",

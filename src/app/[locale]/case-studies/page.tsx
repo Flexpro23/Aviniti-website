@@ -89,7 +89,7 @@ export default function CaseStudiesPage() {
       : caseStudies.filter((s) => s.industry === activeIndustry);
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -139,7 +139,7 @@ export default function CaseStudiesPage() {
                   <CardHeader>
                     <div className="flex items-center gap-2 mb-3">
                       <Badge variant="default" size="sm">
-                        {study.industry}
+                        {t(`industries.${study.industry}`)}
                       </Badge>
                     </div>
                     <CardTitle className="text-white text-xl">
@@ -189,7 +189,7 @@ export default function CaseStudiesPage() {
                       className="text-bronze font-medium hover:text-bronze-light transition-colors flex items-center gap-2"
                     >
                       {t('card.read_case_study')}
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                     </Link>
                   </CardFooter>
                 </Card>
@@ -214,6 +214,6 @@ export default function CaseStudiesPage() {
         primaryCTA={{ label: t('list_cta.primary'), href: '/contact' }}
         secondaryCTA={{ label: t('list_cta.secondary'), href: '/solutions' }}
       />
-    </main>
+    </div>
   );
 }

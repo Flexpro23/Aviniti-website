@@ -333,8 +333,9 @@ export const modalVariants: Variants = {
 };
 
 /**
- * Mobile drawer slide from right (LTR)
- * Usage: Mobile navigation drawer
+ * Mobile drawer slide from inline-end
+ * Default (LTR): slides from right. RTL: slides from left.
+ * Use getDrawerVariants(isRTL) for direction-aware animation.
  */
 export const drawerVariants: Variants = {
   hidden: {
@@ -355,6 +356,31 @@ export const drawerVariants: Variants = {
     },
   },
 };
+
+/**
+ * Direction-aware drawer variants factory.
+ * @param isRTL - Whether the current layout direction is RTL
+ */
+export function getDrawerVariants(isRTL: boolean): Variants {
+  const offscreen = isRTL ? '-100%' : '100%';
+  return {
+    hidden: { x: offscreen },
+    visible: {
+      x: 0,
+      transition: {
+        duration: duration.normal,
+        ease: easing.easeOut,
+      },
+    },
+    exit: {
+      x: offscreen,
+      transition: {
+        duration: duration.fast,
+        ease: easing.easeIn,
+      },
+    },
+  };
+}
 
 /**
  * Bottom sheet slide from bottom (mobile)

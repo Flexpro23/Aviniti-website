@@ -24,17 +24,19 @@ interface FormErrors {
   message?: string;
 }
 
+const initialFormData: FormData = {
+  name: '',
+  email: '',
+  company: '',
+  topic: '',
+  message: '',
+  whatsapp: false,
+};
+
 export default function ContactPage() {
   const t = useTranslations('contact');
 
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    company: '',
-    topic: '',
-    message: '',
-    whatsapp: false,
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,32 +105,15 @@ export default function ContactPage() {
     { value: 'other', label: t('form.topics.other') },
   ];
 
-  // Success State
-  if (isSuccess) {
-    return (
-      <main className="min-h-screen bg-navy">
-        <Section padding="hero">
-          <Container>
-            <div className="max-w-lg mx-auto text-center">
-              <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-8 w-8 text-green-400" />
-              </div>
-              <h1 className="text-h2 text-white">{t('success.title')}</h1>
-              <p className="text-lg text-muted mt-4">{t('success.message')}</p>
-              {ticketId && (
-                <p className="text-sm text-bronze mt-4 font-mono bg-slate-blue rounded-lg px-4 py-2 inline-block">
-                  {t('success.reference')} {ticketId}
-                </p>
-              )}
-            </div>
-          </Container>
-        </Section>
-      </main>
-    );
-  }
+  const handleSendAnother = () => {
+    setIsSuccess(false);
+    setFormData(initialFormData);
+    setErrors({});
+    setTicketId('');
+  };
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -153,6 +138,34 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             {/* Contact Form (3 columns) */}
             <div className="lg:col-span-3">
+              {isSuccess ? (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center py-8">
+                      <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="h-8 w-8 text-green-400" />
+                      </div>
+                      <h2 className="text-h2 text-white">{t('success.title')}</h2>
+                      <p className="text-lg text-muted mt-4">{t('success.message')}</p>
+                      {ticketId && (
+                        <p className="text-sm text-bronze mt-4 font-mono bg-slate-blue rounded-lg px-4 py-2 inline-block">
+                          {t('success.reference')} {ticketId}
+                        </p>
+                      )}
+                      <div className="mt-8">
+                        <Button
+                          variant="secondary"
+                          size="lg"
+                          onClick={handleSendAnother}
+                          leftIcon={<Send className="h-4 w-4" />}
+                        >
+                          {t('form.send_another')}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-semibold text-white mb-6">
@@ -199,7 +212,7 @@ export default function ContactPage() {
                     <div className="w-full space-y-2">
                       <label className="block text-sm font-medium text-off-white">
                         {t('form.topic_label')}
-                        <span className="text-error ms-1" aria-label="required">*</span>
+                        <span className="text-error ms-1" aria-label={t('form.aria_required')}>*</span>
                       </label>
                       <Select
                         value={formData.topic}
@@ -208,7 +221,7 @@ export default function ContactPage() {
                         }
                       >
                         <SelectTrigger error={errors.topic}>
-                          <SelectValue placeholder={t('form.topic_label')} />
+                          <SelectValue placeholder={t('form.topic_placeholder')} />
                         </SelectTrigger>
                         <SelectContent>
                           {topicOptions.map((option) => (
@@ -255,6 +268,7 @@ export default function ContactPage() {
                   </form>
                 </CardContent>
               </Card>
+              )}
             </div>
 
             {/* Contact Info Sidebar (2 columns) */}
@@ -278,8 +292,9 @@ export default function ContactPage() {
                       <a
                         href={`mailto:${t('info.email_value')}`}
                         className="text-sm text-muted hover:text-bronze transition-colors"
+                        dir="ltr"
                       >
-                        {t('info.email_value')}
+                        <span className="[unicode-bidi:embed]">{t('info.email_value')}</span>
                       </a>
                     </div>
                   </div>
@@ -293,8 +308,8 @@ export default function ContactPage() {
                       <p className="text-sm font-medium text-off-white">
                         {t('info.whatsapp')}
                       </p>
-                      <p className="text-sm text-muted">
-                        {t('info.whatsapp_value')}
+                      <p className="text-sm text-muted" dir="ltr">
+                        <span className="[unicode-bidi:embed]">{t('info.whatsapp_value')}</span>
                       </p>
                     </div>
                   </div>
@@ -347,6 +362,7 @@ export default function ContactPage() {
                     variant="secondary"
                     size="lg"
                     className="mt-6 w-full"
+                    aria-label={t('page.calendly_aria')}
                     onClick={() => {
                       // Open Calendly booking
                       window.open('https://calendly.com/aliodat-aviniti/30min', '_blank');
@@ -361,6 +377,6 @@ export default function ContactPage() {
           </div>
         </Container>
       </Section>
-    </main>
+    </div>
   );
 }

@@ -10,10 +10,12 @@
     "form_title": "أرسل لنا رسالة",
     "calendly_title": "أو احجز استشارة مجانية",
     "calendly_description": "حدد موعد مكالمة لمدة 30 دقيقة لمناقشة مشروعك",
-    "calendly_cta": "احجز مكالمة"
+    "calendly_cta": "احجز مكالمة",
+    "calendly_aria": "احجز استشارة مجانية لمدة 30 دقيقة"
   },
   "form": {
     "name_label": "اسمك",
+    "topic_placeholder": "اختر موضوعاً...",
     "name_placeholder": "أحمد محمد",
     "email_label": "عنوان البريد الإلكتروني",
     "email_placeholder": "ahmad@company.com",
@@ -23,6 +25,7 @@
     "phone_placeholder": "+962 79 123 4567",
     "country_code_label": "رمز الدولة",
     "topic_label": "ما الموضوع؟",
+    "aria_required": "مطلوب",
     "topics": {
       "general": "استفسار عام",
       "project": "مناقشة مشروع جديد",
@@ -35,7 +38,8 @@
     "message_placeholder": "أخبرنا عن مشروعك أو سؤالك...",
     "whatsapp_label": "اتصل بي أيضاً عبر واتساب",
     "submit": "إرسال الرسالة",
-    "submitting": "جارٍ الإرسال..."
+    "submitting": "جارٍ الإرسال...",
+    "send_another": "إرسال رسالة أخرى"
   },
   "success": {
     "title": "تم إرسال الرسالة!",

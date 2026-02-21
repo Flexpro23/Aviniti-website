@@ -56,11 +56,13 @@ export function buildIdeaLabPrompt(data: {
   discoveryAnswers: DiscoveryAnswer[];
   locale: 'en' | 'ar';
   previousIdeaNames?: string[];
+  inputLanguage?: 'en' | 'ar';
 }): string {
   const lang = data.locale === 'ar' ? 'ar' : 'en';
   const personaLabel = PERSONA_LABELS[data.persona][lang];
   const industryLabel = INDUSTRY_LABELS[data.industry][lang];
-  const outputLanguage = data.locale === 'ar' ? 'Arabic' : 'English';
+  const outputLang = data.inputLanguage || data.locale;
+  const outputLanguage = outputLang === 'ar' ? 'Arabic' : 'English';
 
   const answersText = data.discoveryAnswers
     .map((a) => `Q: ${a.questionText}\nA: ${a.answer}`)

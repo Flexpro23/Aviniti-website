@@ -34,7 +34,7 @@ export default function SolutionsPage() {
       : solutions.filter((s) => s.category === activeFilter);
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -130,7 +130,7 @@ export default function SolutionsPage() {
                       <Button asChild variant="link" size="sm">
                         <Link href={`/solutions/${solution.slug}`}>
                           {t('page.learn_more')}
-                          <ArrowRight className="w-4 h-4" />
+                          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                         </Link>
                       </Button>
                     </CardFooter>
@@ -149,6 +149,6 @@ export default function SolutionsPage() {
         primaryCTA={{ label: t('page.cta_estimate'), href: '/get-estimate' }}
         secondaryCTA={{ label: t('page.cta_contact'), href: '/contact' }}
       />
-    </main>
+    </div>
   );
 }

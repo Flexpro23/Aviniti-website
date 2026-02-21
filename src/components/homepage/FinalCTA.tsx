@@ -21,14 +21,14 @@ export function FinalCTA() {
   const { ref, inView } = useScrollReveal({ once: true, amount: 0.3 });
 
   return (
-    <section className="py-20 lg:py-32 bg-navy">
+    <section className="py-20 lg:py-32 bg-navy" aria-labelledby="final-cta-heading">
       <Container>
         <motion.div
           ref={ref}
           variants={scaleIn}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-blue via-slate-blue-light/80 to-slate-blue border border-slate-blue-light/50 p-12 lg:p-16 text-center"
+          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-blue via-slate-blue-light/80 to-slate-blue border border-slate-blue-light/50 p-6 sm:p-8 md:p-12 lg:p-16 text-center"
         >
           {/* Decorative Gradient Overlay */}
           <div
@@ -42,7 +42,7 @@ export function FinalCTA() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             {/* Heading */}
-            <h2 className="text-h2 text-white mb-6">{t('title')}</h2>
+            <h2 id="final-cta-heading" className="text-h2 text-white mb-6">{t('title')}</h2>
 
             {/* Subtitle */}
             <p className="text-lg lg:text-xl text-muted mb-10 max-w-2xl mx-auto">
@@ -54,7 +54,7 @@ export function FinalCTA() {
               <Button asChild variant="primary" size="lg">
                 <Link href="/get-estimate">
                   {t('cta_primary')}
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                 </Link>
               </Button>
 
@@ -71,7 +71,7 @@ export function FinalCTA() {
               <MessageCircle className="w-4 h-4" />
               <span>{t('whatsapp_label')}</span>
               <a
-                href="https://wa.me/962790685302?text=Hi%2C%20I%27m%20interested%20in%20Aviniti%27s%20services"
+                href={`https://wa.me/962790685302?text=${encodeURIComponent(t('whatsapp_message'))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-bronze hover:text-bronze-light transition-colors underline underline-offset-2"

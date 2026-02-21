@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { faqCategories } from '@/lib/data/faq';
 import { Container, Section } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
@@ -19,6 +20,7 @@ export async function generateMetadata({
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: getAlternateLinks('/faq'),
     openGraph: {
       title: t('meta.title'),
       description: t('meta.description'),
@@ -74,7 +76,7 @@ export default async function FAQPage({
   };
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -109,6 +111,6 @@ export default async function FAQPage({
         primaryCTA={{ label: t('cta.primary_label'), href: '/contact' }}
         secondaryCTA={{ label: t('cta.secondary_label'), href: '/get-estimate' }}
       />
-    </main>
+    </div>
   );
 }

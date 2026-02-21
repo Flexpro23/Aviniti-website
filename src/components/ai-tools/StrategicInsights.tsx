@@ -135,7 +135,7 @@ export function StrategicInsights({
 
             {/* Description */}
             <div className={cn(
-              'text-sm text-muted leading-relaxed pl-3 border-l-2 py-1',
+              'text-sm text-muted leading-relaxed ps-3 border-s-2 py-1',
               insight.type === 'strength' && 'border-emerald-600/40',
               insight.type === 'challenge' && 'border-amber-500/40',
               insight.type === 'recommendation' && 'border-bronze/40'

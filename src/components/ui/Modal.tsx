@@ -40,12 +40,14 @@ ModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 export interface ModalContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   mobileSheet?: boolean;
+  /** Required for i18n: pass a translated close label (e.g. t('ui.close_label')) */
+  closeLabel: string;
 }
 
 export const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   ModalContentProps
->(({ className, children, mobileSheet = true, ...props }, ref) => (
+>(({ className, children, mobileSheet = true, closeLabel, ...props }, ref) => (
   <ModalPortal>
     <ModalOverlay />
     <DialogPrimitive.Content
@@ -55,8 +57,8 @@ export const ModalContent = React.forwardRef<
         'fixed z-[60] bg-slate-blue border border-slate-blue-light shadow-xl',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bronze',
         mobileSheet
-          ? 'inset-x-0 bottom-0 rounded-t-2xl p-6 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:rounded-xl'
-          : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-lg rounded-xl p-6',
+          ? 'inset-x-0 bottom-0 rounded-t-2xl p-6 md:start-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:rounded-xl'
+          : 'start-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-lg rounded-xl p-6',
         className
       )}
       {...props}
@@ -66,11 +68,12 @@ export const ModalContent = React.forwardRef<
         initial="hidden"
         animate="visible"
         exit="exit"
+        className={mobileSheet ? 'max-h-[85vh] overflow-y-auto' : undefined}
       >
         {children}
-        <DialogPrimitive.Close className="absolute end-4 top-4 rounded-sm opacity-70 ring-offset-navy transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-bronze focus:ring-offset-2 disabled:pointer-events-none">
+        <DialogPrimitive.Close className="absolute end-4 top-4 h-10 w-10 flex items-center justify-center rounded-sm opacity-70 ring-offset-navy transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-bronze focus:ring-offset-2 disabled:pointer-events-none">
           <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{closeLabel}</span>
         </DialogPrimitive.Close>
       </motion.div>
     </DialogPrimitive.Content>
@@ -85,7 +88,7 @@ ModalHeader.displayName = 'ModalHeader';
 
 export const ModalFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2', className)}
+    className={cn('flex flex-col-reverse sm:flex-row sm:justify-end gap-2', className)}
     {...props}
   />
 );

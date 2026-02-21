@@ -27,10 +27,11 @@ export function LanguageSwitcher() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -39,8 +40,8 @@ export function LanguageSwitcher() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
   // Close dropdown on Escape key
@@ -61,11 +62,62 @@ export function LanguageSwitcher() {
     router.replace(pathname, { locale: newLocale as 'en' | 'ar' });
   };
 
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  };
+
+  const handleMenuKeyDown = (e: React.KeyboardEvent) => {
+    const items = dropdownRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]');
+    if (!items?.length) return;
+
+    const currentIndex = Array.from(items).findIndex(item => item === document.activeElement);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        items[(currentIndex + 1) % items.length]?.focus();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        items[(currentIndex - 1 + items.length) % items.length]?.focus();
+        break;
+      case 'Home':
+        e.preventDefault();
+        items[0]?.focus();
+        break;
+      case 'End':
+        e.preventDefault();
+        items[items.length - 1]?.focus();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        break;
+    }
+  };
+
+  // Focus first menu item when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        const firstItem = dropdownRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
+        firstItem?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
       <button
+        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
         className={cn(
           'flex items-center gap-1.5 px-3 py-1.5 rounded-lg',
           'text-sm font-medium text-muted',
@@ -96,6 +148,7 @@ export function LanguageSwitcher() {
             )}
             role="menu"
             aria-label={t('language.options')}
+            onKeyDown={handleMenuKeyDown}
           >
             {locales.map((locale) => (
               <button
@@ -107,11 +160,13 @@ export function LanguageSwitcher() {
                 className={cn(
                   'w-full px-3 py-2 text-sm text-start',
                   'hover:bg-slate-blue-light transition-colors',
+                  'focus-visible:outline-none focus-visible:bg-slate-blue-light focus-visible:text-white',
                   currentLocale === locale
                     ? 'text-bronze font-medium'
                     : 'text-muted hover:text-white'
                 )}
                 role="menuitem"
+                tabIndex={-1}
               >
                 {t(`language.${locale}`)}
               </button>

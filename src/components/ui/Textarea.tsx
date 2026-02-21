@@ -22,7 +22,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const errorId = error ? `${textareaId}-error` : undefined;
     const helperId = helperText ? `${textareaId}-helper` : undefined;
 
-    const [charCount, setCharCount] = React.useState(0);
+    const [charCount, setCharCount] = React.useState(() => {
+      if (value !== undefined) return String(value).length;
+      if (props.defaultValue !== undefined) return String(props.defaultValue).length;
+      return 0;
+    });
 
     React.useEffect(() => {
       if (value !== undefined) {
@@ -37,12 +41,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="w-full space-y-2">
-        {label && (
+        {/* Label row */}
+        {(label || maxLength) && (
           <div className="flex items-center justify-between">
-            <label htmlFor={textareaId} className="block text-sm font-medium text-off-white">
-              {label}
-              {required && <span className="text-error ms-1" aria-label={t('ui.required_aria')}>*</span>}
-            </label>
+            {label ? (
+              <label htmlFor={textareaId} className="block text-sm font-medium text-off-white">
+                {label}
+                {required && <span className="text-error ms-1" aria-label={t('ui.required_aria')}>*</span>}
+              </label>
+            ) : <span />}
             {maxLength && (
               <span className="text-xs text-muted tabular-nums" aria-live="polite">
                 {charCount}/{maxLength}
@@ -65,7 +72,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className
           )}
           aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={cn(errorId, helperId)}
+          aria-describedby={[errorId, helperId].filter(Boolean).join(' ') || undefined}
           maxLength={maxLength}
           value={value}
           onChange={handleChange}

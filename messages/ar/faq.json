@@ -8,6 +8,8 @@
     "title": "الأسئلة الشائعة",
     "subtitle": "كل ما تحتاج معرفته عن العمل مع Aviniti",
     "search_placeholder": "ابحث في الأسئلة...",
+    "clear_search": "مسح البحث",
+    "aria_clear_search": "مسح البحث",
     "search_no_results": "لم يتم العثور على أسئلة مطابقة. جرّب مصطلح بحث مختلف.",
     "categories": {
       "all": "جميع الأسئلة",

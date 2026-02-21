@@ -94,6 +94,8 @@
     }
   },
   "step5": {
+    "title": "أين يجب أن نرسل مخطط مشروعك؟",
+    "description": "سنرسل لك التقرير الكامل مع ملف PDF قابل للتحميل.",
     "deliverables_title": "ما ستحصل عليه",
     "deliverable_cost": "تفصيل التكلفة حسب المرحلة",
     "deliverable_timeline": "جدول زمني أسبوعي للمشروع",
@@ -308,6 +310,7 @@
     "calendly_label": "Calendly:",
     "loading": "جارٍ تحميل PDF...",
     "generating": "جارٍ إنشاء PDF...",
+    "error": "فشل التحميل",
     "download": "تنزيل تقرير PDF",
     "confidential": "سري",
     "page_of": "صفحة {page} من {total}",

@@ -23,7 +23,8 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
     return (
       <div
         ref={ref}
-        className={cn('animate-pulse bg-slate-blue-light', variantStyles[variant], className)}
+        className={cn('animate-pulse motion-reduce:animate-none bg-slate-blue-light', variantStyles[variant], className)}
+        aria-busy="true"
         {...props}
       />
     );

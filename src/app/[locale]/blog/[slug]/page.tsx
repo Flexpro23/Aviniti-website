@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { notFound } from 'next/navigation';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -6,6 +7,7 @@ import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Badge } from '@/components/ui';
 import { ShareButtons } from '@/components/shared/ShareButtons';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { ContentLanguageNotice } from '@/components/shared/ContentLanguageNotice';
 
 interface BlogPost {
   slug: string;
@@ -14,7 +16,7 @@ interface BlogPost {
   category: string;
   author: string;
   date: string;
-  readTime: string;
+  readTime: number;
   content: string;
 }
 
@@ -27,7 +29,7 @@ const blogPosts: BlogPost[] = [
     category: 'AI',
     author: 'Aviniti Team',
     date: '2025-03-15',
-    readTime: '8 min read',
+    readTime: 8,
     content: `
 Artificial intelligence is no longer a futuristic concept in mobile app development -- it is here and reshaping every stage of the development lifecycle.
 
@@ -64,7 +66,7 @@ Want to explore how AI can enhance your mobile app? Contact our team for a free 
     category: 'Tutorials',
     author: 'Aviniti Team',
     date: '2025-03-01',
-    readTime: '12 min read',
+    readTime: 12,
     content: `
 Choosing the right technology stack is one of the most critical decisions for any startup. The wrong choice can lead to scalability issues, increased costs, and delayed launches.
 
@@ -99,7 +101,7 @@ Ready to discuss your project's tech stack? Use our AI Estimate tool for persona
     category: 'Mobile',
     author: 'Aviniti Team',
     date: '2025-02-18',
-    readTime: '10 min read',
+    readTime: 10,
     content: `
 Building a delivery app that can scale from hundreds to thousands of orders per day requires careful architectural planning and the right technology choices.
 
@@ -136,7 +138,7 @@ Building a scalable delivery app requires expertise across mobile development, b
     category: 'Web',
     author: 'Aviniti Team',
     date: '2025-02-05',
-    readTime: '15 min read',
+    readTime: 15,
     content: `
 Performance is a critical factor in user experience and SEO. Here are the key techniques we use to ensure our web applications are lightning fast.
 
@@ -175,7 +177,7 @@ These optimization techniques are built into every project we deliver at Aviniti
     category: 'AI',
     author: 'Aviniti Team',
     date: '2025-01-20',
-    readTime: '7 min read',
+    readTime: 7,
     content: `
 AI-powered business tools are rapidly evolving from novelties to necessities. Here is what we see shaping the future of enterprise AI.
 
@@ -225,6 +227,7 @@ export async function generateMetadata({
   return {
     title: `${post.title} - ${t('meta.blog_suffix')}`,
     description: post.excerpt,
+    alternates: getAlternateLinks(`/blog/${slug}`),
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -260,7 +263,7 @@ export default async function BlogPostPage({
         const text = currentParagraph.join(' ').trim();
         if (text) {
           elements.push(
-            <p key={`p-${elements.length}`} className="text-muted leading-relaxed mb-4">
+            <p key={`p-${elements.length}`} className="text-off-white leading-relaxed mb-4">
               {text}
             </p>
           );
@@ -291,7 +294,7 @@ export default async function BlogPostPage({
   };
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -308,13 +311,13 @@ export default async function BlogPostPage({
               href="/blog"
               className="inline-flex items-center gap-2 text-muted hover:text-bronze transition-colors mb-8"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               {t('post.back_to_blog')}
             </Link>
 
             {/* Category Badge */}
             <Badge variant="default" className="mb-4">
-              {post.category}
+              {t(`page.categories.${post.category.toLowerCase()}`)}
             </Badge>
 
             {/* Title */}
@@ -338,14 +341,14 @@ export default async function BlogPostPage({
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                {post.readTime}
+                {t('post.reading_time', { minutes: post.readTime })}
               </span>
             </div>
 
             {/* Share Buttons */}
             <div className="mt-6 pt-6 border-t border-slate-blue-light">
               <ShareButtons
-                url={`https://aviniti.app/blog/${post.slug}`}
+                url={`https://aviniti.app/${locale}/blog/${post.slug}`}
                 title={post.title}
                 description={post.excerpt}
               />
@@ -357,6 +360,9 @@ export default async function BlogPostPage({
       {/* Article Body */}
       <Section>
         <Container>
+          <div className="max-w-3xl mx-auto">
+            <ContentLanguageNotice namespace="blog" />
+          </div>
           <article className="max-w-3xl mx-auto prose-custom">
             {renderContent(post.content)}
           </article>
@@ -368,7 +374,7 @@ export default async function BlogPostPage({
         <Container>
           <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-slate-blue-light">
             <ShareButtons
-              url={`https://aviniti.app/blog/${post.slug}`}
+              url={`https://aviniti.app/${locale}/blog/${post.slug}`}
               title={post.title}
               description={post.excerpt}
             />
@@ -376,12 +382,12 @@ export default async function BlogPostPage({
               href="/blog"
               className="text-bronze hover:text-bronze-light transition-colors font-medium flex items-center gap-2"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               {t('post.all_articles')}
             </Link>
           </div>
         </Container>
       </Section>
-    </main>
+    </div>
   );
 }

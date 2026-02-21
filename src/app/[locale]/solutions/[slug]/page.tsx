@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { getAlternateLinks } from '@/lib/i18n/config';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import {
@@ -62,6 +63,7 @@ export async function generateMetadata({
   return {
     title: `${t(`solutions.${tKey}.name`)} - Aviniti`,
     description: t(`solutions.${tKey}.description`),
+    alternates: getAlternateLinks(`/solutions/${slug}`),
     openGraph: {
       title: `${t(`solutions.${tKey}.name`)} | Aviniti`,
       description: t(`solutions.${tKey}.description`),
@@ -110,7 +112,7 @@ export default async function SolutionDetailPage({
   }
 
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Breadcrumbs */}
       <Section padding="compact">
         <Container>
@@ -155,7 +157,7 @@ export default async function SolutionDetailPage({
                 className="inline-flex items-center justify-center gap-2 h-13 px-7 py-3 text-lg font-semibold rounded-lg bg-bronze text-white hover:bg-bronze-hover transition-colors duration-200"
               >
                 {t('detail.cta_primary')}
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5 rtl:rotate-180" />
               </Link>
               {solution.hasDemo && (
                 <Link
@@ -229,8 +231,8 @@ export default async function SolutionDetailPage({
                       {/* Week label */}
                       <div className="text-xs text-muted uppercase tracking-wider mb-2">
                         {solution.timelineDays === 60
-                          ? `Week ${step.week * 2 - 1}-${step.week * 2}`
-                          : `Week ${step.week}`}
+                          ? t('detail.timeline_weeks_range', { start: step.week * 2 - 1, end: step.week * 2 })
+                          : t('detail.timeline_week', { week: step.week })}
                       </div>
                       {/* Step description */}
                       <p className="text-sm text-off-white leading-tight">
@@ -278,7 +280,7 @@ export default async function SolutionDetailPage({
                 className="inline-flex items-center gap-2 mt-4 text-bronze hover:text-bronze-light transition-colors duration-200 font-medium"
               >
                 {t('detail.cta_secondary')}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 rtl:rotate-180" />
               </Link>
             </div>
           </div>
@@ -294,6 +296,10 @@ export default async function SolutionDetailPage({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               {solutions
                 .filter((s) => s.slug !== solution.slug)
+                .sort((a, b) =>
+                  Math.abs(a.startingPrice - solution.startingPrice) -
+                  Math.abs(b.startingPrice - solution.startingPrice)
+                )
                 .slice(0, 3)
                 .map((relatedSolution) => {
                   const Icon = iconMap[relatedSolution.icon as keyof typeof iconMap];
@@ -337,7 +343,7 @@ export default async function SolutionDetailPage({
                           {/* Learn More */}
                           <div className="flex items-center gap-2 mt-4 text-bronze text-sm font-medium group-hover:gap-3 transition-all">
                             <span>{t('page.learn_more')}</span>
-                            <ArrowRight className="h-4 w-4" />
+                            <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                           </div>
                         </CardContent>
                       </Card>
@@ -356,6 +362,6 @@ export default async function SolutionDetailPage({
         primaryCTA={{ label: t('detail.cta_primary'), href: '/contact' }}
         secondaryCTA={{ label: t('detail.view_all'), href: '/solutions' }}
       />
-    </main>
+    </div>
   );
 }

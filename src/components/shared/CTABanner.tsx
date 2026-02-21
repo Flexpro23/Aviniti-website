@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
-import { scaleIn, fadeInUp } from '@/lib/motion/variants';
+import { fadeInUp } from '@/lib/motion/variants';
 import { useScrollReveal } from '@/lib/motion/hooks';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
@@ -55,13 +55,24 @@ export function CTABanner({
       <motion.div
         initial={prefersReducedMotion ? {} : 'hidden'}
         animate={prefersReducedMotion ? {} : inView ? 'visible' : 'hidden'}
-        variants={scaleIn}
+        variants={{
+          hidden: { opacity: 0, scale: 0.95 },
+          visible: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+              duration: 0.5,
+              ease: 'easeOut',
+              staggerChildren: 0.15,
+              delayChildren: 0.1,
+            },
+          },
+        }}
         className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 text-center"
       >
         {/* Heading */}
         <motion.h2
           variants={fadeInUp}
-          transition={{ delay: 0.2 }}
           className="text-h2 text-white"
         >
           {heading}
@@ -71,7 +82,6 @@ export function CTABanner({
         {subtitle && (
           <motion.p
             variants={fadeInUp}
-            transition={{ delay: 0.35 }}
             className="text-lg text-muted mt-4 max-w-2xl mx-auto"
           >
             {subtitle}
@@ -81,13 +91,12 @@ export function CTABanner({
         {/* CTAs */}
         <motion.div
           variants={fadeInUp}
-          transition={{ delay: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
         >
           <Button asChild size="lg">
             <Link href={primaryCTA.href}>
               {primaryCTA.label}
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>
           </Button>
           {secondaryCTA && (

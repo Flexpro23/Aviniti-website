@@ -9,11 +9,12 @@
 
 import { useState, FormEvent } from 'react';
 import { ArrowRight, Loader2, Check } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 export function NewsletterForm() {
   const t = useTranslations('common');
+  const locale = useLocale();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,13 +26,24 @@ export function NewsletterForm() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement newsletter API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, locale }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        const message =
+          json?.error?.message ?? t('newsletter.subscribe_error');
+        setError(message);
+        return;
+      }
 
       setIsSuccess(true);
       setEmail('');
       setTimeout(() => setIsSuccess(false), 3000);
-    } catch (err) {
+    } catch {
       setError(t('newsletter.subscribe_error'));
     } finally {
       setIsLoading(false);
@@ -45,15 +57,15 @@ export function NewsletterForm() {
         <input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com"
+          onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
+          placeholder={t('newsletter.email_placeholder')}
           required
           disabled={isLoading || isSuccess}
           className={cn(
             'flex-1 h-11 px-4 rounded-lg',
             'bg-slate-blue border border-slate-blue-light',
             'text-sm text-off-white placeholder:text-muted-light',
-            'focus:border-bronze focus:ring-1 focus:ring-bronze',
+            'focus-visible:border-bronze focus-visible:ring-2 focus-visible:ring-bronze',
             'transition-all duration-200',
             'disabled:opacity-50 disabled:cursor-not-allowed'
           )}
@@ -83,14 +95,14 @@ export function NewsletterForm() {
               <span className="sr-only">{t('newsletter.subscribing')}</span>
             </>
           ) : isSuccess ? (
-            <>
+            <span aria-live="polite" className="inline-flex items-center gap-2">
               <Check className="h-4 w-4" aria-hidden="true" />
               {t('newsletter.subscribed')}
-            </>
+            </span>
           ) : (
             <>
               {t('newsletter.subscribe')}
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             </>
           )}
         </button>

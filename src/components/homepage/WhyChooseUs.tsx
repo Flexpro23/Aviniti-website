@@ -8,52 +8,40 @@
  */
 
 import { useTranslations } from 'next-intl';
-import { Zap, Sparkles, DollarSign, HeadphonesIcon } from 'lucide-react';
+import { Zap, Sparkles, DollarSign, HeadphonesIcon, ArrowRight } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { staggerContainer, fadeInUp } from '@/lib/motion/variants';
 import { motion } from 'framer-motion';
+import { Link } from '@/lib/i18n/navigation';
 
 interface Differentiator {
-  icon: React.ReactNode;
+  Icon: LucideIcon;
   titleKey: string;
   descriptionKey: string;
 }
 
+const DIFFERENTIATORS: Differentiator[] = [
+  { Icon: Zap, titleKey: 'reason_1_title', descriptionKey: 'reason_1_description' },
+  { Icon: Sparkles, titleKey: 'reason_2_title', descriptionKey: 'reason_2_description' },
+  { Icon: DollarSign, titleKey: 'reason_3_title', descriptionKey: 'reason_3_description' },
+  { Icon: HeadphonesIcon, titleKey: 'reason_4_title', descriptionKey: 'reason_4_description' },
+];
+
 export function WhyChooseUs() {
   const t = useTranslations('home.why_choose');
 
-  const differentiators: Differentiator[] = [
-    {
-      icon: <Zap className="w-10 h-10" />,
-      titleKey: 'reason_1_title',
-      descriptionKey: 'reason_1_description',
-    },
-    {
-      icon: <Sparkles className="w-10 h-10" />,
-      titleKey: 'reason_2_title',
-      descriptionKey: 'reason_2_description',
-    },
-    {
-      icon: <DollarSign className="w-10 h-10" />,
-      titleKey: 'reason_3_title',
-      descriptionKey: 'reason_3_description',
-    },
-    {
-      icon: <HeadphonesIcon className="w-10 h-10" />,
-      titleKey: 'reason_4_title',
-      descriptionKey: 'reason_4_description',
-    },
-  ];
-
   return (
-    <Section className="bg-navy">
+    <Section className="bg-navy" aria-labelledby="why-choose-heading">
       <Container>
         <ScrollReveal>
           <SectionHeading
+            id="why-choose-heading"
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
@@ -68,13 +56,13 @@ export function WhyChooseUs() {
           viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {differentiators.map((item, index) => (
+          {DIFFERENTIATORS.map((item, index) => (
             <motion.div key={index} variants={fadeInUp}>
               <Card hover className="h-full">
                 <CardHeader className="space-y-4">
                   {/* Icon */}
                   <div className="w-16 h-16 rounded-xl bg-bronze/10 flex items-center justify-center text-bronze">
-                    {item.icon}
+                    <item.Icon className="w-10 h-10" aria-hidden="true" />
                   </div>
 
                   {/* Title */}
@@ -89,6 +77,18 @@ export function WhyChooseUs() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Section-level CTA */}
+        <div className="mt-12 flex justify-center">
+          <Button
+            asChild
+            variant="primary"
+            size="lg"
+            rightIcon={<ArrowRight className="h-5 w-5 rtl:rotate-180" />}
+          >
+            <Link href="/get-estimate">{t('cta')}</Link>
+          </Button>
+        </div>
       </Container>
     </Section>
   );

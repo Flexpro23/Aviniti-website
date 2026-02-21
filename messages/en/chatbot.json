@@ -69,6 +69,7 @@
     "greeting": "Hi! I'm Avi, your AI assistant. How can I help you today?",
     "input_placeholder": "Type your message...",
     "input_aria": "Chat message",
-    "send_aria": "Send message"
+    "send_aria": "Send message",
+    "chat_window_aria": "Chat with Avi, Aviniti's AI assistant"
   }
 }

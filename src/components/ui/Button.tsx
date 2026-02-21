@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { buttonVariants } from '@/lib/motion/variants';
+import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 
 /* ============================================================
    BUTTON COMPONENT
@@ -43,6 +44,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const t = useTranslations('common');
+    const prefersReducedMotion = usePrefersReducedMotion();
     const defaultLoadingText = loadingText ?? t('ui.loading_text');
     const Comp = asChild ? Slot : 'button';
 
@@ -110,8 +112,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (asChild) {
-      // When asChild, pass children directly to Slot (not wrapped in fragment)
-      // Slot needs a single child element to merge className onto
+      // When asChild, Slot merges className onto its single child element.
+      // We wrap icons around children so they render inside the slotted element.
       return (
         <Comp
           ref={ref}
@@ -119,7 +121,34 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           aria-busy={isLoading}
           {...props}
         >
-          {children}
+          {React.isValidElement(children)
+            ? React.cloneElement(children as React.ReactElement<{ children?: React.ReactNode }>, {
+                children: (
+                  <>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className={cn('animate-spin', iconSizes[size])} aria-hidden="true" />
+                        <span className="sr-only">{defaultLoadingText}</span>
+                      </>
+                    ) : (
+                      <>
+                        {leftIcon && (
+                          <span className={cn('inline-flex', iconSizes[size])} aria-hidden="true">
+                            {leftIcon}
+                          </span>
+                        )}
+                        {(children as React.ReactElement<{ children?: React.ReactNode }>).props.children}
+                        {rightIcon && (
+                          <span className={cn('inline-flex', iconSizes[size])} aria-hidden="true">
+                            {rightIcon}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </>
+                ),
+              })
+            : children}
         </Comp>
       );
     }
@@ -131,10 +160,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         variants={buttonVariants}
         initial="idle"
-        whileHover={!disabled && !isLoading ? 'hover' : undefined}
-        whileTap={!disabled && !isLoading ? 'tap' : undefined}
+        whileHover={!disabled && !isLoading && !prefersReducedMotion ? 'hover' : undefined}
+        whileTap={!disabled && !isLoading && !prefersReducedMotion ? 'tap' : undefined}
         aria-busy={isLoading}
-        {...(props as any)}
+        {...(props as Omit<
+          React.ComponentPropsWithoutRef<'button'>,
+          'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'
+        >)}
       >
         {content}
       </motion.button>

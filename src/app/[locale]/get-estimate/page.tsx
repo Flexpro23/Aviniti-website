@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -28,6 +29,7 @@ import {
   X,
   TrendingUp,
 } from 'lucide-react';
+import { Link } from '@/lib/i18n/navigation';
 import { ToolHero } from '@/components/ai-tools/ToolHero';
 import { ToolForm } from '@/components/ai-tools/ToolForm';
 import { StepTransition } from '@/components/ai-tools/StepTransition';
@@ -35,14 +37,21 @@ import { AIThinkingState } from '@/components/ai-tools/AIThinkingState';
 import { ProcessingState } from '@/components/ai-tools/ProcessingState';
 import { ToolResults, ToolResultItem } from '@/components/ai-tools/ToolResults';
 import { CrossSellCTA } from '@/components/ai-tools/CrossSellCTA';
-import { CostBreakdownChart } from '@/components/ai-tools/charts/CostBreakdownChart';
 import { TimelinePhases } from '@/components/ai-tools/TimelinePhases';
 import { StrategicInsights } from '@/components/ai-tools/StrategicInsights';
-import { PDFReport } from '@/components/ai-tools/PDFReport';
 import { ConsultationCTA } from '@/components/ai-tools/ConsultationCTA';
 import { TechStackToggle } from '@/components/ai-tools/TechStackToggle';
 import { EstimateHeroVisual } from '@/components/ai-tools/EstimateHeroVisual';
 import { ResultsNav } from '@/components/ai-tools/ResultsNav';
+
+const CostBreakdownChart = dynamic(
+  () => import('@/components/ai-tools/charts/CostBreakdownChart').then((mod) => ({ default: mod.CostBreakdownChart })),
+  { ssr: false, loading: () => <div className="h-64 animate-pulse rounded-xl bg-white/5" /> }
+);
+const PDFReport = dynamic(
+  () => import('@/components/ai-tools/PDFReport').then((mod) => ({ default: mod.PDFReport })),
+  { ssr: false }
+);
 import { useResultPersistence } from '@/hooks/useResultPersistence';
 import { getNextDiscountThreshold } from '@/lib/pricing/calculator';
 import type {
@@ -170,7 +179,7 @@ export default function GetEstimatePage() {
 
   // Result persistence
   const [isCopied, setIsCopied] = useState(false);
-  const { saveResult, copyShareableUrl, savedId } = useResultPersistence('estimate');
+  const { saveResult, copyShareableUrl, savedId, loadedResult } = useResultPersistence('estimate', locale);
 
   // Save result when it arrives
   useEffect(() => {
@@ -178,6 +187,15 @@ export default function GetEstimatePage() {
       saveResult(results);
     }
   }, [results, savedId, saveResult]);
+
+  // Hydrate results from shareable URL
+  useEffect(() => {
+    if (loadedResult && !results) {
+      setResults(loadedResult);
+      setStep(6);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedResult]);
 
   // Ref prevents React Strict Mode double-execution from clearing sessionStorage
   const prefillLoadedRef = useRef(false);
@@ -346,6 +364,16 @@ export default function GetEstimatePage() {
         }),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('errors.analyze_failed'));
+        } catch {
+          setError(t('errors.analyze_failed'));
+        }
+        setStep(2);
+        return;
+      }
       const data = await res.json();
 
       if (data.success) {
@@ -394,6 +422,16 @@ export default function GetEstimatePage() {
         }),
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('errors.features_failed'));
+        } catch {
+          setError(t('errors.features_failed'));
+        }
+        setStep(3);
+        return;
+      }
       const data = await res.json();
 
       if (data.success) {
@@ -518,12 +556,24 @@ export default function GetEstimatePage() {
         signal: controller.signal,
       });
 
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          setError(errorData.error?.message || t('errors.generation_failed'));
+        } catch {
+          setError(t('errors.generation_failed'));
+        }
+        setIsLoading(false);
+        setStep(5);
+        return;
+      }
       const data = await res.json();
 
       if (data.success) {
         setResults(data.data);
       } else {
         setError(data.error?.message || t('errors.generation_failed'));
+        setStep(5);
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
@@ -554,7 +604,7 @@ export default function GetEstimatePage() {
   };
 
   const handleCopyLink = async () => {
-    const success = await copyShareableUrl();
+    const success = await copyShareableUrl(results ?? undefined);
     if (success) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
@@ -622,7 +672,7 @@ export default function GetEstimatePage() {
       : `$${results.estimatedCost.min.toLocaleString()}–$${results.estimatedCost.max.toLocaleString()}`;
 
     return (
-      <main className="min-h-screen bg-navy">
+      <div className="min-h-screen bg-navy">
         {/* Sticky anchor navigation */}
         <ResultsNav sections={navSections} />
 
@@ -715,12 +765,12 @@ export default function GetEstimatePage() {
                     </span>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-start">
                       <thead>
                         <tr className="border-b border-slate-blue-light">
                           <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">{t('pricing.table_feature')}</th>
                           <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">{t('pricing.table_category')}</th>
-                          <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">{t('pricing.table_price')}</th>
+                          <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-end">{t('pricing.table_price')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-blue-light/50">
@@ -728,30 +778,30 @@ export default function GetEstimatePage() {
                           <tr key={i} className="hover:bg-navy/50 transition-colors">
                             <td className="px-6 py-3 text-sm text-off-white">{tf(`${f.catalogId}.name`)}</td>
                             <td className="px-6 py-3 text-xs text-muted capitalize">{tf(`categories.${f.categoryId}`)}</td>
-                            <td className="px-6 py-3 text-sm font-medium text-off-white text-right">${f.price.toLocaleString()}</td>
+                            <td className="px-6 py-3 text-sm font-medium text-off-white text-end">${f.price.toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
                         <tr className="border-t border-slate-blue-light">
                           <td colSpan={2} className="px-6 py-3 text-sm text-muted">{t('pricing.subtotal')}</td>
-                          <td className="px-6 py-3 text-sm font-medium text-off-white text-right">${results.pricing.subtotal.toLocaleString()}</td>
+                          <td className="px-6 py-3 text-sm font-medium text-off-white text-end">${results.pricing.subtotal.toLocaleString()}</td>
                         </tr>
                         <tr>
                           <td colSpan={2} className="px-6 py-2 text-sm text-muted">{t('pricing.design_surcharge')}</td>
-                          <td className="px-6 py-2 text-sm text-off-white text-right">+${results.pricing.designSurcharge.toLocaleString()}</td>
+                          <td className="px-6 py-2 text-sm text-off-white text-end">+${results.pricing.designSurcharge.toLocaleString()}</td>
                         </tr>
                         {results.pricing.bundleDiscount > 0 && (
                           <tr>
                             <td colSpan={2} className="px-6 py-2 text-sm text-tool-green-light">
                               {t('pricing.bundle_discount', { percent: Math.round(results.pricing.bundleDiscountPercent * 100) })}
                             </td>
-                            <td className="px-6 py-2 text-sm text-tool-green-light text-right">-${results.pricing.bundleDiscount.toLocaleString()}</td>
+                            <td className="px-6 py-2 text-sm text-tool-green-light text-end">-${results.pricing.bundleDiscount.toLocaleString()}</td>
                           </tr>
                         )}
                         <tr className="border-t-2 border-bronze">
                           <td colSpan={2} className="px-6 py-3 text-base font-bold text-white">{t('pricing.total')}</td>
-                          <td className="px-6 py-3 text-base font-bold text-bronze-light text-right">${results.pricing.total.toLocaleString()}</td>
+                          <td className="px-6 py-3 text-base font-bold text-bronze-light text-end">${results.pricing.total.toLocaleString()}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -774,16 +824,16 @@ export default function GetEstimatePage() {
                   </span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left">
+                  <table className="w-full text-start">
                     <thead>
                       <tr className="border-b border-slate-blue-light">
                         <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider">
                           {t('results.table_phase')}
                         </th>
-                        <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">
+                        <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-end">
                           {t('results.table_cost')}
                         </th>
-                        <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-right">
+                        <th className="px-6 py-3 text-xs font-semibold text-muted uppercase tracking-wider text-end">
                           {t('results.table_duration')}
                         </th>
                       </tr>
@@ -804,10 +854,10 @@ export default function GetEstimatePage() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm font-medium text-off-white text-right">
+                          <td className="px-6 py-4 text-sm font-medium text-off-white text-end">
                             ${phase.cost.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 text-sm text-muted text-right">
+                          <td className="px-6 py-4 text-sm text-muted text-end">
                             {phase.duration}
                           </td>
                         </tr>
@@ -947,7 +997,7 @@ export default function GetEstimatePage() {
             />
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -955,7 +1005,7 @@ export default function GetEstimatePage() {
   // Form (Steps 1-5)
   // ============================================================
   return (
-    <main className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy">
       {/* Hero */}
       <ToolHero
         toolSlug="get-estimate"
@@ -1022,7 +1072,7 @@ export default function GetEstimatePage() {
                         role="radio"
                         aria-checked={isSelected}
                         onClick={() => setProjectType(option.value)}
-                        className={`w-full flex items-start gap-4 p-4 md:p-5 rounded-lg border-2 transition-all duration-200 text-left cursor-pointer ${
+                        className={`w-full flex items-start gap-4 p-4 md:p-5 rounded-lg border-2 transition-all duration-200 text-start cursor-pointer ${
                           option.value === 'fullstack' ? 'sm:col-span-2' : ''
                         } ${
                           isSelected
@@ -1042,7 +1092,7 @@ export default function GetEstimatePage() {
                           </span>
                         </div>
                         {isSelected && (
-                          <div className="ml-auto flex-shrink-0 h-6 w-6 rounded-full bg-tool-green flex items-center justify-center">
+                          <div className="ms-auto flex-shrink-0 h-6 w-6 rounded-full bg-tool-green flex items-center justify-center">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                         )}
@@ -1058,7 +1108,7 @@ export default function GetEstimatePage() {
                     className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                   >
                     {t('buttons.next_describe')}
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                   </button>
                 </div>
               </div>
@@ -1129,7 +1179,7 @@ export default function GetEstimatePage() {
                       rows={6}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full min-h-[160px] px-4 py-3 bg-navy border border-slate-blue-light rounded-lg text-base text-off-white placeholder:text-muted-light resize-y hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200"
+                      className="w-full min-h-[160px] px-4 py-3 bg-navy border border-slate-blue-light rounded-lg text-base text-off-white placeholder:text-muted-light resize-y hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200"
                       placeholder={t('step2.placeholder')}
                       maxLength={2000}
                     />
@@ -1154,7 +1204,7 @@ export default function GetEstimatePage() {
                             key={key}
                             type="button"
                             onClick={() => setDescription(example)}
-                            className="flex items-start gap-2 w-full text-left text-xs text-muted hover:text-tool-green-light hover:bg-tool-green/5 rounded-md px-2 py-1.5 transition-all duration-150 cursor-pointer"
+                            className="flex items-start gap-2 w-full text-start text-xs text-muted hover:text-tool-green-light hover:bg-tool-green/5 rounded-md px-2 py-1.5 transition-all duration-150 cursor-pointer"
                           >
                             <span className="text-tool-green-light mt-0.5 flex-shrink-0">•</span>
                             &ldquo;{example}&rdquo;
@@ -1170,7 +1220,7 @@ export default function GetEstimatePage() {
                     onClick={goBack}
                     className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                   >
-                    <ArrowLeft className="h-5 w-5" />
+                    <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                     {t('buttons.back')}
                   </button>
                   <button
@@ -1307,7 +1357,7 @@ export default function GetEstimatePage() {
                         onClick={goBack}
                         className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                       >
-                        <ArrowLeft className="h-5 w-5" />
+                        <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                         {t('buttons.back')}
                       </button>
                       <button
@@ -1516,7 +1566,7 @@ export default function GetEstimatePage() {
                         onClick={goBack}
                         className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                       >
-                        <ArrowLeft className="h-5 w-5" />
+                        <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                         {t('buttons.back')}
                       </button>
                       <button
@@ -1525,7 +1575,7 @@ export default function GetEstimatePage() {
                         className="h-11 px-6 bg-tool-green text-white font-semibold rounded-lg shadow-sm hover:bg-tool-green/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
                       >
                         {t('buttons.next_contact')}
-                        <ArrowRight className="h-5 w-5" />
+                        <ArrowRight className="h-5 w-5 rtl:rotate-180" />
                       </button>
                     </div>
                   </>
@@ -1539,10 +1589,10 @@ export default function GetEstimatePage() {
             {step === 5 && (
               <div>
                 <h2 className="text-h4 text-white mb-2">
-                  {t('step4.title')}
+                  {t('step5.title')}
                 </h2>
                 <p className="text-sm text-muted mb-6">
-                  {t('step4.description')}
+                  {t('step5.description')}
                 </p>
 
                 {/* What You'll Get — Deliverables Card */}
@@ -1615,7 +1665,7 @@ export default function GetEstimatePage() {
                         }
                       }}
                       onBlur={() => handleFieldBlur('name')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
+                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
                         formErrors.name ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
                       placeholder={t('step4.form.name_placeholder')}
@@ -1644,7 +1694,7 @@ export default function GetEstimatePage() {
                         }
                       }}
                       onBlur={() => handleFieldBlur('email')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
+                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
                         formErrors.email ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
                       placeholder={t('step4.form.email_placeholder')}
@@ -1674,7 +1724,7 @@ export default function GetEstimatePage() {
                         }
                       }}
                       onBlur={() => handleFieldBlur('phone')}
-                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus:bg-slate-blue-light focus:border-tool-green focus:text-white focus:outline-none focus:ring-1 focus:ring-tool-green transition-all duration-200 ${
+                      className={`w-full h-11 px-3 py-2.5 bg-navy border rounded-lg text-base text-off-white placeholder:text-muted-light hover:border-gray-700 focus-visible:bg-slate-blue-light focus-visible:border-tool-green focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tool-green transition-all duration-200 ${
                         formErrors.phone ? 'border-red-500' : 'border-slate-blue-light'
                       }`}
                       placeholder={t('step4.form.phone_placeholder')}
@@ -1706,9 +1756,9 @@ export default function GetEstimatePage() {
                   {/* Privacy note */}
                   <p className="text-xs text-muted">
                     {t('step4.form.privacy_text')}{' '}
-                    <a href="/privacy" className="text-tool-green-light hover:underline">
+                    <Link href="/privacy-policy" className="text-tool-green-light hover:underline">
                       {t('step4.form.privacy_link')}
-                    </a>
+                    </Link>
                     {t('step4.form.privacy_suffix')}
                   </p>
                 </div>
@@ -1718,7 +1768,7 @@ export default function GetEstimatePage() {
                     onClick={goBack}
                     className="h-11 px-5 bg-transparent text-muted font-semibold rounded-lg hover:text-white hover:bg-slate-blue-light/40 transition-all duration-200 inline-flex items-center gap-2"
                   >
-                    <ArrowLeft className="h-5 w-5" />
+                    <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
                     {t('buttons.back')}
                   </button>
                   <button
@@ -1750,6 +1800,6 @@ export default function GetEstimatePage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

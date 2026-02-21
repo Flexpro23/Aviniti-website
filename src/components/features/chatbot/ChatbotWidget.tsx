@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Sparkles, X, Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 import type { ChatMessage } from '@/types/api';
 
 interface ChatSession {
@@ -17,15 +18,19 @@ export default function ChatbotWidget() {
   const [session, setSession] = useState<ChatSession>(() => {
     // Initialize from sessionStorage if available
     if (typeof window !== 'undefined') {
-      const stored = sessionStorage.getItem('avi_chat_session');
-      if (stored) {
-        return JSON.parse(stored);
+      try {
+        const stored = sessionStorage.getItem('avi_chat_session');
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch {
+        // Malformed data – fall through to default
       }
     }
 
     return {
       messages: [],
-      sessionId: crypto.randomUUID(),
+      sessionId: typeof window !== 'undefined' ? crypto.randomUUID() : '',
       isOpen: false,
       messageCount: 0,
     };
@@ -33,6 +38,13 @@ export default function ChatbotWidget() {
 
   const [unreadCount, setUnreadCount] = useState(0);
   const [showProactive, setShowProactive] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
+  // Hydrate hasInteracted from sessionStorage on mount
+  useEffect(() => {
+    setHasInteracted(!!sessionStorage.getItem('avi_interacted'));
+  }, []);
 
   // Persist session to sessionStorage
   useEffect(() => {
@@ -57,12 +69,14 @@ export default function ChatbotWidget() {
   }, [session.isOpen, session.messages.length]);
 
   const handleBubbleClick = () => {
-    setSession({ ...session, isOpen: true });
+    setSession(prev => ({ ...prev, isOpen: true }));
     setUnreadCount(0);
+    setHasInteracted(true);
+    sessionStorage.setItem('avi_interacted', 'true');
   };
 
   const handleCloseChat = () => {
-    setSession({ ...session, isOpen: false });
+    setSession(prev => ({ ...prev, isOpen: false }));
   };
 
   const handleSendMessage = async (message: string) => {
@@ -73,21 +87,22 @@ export default function ChatbotWidget() {
       timestamp: new Date().toISOString(),
     };
 
-    const updatedMessages = [...session.messages, userMessage];
-    setSession({
-      ...session,
-      messages: updatedMessages,
-      messageCount: session.messageCount + 1,
-    });
+    setSession(prev => ({
+      ...prev,
+      messages: [...prev.messages, userMessage],
+      messageCount: prev.messageCount + 1,
+    }));
 
+    setIsTyping(true);
     try {
-      // Call chat API
+      // Call chat API — read current session for conversationHistory
+      const currentMessages = [...session.messages, userMessage];
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          conversationHistory: updatedMessages,
+          conversationHistory: currentMessages,
           currentPage: window.location.pathname,
           locale: document.documentElement.lang || 'en',
           sessionId: session.sessionId,
@@ -107,10 +122,10 @@ export default function ChatbotWidget() {
           timestamp: new Date().toISOString(),
         };
 
-        setSession({
-          ...session,
-          messages: [...updatedMessages, assistantMessage],
-        });
+        setSession(prev => ({
+          ...prev,
+          messages: [...prev.messages, assistantMessage],
+        }));
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -121,12 +136,16 @@ export default function ChatbotWidget() {
         timestamp: new Date().toISOString(),
       };
 
-      setSession({
-        ...session,
-        messages: [...updatedMessages, errorMessage],
-      });
+      setSession(prev => ({
+        ...prev,
+        messages: [...prev.messages, errorMessage],
+      }));
+    } finally {
+      setIsTyping(false);
     }
   };
+
+  const bubbleRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
@@ -136,12 +155,15 @@ export default function ChatbotWidget() {
           onClose={handleCloseChat}
           onSendMessage={handleSendMessage}
           sessionId={session.sessionId}
+          isTyping={isTyping}
+          returnFocusRef={bubbleRef}
         />
       ) : (
         <ChatBubble
+          ref={bubbleRef}
           unreadCount={unreadCount}
           onClick={handleBubbleClick}
-          showPulse={showProactive && !sessionStorage.getItem('avi_interacted')}
+          showPulse={showProactive && !hasInteracted}
         />
       )}
     </>
@@ -155,32 +177,39 @@ interface ChatBubbleProps {
   showPulse: boolean;
 }
 
-function ChatBubble({ unreadCount, onClick, showPulse }: ChatBubbleProps) {
-  const t = useTranslations('chatbot');
-  return (
-    <button
-      onClick={onClick}
-      className="fixed bottom-6 end-6 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-bronze to-bronze-hover shadow-lg shadow-bronze/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200"
-      aria-label={t('widget.open_chat_aria')}
-    >
-      {showPulse && (
-        <span className="absolute inset-0 rounded-full bg-bronze/30 animate-ping" />
-      )}
+import { forwardRef } from 'react';
 
-      <Sparkles className="h-7 w-7 text-white" />
+const ChatBubble = forwardRef<HTMLButtonElement, ChatBubbleProps>(
+  function ChatBubble({ unreadCount, onClick, showPulse }, ref) {
+    const t = useTranslations('chatbot');
+    const prefersReducedMotion = usePrefersReducedMotion();
 
-      {/* Online indicator */}
-      <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-success border-2 border-navy" />
+    return (
+      <button
+        ref={ref}
+        onClick={onClick}
+        className="fixed bottom-6 end-6 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-bronze to-bronze-hover shadow-lg shadow-bronze/25 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200"
+        aria-label={t('widget.open_chat_aria')}
+      >
+        {showPulse && !prefersReducedMotion && (
+          <span className="absolute inset-0 rounded-full bg-bronze/30 animate-ping" />
+        )}
 
-      {/* Unread badge */}
-      {unreadCount > 0 && (
-        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-error flex items-center justify-center text-xs font-bold text-white">
-          {unreadCount}
-        </span>
-      )}
-    </button>
-  );
-}
+        <Sparkles className="h-7 w-7 text-white" />
+
+        {/* Online indicator */}
+        <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full bg-success border-2 border-navy" />
+
+        {/* Unread badge */}
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -end-1 h-5 w-5 rounded-full bg-error flex items-center justify-center text-xs font-bold text-white">
+            {unreadCount}
+          </span>
+        )}
+      </button>
+    );
+  }
+);
 
 // ChatWindow Component (simplified - should be in separate file)
 interface ChatWindowProps {
@@ -188,11 +217,73 @@ interface ChatWindowProps {
   onClose: () => void;
   onSendMessage: (message: string) => void;
   sessionId: string;
+  isTyping: boolean;
+  returnFocusRef: React.RefObject<HTMLButtonElement | null>;
 }
 
-function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
+function ChatWindow({ messages, onClose, onSendMessage, isTyping, returnFocusRef }: ChatWindowProps) {
   const t = useTranslations('chatbot');
   const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  // Lock body scroll on mobile when chat is open
+  useEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 640px)').matches;
+    if (isMobile) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  // Focus input on open
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Restore focus on close
+  useEffect(() => {
+    return () => {
+      returnFocusRef.current?.focus();
+    };
+  }, [returnFocusRef]);
+
+  // Focus trap
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+      return;
+    }
+    if (e.key !== 'Tab' || !chatWindowRef.current) return;
+
+    const focusableElements = chatWindowRef.current.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+  }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +294,14 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
   };
 
   return (
-    <div className="fixed bottom-24 end-6 z-40 w-[calc(100vw-2rem)] sm:w-[380px] h-[520px] max-h-[70vh] bg-slate-blue border border-slate-blue-light rounded-2xl shadow-2xl flex flex-col">
+    <div
+      ref={chatWindowRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('widget.chat_window_aria')}
+      onKeyDown={handleKeyDown}
+      className="fixed bottom-24 end-6 z-40 w-[calc(100vw-7rem)] sm:w-[380px] h-[520px] max-h-[70dvh] sm:max-h-[70vh] bg-slate-blue border border-slate-blue-light rounded-2xl shadow-2xl flex flex-col"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-blue-light">
         <div className="flex items-center gap-3">
@@ -220,10 +318,10 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
         </div>
         <button
           onClick={onClose}
-          className="h-8 w-8 rounded-lg text-muted hover:text-white hover:bg-slate-blue-light transition-colors"
+          className="h-10 w-10 rounded-lg flex items-center justify-center text-muted hover:text-white hover:bg-slate-blue-light transition-colors"
           aria-label={t('widget.close_chat_aria')}
         >
-          ✕
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 
@@ -239,7 +337,7 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
           <div
             key={index}
             className={`flex items-start gap-2.5 ${
-              message.role === 'user' ? 'flex-row-reverse' : ''
+              message.role === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
             {message.role === 'assistant' && (
@@ -250,8 +348,8 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
             <div
               className={`rounded-2xl px-4 py-3 max-w-[85%] ${
                 message.role === 'user'
-                  ? 'bg-bronze/20 rounded-tr-sm'
-                  : 'bg-slate-blue-light rounded-tl-sm'
+                  ? 'bg-bronze/20 ltr:rounded-tr-sm rtl:rounded-tl-sm'
+                  : 'bg-slate-blue-light ltr:rounded-tl-sm rtl:rounded-tr-sm'
               }`}
             >
               <div className="text-sm text-off-white leading-relaxed whitespace-pre-wrap">
@@ -260,16 +358,32 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
             </div>
           </div>
         ))}
+        {isTyping && (
+          <div className="flex items-start gap-2.5">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-bronze to-bronze-hover flex items-center justify-center flex-shrink-0">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <div className="rounded-2xl px-4 py-3 bg-slate-blue-light ltr:rounded-tl-sm rtl:rounded-tr-sm">
+              <div className="flex gap-1">
+                <span className="h-2 w-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="h-2 w-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="h-2 w-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
       <form onSubmit={handleSubmit} className="flex items-center gap-2 px-4 py-3 border-t border-slate-blue-light">
         <input
+          ref={inputRef}
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={t('widget.input_placeholder')}
-          className="flex-1 h-10 px-3 py-2 bg-navy/50 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus:border-bronze focus:ring-1 focus:ring-bronze transition-all outline-none"
+          className="flex-1 h-10 px-3 py-2 bg-navy/50 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted-light focus-visible:border-bronze focus-visible:ring-2 focus-visible:ring-bronze transition-all outline-none"
           aria-label={t('widget.input_aria')}
           maxLength={1000}
         />
@@ -279,7 +393,7 @@ function ChatWindow({ messages, onClose, onSendMessage }: ChatWindowProps) {
           className="h-10 w-10 rounded-lg bg-bronze flex items-center justify-center text-white hover:bg-bronze-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={t('widget.send_aria')}
         >
-          →
+          <Send className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
         </button>
       </form>
     </div>

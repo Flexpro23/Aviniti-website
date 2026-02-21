@@ -275,6 +275,9 @@ export const roiResponseSchemaV2 = z.object({
     min: z.number().nonnegative(),
     max: z.number().positive(),
     currency: z.string().default('USD'),
+  }).refine((d) => d.min <= d.max, {
+    message: 'investmentRequired.min must be less than or equal to investmentRequired.max',
+    path: ['min'],
   }),
   paybackPeriodMonths: z.object({
     optimistic: z.number().positive().max(60),
