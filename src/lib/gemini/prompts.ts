@@ -134,7 +134,7 @@ Respond with valid JSON matching this exact schema:
       "analysis": "string",
       "findings": ["string"],
       "complexity": "low" | "medium" | "high",
-      "suggestedTechStack": ["string"],
+      "suggestedTechStack": ["short technology name, e.g. 'Next.js', 'PostgreSQL', 'Firebase Auth'"],
       "challenges": ["string"]
     },
     "monetization": {

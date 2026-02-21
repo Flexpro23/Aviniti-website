@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
 import { fadeInDown } from '@/lib/motion/variants';
 import { duration } from '@/lib/motion/tokens';
+import { trackLanguageChanged } from '@/lib/analytics';
 
 const locales = ['en', 'ar'] as const;
 
@@ -59,6 +60,7 @@ export function LanguageSwitcher() {
   }, [isOpen]);
 
   const handleLocaleChange = (newLocale: string) => {
+    trackLanguageChanged(currentLocale, newLocale);
     router.replace(pathname, { locale: newLocale as 'en' | 'ar' });
   };
 

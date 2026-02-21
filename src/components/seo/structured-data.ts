@@ -1,8 +1,7 @@
 // Structured data generators for JSON-LD
 // These follow schema.org specifications
 
-const SITE_URL = 'https://www.aviniti.app';
-const LOGO_URL = `${SITE_URL}/images/logo.png`;
+import { SITE_URL, LOGO_URL } from '@/lib/config';
 
 /**
  * Organization schema

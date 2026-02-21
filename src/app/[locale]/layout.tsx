@@ -10,6 +10,8 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { getHomepageSchema } from '@/components/seo/structured-data';
+import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
+import { PageViewTracker } from '@/components/analytics/PageViewTracker';
 import '../globals.css';
 
 const inter = Inter({
@@ -65,6 +67,8 @@ export default async function LocaleLayout({
         <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} ${locale === 'ar' ? 'font-arabic' : 'font-sans'}`}>
           <NextIntlClientProvider messages={messages}>
             <LocaleUpdater />
+            <AnalyticsProvider />
+            <PageViewTracker />
             <SkipToContent />
             <Navbar />
             <main id="main-content" className="pt-16">

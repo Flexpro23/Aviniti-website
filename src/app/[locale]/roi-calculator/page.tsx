@@ -40,6 +40,7 @@ import type { ToolSlug } from '@/lib/utils/transition-metrics';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
 import { useUserContact } from '@/hooks/useUserContact';
 import { useSmartNudges } from '@/hooks/useSmartNudges';
+import { trackAiToolStarted, trackAiToolSubmitted, trackAiToolCompleted, trackAiToolError } from '@/lib/analytics';
 
 const ROIProjectionChart = dynamic(
   () => import('@/components/ai-tools/charts/ROIProjectionChart').then((mod) => ({ default: mod.ROIProjectionChart })),
@@ -485,6 +486,8 @@ export default function ROICalculatorPage() {
     setWhatsapp(finalWhatsapp);
     setStep('loading');
     setError(null);
+    trackAiToolSubmitted('roi_calculator', locale);
+    let startTime = Date.now();
 
     // Persist contact info to the shared store (single contact capture across tools)
     if (finalPhone) {
@@ -559,6 +562,7 @@ export default function ROICalculatorPage() {
       const data = await res.json();
 
       if (data.success) {
+        trackAiToolCompleted('roi_calculator', locale, Date.now() - startTime);
         setResults(data.data);
         setStep('results');
       } else {
@@ -566,6 +570,7 @@ export default function ROICalculatorPage() {
         setStep('form');
       }
     } catch {
+      trackAiToolError('roi_calculator', locale);
       setError(t('errors.calculation_failed'));
       setStep('form');
     }
@@ -1193,6 +1198,7 @@ export default function ROICalculatorPage() {
                   id="roi-idea-input"
                   value={ideaDescription}
                   onChange={(e) => setIdeaDescription(e.target.value)}
+                  onFocus={() => trackAiToolStarted('roi_calculator', locale)}
                   placeholder={t('standalone.idea_placeholder')}
                   rows={4}
                   maxLength={2000}

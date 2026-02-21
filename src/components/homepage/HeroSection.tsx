@@ -31,7 +31,8 @@ import {
   Star,
   Download,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackCtaClicked } from '@/lib/analytics';
 import { Link } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -1013,6 +1014,7 @@ function JourneyDeviceShowcase({
 
 export function HeroSection() {
   const t = useTranslations('home.hero');
+  const locale = useLocale();
   const [currentStage, setCurrentStage] = useState(0);
   const stage = JOURNEY_STAGES[currentStage];
 
@@ -1092,7 +1094,7 @@ export function HeroSection() {
             >
               <div className="relative overflow-hidden rounded-lg group">
                 <Button asChild variant="primary" size="lg">
-                  <Link href="/ai-analyzer">
+                  <Link href="/ai-analyzer" onClick={() => trackCtaClicked('hero', 'analyze_idea', locale)}>
                     {t('cta_primary')}
                     <ArrowDown className="w-5 h-5 transition-transform duration-200 group-hover:translate-y-1" />
                   </Link>
@@ -1109,7 +1111,7 @@ export function HeroSection() {
               </div>
 
               <Button asChild variant="secondary" size="lg">
-                <Link href="/solutions">{t('cta_secondary')}</Link>
+                <Link href="/solutions" onClick={() => trackCtaClicked('hero', 'view_solutions', locale)}>{t('cta_secondary')}</Link>
               </Button>
             </motion.div>
 
@@ -1118,6 +1120,7 @@ export function HeroSection() {
               <Link
                 href="/contact"
                 className="group inline-flex items-center gap-2 text-muted hover:text-off-white transition-colors text-sm"
+                onClick={() => trackCtaClicked('hero', 'contact', locale)}
               >
                 {t('cta_tertiary')}
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />

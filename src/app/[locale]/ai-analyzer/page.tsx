@@ -44,6 +44,7 @@ import type { ToolSlug } from '@/lib/utils/transition-metrics';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
 import { useUserContact } from '@/hooks/useUserContact';
 import { useSmartNudges } from '@/hooks/useSmartNudges';
+import { trackAiToolStarted, trackAiToolSubmitted, trackAiToolCompleted, trackAiToolError } from '@/lib/analytics';
 
 const AnalyzerRadarChart = dynamic(
   () => import('@/components/ai-tools/charts/AnalyzerRadarChart').then((mod) => ({ default: mod.AnalyzerRadarChart })),
@@ -427,6 +428,8 @@ export default function AIAnalyzerPage() {
       setFormData(updatedData);
       setIsLoading(true);
       setError(null);
+      trackAiToolSubmitted('ai_analyzer', locale);
+      let startTime = Date.now();
 
       // Persist contact info to the shared store (single contact capture across tools)
       updateContact({
@@ -477,11 +480,13 @@ export default function AIAnalyzerPage() {
         const data = await res.json();
 
         if (data.success) {
+          trackAiToolCompleted('ai_analyzer', locale, Date.now() - startTime);
           setResults(data.data);
         } else {
           setError(data.error?.message || t('errors.failed'));
         }
       } catch {
+        trackAiToolError('ai_analyzer', locale);
         setError(t('errors.generic'));
       } finally {
         setIsLoading(false);
@@ -1351,6 +1356,7 @@ export default function AIAnalyzerPage() {
                   <textarea
                     value={formData.idea}
                     onChange={(e) => setFormData((prev) => ({ ...prev, idea: e.target.value }))}
+                    onFocus={() => trackAiToolStarted('ai_analyzer', locale)}
                     placeholder={t('form_textarea_placeholder')}
                     minLength={30}
                     maxLength={2000}

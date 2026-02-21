@@ -10,7 +10,8 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import { User, Mail, MessageCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackContactCaptureStarted, trackContactCaptureSubmitted } from '@/lib/analytics';
 import { PhoneInput } from 'react-international-phone';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import 'react-international-phone/style.css';
@@ -44,6 +45,7 @@ export function ContactCapture({
   showSkip = false,
 }: ContactCaptureProps) {
   const t = useTranslations('common');
+  const locale = useLocale();
 
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState<string | null>(null);
@@ -97,6 +99,7 @@ export function ContactCapture({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    trackContactCaptureSubmitted('contact_capture', locale);
     validateName(name);
     validatePhone(phone);
     if (email) validateEmail(email);
@@ -143,6 +146,7 @@ export function ContactCapture({
             value={name}
             onChange={(e) => setName(e.target.value)}
             onBlur={() => validateName(name)}
+            onFocus={() => trackContactCaptureStarted('contact_capture', locale)}
             disabled={isLoading}
             placeholder={t('contact_capture.name_placeholder')}
             className={cn(

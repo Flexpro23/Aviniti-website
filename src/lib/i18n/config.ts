@@ -4,6 +4,7 @@
  */
 
 import type { Locale } from './routing';
+import { SITE_URL } from '@/lib/config';
 
 export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'ar'] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -70,7 +71,7 @@ export function isValidLocale(locale: string): locale is Locale {
  * @returns Alternates object for Next.js metadata
  */
 export function getAlternateLinks(pathname: string = '') {
-  const baseUrl = 'https://www.aviniti.app';
+  const baseUrl = SITE_URL;
   // Ensure pathname starts with / if it's not empty
   const normalizedPath = pathname && !pathname.startsWith('/') ? `/${pathname}` : pathname;
 

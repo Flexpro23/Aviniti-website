@@ -62,6 +62,7 @@ const PDFReport = dynamic(
 import { useResultPersistence } from '@/hooks/useResultPersistence';
 import { useUserContact } from '@/hooks/useUserContact';
 import { useSmartNudges } from '@/hooks/useSmartNudges';
+import { trackAiToolSubmitted, trackAiToolCompleted, trackAiToolError } from '@/lib/analytics';
 import { getNextDiscountThreshold } from '@/lib/pricing/calculator';
 import type {
   ProjectType,
@@ -547,6 +548,8 @@ export default function GetEstimatePage() {
     setError(null);
     setDirection('forward');
     setStep(6);
+    trackAiToolSubmitted('get_estimate', locale);
+    let startTime = Date.now();
 
     try {
       const res = await fetch('/api/ai/estimate', {
@@ -597,6 +600,7 @@ export default function GetEstimatePage() {
       const respData = await res.json();
 
       if (respData.success) {
+        trackAiToolCompleted('get_estimate', locale, Date.now() - startTime);
         setResults(respData.data);
       } else {
         setError(respData.error?.message || t('errors.generation_failed'));
@@ -607,6 +611,7 @@ export default function GetEstimatePage() {
         // User cancelled — do nothing, state already reset in handleCancel
         return;
       }
+      trackAiToolError('get_estimate', locale);
       setError(t('errors.generic'));
     } finally {
       setIsLoading(false);

@@ -6,8 +6,7 @@ This directory contains all core utility functions, Firebase integration, Gemini
 
 ```
 lib/
-├── firebase/           # Firebase client and admin SDK
-│   ├── client.ts      # Browser Firebase SDK (lazy initialization)
+├── firebase/           # Firebase admin SDK
 │   ├── admin.ts       # Server-only Firebase Admin SDK
 │   ├── collections.ts # Firestore collection helpers and types
 │   └── index.ts       # Central exports
@@ -28,20 +27,6 @@ lib/
 ```
 
 ## Firebase Integration
-
-### Client SDK (`firebase/client.ts`)
-
-For browser-side operations (currently minimal usage, prepared for future features):
-
-```typescript
-import { getFirebaseApp, getFirebaseDb } from '@/lib/firebase';
-
-// Get app instance
-const app = getFirebaseApp();
-
-// Get Firestore instance
-const db = getFirebaseDb();
-```
 
 ### Admin SDK (`firebase/admin.ts`)
 

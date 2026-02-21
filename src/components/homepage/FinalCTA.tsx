@@ -9,7 +9,8 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, Phone, MessageCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackCtaClicked } from '@/lib/analytics';
 import { Link } from '@/lib/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -18,6 +19,7 @@ import { useScrollReveal } from '@/lib/motion/hooks';
 
 export function FinalCTA() {
   const t = useTranslations('home.final_cta');
+  const locale = useLocale();
   const { ref, inView } = useScrollReveal({ once: true, amount: 0.3 });
 
   return (
@@ -52,14 +54,14 @@ export function FinalCTA() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Button asChild variant="primary" size="lg">
-                <Link href="/get-estimate">
+                <Link href="/get-estimate" onClick={() => trackCtaClicked('final_cta', 'get_started', locale)}>
                   {t('cta_primary')}
                   <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                 </Link>
               </Button>
 
               <Button asChild variant="secondary" size="lg">
-                <Link href="/contact">
+                <Link href="/contact" onClick={() => trackCtaClicked('final_cta', 'contact', locale)}>
                   <Phone className="w-5 h-5" />
                   {t('cta_secondary')}
                 </Link>
@@ -75,6 +77,7 @@ export function FinalCTA() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-bronze hover:text-bronze-light transition-colors underline underline-offset-2"
+                onClick={() => trackCtaClicked('final_cta', 'whatsapp', locale)}
               >
                 {t('whatsapp_cta')}
               </a>

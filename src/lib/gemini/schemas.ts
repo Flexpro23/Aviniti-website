@@ -62,13 +62,13 @@ export type IdeaLabGeminiResponse = z.infer<typeof ideaLabResponseSchema>;
 const analysisCategorySchema = z.object({
   score: z.number().min(0).max(100),
   analysis: z.string().min(50).max(2000),
-  findings: z.array(z.string().min(10).max(300)).min(3).max(5),
+  findings: z.array(z.string().min(10).max(300)).min(2).max(5),
 });
 
 const technicalAnalysisCategorySchema = analysisCategorySchema.extend({
   complexity: z.enum(['low', 'medium', 'high']),
-  suggestedTechStack: z.array(z.string().min(2).max(50)).min(3).max(10),
-  challenges: z.array(z.string().min(10).max(200)).min(2).max(5),
+  suggestedTechStack: z.array(z.string().min(2).max(120)).min(2).max(10),
+  challenges: z.array(z.string().min(10).max(300)).min(2).max(5),
 });
 
 const recommendedRevenueModelSchema = z.object({

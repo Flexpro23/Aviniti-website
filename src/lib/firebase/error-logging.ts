@@ -22,11 +22,32 @@ export interface ErrorLogEntry {
 }
 
 /**
+ * Check whether Firebase Admin env vars are present.
+ * If they're missing we skip Firestore writes entirely so that
+ * the error logger never triggers the "Missing Firebase Admin
+ * configuration" throw in admin.ts.
+ */
+function isFirebaseAdminConfigured(): boolean {
+  return !!(
+    process.env.FIREBASE_ADMIN_PROJECT_ID &&
+    process.env.FIREBASE_ADMIN_CLIENT_EMAIL &&
+    process.env.FIREBASE_ADMIN_PRIVATE_KEY
+  );
+}
+
+/**
  * Get the error_logs collection
+ * Returns null if Firebase Admin is not configured
  */
 export function getErrorLogsCollection() {
-  const db = getAdminDb();
-  return db.collection('error_logs');
+  if (!isFirebaseAdminConfigured()) return null;
+
+  try {
+    const db = getAdminDb();
+    return db.collection('error_logs');
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -63,15 +84,17 @@ export function logServerError(
     environment: process.env.NODE_ENV || 'unknown',
   };
 
-  // Write to Firestore non-blocking
-  getErrorLogsCollection()
-    .add(errorLogEntry)
-    .catch((err) => {
-      // If Firestore write fails, log to console as fallback
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[Error Logger Fallback]', err);
-      }
-    });
+  // Write to Firestore non-blocking (skip if Firebase Admin not configured)
+  const collection = getErrorLogsCollection();
+  if (collection) {
+    collection
+      .add(errorLogEntry)
+      .catch((err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Error Logger Fallback]', err);
+        }
+      });
+  }
 
   // Also log to console in development for better DX
   if (process.env.NODE_ENV === 'development') {
@@ -106,15 +129,17 @@ export function logServerWarning(
     environment: process.env.NODE_ENV || 'unknown',
   };
 
-  // Write to Firestore non-blocking
-  getErrorLogsCollection()
-    .add(warningLogEntry)
-    .catch((err) => {
-      // If Firestore write fails, log to console as fallback
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[Error Logger Fallback]', err);
-      }
-    });
+  // Write to Firestore non-blocking (skip if Firebase Admin not configured)
+  const collection = getErrorLogsCollection();
+  if (collection) {
+    collection
+      .add(warningLogEntry)
+      .catch((err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Error Logger Fallback]', err);
+        }
+      });
+  }
 
   // Also log to console in development
   if (process.env.NODE_ENV === 'development') {
@@ -147,15 +172,17 @@ export function logServerInfo(
     environment: process.env.NODE_ENV || 'unknown',
   };
 
-  // Write to Firestore non-blocking
-  getErrorLogsCollection()
-    .add(infoLogEntry)
-    .catch((err) => {
-      // If Firestore write fails, log to console as fallback
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[Error Logger Fallback]', err);
-      }
-    });
+  // Write to Firestore non-blocking (skip if Firebase Admin not configured)
+  const collection = getErrorLogsCollection();
+  if (collection) {
+    collection
+      .add(infoLogEntry)
+      .catch((err) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[Error Logger Fallback]', err);
+        }
+      });
+  }
 
   // Also log to console in development
   if (process.env.NODE_ENV === 'development') {

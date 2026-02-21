@@ -1,71 +1,55 @@
-// Firebase Client SDK initialization for browser-side operations
-// Note: For this project, Firestore access is server-only via Admin SDK.
-// This client is initialized for potential future features (Analytics, etc.)
+// Client-side Firebase SDK initialization
+// This module is safe to import in client components only.
+// It must NEVER be imported in Server Components or API routes.
 
-import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAnalytics, isSupported, type Analytics } from 'firebase/analytics';
 
-let app: FirebaseApp | undefined;
-let db: Firestore | undefined;
-
-/**
- * Initialize Firebase client SDK
- * Lazy initialization pattern - only initializes once
- */
-function initializeFirebase() {
-  if (getApps().length > 0) {
-    app = getApps()[0];
-    db = getFirestore(app);
-    return { app, db };
-  }
-
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-
-  // Validate all required environment variables are present
-  const missingVars = Object.entries(firebaseConfig)
-    .filter(([_, value]) => !value)
-    .map(([key]) => `NEXT_PUBLIC_FIREBASE_${key.toUpperCase()}`);
-
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing Firebase client configuration: ${missingVars.join(', ')}`
-    );
-  }
-
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-
-  return { app, db };
-}
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
 
 /**
- * Get Firebase app instance
- * Initializes on first call
+ * Get (or lazily initialize) the Firebase client app.
+ * Safe to call multiple times — returns the same instance.
  */
 export function getFirebaseApp(): FirebaseApp {
-  if (!app) {
-    initializeFirebase();
+  if (getApps().length > 0) {
+    return getApp();
   }
-  return app!;
+  return initializeApp(firebaseConfig);
 }
 
 /**
- * Get Firestore instance
- * Initializes on first call
+ * Get Firebase Analytics instance.
+ * Returns null when:
+ *  - Running on the server (SSR)
+ *  - Browser does not support the Analytics SDK (e.g. blocked by privacy settings)
+ *  - measurementId env var is not set
+ *
+ * Always await this before calling logEvent / setUserProperties.
  */
-export function getFirebaseDb(): Firestore {
-  if (!db) {
-    initializeFirebase();
-  }
-  return db!;
-}
+export async function getFirebaseAnalytics(): Promise<Analytics | null> {
+  // Guard: Analytics is browser-only
+  if (typeof window === 'undefined') return null;
 
-// Export for direct access (will be initialized on first use)
-export { app, db };
+  // Guard: measurementId must be configured
+  if (!firebaseConfig.measurementId) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[Firebase Analytics] NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID is not set. Analytics disabled.');
+    }
+    return null;
+  }
+
+  const supported = await isSupported();
+  if (!supported) return null;
+
+  const app = getFirebaseApp();
+  return getAnalytics(app);
+}

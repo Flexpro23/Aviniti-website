@@ -41,6 +41,7 @@ import { DiscoveryProgress } from '@/components/ai-tools/DiscoveryProgress';
 import { IdeaDetailPanel } from '@/components/ai-tools/IdeaDetailPanel';
 import { useResultPersistence } from '@/hooks/useResultPersistence';
 import { useUserContact } from '@/hooks/useUserContact';
+import { trackAiToolStarted, trackAiToolSubmitted, trackAiToolCompleted, trackAiToolError } from '@/lib/analytics';
 import type {
   Persona,
   Industry,
@@ -258,6 +259,8 @@ export default function IdeaLabPage() {
     goForward();
     setPhase('generate-loading');
     setError(null);
+    trackAiToolSubmitted('idea_lab', locale);
+    let startTime = Date.now();
 
     // Persist contact info to the shared store (single contact capture across tools)
     updateContact({
@@ -311,6 +314,7 @@ export default function IdeaLabPage() {
       const data = await res.json();
 
       if (data.success && data.data?.ideas) {
+        trackAiToolCompleted('idea_lab', locale, Date.now() - startTime);
         setResults(data.data);
         // Track generated idea names for potential refresh
         setAllPreviousIdeaNames(data.data.ideas.map((i: IdeaLabIdea) => i.name));
@@ -320,6 +324,7 @@ export default function IdeaLabPage() {
         setPhase('email');
       }
     } catch {
+      trackAiToolError('idea_lab', locale);
       setError(t('error_generic'));
       setPhase('email');
     }
@@ -939,6 +944,7 @@ export default function IdeaLabPage() {
                       onChange={(e) =>
                         handleAnswerQuestion(currentQuestion.id, e.target.value)
                       }
+                      onFocus={() => trackAiToolStarted('idea_lab', locale)}
                       placeholder={
                         currentQuestion.placeholder || t('single_line_placeholder')
                       }

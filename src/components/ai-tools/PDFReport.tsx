@@ -19,7 +19,8 @@ import {
   Defs,
 } from '@react-pdf/renderer';
 import { Download, FileText } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackPdfDownloaded } from '@/lib/analytics';
 import { cn } from '@/lib/utils/cn';
 import type { EstimateResponse, EstimatePhase, StrategicInsight, PricingBreakdown } from '@/types/api';
 
@@ -896,6 +897,7 @@ export function PDFReport({ results, userName, userEmail, className }: PDFReport
   const [isClient, setIsClient] = useState(false);
   const t = useTranslations('get_estimate');
   const tf = useTranslations('features');
+  const locale = useLocale();
 
   useEffect(() => {
     setIsClient(true);
@@ -927,6 +929,7 @@ export function PDFReport({ results, userName, userEmail, className }: PDFReport
         'h-11 px-5 bg-bronze hover:bg-bronze-hover text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center gap-2',
         className
       )}
+      onClick={() => trackPdfDownloaded('get_estimate', locale)}
     >
       {({ loading, error }) => {
         if (error) {

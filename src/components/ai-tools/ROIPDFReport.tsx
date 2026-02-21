@@ -15,7 +15,8 @@ import {
   Link,
 } from '@react-pdf/renderer';
 import { Download, FileText } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackPdfDownloaded } from '@/lib/analytics';
 import { cn } from '@/lib/utils/cn';
 import type { ROICalculatorResponseV2 } from '@/types/api';
 
@@ -515,6 +516,7 @@ interface ROIPDFReportProps {
 export function ROIPDFReport({ results, isArabic: isArabicProp, className }: ROIPDFReportProps) {
   const [isClient, setIsClient] = useState(false);
   const t = useTranslations('roi_calculator');
+  const locale = useLocale();
 
   useEffect(() => {
     setIsClient(true);
@@ -548,6 +550,7 @@ export function ROIPDFReport({ results, isArabic: isArabicProp, className }: ROI
         'h-11 px-5 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center gap-2',
         className
       )}
+      onClick={() => trackPdfDownloaded('roi_calculator', locale)}
     >
       {({ loading, error }) => {
         if (error) {

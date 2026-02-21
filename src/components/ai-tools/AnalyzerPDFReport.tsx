@@ -15,7 +15,8 @@ import {
   Link,
 } from '@react-pdf/renderer';
 import { Download, FileText } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackPdfDownloaded } from '@/lib/analytics';
 import { cn } from '@/lib/utils/cn';
 import type { AnalyzerResponse } from '@/types/api';
 
@@ -504,6 +505,7 @@ interface AnalyzerPDFReportProps {
 export function AnalyzerPDFReport({ results, isArabic: isArabicProp, className }: AnalyzerPDFReportProps) {
   const [isClient, setIsClient] = useState(false);
   const t = useTranslations('ai_analyzer');
+  const locale = useLocale();
 
   useEffect(() => {
     setIsClient(true);
@@ -537,6 +539,7 @@ export function AnalyzerPDFReport({ results, isArabic: isArabicProp, className }
         'h-11 px-5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold shadow-sm hover:shadow-md transition-all duration-200 inline-flex items-center gap-2',
         className
       )}
+      onClick={() => trackPdfDownloaded('ai_analyzer', locale)}
     >
       {({ loading, error }) => {
         if (error) {

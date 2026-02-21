@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-
-const BASE_URL = 'https://www.aviniti.app';
+import { SITE_URL as BASE_URL } from '@/lib/config';
 
 // Static pages
 const staticPages = [
