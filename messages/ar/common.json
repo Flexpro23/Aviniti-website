@@ -117,6 +117,27 @@
     "email_optional": "اختياري — أدخل بريدك الإلكتروني لاستلام النتائج",
     "skip": "تخطي، اعرض النتائج الآن"
   },
+  "contact_capture": {
+    "title": "!أوشكت على الانتهاء",
+    "description": "أدخل بياناتك لتحصل على نتائجك",
+    "name_label": "الاسم الكامل",
+    "name_placeholder": "أدخل اسمك الكامل",
+    "name_required": "يرجى إدخال اسمك",
+    "phone_label": "رقم الهاتف",
+    "phone_placeholder": "أدخل رقم هاتفك",
+    "phone_required": "يرجى إدخال رقم هاتفك",
+    "phone_invalid": "يرجى إدخال رقم هاتف صالح",
+    "email_label": "البريد الإلكتروني",
+    "email_placeholder": "you@example.com",
+    "email_optional": "اختياري — سنرسل النتائج إلى بريدك الإلكتروني",
+    "email_invalid": "يرجى إدخال بريد إلكتروني صالح",
+    "whatsapp_label": "إرسال النتائج عبر واتساب",
+    "whatsapp_hint": "احصل على ملخص سريع عبر واتساب",
+    "submit": "احصل على نتائجي",
+    "submitting": "جارٍ تحضير نتائجك...",
+    "skip": "تخطي الآن",
+    "privacy": "معلوماتك آمنة ولن تتم مشاركتها مع أي طرف ثالث."
+  },
   "exit_intent": {
     "thank_you": "شكراً لك!",
     "will_be_in_touch": "سنتواصل معك قريباً.",

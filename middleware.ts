@@ -54,7 +54,18 @@ export default function middleware(request: NextRequest) {
   }
 
   // For non-API routes, use the intl middleware
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+
+  // Inject geo-country cookie from Vercel's geo header (defaults to JO for local dev)
+  const country = request.headers.get('x-vercel-ip-country') || 'JO';
+  response.cookies.set('geo-country', country, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 86400,
+  });
+
+  return response;
 }
 
 export const config = {

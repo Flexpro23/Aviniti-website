@@ -117,6 +117,27 @@
     "email_optional": "Optional — enter to receive results by email",
     "skip": "Skip, show results now"
   },
+  "contact_capture": {
+    "title": "Almost There!",
+    "description": "Enter your details to receive your results",
+    "name_label": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "name_required": "Please enter your name",
+    "phone_label": "Phone Number",
+    "phone_placeholder": "Enter your phone number",
+    "phone_required": "Please enter your phone number",
+    "phone_invalid": "Please enter a valid phone number",
+    "email_label": "Email Address",
+    "email_placeholder": "you@example.com",
+    "email_optional": "Optional — we'll send results to your email",
+    "email_invalid": "Please enter a valid email address",
+    "whatsapp_label": "Send results via WhatsApp",
+    "whatsapp_hint": "Get a quick summary delivered to your WhatsApp",
+    "submit": "Get My Results",
+    "submitting": "Preparing your results...",
+    "skip": "Skip for now",
+    "privacy": "Your information is secure and will never be shared with third parties."
+  },
   "exit_intent": {
     "thank_you": "Thank you!",
     "will_be_in_touch": "We'll be in touch shortly.",
