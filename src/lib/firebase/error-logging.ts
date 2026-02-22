@@ -78,8 +78,8 @@ export function logServerError(
     source,
     severity: 'error',
     message,
-    stack,
-    metadata,
+    ...(stack !== undefined && { stack }),
+    ...(metadata !== undefined && { metadata }),
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'unknown',
   };
@@ -124,7 +124,7 @@ export function logServerWarning(
     source,
     severity: 'warning',
     message,
-    metadata,
+    ...(metadata !== undefined && { metadata }),
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'unknown',
   };
@@ -167,7 +167,7 @@ export function logServerInfo(
     source,
     severity: 'info',
     message,
-    metadata,
+    ...(metadata !== undefined && { metadata }),
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'unknown',
   };

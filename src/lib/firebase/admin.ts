@@ -23,6 +23,7 @@ function initializeFirebaseAdmin() {
   if (getApps().length > 0) {
     adminApp = getApps()[0];
     adminDb = getFirestore(adminApp);
+    try { adminDb.settings({ ignoreUndefinedProperties: true }); } catch { /* already set */ }
     return { adminApp, adminDb };
   }
 
@@ -58,6 +59,7 @@ function initializeFirebaseAdmin() {
   });
 
   adminDb = getFirestore(adminApp);
+  adminDb.settings({ ignoreUndefinedProperties: true });
 
   return { adminApp, adminDb };
 }

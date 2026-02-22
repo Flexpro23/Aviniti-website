@@ -61,13 +61,13 @@ export async function POST(request: NextRequest) {
       locale: locale,
       metadata: {
         ...metadata,
-        ipCountry: undefined,
       },
     });
 
     // Save contact submission
     await saveContactSubmission({
       leadId,
+      ticketId,
       name: validatedData.name,
       phone: validatedData.phone,
       email: validatedData.email || null,
@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
       topic: validatedData.topic,
       message: validatedData.message,
       whatsapp: validatedData.whatsapp,
+      locale,
     });
 
     // 5. Return success response
