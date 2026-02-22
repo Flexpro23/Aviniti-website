@@ -27,13 +27,13 @@ export function getLeadsCollection() {
   return db.collection('leads');
 }
 
-/**
- * Get AI submissions collection reference
- */
-export function getAISubmissionsCollection() {
-  const db = getAdminDb();
-  return db.collection('ai_submissions');
-}
+// Maps tool identifiers to their subcollection names under a lead document
+const TOOL_SUBCOLLECTIONS: Record<AISubmissionData['tool'], string> = {
+  'idea-lab': 'idea_lab',
+  'analyzer': 'analyzer',
+  'estimate': 'estimate',
+  'roi-calculator': 'roi_calculator',
+};
 
 /**
  * Get chatbot conversations collection reference
@@ -141,6 +141,7 @@ export interface ChatbotConversationData {
 
 export interface ContactSubmissionData {
   leadId: string;
+  ticketId: string;
   name: string;
   phone: string;
   email?: string | null;
@@ -148,6 +149,7 @@ export interface ContactSubmissionData {
   topic: ContactTopic;
   message: string;
   whatsapp: boolean;
+  locale: Locale;
   status: 'new' | 'responded' | 'closed';
 }
 
@@ -220,14 +222,25 @@ export async function saveLeadToFirestore(
 }
 
 /**
- * Save an AI tool submission to Firestore
+ * Save an AI tool submission as a subcollection document under the lead.
+ *
+ * Path: leads/{leadId}/{tool_subcollection}/{autoId}
+ *
+ * Each call appends a new document — submissions are never updated,
+ * so every run is preserved as a separate history entry.
  */
 export async function saveAISubmission(
   submissionData: Omit<AISubmissionData, 'createdAt'>
 ): Promise<string> {
-  const aiSubmissionsCollection = getAISubmissionsCollection();
+  const db = getAdminDb();
+  const subcollectionName = TOOL_SUBCOLLECTIONS[submissionData.tool];
 
-  const docRef = await aiSubmissionsCollection.add({
+  const subcollectionRef = db
+    .collection('leads')
+    .doc(submissionData.leadId)
+    .collection(subcollectionName);
+
+  const docRef = await subcollectionRef.add({
     ...submissionData,
     createdAt: new Date(),
   });

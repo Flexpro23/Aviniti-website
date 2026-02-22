@@ -6,7 +6,6 @@ export { getAdminApp, getAdminDb, adminApp, adminDb } from './admin';
 // Collection helpers
 export {
   getLeadsCollection,
-  getAISubmissionsCollection,
   getChatbotConversationsCollection,
   getContactSubmissionsCollection,
   getExitIntentCapturesCollection,
