@@ -1,182 +1,711 @@
 {
   "meta": {
-    "title": "Ready-Made Solutions - Launch Faster | Aviniti",
-    "description": "Pre-built app solutions ready to deploy in 35 days. Delivery apps, e-commerce, booking systems, and more."
+    "title": "Ready-Made App Solutions — Aviniti",
+    "description": "Browse 8 pre-built software systems ready to deploy: delivery apps, gym management, kindergarten systems, and more. Starting from $8,000.",
+    "og_title": "Ready-Made App Solutions — Aviniti",
+    "og_description": "Browse 8 pre-built software systems ready to deploy: delivery apps, gym management, kindergarten systems, and more. Starting from $8,000."
   },
   "page": {
     "label": "Solutions",
     "title": "Ready-Made Solutions",
-    "subtitle": "Launch faster with our pre-built, customizable app solutions",
+    "subtitle": "Launch faster with pre-built, customizable solutions — each one battle-tested and ready to deploy",
     "filter_all": "All Solutions",
-    "filter_delivery": "Delivery & Logistics",
+    "filter_delivery": "Delivery",
     "filter_education": "Education",
-    "filter_booking": "Booking & Reservations",
-    "filter_ecommerce": "E-commerce",
-    "filter_restaurant": "Food & Restaurant",
-    "filter_operations": "Business Operations",
-    "filter_social": "Social & Community",
+    "filter_booking": "Booking & Scheduling",
+    "filter_ecommerce": "E-Commerce & Retail",
+    "filter_operations": "Operations",
+    "filter_health_beauty": "Health & Beauty",
     "learn_more": "Learn More",
     "demo_available": "Demo Available",
+    "demo_partial": "Partial Demo",
+    "no_demo": "No Demo",
+    "apps_count": "{count} Apps",
+    "apps_count_single": "1 App",
+    "from_price": "From {price}",
     "cta_heading": "Need a Custom Solution?",
-    "cta_subtitle": "Our team can build exactly what your business needs. Get a free AI-powered estimate in minutes.",
-    "cta_estimate": "Get AI Estimate",
+    "cta_subtitle": "Can't find exactly what you need? Let's build something tailored for your business.",
+    "cta_estimate": "Get a Custom Estimate",
     "cta_contact": "Contact Us"
   },
   "solutions": {
     "delivery-app-system": {
       "name": "Delivery App System",
-      "tagline": "Complete multi-vendor delivery platform",
-      "description": "Full-featured delivery management system with customer app, driver app, and vendor dashboard",
-      "starting_price": "$10,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "Customer mobile app (iOS & Android)",
-        "feature_2": "Driver mobile app with real-time tracking",
-        "feature_3": "Vendor/restaurant dashboard",
-        "feature_4": "Admin control panel",
-        "feature_5": "Real-time order tracking",
-        "feature_6": "Payment gateway integration",
-        "feature_7": "Push notifications",
-        "feature_8": "Rating and reviews system"
-      }
+      "tagline": "Complete multi-vendor delivery platform with 3 integrated apps",
+      "description": "Full delivery management system with an Owner Dashboard for managing operations, a Customer/Vendor App for businesses to manage their orders and products, and a Driver App with route optimization and multi-delivery batching. Built on Google Maps API with real-time tracking.",
+      "category": "delivery",
+      "demo": "demo_available",
+      "starting_price": "$15,000",
+      "timeline": "4-6 weeks",
+      "timeline_custom": "Up to 8 weeks with customization",
+      "apps": [
+        {
+          "name": "Owner Dashboard",
+          "description": "Complete control center for managing drivers, customers, deliveries, backups, analytics, and reports. Full Google Maps integration with onboarding/offboarding management.",
+          "roles": "Admin, Operations Manager",
+          "features": [
+            "Google Maps integration with real-time delivery tracking",
+            "Comprehensive analytics and reporting dashboard",
+            "Driver management with performance metrics",
+            "Customer database and order history",
+            "Live delivery tracking and ETA updates",
+            "Backup management and data recovery",
+            "Driver and customer onboarding/offboarding workflows",
+            "Payment oversight and revenue reconciliation"
+          ]
+        },
+        {
+          "name": "Customer/Vendor App",
+          "description": "For businesses that need delivery services. Upload orders, products, and customer base. Add orders by phone number for returning customers, pick products from catalog, choose delivery type (fast, standard, scheduled).",
+          "roles": "Business Owner, Store Manager",
+          "features": [
+            "Bulk order upload and import functionality",
+            "Product catalog creation and management",
+            "Customer management by phone number",
+            "Delivery type selection (fast, standard, scheduled)",
+            "Vendor analytics and order tracking dashboard",
+            "Payment tracking and settlement reports"
+          ]
+        },
+        {
+          "name": "Driver App",
+          "description": "Shows available pickups, delivery locations, estimated revenue per delivery. Supports multi-delivery batching for geographic areas — deliver multiple orders in one trip. Best route calculation via Google Maps API.",
+          "roles": "Driver",
+          "features": [
+            "Real-time available pickup notifications",
+            "Multi-delivery batching by geographic area",
+            "Automatic best route calculation via Google Maps",
+            "Revenue estimation per delivery",
+            "Google Maps turn-by-turn navigation",
+            "Delivery status updates and proof of delivery",
+            "Earnings tracking and performance dashboard"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Google Maps real-time integration with live tracking",
+        "Multi-delivery batching algorithm to maximize driver efficiency",
+        "Automated route optimization reducing delivery times",
+        "Vendor self-service portal eliminating manual order entry",
+        "Real-time revenue tracking and driver incentive management"
+      ],
+      "customization": [
+        "Custom branding and theme customization",
+        "Legacy system integration and data migration",
+        "Additional payment gateways (local and international)",
+        "Multi-language support for regional expansion"
+      ],
+      "whats_included": [
+        "3 mobile apps (iOS & Android) fully functional",
+        "Google Maps API setup and configuration",
+        "Admin dashboard with full management access",
+        "Payment gateway integration and testing",
+        "30 days of post-launch support",
+        "Full source code and documentation"
+      ]
     },
     "kindergarten-management": {
       "name": "Kindergarten Management System",
-      "tagline": "All-in-one childcare management",
-      "description": "Comprehensive solution for managing students, parents, staff, and operations",
-      "starting_price": "$8,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "Student enrollment and profiles",
-        "feature_2": "Parent communication portal",
-        "feature_3": "Staff management and scheduling",
-        "feature_4": "Attendance tracking",
-        "feature_5": "Fee management and billing",
-        "feature_6": "Activity and progress reporting",
-        "feature_7": "Photo and video sharing",
-        "feature_8": "Meal planning and nutrition tracking"
-      }
+      "tagline": "All-in-one nursery management with 3 connected apps",
+      "description": "Complete nursery management built from our real Nay Nursery project. Admin dashboard for operations, a Staff App with geofencing check-in, and a Parent App where families see everything about their child's day. Staff adopted it without any training.",
+      "category": "education",
+      "demo": "demo_available",
+      "starting_price": "$9,000",
+      "timeline": "4-6 weeks",
+      "timeline_custom": "6 weeks with customization",
+      "apps": [
+        {
+          "name": "Admin Dashboard",
+          "description": "Operations and management hub for nursery directors. Complete operational control including enrollment management, billing cycles, staff scheduling, activity reporting, parent communication, and attendance analytics. Developed from real Nay Nursery operations.",
+          "roles": "Director, Manager",
+          "features": [
+            "Student enrollment and profile management",
+            "Billing and payment tracking",
+            "Staff scheduling and shift management",
+            "Activity and incident reporting",
+            "Parent communication tools and notifications",
+            "Attendance and performance analytics",
+            "Class management and group organization",
+            "Financial reporting and invoicing"
+          ]
+        },
+        {
+          "name": "Staff App",
+          "description": "Mobile app for teachers and caregivers. Geofencing-based check-in/out, incident reporting, daily activity logging with photos/videos, and direct messaging with parents. No training required — intuitive interface adopted immediately.",
+          "roles": "Teacher, Caregiver",
+          "features": [
+            "Geofencing-based automatic check-in/check-out",
+            "Manual attendance marking with time stamps",
+            "Incident and accident report creation",
+            "Daily activity logging with timestamps",
+            "Photo and video upload to secure cloud",
+            "Direct messaging with parents and admin",
+            "Child observation notes and behavior tracking",
+            "Emergency contact quick access"
+          ]
+        },
+        {
+          "name": "Parent App",
+          "description": "Mobile app for families. Real-time updates on child's day, attendance confirmation, fee payments, photo gallery from activities, and direct messaging with staff. Full visibility and peace of mind.",
+          "roles": "Parent/Guardian",
+          "features": [
+            "Real-time daily activity updates and logs",
+            "Attendance confirmation and pickup notifications",
+            "Fee payment and billing management",
+            "Photo and video gallery from daily activities",
+            "Direct messaging with teachers and admin",
+            "Child development milestone tracking",
+            "Incident and accident notifications",
+            "Emergency contact management"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Geofencing staff check-in requiring no manual intervention",
+        "Intuitive UX proven in real Nay Nursery with zero training required",
+        "Real-time parent updates eliminating daily pickup questions",
+        "Built from real nursery experience ensuring all critical workflows are covered"
+      ],
+      "customization": [
+        "Custom branding with nursery logo and colors",
+        "Curriculum module customization (Montessori, IB, etc.)",
+        "Transportation tracking integration",
+        "Meal planning and dietary tracking add-on"
+      ],
+      "whats_included": [
+        "3 mobile apps (iOS & Android) fully configured",
+        "Admin dashboard with all management features",
+        "Geofencing setup and GPS infrastructure",
+        "Parent onboarding workflow and invitations",
+        "30 days of post-launch support",
+        "Full source code and customization documentation"
+      ]
     },
     "hypermarket-management": {
       "name": "Hypermarket Management System",
-      "tagline": "Complete retail operations platform",
-      "description": "End-to-end solution for inventory, POS, and customer management",
-      "starting_price": "$15,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "Point of Sale (POS) system",
-        "feature_2": "Inventory management",
-        "feature_3": "Customer loyalty program",
-        "feature_4": "Supplier management",
-        "feature_5": "Multi-location support",
-        "feature_6": "Real-time reporting and analytics",
-        "feature_7": "E-commerce integration",
-        "feature_8": "Barcode scanning"
-      }
+      "tagline": "Enterprise retail operations with POS, loyalty, and multi-branch support",
+      "description": "End-to-end retail solution: POS system, customer loyalty app with smart shopping lists and in-store product finder, inventory and warehouse management, and multi-branch connectivity. Scales from single store to multi-location chains.",
+      "category": "ecommerce",
+      "demo": "demo_partial",
+      "starting_price": "$20,000 - $50,000",
+      "price_note": "Price scales with number of branches and operational complexity",
+      "timeline": "8 weeks",
+      "timeline_custom": "Up to 12 weeks with customization",
+      "apps": [
+        {
+          "name": "POS System",
+          "description": "Point of sale with barcode and card processing. Full point-of-sale system with barcode scanning, receipt printing, returns processing, cash management, and shift-end reconciliation. Hardware-agnostic and works on tablets or dedicated terminals.",
+          "roles": "Cashier, Supervisor",
+          "features": [
+            "Barcode and QR code scanning integration",
+            "Receipt printing and digital receipts",
+            "Fast returns and refund processing",
+            "Cash and card payment handling",
+            "Shift opening and closing reports",
+            "Discount and promotion application",
+            "Multiple payment method support",
+            "Transaction history and audit trail"
+          ]
+        },
+        {
+          "name": "Customer Loyalty App",
+          "description": "Smart shopping lists and in-store product finder. Customer-facing app with order history, smart shopping lists that sync across devices, in-store product finder showing exact shelf location, loyalty card integration, and reorder favorites. Replaces physical fridge shopping lists.",
+          "roles": "Customer, Shopper",
+          "features": [
+            "Digital loyalty card and QR code scanning",
+            "Smart shopping lists with quantities",
+            "In-store product finder with shelf location",
+            "Personalized discount and offer recommendations",
+            "Order history and reorder favorites",
+            "Receipt digital storage and access",
+            "Rewards points and balance tracking",
+            "Push notifications for deals and promotions"
+          ]
+        },
+        {
+          "name": "Inventory & Warehouse Management",
+          "description": "Stock levels, reorder alerts, and warehouse operations. Complete inventory tracking with real-time stock levels, automated reorder point alerts, supplier management, goods receipt workflows, and full audit trails. Warehouse staff can process receipts and manage transfers.",
+          "roles": "Warehouse Manager, Stock Controller",
+          "features": [
+            "Real-time stock level tracking across warehouse",
+            "Automated reorder point alerts and suggestions",
+            "Supplier management and contact information",
+            "Goods receipt and inspection workflow",
+            "Stock adjustment and cycle counting",
+            "Stock transfer between branches",
+            "Product expiry tracking and FIFO management",
+            "Complete audit trail and transaction history"
+          ]
+        },
+        {
+          "name": "Multi-Branch Dashboard",
+          "description": "Centralized management for chain operations. Unified dashboard for managing multiple store locations. Inter-branch stock transfers, centralized reporting, branch comparison analytics, synchronized product catalog, and unified pricing. Real-time visibility across all locations.",
+          "roles": "Regional Manager, Operations Director",
+          "features": [
+            "Inter-branch stock transfer management",
+            "Centralized reporting and KPI dashboard",
+            "Branch-to-branch comparison analytics",
+            "Unified product catalog and pricing",
+            "Synchronized promotion and discount campaigns",
+            "Staff allocation and scheduling across branches",
+            "Revenue comparison and performance metrics",
+            "Consolidated financial reporting"
+          ]
+        }
+      ],
+      "differentiation": [
+        "In-store product finder feature eliminating customer search time",
+        "Multi-branch real-time sync ensuring pricing and stock consistency",
+        "Smart shopping lists replacing traditional paper and fridge notes",
+        "Unified inventory across locations enabling efficient stock distribution",
+        "Loyalty program with personalized offers driving repeat visits and basket size"
+      ],
+      "customization": [
+        "Hardware POS integration (receipt printers, card terminals)",
+        "ERP system integration for financial data sync",
+        "Custom reporting and business intelligence dashboards",
+        "Supplier portal for automated ordering",
+        "E-commerce bridge connecting online and offline inventory"
+      ],
+      "whats_included": [
+        "Complete POS software with hardware consultation",
+        "Customer loyalty and rewards app",
+        "Inventory management system with warehouse module",
+        "Multi-branch management dashboard",
+        "Hardware consultation and setup guidance",
+        "60 days of post-launch support and training",
+        "Full source code and technical documentation"
+      ]
     },
     "office-management": {
       "name": "Office Management Suite",
-      "tagline": "Streamline your office operations",
-      "description": "All-in-one platform for HR, projects, and team collaboration",
+      "tagline": "Appointment booking, CRM, and staff management in one dashboard",
+      "description": "Streamlined management dashboard for appointment-based businesses — clinics, salons, consultancies. Booking system, client CRM, staff scheduling, and payment tracking. Similar to our Secretary product, optimized for simplicity.",
+      "category": "booking",
+      "demo": "demo_available",
       "starting_price": "$8,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "Employee directory and profiles",
-        "feature_2": "Leave and attendance management",
-        "feature_3": "Project and task tracking",
-        "feature_4": "Document management",
-        "feature_5": "Team chat and collaboration",
-        "feature_6": "Time tracking and timesheets",
-        "feature_7": "Expense reporting",
-        "feature_8": "Performance reviews"
-      }
+      "timeline": "4-6 weeks",
+      "timeline_custom": "6 weeks with customization",
+      "apps": [
+        {
+          "name": "Management Dashboard",
+          "description": "All-in-one office operations hub. Single dashboard for appointment scheduling, client relationship management, staff scheduling, payment processing, and business analytics. Built from real Secretary product deployment in clinics and salons. Minimal learning curve.",
+          "roles": "Manager, Receptionist, Owner",
+          "features": [
+            "Appointment booking with calendar view",
+            "Recurring and follow-up appointment scheduling",
+            "Client CRM with contact history and preferences",
+            "Staff scheduling and shift assignment",
+            "Payment tracking and invoicing",
+            "Service menu customization",
+            "Automated appointment reminders",
+            "Business analytics and reporting",
+            "Waitlist and walk-in management",
+            "Integration with SMS and email notifications"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Works for any appointment-based business (clinics, salons, consultancies, legal offices)",
+        "Minimal training required — proven in real Secretary deployments",
+        "Built from real Secretary product ensuring all critical workflows",
+        "Clean, mobile-responsive interface suitable for any professional setting"
+      ],
+      "customization": [
+        "Custom branding with company logo and colors",
+        "Additional third-party integrations",
+        "Multi-location support for businesses with multiple offices"
+      ],
+      "whats_included": [
+        "Web-based management dashboard",
+        "Booking system with calendar integration",
+        "CRM module with client profiles",
+        "30 days of post-launch support",
+        "Full source code and documentation"
+      ]
     },
     "gym-management": {
       "name": "Gym & Fitness Management",
-      "tagline": "Smart fitness center operations",
-      "description": "Complete gym management with member app, trainer scheduling, and billing",
-      "starting_price": "$25,000",
-      "timeline": "60 days",
-      "features": {
-        "feature_1": "Member mobile app",
-        "feature_2": "Membership and subscription management",
-        "feature_3": "Class scheduling and booking",
-        "feature_4": "Personal trainer management",
-        "feature_5": "Workout tracking and progress",
-        "feature_6": "Nutrition planning",
-        "feature_7": "Payment processing",
-        "feature_8": "Access control integration"
-      }
+      "tagline": "6-app ecosystem for modern fitness centers",
+      "description": "The most comprehensive gym management system: Owner Dashboard, Receptionist App, Staff App for maintenance, Shop & Bar POS, Trainer App with AI video analysis, and a Customer App with QR-based equipment tracking. From membership management to AI-powered form correction.",
+      "category": "operations",
+      "demo": "demo_available",
+      "starting_price": "$25,000 - $75,000",
+      "price_note": "Scales with branch count and legacy system integration",
+      "timeline": "8 weeks",
+      "timeline_custom": "Up to 12 weeks with customization",
+      "apps": [
+        {
+          "name": "Owner Dashboard",
+          "description": "Gym operations and financial control center. Complete owner/GM view with subscription management, revenue analytics, staff oversight, branch management, equipment inventory, and reporting. Real-time KPIs for running the business.",
+          "roles": "Owner, General Manager",
+          "features": [
+            "Membership subscription management and renewals",
+            "Revenue analytics and financial dashboards",
+            "Staff oversight and performance tracking",
+            "Multi-branch management and comparison",
+            "Equipment inventory and maintenance tracking",
+            "Class scheduling and attendance",
+            "Trainer performance metrics",
+            "Monthly and annual financial reports"
+          ]
+        },
+        {
+          "name": "Receptionist App",
+          "description": "Front desk member check-in and registration. Tablet-based app for check-in/check-out, membership renewal, payment processing, walk-in registration, and day pass sales. Integrates with member account system for seamless experience.",
+          "roles": "Receptionist, Front Desk",
+          "features": [
+            "Member check-in/check-out with barcode scanning",
+            "Membership renewal and upgrade processing",
+            "Payment processing for renewals and day passes",
+            "Walk-in visitor registration and day pass sales",
+            "Account balance and payment history lookup",
+            "Member ID card generation and printing",
+            "Quick access to member contact information",
+            "Walk-in counter and daily revenue tracking"
+          ]
+        },
+        {
+          "name": "Maintenance & Facility Staff App",
+          "description": "Equipment and facility maintenance scheduling. Mobile app for maintenance staff to manage equipment maintenance tasks, cleaning checklists, facility status reports, and maintenance history. Keeps gym running smoothly.",
+          "roles": "Maintenance Staff, Facility Manager",
+          "features": [
+            "Equipment maintenance schedule and history",
+            "Daily cleaning checklist with task assignment",
+            "Equipment status reporting and photo documentation",
+            "Preventive maintenance scheduling",
+            "Facility inspection reports",
+            "Maintenance task assignment and completion tracking",
+            "Equipment repair history and downtime logging",
+            "Parts and supplies inventory management"
+          ]
+        },
+        {
+          "name": "Shop & Bar POS",
+          "description": "Supplement and beverage sales with credit system. Point-of-sale system for selling supplements, clothing, equipment, and bar items (protein shakes, energy bars). Credit system tied to member accounts allowing charges to membership billing.",
+          "roles": "Shop Staff, Bartender",
+          "features": [
+            "Product sales with barcode scanning",
+            "Bar order processing (shakes, bars, beverages)",
+            "Member account credit system and charges",
+            "Inventory tracking for shop and bar items",
+            "Tab management for member charges",
+            "Daily cash reconciliation",
+            "Supplier ordering and stock management",
+            "Sales reporting and popular items analysis"
+          ]
+        },
+        {
+          "name": "Trainer App",
+          "description": "Session scheduling, workout planning, and AI form analysis. Professional trainer app with client assignment, PT session booking, workout plan creation from client history, AI video analysis of training form, session tracking, and member pitching. Can see unassigned members to pitch PT packages.",
+          "roles": "Personal Trainer",
+          "features": [
+            "Client assignment and management",
+            "PT session booking and scheduling",
+            "Workout plan creation and customization",
+            "Exercise library with form demonstrations",
+            "AI video analysis of training form during session",
+            "Form correction feedback via AI",
+            "Session tracking and client progress notes",
+            "Billing and session hours calculation",
+            "View unassigned members for PT package pitching",
+            "Complex training session logging with exercise variants"
+          ]
+        },
+        {
+          "name": "Customer App",
+          "description": "Equipment tracking, PT booking, and progress management. Mobile app for gym members with digital gym passport, subscription info, training history, PT session booking with trainer selection, QR scan on equipment for session logging, find assigned workout equipment, and progress tracking.",
+          "roles": "Gym Member",
+          "features": [
+            "Digital gym passport with access status",
+            "Subscription information and renewal dates",
+            "Training history and session logs",
+            "PT session booking with trainer selection",
+            "QR scan on equipment to start session timer",
+            "Equipment usage logging and history",
+            "Find specific equipment in gym via scan or search",
+            "Trainer-assigned workout guide with locations",
+            "Progress tracking and achievement milestones",
+            "Upcoming session reminders and notifications"
+          ]
+        }
+      ],
+      "differentiation": [
+        "QR code on every equipment for automatic session tracking and usage logging",
+        "AI video analysis for real-time training form correction during PT sessions",
+        "Credit system linking supplement shop to member accounts and billing",
+        "6 specialized apps for every gym role — from owner to member",
+        "Trainer can see unassigned members to pitch PT packages and grow revenue",
+        "Customer app finds exact equipment from trainer-assigned workouts with location"
+      ],
+      "customization": [
+        "Hardware integration (card readers, check-in kiosks)",
+        "Multiple branch management with different equipment catalogs",
+        "Custom AI models for specific exercises and form analysis",
+        "Payment gateway options (local and international)",
+        "Integration with existing membership software or billing systems"
+      ],
+      "whats_included": [
+        "6 mobile/web apps (iOS, Android, and web versions)",
+        "QR code generation and gym equipment labeling guide",
+        "AI video analysis module with exercise library",
+        "POS hardware consultation for shop/bar setup",
+        "Equipment QR code labeling and installation guide",
+        "Admin training and staff onboarding materials",
+        "60 days of post-launch support",
+        "Full source code and technical documentation"
+      ]
     },
     "airbnb-marketplace": {
       "name": "Property Rental Platform",
-      "tagline": "Your own Airbnb-style marketplace",
-      "description": "Complete rental marketplace with host and guest apps",
-      "starting_price": "$15,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "Property listing and management",
-        "feature_2": "Booking and reservation system",
-        "feature_3": "Payment processing with escrow",
-        "feature_4": "Review and rating system",
-        "feature_5": "Host and guest profiles",
-        "feature_6": "Calendar and availability",
-        "feature_7": "Messaging system",
-        "feature_8": "Map-based search"
-      }
+      "tagline": "Your own Airbnb-style marketplace — for rent and sale",
+      "description": "Complete rental and property sales marketplace. Host app for listing properties, Guest app for booking and purchasing, and Admin dashboard for platform management. Not just rentals — supports property sales too.",
+      "category": "ecommerce",
+      "demo": "demo_partial",
+      "starting_price": "$12,000",
+      "timeline": "4-6 weeks",
+      "timeline_custom": "6 weeks with customization ($15,000)",
+      "apps": [
+        {
+          "name": "Host App",
+          "description": "Property listing and booking management. Complete tools for property owners to list rental and sale properties, manage availability, handle bookings, set pricing, communicate with guests, collect reviews, and track earnings.",
+          "roles": "Property Owner, Host",
+          "features": [
+            "Property listing creation with photos and descriptions",
+            "Calendar-based availability management",
+            "Booking request handling and approval workflow",
+            "Dynamic pricing and seasonal rate management",
+            "Guest messaging and communication tools",
+            "Review and rating management",
+            "Earnings tracking and payout management",
+            "Property analytics and booking history"
+          ]
+        },
+        {
+          "name": "Guest App",
+          "description": "Search, booking, and purchase for renters and buyers. App for guests to search properties with map view, place bookings with secure payment (escrow), contact hosts, leave reviews, save favorites, and make purchase offers for sale properties.",
+          "roles": "Guest, Renter, Buyer",
+          "features": [
+            "Map-based property search and filtering",
+            "Property detail pages with photos and descriptions",
+            "Booking request and payment processing",
+            "Escrow payment protection for security",
+            "Guest and host messaging",
+            "Review and rating system for properties and hosts",
+            "Favorites list and saved searches",
+            "Purchase offers for sale properties",
+            "Booking confirmation and check-in instructions"
+          ]
+        },
+        {
+          "name": "Admin Dashboard",
+          "description": "Platform management and oversight. Complete platform management including user verification, content moderation, booking oversight, dispute resolution, commission management, and financial reporting.",
+          "roles": "Platform Admin, Moderator",
+          "features": [
+            "User account management and verification",
+            "Property listing moderation and approval",
+            "Booking dispute resolution and mediation",
+            "Commission calculation and payment management",
+            "Fraud detection and prevention",
+            "User reviews and ratings moderation",
+            "Platform analytics and reporting",
+            "Payment processing oversight"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Supports both rental AND property sales — broader market reach",
+        "Map-based search for intuitive property discovery",
+        "Escrow payment protection ensuring security for both parties",
+        "Host self-service onboarding eliminating manual verification delays"
+      ],
+      "customization": [
+        "Payment gateway selection (local and international options)",
+        "Custom booking rules and cancellation policies",
+        "Multi-currency support for international properties",
+        "Property verification workflow customization"
+      ],
+      "whats_included": [
+        "3 mobile apps (iOS & Android) fully functional",
+        "Admin dashboard with all management features",
+        "Payment integration with escrow handling",
+        "Map and location services setup",
+        "30 days of post-launch support",
+        "Full source code and documentation"
+      ]
     },
     "hair-transplant-ai": {
       "name": "Hair Transplant AI Analyzer",
-      "tagline": "AI-powered hair analysis and consultation",
-      "description": "Smart solution for hair clinics with AI analysis and patient management",
-      "starting_price": "$18,000",
-      "timeline": "35 days",
-      "features": {
-        "feature_1": "AI hair density analysis",
-        "feature_2": "Before/after visualization",
-        "feature_3": "Patient management system",
-        "feature_4": "Consultation booking",
-        "feature_5": "Treatment planning",
-        "feature_6": "Cost estimation",
-        "feature_7": "Progress tracking with photos",
-        "feature_8": "Payment and invoicing"
-      }
+      "tagline": "AI-powered hair analysis and clinic management",
+      "description": "Built from our real HairVision project. Receptionist dashboard for appointment booking, patient history, and medication tracking. Doctor AI tool: take 4 photos of a patient's head and get follicle counts, donor area mapping, and transplant planning. Progress tracking at 7, 30, and 90 days post-transplant.",
+      "category": "health_beauty",
+      "demo": "no_demo",
+      "starting_price": "$20,000",
+      "timeline": "4 weeks",
+      "timeline_custom": "6 weeks with customization",
+      "apps": [
+        {
+          "name": "Receptionist Dashboard",
+          "description": "Appointment and patient management. Web-based dashboard for scheduling appointments, maintaining patient profiles, tracking medical history and medications, and managing session context. Ensures doctors have complete patient information at each visit.",
+          "roles": "Receptionist, Secretary",
+          "features": [
+            "Appointment booking and calendar management",
+            "Patient profile creation and management",
+            "Medical history and health conditions tracking",
+            "Medication and allergy documentation",
+            "Session context and previous treatment notes",
+            "Payment and invoicing processing",
+            "Patient communication and reminders",
+            "Follow-up appointment scheduling"
+          ]
+        },
+        {
+          "name": "Doctor AI Analysis Tool",
+          "description": "AI-powered hair analysis and transplant planning. Sophisticated tool for doctors to capture 4 standard head photos and receive AI analysis: follicle density counts, donor area mapping, transplant planning visualization, graft estimation. Progress tracking at clinical intervals (7, 30, 90 days post-procedure). Built from real Jarwan Transplant Clinic deployment.",
+          "roles": "Doctor, Surgeon",
+          "features": [
+            "4-photo standardized capture system for consistency",
+            "AI follicle density analysis and counting",
+            "Donor area evaluation and mapping",
+            "Recipient area assessment and planning",
+            "Transplant planning visualization and design",
+            "Graft requirement estimation",
+            "Pre-operative planning documentation",
+            "Post-operative progress tracking (7/30/90 days)",
+            "Before/after comparison visualization",
+            "Treatment recommendations and analysis reports"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Real AI follicle counting from photos — not simulations or estimates",
+        "Automated donor area mapping eliminating manual measurement",
+        "Progress tracking at clinical intervals (7, 30, 90 days) for outcome monitoring",
+        "Built from real clinic deployment at Jarwan Transplant ensuring medical accuracy"
+      ],
+      "customization": [
+        "Clinic branding with logo and colors",
+        "Additional AI analysis models for different procedures",
+        "Integration with existing patient management systems",
+        "Multi-clinic support for clinic chains"
+      ],
+      "whats_included": [
+        "Receptionist dashboard for full patient management",
+        "Doctor AI analysis tool with photo capture",
+        "AI model setup and calibration",
+        "Patient data migration assistance from existing systems",
+        "30 days of post-launch support",
+        "Full source code and technical documentation"
+      ]
+    },
+    "barbershop-management": {
+      "name": "Elite Barbershop Management",
+      "tagline": "Professional barbershop system with AI style analysis",
+      "description": "Complete barbershop management: Owner dashboard for CRM, staff management, and analytics. Receptionist mini-dashboard for check-in/out. Barber App with sophisticated AI hairstyle and beard analysis — professional-grade, more advanced than consumer apps. Can integrate directly with Calibre so customers who download Calibre get access to your salon.",
+      "category": "health_beauty",
+      "demo": "demo_available",
+      "starting_price": "$35,000",
+      "timeline": "5 weeks",
+      "timeline_custom": "7 weeks with customization",
+      "apps": [
+        {
+          "name": "Owner Dashboard",
+          "description": "Business operations and analytics. Complete CRM and management dashboard with staff scheduling, appointment booking, client relationship management, analytics, revenue reporting, product inventory, and marketing tools. Full visibility into business operations.",
+          "roles": "Owner, Manager",
+          "features": [
+            "Client CRM with complete profile history",
+            "Staff scheduling and shift management",
+            "Appointment booking and calendar management",
+            "Revenue reporting and financial analytics",
+            "Client retention metrics and repeat visit tracking",
+            "Product inventory for barbershop supplies",
+            "Marketing tools and promotional campaigns",
+            "Performance metrics by barber and service type"
+          ]
+        },
+        {
+          "name": "Receptionist App",
+          "description": "Client check-in and appointment management. Mini-dashboard for front desk operations including client check-in/check-out, appointment booking, walk-in queue management, payment processing, and quick client lookup.",
+          "roles": "Receptionist, Front Desk",
+          "features": [
+            "Client check-in/check-out with timing",
+            "Appointment booking and scheduling",
+            "Walk-in queue and wait time management",
+            "Payment processing and card handling",
+            "Quick client lookup by phone or name",
+            "Waiting client notifications",
+            "Daily client count and throughput tracking",
+            "Service time estimation and tracking"
+          ]
+        },
+        {
+          "name": "Barber App",
+          "description": "Professional-grade AI style analysis. Mobile app for barbers with complete client profiles, appointment schedule, service history, and professional-grade AI hairstyle and beard analysis. Advanced beyond consumer apps — AI recommends styles based on client appearance and preferences. Direct Calibre integration for customer acquisition.",
+          "roles": "Barber, Stylist",
+          "features": [
+            "Complete client profile with appearance data",
+            "Client service history and preferences",
+            "Appointment schedule and upcoming bookings",
+            "Professional AI hairstyle analysis and matching",
+            "AI beard style analysis and recommendations",
+            "Advanced AI style suggestions surpassing consumer apps",
+            "Style history per client with photos",
+            "Product recommendations for client care",
+            "Direct Calibre app integration for client discovery",
+            "Client photo and style documentation"
+          ]
+        }
+      ],
+      "differentiation": [
+        "Professional-grade AI style analysis surpassing consumer apps like Calibre",
+        "Direct Calibre app integration allowing customers to discover and book with your salon",
+        "Complete client appearance history for consistent, personalized service",
+        "Sophisticated beard and hairstyle matching AI for premium consultations",
+        "Receptionist mini-dashboard ensuring efficient front desk operations"
+      ],
+      "customization": [
+        "Custom branding with shop logo and colors",
+        "Additional AI style models for specific hair types or ethnicities",
+        "Multi-location support for barbershop chains",
+        "Loyalty and rewards program customization"
+      ],
+      "whats_included": [
+        "3 apps: Owner Dashboard (web), Receptionist App (tablet), Barber App (mobile)",
+        "AI style analysis setup and model configuration",
+        "Calibre app integration documentation and setup",
+        "Staff training and onboarding materials",
+        "30 days of post-launch support",
+        "Full source code and technical documentation"
+      ]
     }
   },
   "detail": {
     "key_features": "Key Features",
-    "pricing": "Pricing",
-    "timeline": "Timeline",
-    "related_title": "You Might Also Like",
-    "timeline_title": "Implementation Timeline",
-    "timeline_week1": "Requirements & Design",
-    "timeline_week2": "Core Development",
-    "timeline_week3": "Features & Integration",
-    "timeline_week4": "Testing & QA",
-    "timeline_week5": "Deployment & Training",
+    "apps_title": "System Components",
+    "apps_subtitle": "Each component is purpose-built for a specific role",
+    "apps_for_roles": "For: {roles}",
+    "features_title": "Features",
+    "differentiation_title": "What Sets This Apart",
+    "pricing_title": "Pricing",
+    "base_package": "Base Package",
+    "custom_package": "With Customization",
+    "customization_title": "Customization Options",
+    "customization_desc": "Every solution can be tailored to your specific needs",
     "whats_included": "What's Included",
-    "included_items": {
-      "item_1": "Full source code",
-      "item_2": "Cloud deployment setup",
-      "item_3": "Admin training",
-      "item_4": "30 days of support",
-      "item_5": "Documentation",
-      "item_6": "Regular updates"
-    },
-    "customization": "Customization Available",
-    "customization_desc": "This solution can be customized to match your brand and specific needs",
+    "timeline_title": "Delivery Timeline",
+    "without_customization": "Without customization",
+    "with_customization": "With customization",
+    "related_title": "You Might Also Like",
+    "cta_heading": "Ready to Get Started?",
+    "cta_subtitle": "Get this solution deployed for your business. Book a call to discuss your needs.",
     "cta_primary": "Get This Solution",
     "cta_secondary": "Customize & Get Estimate",
     "cta_demo": "Request Demo",
     "starting_at": "Starting at",
     "delivery": "delivery",
-    "features": "Features",
-    "package": "Package",
-    "cta_heading": "Ready to Get Started?",
-    "cta_subtitle": "Get this solution deployed for your business in as little as 35 days.",
     "view_all": "View All Solutions",
-    "not_found_title": "Solution Not Found - Aviniti",
-    "timeline_week": "Week {week}",
-    "timeline_weeks_range": "Week {start}-{end}"
+    "not_found_title": "Solution Not Found — Aviniti",
+    "price_note": "Price Note",
+    "learn_more_features": "See all features"
   }
 }

@@ -1,7 +1,9 @@
 {
   "meta": {
-    "title": "Contact Us - Aviniti",
-    "description": "Get in touch with Aviniti. Book a free consultation or send us a message about your project."
+    "title": "Contact Aviniti — Let's Build Your Idea",
+    "description": "Get in touch with Aviniti's development team. Tell us about your app idea and receive a free estimate within 24 hours.",
+    "og_title": "Contact Aviniti — Let's Build Your Idea",
+    "og_description": "Get in touch with Aviniti's development team. Tell us about your app idea and receive a free estimate within 24 hours."
   },
   "page": {
     "label": "Contact",

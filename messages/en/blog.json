@@ -1,23 +1,28 @@
 {
   "meta": {
-    "title": "Blog - Aviniti",
-    "description": "Insights on AI, app development, technology trends, and digital transformation",
+    "title": "Blog — App Development & AI Insights | Aviniti",
+    "description": "Expert articles on mobile app development, AI integration, and digital transformation for businesses in Jordan and the Middle East.",
+    "og_title": "Blog — App Development & AI Insights | Aviniti",
+    "og_description": "Expert articles on mobile app development, AI integration, and digital transformation for businesses in Jordan and the Middle East.",
     "not_found": "Post Not Found - Aviniti Blog",
     "blog_suffix": "Aviniti Blog"
   },
   "page": {
     "label": "Blog",
     "title": "Insights & Articles",
-    "subtitle": "Expert perspectives on AI, mobile development, web technologies, and digital transformation.",
+    "subtitle": "Expert perspectives on AI, mobile development, and digital transformation for businesses in Jordan and the Middle East.",
     "search_placeholder": "Search articles...",
     "search_no_results": "No articles found matching your search.",
     "aria_clear_search": "Clear search",
     "categories": {
       "all": "All",
+      "app development": "App Development",
       "ai": "AI",
       "mobile": "Mobile",
       "web": "Web",
-      "tutorials": "Tutorials"
+      "digital transformation": "Digital Transformation",
+      "tutorials": "Tutorials",
+      "business": "Business"
     }
   },
   "cta": {
@@ -27,7 +32,7 @@
     "estimate": "Get AI Estimate"
   },
   "post": {
-    "read": "Read",
+    "read": "Read Article",
     "read_more": "Read More",
     "reading_time": "{minutes} min read",
     "published_on": "Published on {date}",
@@ -40,32 +45,22 @@
     "featured_image": "Featured Image",
     "back_to_blog": "Back to Blog",
     "all_articles": "All Articles",
-    "not_found_title": "Post Not Found"
+    "not_found_title": "Post Not Found",
+    "not_found_description": "The article you are looking for does not exist or may have been removed.",
+    "table_of_contents": "In this article"
   },
   "filters": {
     "sort_by": "Sort by",
     "newest": "Newest First",
     "oldest": "Oldest First",
-    "most_popular": "Most Popular",
     "filter_by_category": "Filter by Category",
     "clear_filters": "Clear Filters"
   },
   "empty": {
-    "title": "No articles found",
-    "description": "Try adjusting your search or filters",
+    "title": "No articles yet",
+    "description": "New articles are published regularly. Check back soon.",
     "cta": "View All Articles"
   },
-  "contentNotice": {
-    "title": "Content Language Notice",
-    "message": "Blog articles are currently available in English only. We're working on adding Arabic content soon.",
-    "dismiss": "Got it"
-  },
-  "newsletter": {
-    "title": "Subscribe to our newsletter",
-    "description": "Get the latest articles and insights delivered to your inbox",
-    "email_placeholder": "your@email.com",
-    "submit": "Subscribe",
-    "success": "Thank you for subscribing!",
-    "error": "Failed to subscribe. Please try again."
-  }
+  "loading": "Loading articles...",
+  "author": "Aviniti Team"
 }

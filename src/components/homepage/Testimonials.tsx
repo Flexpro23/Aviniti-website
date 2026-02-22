@@ -25,7 +25,7 @@ interface Testimonial {
   nameKey: string;
   roleKey: string;
   companyKey: string;
-  rating: number;
+  ratingKey: string;
 }
 
 const TESTIMONIALS: Testimonial[] = [
@@ -35,7 +35,7 @@ const TESTIMONIALS: Testimonial[] = [
     nameKey: 'testimonial_1_name',
     roleKey: 'testimonial_1_role',
     companyKey: 'testimonial_1_company',
-    rating: 5,
+    ratingKey: 'testimonial_1_rating',
   },
   {
     id: '2',
@@ -43,7 +43,7 @@ const TESTIMONIALS: Testimonial[] = [
     nameKey: 'testimonial_2_name',
     roleKey: 'testimonial_2_role',
     companyKey: 'testimonial_2_company',
-    rating: 5,
+    ratingKey: 'testimonial_2_rating',
   },
   {
     id: '3',
@@ -51,7 +51,7 @@ const TESTIMONIALS: Testimonial[] = [
     nameKey: 'testimonial_3_name',
     roleKey: 'testimonial_3_role',
     companyKey: 'testimonial_3_company',
-    rating: 5,
+    ratingKey: 'testimonial_3_rating',
   },
   {
     id: '4',
@@ -59,11 +59,45 @@ const TESTIMONIALS: Testimonial[] = [
     nameKey: 'testimonial_4_name',
     roleKey: 'testimonial_4_role',
     companyKey: 'testimonial_4_company',
-    rating: 5,
+    ratingKey: 'testimonial_4_rating',
+  },
+  {
+    id: '5',
+    quoteKey: 'testimonial_5_quote',
+    nameKey: 'testimonial_5_name',
+    roleKey: 'testimonial_5_role',
+    companyKey: 'testimonial_5_company',
+    ratingKey: 'testimonial_5_rating',
   },
 ];
 
-const AUTO_ROTATE_INTERVAL = 6000; // 6 seconds
+const AUTO_ROTATE_INTERVAL = 10000; // 10 seconds
+
+interface StarRatingProps {
+  ratingKey: string;
+  t: ReturnType<typeof useTranslations>;
+}
+
+function StarRating({ ratingKey, t }: StarRatingProps) {
+  const ratingValue = parseInt(t(ratingKey), 10);
+
+  return (
+    <div className="flex items-center justify-center gap-1 mb-6" aria-label={`${ratingValue} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={cn(
+            'w-5 h-5',
+            i < ratingValue
+              ? 'text-bronze fill-bronze'
+              : 'text-slate-blue-light'
+          )}
+          aria-hidden="true"
+        />
+      ))}
+    </div>
+  );
+}
 
 export function Testimonials() {
   const t = useTranslations('home.testimonials');
@@ -181,20 +215,7 @@ export function Testimonials() {
                   </div>
 
                   {/* Star Rating */}
-                  <div className="flex items-center justify-center gap-1 mb-6" aria-label={`${currentTestimonial.rating} out of 5 stars`}>
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={cn(
-                          'w-5 h-5',
-                          i < currentTestimonial.rating
-                            ? 'text-bronze fill-bronze'
-                            : 'text-slate-blue-light'
-                        )}
-                        aria-hidden="true"
-                      />
-                    ))}
-                  </div>
+                  <StarRating ratingKey={currentTestimonial.ratingKey} t={t} />
 
                   {/* Quote */}
                   <blockquote className="text-lg lg:text-xl text-off-white text-center leading-relaxed mb-8 relative z-10">

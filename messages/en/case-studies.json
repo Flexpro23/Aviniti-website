@@ -1,7 +1,9 @@
 {
   "meta": {
-    "title": "Case Studies - Real Results | Aviniti",
-    "description": "See how we've helped businesses transform with custom apps and AI solutions",
+    "title": "Case Studies — Client Success Stories | Aviniti",
+    "description": "See how Aviniti built real solutions for real businesses — from logistics platforms to kindergarten management systems.",
+    "og_title": "Case Studies — Client Success Stories | Aviniti",
+    "og_description": "See how Aviniti built real solutions for real businesses — from logistics platforms to kindergarten management systems.",
     "not_found": "Case Study Not Found - Aviniti",
     "case_study_suffix": "Aviniti Case Study"
   },
@@ -13,11 +15,10 @@
     "description": "See how we have helped companies across industries achieve their digital transformation goals.",
     "all_case_studies": "All Case Studies",
     "filter_all": "All",
-    "filter_healthcare": "Healthcare",
     "filter_ecommerce": "E-Commerce",
     "filter_logistics": "Logistics",
     "filter_education": "Education",
-    "filter_restaurant": "Restaurant & Food"
+    "duration": "Duration"
   },
   "card": {
     "read_case_study": "Read Case Study",
@@ -53,29 +54,6 @@
     "subtitle": "Let us help you achieve similar results. Get started with a free consultation.",
     "primary": "Get Free Consultation",
     "secondary": "View Solutions"
-  },
-  "examples": {
-    "healthcare_1": {
-      "title": "40% Faster Patient Processing for Healthcare Clinic",
-      "industry": "Healthcare",
-      "excerpt": "How we helped a busy medical clinic reduce patient wait times and improve operational efficiency with a custom booking and management system",
-      "key_metric": "40%",
-      "key_metric_label": "Reduction in patient wait time"
-    },
-    "ecommerce_1": {
-      "title": "3x Revenue Growth for E-commerce Startup",
-      "industry": "E-commerce",
-      "excerpt": "A complete e-commerce platform with AI recommendations that tripled revenue in 6 months",
-      "key_metric": "3x",
-      "key_metric_label": "Revenue increase"
-    },
-    "logistics_1": {
-      "title": "$120K Annual Savings in Delivery Operations",
-      "industry": "Logistics",
-      "excerpt": "How a multi-vendor delivery platform reduced costs and improved delivery times for a logistics company",
-      "key_metric": "$120K",
-      "key_metric_label": "Annual cost savings"
-    }
   },
   "contentNotice": {
     "title": "Content Language Notice",

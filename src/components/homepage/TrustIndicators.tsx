@@ -29,10 +29,10 @@ export function TrustIndicators() {
   const { ref, inView } = useScrollReveal({ once: true });
 
   const metrics: TrustMetric[] = [
-    { value: 50, suffix: '+', labelKey: 'metric_1_label' }, // 50+ Apps Delivered
-    { value: 7, suffix: '', labelKey: 'metric_2_label' }, // 7 Ready-Made Solutions
+    { value: 24, suffix: '+', labelKey: 'metric_1_label' }, // 24+ Products Delivered
+    { value: 9, suffix: '', labelKey: 'metric_2_label' }, // 9 Apps Live in Stores
     { value: 98, suffix: '%', labelKey: 'metric_3_label' }, // 98% Client Satisfaction
-    { value: 35, suffix: '', labelKey: 'metric_4_label' }, // 35-Day Average Delivery
+    { value: 16, suffix: '+', labelKey: 'metric_4_label' }, // 16+ Clients Served
   ];
 
   const badges: TrustBadge[] = [

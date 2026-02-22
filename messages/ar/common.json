@@ -16,8 +16,14 @@
       "ideaLab": "مختبر الأفكار",
       "analyzer": "محلل الذكاء الاصطناعي",
       "estimate": "احصل على تقدير",
-      "roiCalculator": "حاسبة العائد"
-    }
+      "roiCalculator": "حاسبة العائد",
+      "ideaLabDesc": "حوّل أفكارك إلى مشاريع أعمال مدروسة",
+      "analyzerDesc": "تحليل الإمكانيات السوقية والمنافسة",
+      "estimateDesc": "احصل على تقدير فوري للتكلفة بالذكاء الاصطناعي",
+      "roiDesc": "احسب العائد المتوقع قبل البدء في البناء",
+      "viewAll": "عرض جميع الأدوات ←"
+    },
+    "get_started": "تواصل معنا"
   },
   "cta": {
     "get_estimate": "احصل على تقدير بالذكاء الاصطناعي",
@@ -84,7 +90,11 @@
     "breadcrumb": "مسار التنقل",
     "page_loading": "جارٍ تحميل الصفحة",
     "go_back_to_step": "العودة إلى الخطوة {step}: {label}",
-    "legal_navigation": "التنقل القانوني"
+    "legal_navigation": "التنقل القانوني",
+    "getStarted": "تواصل مع Aviniti",
+    "aiToolsMenu": "قائمة أدوات الذكاء الاصطناعي",
+    "openAiTools": "فتح قائمة أدوات الذكاء الاصطناعي",
+    "closeAiTools": "إغلاق قائمة أدوات الذكاء الاصطناعي"
   },
   "loading": "جارٍ التحميل...",
   "loading_aria": "جارٍ تحميل محتوى الصفحة",
@@ -143,11 +153,15 @@
     "privacy": "معلوماتك آمنة ولن تتم مشاركتها مع أي طرف ثالث."
   },
   "exit_intent": {
+    "checklist_title": "قبل أن تغادر — احصل على قائمة تطوير التطبيقات بالذكاء الاصطناعي المجانية",
+    "checklist_subtitle": "انظر بالضبط ما نقيّمه قبل بناء التطبيق.",
+    "email_placeholder": "your@email.com",
+    "checklist_cta": "أرسل لي قائمة التحقق",
+    "close_aria": "إغلاق",
     "thank_you": "شكراً لك!",
     "will_be_in_touch": "سنتواصل معك قريباً.",
     "before_you_go": "قبل أن تغادر...",
     "free_consultation_description": "احصل على استشارة مجانية مع فريقنا. سنساعدك في إيجاد الحل المناسب لعملك.",
-    "email_placeholder": "عنوان بريدك الإلكتروني",
     "phone_placeholder": "أدخل رقم هاتفك",
     "phone_required": "يرجى إدخال رقم هاتفك",
     "phone_invalid": "يرجى إدخال رقم هاتف صالح",

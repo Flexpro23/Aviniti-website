@@ -429,10 +429,11 @@ export const contactFormSchema = z.object({
   company: companySchema,
   phone: phoneSchema,
   topic: z.enum([
-    'general-inquiry',
-    'project-discussion',
-    'partnership',
+    'general',
+    'project',
+    'estimate',
     'support',
+    'partnership',
     'other',
   ] as const).describe('Please select a topic'),
   message: z

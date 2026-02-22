@@ -16,8 +16,14 @@
       "ideaLab": "Idea Lab",
       "analyzer": "AI Analyzer",
       "estimate": "Get AI Estimate",
-      "roiCalculator": "ROI Calculator"
-    }
+      "roiCalculator": "ROI Calculator",
+      "ideaLabDesc": "Turn ideas into validated business concepts",
+      "analyzerDesc": "Analyze market potential and competition",
+      "estimateDesc": "Get AI-powered cost estimates instantly",
+      "roiDesc": "Calculate expected ROI before you build",
+      "viewAll": "View all AI tools →"
+    },
+    "get_started": "Get in Touch"
   },
   "cta": {
     "get_estimate": "Get AI Estimate",
@@ -84,7 +90,11 @@
     "breadcrumb": "Breadcrumb navigation",
     "page_loading": "Page loading",
     "go_back_to_step": "Go back to step {step}: {label}",
-    "legal_navigation": "Legal navigation"
+    "legal_navigation": "Legal navigation",
+    "getStarted": "Get in touch with Aviniti",
+    "aiToolsMenu": "AI Tools menu",
+    "openAiTools": "Open AI Tools menu",
+    "closeAiTools": "Close AI Tools menu"
   },
   "loading": "Loading...",
   "loading_aria": "Loading page content",
@@ -143,11 +153,15 @@
     "privacy": "Your information is secure and will never be shared with third parties."
   },
   "exit_intent": {
+    "checklist_title": "Before you go — grab our free AI Development Checklist",
+    "checklist_subtitle": "See exactly what we evaluate before building an app.",
+    "email_placeholder": "your@email.com",
+    "checklist_cta": "Send Me the Checklist",
+    "close_aria": "Close",
     "thank_you": "Thank you!",
     "will_be_in_touch": "We'll be in touch shortly.",
     "before_you_go": "Before you go...",
     "free_consultation_description": "Get a free consultation with our team. We'll help you find the right solution for your business.",
-    "email_placeholder": "Your email address",
     "phone_placeholder": "Enter your phone number",
     "phone_required": "Please enter your phone number",
     "phone_invalid": "Please enter a valid phone number",

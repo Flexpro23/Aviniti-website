@@ -1,14 +1,14 @@
 {
   "hero": {
     "scroll_cta_aria": "Scroll to services section",
-    "label": "AI-POWERED APP DEVELOPMENT",
-    "title": "Turn Your Ideas Into Powerful Apps",
-    "title_line1": "Turn Your Ideas Into",
-    "title_accent": "Powerful Apps",
-    "subtitle": "We build custom mobile and web applications powered by AI. From concept to launch, we make it happen.",
-    "cta_primary": "Explore Our AI Tools",
+    "label": "CUSTOM AI APP DEVELOPMENT",
+    "title": "We Build Custom AI Apps for Your Business",
+    "title_line1": "We Build Custom AI Apps",
+    "title_accent": "for Your Business",
+    "subtitle": "From idea to App Store in weeks. Get a free AI-powered estimate in 2 minutes — no commitment.",
+    "cta_primary": "Get Your Free Estimate",
     "cta_secondary": "Ready-Made Solutions",
-    "cta_tertiary": "Schedule a free consultation",
+    "cta_tertiary": "or chat with us on WhatsApp",
     "journey_idea_title": "Dream It",
     "journey_idea_desc": "AI-powered idea discovery",
     "journey_analyze_title": "Analyze It",
@@ -17,7 +17,7 @@
     "journey_estimate_desc": "Get cost & timeline instantly",
     "journey_launch_title": "Launch It",
     "journey_launch_desc": "Go live in app stores",
-    "metric_apps": "50+ Apps Delivered",
+    "metric_apps": "24+ Products Delivered",
     "metric_speed": "60% Faster Launch",
     "metric_ai": "AI-Powered"
   },
@@ -25,99 +25,165 @@
     "projects": "Projects Delivered",
     "countries": "Countries Served",
     "satisfaction": "Client Satisfaction",
-    "metric_1_label": "Apps Delivered",
-    "metric_2_label": "Ready-Made Solutions",
+    "metric_1_label": "Products Delivered",
+    "metric_2_label": "Apps Live in Stores",
     "metric_3_label": "Client Satisfaction",
-    "metric_4_label": "Day Average Delivery",
+    "metric_4_label": "Clients Served",
     "badge_1": "SOC 2 Certified",
     "badge_2": "Data Encrypted",
     "badge_3": "GDPR Compliant",
     "heading": {
       "label": "Our Track Record",
       "title": "Numbers That Speak",
-      "subtitle": "Proven results that demonstrate our commitment to excellence"
+      "subtitle": "Real results from real projects — not vanity metrics"
     }
   },
-  "company_logos": {
-    "title": "Trusted by Growing Businesses",
-    "subtitle": "Join the companies that have transformed their operations with our custom applications",
-    "aria_label": "Scrolling list of companies that trust Aviniti"
+  "product_belt": {
+    "title": "Built for Real Businesses",
+    "subtitle": "Real products we've designed, built, and shipped — from AI medical platforms to peer-to-peer marketplaces",
+    "aria_label": "Scrolling showcase of products built by Aviniti",
+    "categories": {
+      "ai": "AI",
+      "health": "Health Tech",
+      "delivery": "Delivery",
+      "education": "Education",
+      "ecommerce": "eCommerce",
+      "lifestyle": "Lifestyle",
+      "business": "Business"
+    },
+    "products": {
+      "skinverse": {
+        "name": "SkinVerse",
+        "desc": "AI-powered skin analysis — 12 attributes from a selfie, progress tracking, and personalized routines"
+      },
+      "calibre": {
+        "name": "Calibre",
+        "desc": "Premium barbershop management with AI hairstyle suggestions and client CRM"
+      },
+      "nay_nursery": {
+        "name": "Nay Nursery",
+        "desc": "Kindergarten management with parent updates, attendance tracking, and staff scheduling"
+      },
+      "secretary": {
+        "name": "Secretary",
+        "desc": "Office management suite — appointments, CRM, staff scheduling, and payment tracking"
+      },
+      "hairvision": {
+        "name": "HairVision",
+        "desc": "AI hair transplant analysis — follicle counting, donor mapping, and progress tracking"
+      },
+      "wear_and_share": {
+        "name": "Wear & Share",
+        "desc": "Clothing eCommerce platform for buying, selling, and sharing fashion"
+      },
+      "ai_cdss_dfu": {
+        "name": "AI-CDSS-DFU",
+        "desc": "AI clinical decision support for diabetic foot wounds — vision analysis to assess and manage patient care"
+      },
+      "pickleball": {
+        "name": "PickleBall",
+        "desc": "Court booking with maps, split payments across players, and game discovery"
+      },
+      "flex_pro": {
+        "name": "Flex Pro",
+        "desc": "Delivery management and pickup/drop-off system — part of our delivery solution ecosystem"
+      },
+      "sensual": {
+        "name": "Sensual",
+        "desc": "AI personal assistant running locally on-device — full access to calendar, contacts, and messages, fully private"
+      },
+      "nerd": {
+        "name": "Nerd",
+        "desc": "Peer-to-peer tutoring marketplace for university students — teach what you know, learn what you need"
+      }
+    }
   },
   "testimonials": {
-    "label": "CLIENT SUCCESS STORIES",
+    "label": "REAL RESULTS",
     "title": "What Our Clients Say",
-    "subtitle": "Real feedback from real clients who have launched successful applications with Aviniti",
+    "subtitle": "Specific feedback from the people behind the apps we've built",
     "carousel_aria": "Client testimonials carousel",
-    "testimonial_1_quote": "Aviniti delivered our gym management app ahead of schedule and exceeded all expectations. The AI-powered features have revolutionized how we manage member engagement and retention.",
-    "testimonial_1_name": "Ahmad Al-Rashidi",
-    "testimonial_1_role": "CEO",
-    "testimonial_1_company": "FlexPro Fitness",
-    "testimonial_2_quote": "The office management solution from Aviniti has saved us countless hours every week. Their attention to detail and commitment to quality is unmatched in the industry.",
-    "testimonial_2_name": "Sarah Mansour",
-    "testimonial_2_role": "Founder",
-    "testimonial_2_company": "SecretaryApp",
-    "testimonial_3_quote": "Our delivery app has been a game-changer for our business. Aviniti's team was professional, responsive, and delivered a product that our customers absolutely love.",
-    "testimonial_3_name": "Omar Haddad",
-    "testimonial_3_role": "Operations Manager",
-    "testimonial_3_company": "FarmHouse",
-    "testimonial_4_quote": "Working with Aviniti on our kindergarten management app was seamless. They understood our needs perfectly and created an intuitive platform that parents and teachers both love.",
-    "testimonial_4_name": "Layla Khouri",
-    "testimonial_4_role": "Director",
-    "testimonial_4_company": "Let's Play"
+    "testimonial_1_quote": "I came to Aviniti with a concept — an app that analyzes your skin from a selfie. They turned it into a full product: 12 skin attributes, progress tracking over time, product conflict detection, personalized routines. The AI accuracy on hydration and texture analysis surprised even me. It's live and users are seeing real results.",
+    "testimonial_1_name": "Duaa Theeb",
+    "testimonial_1_role": "Founder & CEO",
+    "testimonial_1_company": "SkinVerse",
+    "testimonial_1_rating": "5",
+    "testimonial_2_quote": "Calibre has four AI tools in one app — virtual hairstyle try-on, an AI mirror that tells you how to look your best before a meeting, a product cabinet that detects ingredient conflicts, and a Style DNA profile. Aviniti handled the computer vision, the product analysis, everything. I just described what I wanted and they figured out how to build it.",
+    "testimonial_2_name": "Ibrahim Alia",
+    "testimonial_2_role": "Founder & CEO",
+    "testimonial_2_company": "Calibre",
+    "testimonial_2_rating": "5",
+    "testimonial_3_quote": "We needed a system that replaces paper — attendance, incident reports, parent communication, payment tracking. Aviniti built us a dashboard, a staff app with geofencing check-in, and a parent app where families see everything about their child's day. The staff app is what convinced me — teachers use it without any training.",
+    "testimonial_3_name": "Mariam Odat",
+    "testimonial_3_role": "Owner",
+    "testimonial_3_company": "Nay Nursery",
+    "testimonial_3_rating": "4",
+    "testimonial_4_quote": "I needed a simple tool for clinic secretaries to book appointments, manage schedules, and keep track of clients. Aviniti delivered exactly that — nothing extra, nothing missing. Works for our medical clinic and we've recommended it to a makeup artist friend who uses it too.",
+    "testimonial_4_name": "Saber Al Obaidi",
+    "testimonial_4_role": "Owner",
+    "testimonial_4_company": "Secretary",
+    "testimonial_4_rating": "4",
+    "testimonial_5_quote": "We're a hair transplant clinic. The receptionist dashboard alone saved us hours — appointment booking, patient history, medication tracking, session context for returning clients. But the real value is the doctor's AI tool: take 4 photos of a patient's head and get follicle counts, donor area mapping, and transplant planning. We also use it to track progress at 7, 30, and 90 days post-transplant.",
+    "testimonial_5_name": "Sami Jarwan",
+    "testimonial_5_role": "Founder",
+    "testimonial_5_company": "Jarwan Transplant (HairVision)",
+    "testimonial_5_rating": "5"
   },
   "services": {
     "label": "WHAT WE BUILD",
-    "title": "Full-Stack Development, Powered by AI",
-    "subtitle": "From mobile apps to AI integrations, we build complete digital solutions tailored to your business needs.",
-    "cta": "Explore Our Solutions",
-    "card_cta": "Get Started",
+    "title": "What We Actually Build",
+    "subtitle": "Real examples from real projects. Not generic promises.",
+    "cta": "Browse Solutions",
+    "card_cta": "Get Estimate",
     "labels": {
-      "capabilities": "CAPABILITIES",
+      "capabilities": "WHAT WE DELIVER",
       "technologies": "TECHNOLOGIES",
-      "industries": "INDUSTRIES SERVED"
+      "industries": "BUILT FOR",
+      "see_details": "See details",
+      "hide_details": "Hide details"
     },
     "mobile-apps": {
       "name": "Mobile Apps",
       "badge": "iOS & Android",
-      "description": "Cross-platform native apps that users love. From consumer apps to enterprise mobility, built for performance and reliability.",
+      "description": "Native iOS & Android apps. Real-time sync, offline-first, App Store optimized. We built SkinVerse (AI skincare), Calibre (AI grooming), and Nay Nursery (parent + staff apps) this way.",
       "cap_1": "Cross-platform (React Native & Flutter)",
       "cap_2": "Push notifications & real-time sync",
       "cap_3": "Offline-first architecture",
       "cap_4": "App Store submission & optimization",
-      "technologies": "React Native, Flutter, Swift, Kotlin, Firebase",
-      "industries": "Delivery · Fitness · Education · Healthcare · E-commerce"
+      "technologies": "Flutter, React Native, Swift, Kotlin, Firebase, Supabase",
+      "industries": "Skincare · Grooming · Education · Healthcare · Clinics"
     },
     "web-applications": {
       "name": "Web Applications",
-      "badge": "Scalable & Fast",
-      "description": "Modern web platforms with SSR, PWA support, and cloud-native architecture. Built for performance at any scale.",
+      "badge": "Dashboards & Portals",
+      "description": "Next.js dashboards, admin portals, and platforms. We built the Nay Nursery management dashboard, Secretary's booking system, and HairVision's clinic portal this way.",
       "cap_1": "Full-stack development (Next.js & React)",
-      "cap_2": "Progressive Web Apps (PWA)",
-      "cap_3": "Admin dashboards & analytics",
+      "cap_2": "Admin dashboards & real-time analytics",
+      "cap_3": "Progressive Web Apps (PWA)",
       "cap_4": "Cloud deployment & CI/CD",
-      "technologies": "Next.js, React, TypeScript, Node.js, Firebase, Vercel",
-      "industries": "E-commerce · SaaS · Business Ops · Real Estate"
+      "technologies": "Next.js, React, TypeScript, Node.js, PostgreSQL, MongoDB, Firebase, Vercel",
+      "industries": "Clinics · Education · Business Ops · E-commerce"
     },
     "ai-solutions": {
-      "name": "AI Solutions",
-      "badge": "Gemini-Powered",
-      "description": "Custom AI integrations powered by Google Gemini. Intelligent chatbots, predictive analytics, and computer vision that transform your business.",
-      "cap_1": "AI chatbots & virtual assistants",
-      "cap_2": "Natural language processing",
-      "cap_3": "Predictive analytics & forecasting",
-      "cap_4": "Computer vision & image recognition",
-      "technologies": "Google Gemini, TensorFlow, OpenAI, LangChain, Python",
-      "industries": "Healthcare · Analytics · Customer Service · Finance"
+      "name": "AI Integration",
+      "badge": "Computer Vision & NLP",
+      "description": "Computer vision skin analysis (SkinVerse). AI hairstyle try-on and ingredient conflict detection (Calibre). Hair transplant follicle mapping and donor area analysis (HairVision). Real AI, not buzzwords.",
+      "cap_1": "Computer vision & image analysis",
+      "cap_2": "AI-powered diagnostics & recommendations",
+      "cap_3": "Product recognition & conflict detection",
+      "cap_4": "Progress tracking with AI insights",
+      "technologies": "Google Gemini, OpenAI, LangChain, Superflow, TensorFlow, Python",
+      "industries": "Skincare · Hair Transplant · Grooming · Healthcare"
     },
     "ui-ux-design": {
       "name": "UI/UX Design",
-      "badge": "User-Centered",
-      "description": "Research-driven design that converts. Beautiful, intuitive, and accessible interfaces from wireframes to production-ready components.",
-      "cap_1": "User research & prototyping (Figma)",
+      "badge": "Research-Driven",
+      "description": "Figma prototypes to production components. Every app we build starts with user research and ends with interfaces people actually enjoy using — like the Nay Nursery parent app that teachers adopted without training.",
+      "cap_1": "User research & Figma prototyping",
       "cap_2": "Responsive & mobile-first design",
       "cap_3": "Design systems & component libraries",
-      "cap_4": "A/B testing & conversion optimization",
-      "technologies": "Figma, Adobe XD, Tailwind CSS, Framer, Storybook",
+      "cap_4": "Usability testing & iteration",
+      "technologies": "Figma, Tailwind CSS, Framer Motion, Storybook, Adobe XD",
       "industries": "All Industries"
     }
   },
@@ -175,17 +241,21 @@
     "google_play": "Google Play"
   },
   "why_choose": {
-    "title": "Why Companies Choose Aviniti",
-    "subtitle": "We combine speed, AI expertise, transparent pricing, and dedicated support.",
-    "reason_1_title": "Lightning Fast Delivery",
-    "reason_1_description": "From idea to app store in weeks, not months. Our streamlined process gets you to market faster.",
-    "reason_2_title": "AI-Native Development",
-    "reason_2_description": "We don't just build apps — we infuse them with AI from day one.",
-    "reason_3_title": "Transparent Pricing",
-    "reason_3_description": "No hidden fees, no surprises. Get your AI-powered estimate before we start.",
-    "reason_4_title": "Ongoing Support",
-    "reason_4_description": "We don't disappear after launch. Continuous support and updates.",
-    "cta": "Get Started Today"
+    "title": "Why Aviniti",
+    "subtitle": "You've seen the work. Here's why 16+ clients trusted us to build it.",
+    "reason_1_stat": "25 apps",
+    "reason_1_title": "Complete Systems, Not Just Screens",
+    "reason_1_desc": "We don't hand you one app and walk away. Our gym solution has 6 connected apps — owner, receptionist, trainer, shop POS, staff, and customer. Our delivery system has 3. Each piece talks to the others. You get an ecosystem built for how your business actually runs.",
+    "reason_2_stat": "6 AI products",
+    "reason_2_title": "AI That Ships, Not AI That Slides",
+    "reason_2_desc": "SkinVerse reads 12 skin attributes from a selfie. HairVision counts follicles from a photo. AI-CDSS-DFU analyzes diabetic wounds for doctors. Sensual runs a full AI assistant locally on your phone. We build AI that works in the real world — not chatbot wrappers.",
+    "reason_3_stat": "24+ on budget",
+    "reason_3_title": "Know Your Price Before Day One",
+    "reason_3_desc": "Use our AI estimate tool — get your cost, timeline, and tech stack in 2 minutes. That number is what you pay. We've delivered 24+ products without a single scope-creep surprise. Transparent pricing isn't a promise, it's our track record.",
+    "reason_4_stat": "15 on support",
+    "reason_4_title": "We Don't Disappear After Launch",
+    "reason_4_desc": "Right now, 15 of our clients are on active support contracts. Bug fixes, feature updates, App Store management, analytics — we're still there. 4 more projects are in active development. When we say long-term partner, we mean it.",
+    "cta": "Get Your Free Estimate"
   },
   "case_studies": {
     "label": "SUCCESS STORIES",
@@ -194,26 +264,20 @@
     "view_all": "View All Case Studies",
     "read_study": "Read Case Study",
     "industry_ecommerce": "E-Commerce",
-    "industry_healthcare": "Healthcare",
+    "industry_education": "Education",
     "industry_logistics": "Logistics",
-    "metric_1_label": "Sales Growth",
-    "metric_2_label": "Time Saved",
-    "metric_3_label": "Cost Reduction",
-    "case_1_headline": "Revolutionizing E-Commerce with AI-Powered Recommendations",
-    "case_1_excerpt": "Built a custom mobile app with intelligent product recommendations that tripled conversion rates and increased average order value by 45%.",
-    "case_2_headline": "Streamlining Healthcare Operations with Smart Scheduling",
-    "case_2_excerpt": "Developed an AI-driven scheduling platform that reduced appointment no-shows by 65% and saved 20+ hours of administrative work weekly.",
-    "case_3_headline": "Optimizing Last-Mile Delivery with Route Intelligence",
-    "case_3_excerpt": "Created a logistics platform with AI-powered route optimization that cut delivery times by 40% and reduced fuel costs by 30%."
+    "industry_beauty": "Health & Beauty",
+    "industry_medical": "Medical",
+    "industry_business": "Business Operations"
   },
   "final_cta": {
-    "title": "Ready to Build Something Great?",
-    "subtitle": "Get a free AI-powered estimate for your project in under 2 minutes.",
-    "cta_primary": "Get AI Estimate",
+    "title": "Ready to Build Your App?",
+    "subtitle": "Get a free AI-powered estimate in under 2 minutes. See cost, timeline, and tech stack — no strings attached.",
+    "cta_primary": "Get Your Free Estimate",
     "cta_secondary": "Book a Call",
     "whatsapp_label": "Prefer WhatsApp?",
     "whatsapp_cta": "Chat with us now",
-    "whatsapp_message": "Hi, I'm interested in Aviniti's services. Can we discuss my project?"
+    "whatsapp_message": "Hi, I'm interested in building a custom app with Aviniti. Can we discuss my project?"
   },
   "blog": {
     "title": "Latest from Our Blog",
@@ -245,11 +309,11 @@
     "step_6_description": "Ongoing maintenance, updates, and dedicated assistance."
   },
   "meta": {
-    "title": "Aviniti — AI-Powered App Development",
-    "description": "Custom mobile and web applications powered by AI. From concept to launch, we build apps that transform businesses.",
-    "og_title": "Aviniti — Your Ideas, Our Reality",
-    "og_description": "AI-powered app development company based in Amman, Jordan. Get instant estimates, explore ideas, and launch faster.",
-    "twitter_title": "Aviniti — AI-Powered App Development",
-    "twitter_description": "Transform your ideas into powerful apps with AI. Custom mobile & web development from concept to launch."
+    "title": "Aviniti — Custom AI App Development",
+    "description": "We build custom mobile and web applications powered by AI. From SkinVerse to HairVision — real apps, real results. Get a free estimate.",
+    "og_title": "Aviniti — Custom AI Apps for Your Business",
+    "og_description": "Custom AI app development based in Amman, Jordan. Computer vision, diagnostics, intelligent apps. Get a free estimate in 2 minutes.",
+    "twitter_title": "Aviniti — Custom AI App Development",
+    "twitter_description": "We build custom AI-powered apps. Computer vision, diagnostics, intelligent features. Get a free estimate in 2 minutes."
   }
 }

@@ -23,7 +23,7 @@ export default async function AboutPage({
     icon: valueIcons[i],
   }));
 
-  const steps = [0, 1, 2, 3, 4, 5].map((i) => ({
+  const steps = [0, 1, 2, 3].map((i) => ({
     title: t(`approach.steps.${i}.title`),
     description: t(`approach.steps.${i}.description`),
   }));
@@ -55,6 +55,35 @@ export default async function AboutPage({
             <p className="text-lg leading-relaxed text-muted sm:text-xl">
               {t('hero.description')}
             </p>
+          </div>
+        </Container>
+      </Section>
+
+      {/* Founder Story */}
+      <Section className="bg-white/[0.01]">
+        <Container>
+          <div className="mx-auto max-w-3xl">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-bronze">
+              {t('founder.label')}
+            </p>
+            <h2 className="mb-8 text-3xl font-bold text-off-white sm:text-4xl">
+              {t('founder.title')}
+            </h2>
+            <div className="space-y-6 text-base leading-relaxed text-muted">
+              <p>{t('founder.paragraph_1')}</p>
+              <p>{t('founder.paragraph_2')}</p>
+              <p>{t('founder.paragraph_3')}</p>
+              <p>{t('founder.paragraph_4')}</p>
+            </div>
+            <div className="mt-8 flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-bronze/10">
+                <span className="text-lg font-bold text-bronze">AO</span>
+              </div>
+              <div>
+                <p className="font-semibold text-off-white">{t('founder.name')}</p>
+                <p className="text-sm text-muted">{t('founder.role')}</p>
+              </div>
+            </div>
           </div>
         </Container>
       </Section>

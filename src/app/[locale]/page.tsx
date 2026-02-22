@@ -6,12 +6,8 @@ import {
   CompanyLogos,
   TrustIndicators,
   ServicesOverview,
-  AIToolsSpotlight,
-  SolutionsPreview,
-  LiveAppsShowcase,
   WhyChooseUs,
   Testimonials,
-  CaseStudiesPreview,
   FinalCTA,
 } from '@/components/homepage';
 import { SectionDivider } from '@/components/shared/SectionDivider';
@@ -19,22 +15,20 @@ import { SectionDivider } from '@/components/shared/SectionDivider';
 /**
  * Homepage - Main landing page
  *
- * Composed of 13 sections:
- * 1. HeroSection - Full-viewport hero with headline, CTAs, and device mockup
- * 2. AIToolsSpotlight - 4 AI tools with color accents
- * 3. CompanyLogos - Infinite scrolling marquee of client logos
- * 4. ServicesOverview - 4 core services grid
- * 5. SolutionsPreview - Ready-made solutions preview
- * 6. Testimonials - Client testimonials carousel
- * 7. TrustIndicators - Counter stats and trust badges
- * 8. LiveAppsShowcase - Grid of live apps in stores
- * 9. WhyChooseUs - 4 differentiator cards
- * 10. CaseStudiesPreview - 2-3 case study highlights
- * 11. FinalCTA - Full-width call-to-action
+ * Streamlined to 7 focused sections for clear conversion:
+ * 1. HeroSection - Single CTA: "Get Your Free Estimate"
+ * 2. TrustIndicators - Immediate credibility (moved up)
+ * 3. ServicesOverview - "What We Actually Build" with AI specifics
+ * 4. CompanyLogos - Real client logos only
+ * 5. Testimonials - 5 real client stories
+ * 6. WhyChooseUs - Reframed differentiators
+ * 7. FinalCTA - Get Estimate + Book a Call + WhatsApp
  *
- * Optional sections (uncomment to enable):
- * - BlogPreview - Latest blog posts
- * - ProcessOverview - How we work (6 steps)
+ * Removed from homepage (still accessible as separate pages):
+ * - AIToolsSpotlight → tools accessible via nav/estimate flow
+ * - SolutionsPreview → demoted to /solutions page
+ * - CaseStudiesPreview → dedicated /case-studies page
+ * - LiveAppsShowcase → merged into testimonials
  */
 
 export async function generateMetadata({
@@ -46,6 +40,9 @@ export async function generateMetadata({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'home.meta' });
 
+  const ogTitle = encodeURIComponent(t('og_title'));
+  const ogDesc = encodeURIComponent(t('og_description'));
+
   return {
     title: t('title'),
     description: t('description'),
@@ -55,11 +52,20 @@ export async function generateMetadata({
       description: t('og_description'),
       type: 'website',
       locale,
+      images: [
+        {
+          url: `/api/og?title=${ogTitle}&description=${ogDesc}&type=page&locale=${locale}`,
+          width: 1200,
+          height: 630,
+          alt: t('og_title'),
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: t('twitter_title'),
       description: t('twitter_description'),
+      images: [`/api/og?title=${ogTitle}&description=${ogDesc}&type=page&locale=${locale}`],
     },
   };
 }
@@ -73,66 +79,38 @@ export default async function HomePage({
   setRequestLocale(locale);
   return (
     <div className="min-h-screen bg-navy">
-      {/* 1. Hero Section */}
+      {/* 1. Hero — Single CTA: Get Your Free Estimate */}
       <HeroSection />
 
       {/* Glow divider — strong visual break after hero */}
       <SectionDivider variant="glow" />
 
-      {/* 2. AI Tools Spotlight */}
-      <div id="ai-tools">
-        <AIToolsSpotlight />
-      </div>
-
-      <SectionDivider variant="line" />
-
-      {/* 3. Company Logos - Immediate credibility */}
-      <CompanyLogos />
-
-      <SectionDivider variant="gradient" />
-
-      {/* 4. Services Overview */}
-      <ServicesOverview />
-
-      <SectionDivider variant="line" />
-
-      {/* 5. Solutions Preview */}
-      <SolutionsPreview />
-
-      <SectionDivider variant="glow" />
-
-      {/* 6. Testimonials - Social proof after showing what we offer */}
-      <Testimonials />
-
-      <SectionDivider variant="line" />
-
-      {/* 7. Trust Indicators - Enhanced with count-up animations */}
+      {/* 2. Trust Indicators — Immediate credibility right after hero */}
       <TrustIndicators />
 
       <SectionDivider variant="gradient" />
 
-      {/* 8. Live Apps Showcase */}
-      <LiveAppsShowcase />
+      {/* 3. What We Build — Services with real AI specifics */}
+      <ServicesOverview />
 
       <SectionDivider variant="line" />
 
-      {/* 9. Why Choose Us */}
+      {/* 4. Client Logos — Real clients only */}
+      <CompanyLogos />
+
+      <SectionDivider variant="glow" />
+
+      {/* 5. Real Results — 5 authentic client testimonials */}
+      <Testimonials />
+
+      <SectionDivider variant="line" />
+
+      {/* 6. Why Aviniti — Reframed differentiators */}
       <WhyChooseUs />
 
       <SectionDivider variant="glow" />
 
-      {/* 10. Case Studies Preview */}
-      <CaseStudiesPreview />
-
-      {/* Optional: Blog Preview (uncomment to enable) */}
-      {/* <BlogPreview /> */}
-
-      {/* Optional: Process Overview (uncomment to enable) */}
-      {/* <ProcessOverview /> */}
-
-      <SectionDivider variant="line" />
-
-      {/* 11. Final CTA */}
+      {/* 7. Final CTA — Get Estimate + Book a Call + WhatsApp */}
       <FinalCTA />
     </div>
   );

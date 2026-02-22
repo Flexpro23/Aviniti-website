@@ -1,73 +1,77 @@
 {
   "meta": {
-    "title": "About Aviniti — AI-Powered App Development Company",
-    "description": "Learn about Aviniti, a Jordanian AI and app development company turning ideas into reality."
+    "title": "About Aviniti — Jordan's App Development Company",
+    "description": "Learn about Aviniti — our story, team, and mission to turn ideas into digital reality for businesses across Jordan, Saudi Arabia, and the UAE.",
+    "og_title": "About Aviniti — Jordan's App Development Company",
+    "og_description": "Learn about Aviniti — our story, team, and mission to turn ideas into digital reality for businesses across Jordan, Saudi Arabia, and the UAE."
   },
   "hero": {
     "badge": "About Us",
-    "title": "Turning Ideas Into Reality",
-    "description": "Aviniti is an AI-powered app development company based in Jordan, dedicated to helping businesses launch exceptional digital products — faster, smarter, and more affordably."
+    "title": "The Company That Exists Because Developers Kept Ghosting Us",
+    "description": "Aviniti started when our founder spent $9,000 on developers who never delivered. Now we build the apps we wish someone had built for us."
+  },
+  "founder": {
+    "label": "Our Story",
+    "title": "From Getting Scammed to Building the Company",
+    "name": "Ali Odat",
+    "role": "Founder & CEO, Aviniti",
+    "paragraph_1": "Before Aviniti, I was a field coordinator for World Vision — a Canadian NGO — at the Za'atari refugee camp in Jordan. I was the highest-ranking staff member on-site, managing four industrial kitchens, 24 employees, and 300 Syrian workers producing 20,000 meals a day. Good salary, great benefits, stable career. I'm a civil engineer by training. I had zero background in code.",
+    "paragraph_2": "In 2018, I had an idea for a car services app — a platform where you could buy, finance, insure, and maintain your car all in one place, with built-in calculators for every bank and insurance company. I started looking for developers to build it. The first team said it would cost $60,000–$70,000. I had $15,000–$20,000. So I went offshore — India, Egypt, freelancers. I spent close to $9,000 across three different developers. Every single one stopped answering my calls. No product. No code. Nothing.",
+    "paragraph_3": "The last developer I hired used Flutter, so I started learning the basics just to check his work. Then COVID hit. Three months in quarantine with nothing to do. I taught myself to code — religiously, every day. By 2021, I could build an app. Slow, full of bugs, but functional. I quit World Vision, started delivering perfume packages with a friend just to pay the bills, and kept coding. I caught the AI wave early — one of the first 10,000 ChatGPT users. I've been building with Google AI products since Gemini was still called Bard.",
+    "paragraph_4": "I registered Aviniti in 2025. The company exists because I know exactly what it feels like to have an idea, spend your savings on developers who disappear, and have nothing to show for it. That's why we give you an AI-powered estimate before you spend a dollar, why we show you weekly progress, and why we don't ghost. Ever."
   },
   "mission": {
     "label": "Our Mission",
-    "title": "Empowering Businesses Through Technology",
-    "description": "We believe every great business deserves a great app. Our mission is to democratize access to world-class software development by combining cutting-edge AI with deep engineering expertise.",
+    "title": "We build custom AI-powered apps for businesses that need more than a template",
+    "description": "Based in Amman, Jordan, we combine local market understanding with world-class engineering to ship apps that work.",
     "values": [
       {
-        "title": "Innovation First",
-        "description": "We leverage AI at every step — from idea validation to development — to deliver smarter solutions faster."
+        "title": "Speed Without Shortcuts",
+        "description": "We deliver fast by cutting bloat, not quality. No endless meetings, no scope creep. Clear timelines you can count on."
       },
       {
-        "title": "Quality Without Compromise",
-        "description": "Every app we build is production-grade, scalable, and designed to grow with your business."
+        "title": "AI-First, Not AI-Fake",
+        "description": "We don't slap 'AI-powered' on everything. We architect real AI from day one — computer vision in SkinVerse, diagnostics in HairVision, product analysis in Calibre."
       },
       {
-        "title": "Client Partnership",
-        "description": "We don't just build apps — we become your technology partner, invested in your long-term success."
+        "title": "Honesty Over Hype",
+        "description": "We give you realistic estimates and stick to them. If something won't work, we'll tell you before you spend money on it."
       },
       {
-        "title": "Transparency",
-        "description": "No hidden fees, no surprises. You get clear timelines, honest estimates, and regular progress updates."
+        "title": "Built in Jordan, Trusted Regionally",
+        "description": "Amman-based team. Serving businesses across Jordan and the MENA region. We understand the market because we live in it."
       }
     ]
   },
   "approach": {
     "label": "Our Approach",
-    "title": "AI-Enhanced Development",
-    "description": "We use our proprietary AI tools to analyze your idea, estimate costs, and plan architecture before writing a single line of code — saving you time and money.",
+    "title": "From Discovery to Scale",
+    "description": "We handle everything from feasibility validation to production deployment and growth.",
     "steps": [
       {
-        "title": "Validate",
-        "description": "AI-powered idea analysis and market validation"
-      },
-      {
-        "title": "Estimate",
-        "description": "Instant, transparent cost and timeline estimates"
+        "title": "Discovery & Estimation",
+        "description": "Our AI tools validate feasibility and give you a real cost estimate before we write a line of code."
       },
       {
         "title": "Design",
-        "description": "User-centric UI/UX with rapid prototyping"
+        "description": "Iterative prototyping in Figma. You see and approve every screen before development starts."
       },
       {
         "title": "Build",
-        "description": "Agile development with weekly deliverables"
+        "description": "Agile sprints with weekly demos. You see progress every week, not just at the end."
       },
       {
-        "title": "Launch",
-        "description": "App store deployment and go-to-market support"
-      },
-      {
-        "title": "Grow",
-        "description": "Ongoing maintenance, analytics, and iteration"
+        "title": "Deploy & Support",
+        "description": "We handle App Store submission, analytics setup, and stay for bug fixes, iterations, and growth."
       }
     ]
   },
   "stats": {
     "label": "By the Numbers",
     "items": [
-      { "value": "50+", "label": "Projects Delivered" },
-      { "value": "4", "label": "AI-Powered Tools" },
-      { "value": "7", "label": "Ready-Made Solutions" },
+      { "value": "24+", "label": "Products Delivered" },
+      { "value": "9", "label": "Apps Live in Stores" },
+      { "value": "16+", "label": "Clients Served" },
       { "value": "98%", "label": "Client Satisfaction" }
     ]
   },

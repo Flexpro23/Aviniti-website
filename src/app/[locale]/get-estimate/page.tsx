@@ -1069,7 +1069,7 @@ export default function GetEstimatePage() {
                 estimatedCost: results.estimatedCost || (results.pricing ? { min: results.pricing.total * 0.9, max: results.pricing.total * 1.1 } : { min: 10000, max: 20000 }),
                 estimatedTimeline: results.estimatedTimeline,
                 approach: results.approach,
-                features: results.pricing ? results.pricing.features.map((f: any) => tf(`${f.catalogId}.name`)) : [],
+                features: results.pricing ? results.pricing.features.map((f) => tf(`${f.catalogId}.name`)) : [],
                 techStack: results.techStack || [],
                 strategicInsights: results.strategicInsights || [],
                 matchedSolution: results.matchedSolution,

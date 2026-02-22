@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL as BASE_URL } from '@/lib/config';
+import { getAllBlogSlugs } from '@/lib/firebase/blog';
 
 // Static pages
 const staticPages = [
@@ -18,7 +19,7 @@ const staticPages = [
   '/about',
 ];
 
-// Dynamic slugs
+// Solution slugs — update when new solutions are added
 const solutionSlugs = [
   'delivery-app-system',
   'kindergarten-management',
@@ -27,25 +28,27 @@ const solutionSlugs = [
   'gym-management',
   'airbnb-marketplace',
   'hair-transplant-ai',
+  'barbershop-management',
 ];
 
-const blogSlugs = [
-  'ai-transforming-mobile-app-development',
-  'choosing-right-tech-stack-startup',
-  'building-scalable-delivery-apps',
-  'web-app-performance-optimization',
-  'future-of-ai-powered-business-tools',
-];
-
+// Case study slugs — update when new case studies are added
 const caseStudySlugs = [
   'logistics-delivery-optimization',
   'ecommerce-retail-automation',
   'education-kindergarten-system',
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const locales = ['en', 'ar'];
   const entries: MetadataRoute.Sitemap = [];
+
+  // Fetch live blog slugs from Firestore; fall back to empty array if unavailable
+  let blogSlugs: string[] = [];
+  try {
+    blogSlugs = await getAllBlogSlugs();
+  } catch (err) {
+    console.warn('[sitemap] Could not fetch blog slugs from Firestore:', err);
+  }
 
   // Static pages
   for (const page of staticPages) {
@@ -83,7 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
-  // Blog posts
+  // Blog posts — dynamically fetched from Firestore
   for (const slug of blogSlugs) {
     for (const locale of locales) {
       entries.push({

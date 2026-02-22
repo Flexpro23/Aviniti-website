@@ -96,10 +96,11 @@ export type ProcessIssue =
 
 /** Contact form topic */
 export type ContactTopic =
-  | 'general-inquiry'
-  | 'project-discussion'
-  | 'partnership'
+  | 'general'
+  | 'project'
+  | 'estimate'
   | 'support'
+  | 'partnership'
   | 'other';
 
 /** Exit intent popup variant */

@@ -1,0 +1,16 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "functions": [
+    {
+      "source": "functions/blog_generator",
+      "codebase": "blog-generator",
+      "ignore": ["venv", ".git", "__pycache__", "*.pyc"]
+    }
+  ]
+}

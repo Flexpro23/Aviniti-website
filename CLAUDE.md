@@ -66,6 +66,71 @@
 
 ---
 
+## Image Generation — Gemini Imagen 4.0 Ultra
+
+### When to Use
+Any time new hero images, marketing visuals, or solution mockups are needed for the website. This was used to generate all 8 Ready-Made Solutions hero images and should be reused for blog post featured images, case study visuals, etc.
+
+### API Details
+- **API Key**: `REDACTED_API_KEY`
+- **Model**: `imagen-4.0-ultra-generate-001`
+- **Library**: `google-genai` (Python — `pip install google-genai`)
+- **Output format**: WebP (best compression + quality for Next.js Image component)
+- **Note**: The API generates PNG natively. Convert to WebP using Pillow (`pip install Pillow`).
+
+### Generation Script Pattern
+```python
+from google import genai
+from google.genai import types
+from pathlib import Path
+from PIL import Image
+import io
+
+client = genai.Client(api_key="REDACTED_API_KEY")
+
+response = client.models.generate_images(
+    model='imagen-4.0-ultra-generate-001',
+    prompt="Your detailed prompt here",
+    config=types.GenerateImagesConfig(
+        number_of_images=1,
+        aspect_ratio="16:9",  # Use 16:9 for hero images, 1:1 for thumbnails
+    )
+)
+
+# Convert to WebP
+if response.generated_images:
+    img_bytes = response.generated_images[0].image.image_bytes
+    img = Image.open(io.BytesIO(img_bytes))
+    img.save("output.webp", "WEBP", quality=85)
+```
+
+### Design System for Prompts
+All image prompts MUST follow the Aviniti design system:
+- **Background**: Dark navy blue `#0A1628`
+- **Accent color**: Bronze/gold `#C08460`
+- **Style**: Professional, clean, modern SaaS tech company aesthetic
+- **Device mockups**: Photorealistic with slight 3D perspective
+- **Always include**: "No text overlays or watermarks" in the prompt
+- **Aspect ratios**: `16:9` for hero/banner images, `1:1` for thumbnails/cards
+
+### Rate Limiting
+- Add a 3-second pause (`time.sleep(3)`) between consecutive API calls.
+- Batch generations in a single script, don't run them individually.
+
+### File Naming & Location
+- **Solutions images**: `/public/Ready-made-solutions/{Solution Name}.webp`
+- **Blog images**: `/public/blog/{slug}.webp` (when blog system is built)
+- **General marketing**: `/public/images/{descriptive-name}.webp`
+- Always use `.webp` extension. Never commit `.png` or `.svg` for AI-generated images.
+- Keep file sizes under 200KB per image where possible.
+
+### Cleanup Rules
+- Delete generation scripts after use — they are one-time tools, not part of the codebase.
+- Never commit API keys in scripts. The key is stored here in CLAUDE.md for reference.
+- When regenerating images, delete old files first to avoid stale assets.
+
+---
+
 ## Multi-Agent Workflow — Mandatory for All Tasks
 
 ### Architecture

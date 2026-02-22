@@ -1,14 +1,15 @@
 'use client';
 
 /**
- * Company Logos Section — Interactive Typography Marquee
+ * Product Showcase Belt — "Built for Real Businesses"
  *
- * Two-row scrolling marquee of styled company names with:
- * - Unique typographic treatment per company
- * - Bronze cursor spotlight reveal effect
- * - Magnetic hover with scale + glow
- * - Pause on hover
- * - Mobile/touch friendly (higher base opacity)
+ * Two-row scrolling marquee of premium product cards:
+ * - Frosted glass cards with category accent line
+ * - Bronze cursor spotlight effect (desktop)
+ * - Glowing category dots + hover shimmer
+ * - Magnetic hover with lift + category glow
+ * - Pause on hover, RTL-aware
+ * - Mobile-optimized (compact cards, touch-friendly opacity)
  * - Reduced motion support
  */
 
@@ -20,91 +21,47 @@ import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { usePrefersReducedMotion } from '@/lib/motion/hooks';
 
-// ─── Company Typography Definitions ──────────────────────────────────
+// ─── Product Definitions ────────────────────────────────────────────
 
-interface CompanyStyle {
-  name: string;
-  fontWeight: number;
-  letterSpacing: string;
-  textTransform: 'uppercase' | 'lowercase' | 'none';
-  fontSize: string;
-  fontSizeLg: string;
-  fontStyle?: 'italic' | 'normal';
-  fontFamily?: string;
-  textDecoration?: string;
+interface Product {
+  key: string;
+  category: 'ai' | 'health' | 'delivery' | 'education' | 'ecommerce' | 'lifestyle' | 'business';
 }
 
-const COMPANIES: CompanyStyle[] = [
-  {
-    name: 'FlexPro Fitness',
-    fontWeight: 900,
-    letterSpacing: '0.15em',
-    textTransform: 'uppercase',
-    fontSize: '1.5rem',
-    fontSizeLg: '1.875rem',
-  },
-  {
-    name: 'SecretaryApp',
-    fontWeight: 300,
-    letterSpacing: '0.25em',
-    textTransform: 'uppercase',
-    fontSize: '1.25rem',
-    fontSizeLg: '1.5rem',
-  },
-  {
-    name: 'FarmHouse Delivery',
-    fontWeight: 700,
-    letterSpacing: '-0.02em',
-    textTransform: 'none',
-    fontSize: '1.5rem',
-    fontSizeLg: '1.875rem',
-    fontStyle: 'italic',
-  },
-  {
-    name: "Let's Play",
-    fontWeight: 800,
-    letterSpacing: '0.05em',
-    textTransform: 'none',
-    fontSize: '1.875rem',
-    fontSizeLg: '2.25rem',
-  },
-  {
-    name: 'Nay Nursery',
-    fontWeight: 500,
-    letterSpacing: '0.3em',
-    textTransform: 'lowercase',
-    fontSize: '1.25rem',
-    fontSizeLg: '1.5rem',
-  },
-  {
-    name: 'SkinVerse',
-    fontWeight: 600,
-    letterSpacing: '0.08em',
-    textTransform: 'uppercase',
-    fontSize: '1.5rem',
-    fontSizeLg: '1.875rem',
-    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-  },
-  {
-    name: 'WearShare',
-    fontWeight: 400,
-    letterSpacing: '0.2em',
-    textTransform: 'uppercase',
-    fontSize: '1.25rem',
-    fontSizeLg: '1.5rem',
-    textDecoration: 'underline',
-  },
+/** Category colors — used for accent line, dot glow, and hover tint */
+const CATEGORY_COLORS: Record<Product['category'], { main: string; glow: string }> = {
+  ai:         { main: '#A78BFA', glow: 'rgba(167, 139, 250, 0.25)' },
+  health:     { main: '#34D399', glow: 'rgba(52, 211, 153, 0.25)' },
+  delivery:   { main: '#F97316', glow: 'rgba(249, 115, 22, 0.25)' },
+  education:  { main: '#60A5FA', glow: 'rgba(96, 165, 250, 0.25)' },
+  ecommerce:  { main: '#F472B6', glow: 'rgba(244, 114, 182, 0.25)' },
+  lifestyle:  { main: '#FBBF24', glow: 'rgba(251, 191, 36, 0.25)' },
+  business:   { main: '#C08460', glow: 'rgba(192, 132, 96, 0.30)' },
+};
+
+const PRODUCTS: Product[] = [
+  { key: 'skinverse', category: 'ai' },
+  { key: 'calibre', category: 'business' },
+  { key: 'nay_nursery', category: 'education' },
+  { key: 'secretary', category: 'business' },
+  { key: 'hairvision', category: 'ai' },
+  { key: 'wear_and_share', category: 'ecommerce' },
+  { key: 'ai_cdss_dfu', category: 'health' },
+  { key: 'pickleball', category: 'lifestyle' },
+  { key: 'flex_pro', category: 'delivery' },
+  { key: 'sensual', category: 'ai' },
+  { key: 'nerd', category: 'education' },
 ];
 
-const ROW_1 = COMPANIES.slice(0, 4);
-const ROW_2 = COMPANIES.slice(4);
+const ROW_1 = PRODUCTS.slice(0, 6);
+const ROW_2 = PRODUCTS.slice(6);
 const ROW_1_ITEMS = [...ROW_1, ...ROW_1, ...ROW_1];
 const ROW_2_ITEMS = [...ROW_2, ...ROW_2, ...ROW_2];
 
-// ─── Main Component ──────────────────────────────────────────────────
+// ─── Main Component ─────────────────────────────────────────────────
 
 export function CompanyLogos() {
-  const t = useTranslations('home.company_logos');
+  const t = useTranslations('home.product_belt');
   const locale = useLocale();
   const isRTL = locale === 'ar';
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -123,28 +80,20 @@ export function CompanyLogos() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // Cursor tracking — update CSS custom properties directly (no re-renders)
+  const canSpotlight = !prefersReducedMotion && !isTouchDevice;
+
+  // Cursor spotlight tracking
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (prefersReducedMotion || isTouchDevice) return;
+      if (!canSpotlight) return;
       const el = spotlightRef.current;
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!el || !rect) return;
       el.style.setProperty('--sx', `${e.clientX - rect.left}px`);
       el.style.setProperty('--sy', `${e.clientY - rect.top}px`);
     },
-    [prefersReducedMotion, isTouchDevice]
+    [canSpotlight]
   );
-
-  const handleMouseEnter = useCallback(() => {
-    if (!prefersReducedMotion && !isTouchDevice) setSpotlightVisible(true);
-  }, [prefersReducedMotion, isTouchDevice]);
-
-  const handleMouseLeave = useCallback(() => {
-    setSpotlightVisible(false);
-  }, []);
-
-  const baseOpacity = prefersReducedMotion ? 1 : isTouchDevice ? 0.55 : 0.3;
 
   return (
     <Section className="bg-navy-dark overflow-hidden">
@@ -154,29 +103,29 @@ export function CompanyLogos() {
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
-            className="mb-16"
+            className="mb-12 md:mb-16"
           />
         </ScrollReveal>
       </Container>
 
-      {/* Full-bleed marquee area */}
+      {/* Full-bleed marquee area with spotlight */}
       <div
         ref={sectionRef}
         className="relative"
         onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => canSpotlight && setSpotlightVisible(true)}
+        onMouseLeave={() => setSpotlightVisible(false)}
         role="region"
         aria-label={t('aria_label')}
       >
-        {/* Bronze cursor spotlight — single GPU-composited div */}
-        {!prefersReducedMotion && !isTouchDevice && (
+        {/* Bronze cursor spotlight overlay */}
+        {canSpotlight && (
           <div
             ref={spotlightRef}
             className="absolute inset-0 z-10 pointer-events-none"
             style={{
               background:
-                'radial-gradient(600px circle at var(--sx, -1000px) var(--sy, -1000px), rgba(192,132,96,0.15) 0%, rgba(192,132,96,0.05) 40%, transparent 70%)',
+                'radial-gradient(500px circle at var(--sx, -1000px) var(--sy, -1000px), rgba(192,132,96,0.12) 0%, rgba(192,132,96,0.04) 40%, transparent 70%)',
               opacity: spotlightVisible ? 1 : 0,
               transition: 'opacity 0.4s ease',
               willChange: 'background',
@@ -185,26 +134,36 @@ export function CompanyLogos() {
           />
         )}
 
-        <div className="space-y-6 lg:space-y-10">
+        {/* Gradient fade edges */}
+        <div
+          className="absolute inset-y-0 start-0 w-16 sm:w-24 md:w-36 z-20 pointer-events-none ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-[var(--color-navy-dark)] to-transparent"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-y-0 end-0 w-16 sm:w-24 md:w-36 z-20 pointer-events-none ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-[var(--color-navy-dark)] to-transparent"
+          aria-hidden="true"
+        />
+
+        <div className="space-y-4 md:space-y-5">
           <MarqueeRow
             items={ROW_1_ITEMS}
-            direction={isRTL ? "rtl" : "ltr"}
-            speed={35}
-            baseOpacity={baseOpacity}
+            direction={isRTL ? 'rtl' : 'ltr'}
+            speed={50}
             prefersReducedMotion={prefersReducedMotion}
             isTouchDevice={isTouchDevice}
             rowIndex={1}
             uniqueCount={ROW_1.length}
+            t={t}
           />
           <MarqueeRow
             items={ROW_2_ITEMS}
-            direction={isRTL ? "ltr" : "rtl"}
-            speed={28}
-            baseOpacity={baseOpacity}
+            direction={isRTL ? 'ltr' : 'rtl'}
+            speed={42}
             prefersReducedMotion={prefersReducedMotion}
             isTouchDevice={isTouchDevice}
             rowIndex={2}
             uniqueCount={ROW_2.length}
+            t={t}
           />
         </div>
       </div>
@@ -212,45 +171,35 @@ export function CompanyLogos() {
   );
 }
 
-// ─── Marquee Row ─────────────────────────────────────────────────────
+// ─── Marquee Row ────────────────────────────────────────────────────
 
 interface MarqueeRowProps {
-  items: CompanyStyle[];
+  items: Product[];
   direction: 'ltr' | 'rtl';
   speed: number;
-  baseOpacity: number;
   prefersReducedMotion: boolean;
   isTouchDevice: boolean;
   rowIndex: number;
   uniqueCount: number;
+  t: ReturnType<typeof useTranslations>;
 }
 
 function MarqueeRow({
   items,
   direction,
   speed,
-  baseOpacity,
   prefersReducedMotion,
   isTouchDevice,
   rowIndex,
   uniqueCount,
+  t,
 }: MarqueeRowProps) {
   const [rowHovered, setRowHovered] = useState(false);
 
   return (
     <div className="relative">
-      {/* Gradient fade edges — direction adapts to LTR/RTL reading order */}
       <div
-        className="absolute inset-y-0 start-0 w-24 sm:w-32 z-20 pointer-events-none ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-[var(--color-navy-dark)] to-transparent"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-y-0 end-0 w-24 sm:w-32 z-20 pointer-events-none ltr:bg-gradient-to-l rtl:bg-gradient-to-r from-[var(--color-navy-dark)] to-transparent"
-        aria-hidden="true"
-      />
-
-      <div
-        className="flex items-center gap-10 sm:gap-14 lg:gap-20 py-4"
+        className="flex items-stretch gap-3 md:gap-4 py-1"
         style={{
           animation: prefersReducedMotion
             ? 'none'
@@ -260,14 +209,14 @@ function MarqueeRow({
         onMouseEnter={() => setRowHovered(true)}
         onMouseLeave={() => setRowHovered(false)}
       >
-        {items.map((company, index) => (
-          <CompanyName
+        {items.map((product, index) => (
+          <ProductCard
             key={`row${rowIndex}-${index}`}
-            company={company}
-            baseOpacity={baseOpacity}
+            product={product}
+            ariaHidden={index >= uniqueCount}
             prefersReducedMotion={prefersReducedMotion}
             isTouchDevice={isTouchDevice}
-            ariaHidden={index >= uniqueCount}
+            t={t}
           />
         ))}
       </div>
@@ -275,101 +224,187 @@ function MarqueeRow({
   );
 }
 
-// ─── Company Name with Magnetic Hover ────────────────────────────────
+// ─── Product Card ───────────────────────────────────────────────────
 
-interface CompanyNameProps {
-  company: CompanyStyle;
-  baseOpacity: number;
+interface ProductCardProps {
+  product: Product;
+  ariaHidden: boolean;
   prefersReducedMotion: boolean;
   isTouchDevice: boolean;
-  ariaHidden: boolean;
+  t: ReturnType<typeof useTranslations>;
 }
 
-function CompanyName({
-  company,
-  baseOpacity,
+function ProductCard({
+  product,
+  ariaHidden,
   prefersReducedMotion,
   isTouchDevice,
-  ariaHidden,
-}: CompanyNameProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const rafRef = useRef<number>(0);
+  t,
+}: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [magneticOffset, setMagneticOffset] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const [shimmerPos, setShimmerPos] = useState({ x: 0, y: 0 });
 
+  const colors = CATEGORY_COLORS[product.category];
   const canInteract = !prefersReducedMotion && !isTouchDevice;
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLSpanElement>) => {
+  // Track mouse position for shimmer/highlight effect inside card
+  const handleCardMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (!canInteract) return;
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
-        const el = ref.current;
+        const el = cardRef.current;
         if (!el) return;
         const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        setMagneticOffset({
-          x: (e.clientX - cx) * 0.25,
-          y: (e.clientY - cy) * 0.25,
+        setShimmerPos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
         });
       });
     },
     [canInteract]
   );
 
-  const handleMouseLeave = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    setIsHovered(false);
-    setMagneticOffset({ x: 0, y: 0 });
-  }, []);
-
   useEffect(() => {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  // Determine responsive font size via CSS clamp
-  const fontSize = `clamp(${company.fontSize}, 2.5vw, ${company.fontSizeLg})`;
-
   return (
-    <span
-      ref={ref}
-      dir="ltr"
+    <div
       aria-hidden={ariaHidden || undefined}
-      className="flex-shrink-0 cursor-default select-none whitespace-nowrap"
+      className="flex-shrink-0"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        fontWeight: company.fontWeight,
-        letterSpacing: company.letterSpacing,
-        textTransform: company.textTransform,
-        fontSize,
-        fontStyle: company.fontStyle || 'normal',
-        fontFamily: company.fontFamily || 'inherit',
-        textDecorationLine: company.textDecoration || 'none',
-        textDecorationColor: isHovered ? '#D4A583' : 'rgba(255,255,255,0.3)',
-        textUnderlineOffset: '6px',
-        color: isHovered && canInteract
-          ? '#D4A583'
-          : `rgba(255, 255, 255, ${baseOpacity})`,
-        filter: canInteract
-          ? isHovered
-            ? 'blur(0px)'
-            : 'blur(0.5px)'
-          : 'none',
-        textShadow: isHovered && canInteract
-          ? '0 0 30px rgba(192, 132, 96, 0.4), 0 0 60px rgba(192, 132, 96, 0.15)'
-          : 'none',
-        transform: canInteract
-          ? `translate(${magneticOffset.x}px, ${magneticOffset.y}px) scale(${isHovered ? 1.08 : 1})`
-          : undefined,
-        transition:
-          'color 0.3s ease, filter 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease-out, text-decoration-color 0.3s ease',
-        willChange: canInteract ? 'transform' : undefined,
+      onMouseMove={handleCardMouseMove}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        cancelAnimationFrame(rafRef.current);
       }}
     >
-      {company.name}
-    </span>
+      <div
+        ref={cardRef}
+        className="relative rounded-xl overflow-hidden cursor-default w-[220px] sm:w-[250px] md:w-[280px]"
+        style={{
+          /* Glass card base */
+          backgroundColor: isHovered
+            ? 'rgba(255, 255, 255, 0.05)'
+            : 'rgba(255, 255, 255, 0.02)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid',
+          borderColor: isHovered
+            ? `${colors.main}40`
+            : 'rgba(255, 255, 255, 0.06)',
+          transform: canInteract
+            ? isHovered
+              ? 'translateY(-3px) scale(1.02)'
+              : 'translateY(0) scale(1)'
+            : undefined,
+          boxShadow: isHovered
+            ? `0 8px 32px ${colors.glow}, 0 0 0 1px ${colors.main}15, inset 0 1px 0 rgba(255,255,255,0.06)`
+            : 'inset 0 1px 0 rgba(255,255,255,0.04)',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          willChange: canInteract ? 'transform, box-shadow' : undefined,
+        }}
+      >
+        {/* Category accent line at top */}
+        <div
+          className="h-[2px] w-full transition-opacity duration-300"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, ${colors.main} 30%, ${colors.main} 70%, transparent 100%)`,
+            opacity: isHovered ? 1 : 0.3,
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Shimmer / inner glow that follows mouse (desktop) */}
+        {canInteract && isHovered && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(200px circle at ${shimmerPos.x}px ${shimmerPos.y}px, ${colors.glow} 0%, transparent 70%)`,
+              opacity: 0.6,
+              transition: 'opacity 0.2s ease',
+            }}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Card content */}
+        <div className="relative z-[1] px-4 py-3 md:px-5 md:py-4">
+          {/* Top row: glowing dot + product name */}
+          <div className="flex items-center gap-2.5 mb-2">
+            {/* Glowing category dot */}
+            <span
+              className="relative w-2.5 h-2.5 rounded-full flex-shrink-0"
+              aria-hidden="true"
+            >
+              <span
+                className="absolute inset-0 rounded-full transition-all duration-300"
+                style={{
+                  backgroundColor: colors.main,
+                  boxShadow: isHovered
+                    ? `0 0 8px ${colors.main}, 0 0 16px ${colors.glow}`
+                    : 'none',
+                }}
+              />
+              {/* Pulse ring on hover */}
+              {isHovered && canInteract && (
+                <span
+                  className="absolute -inset-1 rounded-full animate-ping"
+                  style={{
+                    backgroundColor: colors.main,
+                    opacity: 0.2,
+                    animationDuration: '2s',
+                  }}
+                />
+              )}
+            </span>
+
+            {/* Product name */}
+            <span
+              className="font-semibold text-sm md:text-[0.95rem] tracking-wide truncate transition-all duration-300"
+              style={{
+                color: isHovered ? '#D4A583' : 'rgba(255, 255, 255, 0.85)',
+                textShadow: isHovered
+                  ? '0 0 20px rgba(192, 132, 96, 0.3)'
+                  : 'none',
+              }}
+              dir="ltr"
+            >
+              {t(`products.${product.key}.name`)}
+            </span>
+          </div>
+
+          {/* Description — 2 lines max */}
+          <p
+            className="text-xs md:text-[0.8rem] leading-relaxed line-clamp-2 transition-colors duration-300"
+            style={{
+              color: isHovered
+                ? 'rgba(255, 255, 255, 0.55)'
+                : 'rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            {t(`products.${product.key}.desc`)}
+          </p>
+
+          {/* Category label */}
+          <div className="flex items-center gap-1.5 mt-2.5">
+            <span
+              className="text-[10px] md:text-[11px] font-semibold uppercase tracking-widest transition-all duration-300"
+              style={{
+                color: isHovered ? colors.main : 'rgba(255, 255, 255, 0.15)',
+                textShadow: isHovered
+                  ? `0 0 12px ${colors.glow}`
+                  : 'none',
+              }}
+            >
+              {t(`categories.${product.category}`)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

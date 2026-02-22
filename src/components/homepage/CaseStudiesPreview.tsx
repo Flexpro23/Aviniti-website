@@ -3,12 +3,12 @@
 /**
  * Case Studies Preview Section
  *
- * Showcases 2-3 case studies with industry badges, headlines, and metrics.
+ * Showcases 2 real case studies with industry badges, headlines, and metrics.
  * Features prominent results and "Read More" CTAs.
  */
 
 import { useTranslations } from 'next-intl';
-import { ArrowRight, TrendingUp, ShoppingCart, Activity, Truck } from 'lucide-react';
+import { ArrowRight, Truck, GraduationCap, Sparkles, Stethoscope, Scissors, CalendarDays } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
@@ -19,14 +19,15 @@ import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { Link } from '@/lib/i18n/navigation';
 import { staggerContainer, fadeInUp } from '@/lib/motion/variants';
 import { motion } from 'framer-motion';
+import { caseStudies } from '@/lib/data/case-studies';
 
 interface CaseStudy {
   slug: string;
   industry: string;
-  headlineKey: string;
+  title: string;
   metricValue: string;
   metricLabel: string;
-  excerptKey: string;
+  excerpt: string;
   icon: React.ReactNode;
   accentColor: string;
 }
@@ -34,39 +35,36 @@ interface CaseStudy {
 export function CaseStudiesPreview() {
   const t = useTranslations('home.case_studies');
 
-  // Placeholder case studies
-  const caseStudies: CaseStudy[] = [
-    {
-      slug: 'ecommerce-retail',
-      industry: 'industry_ecommerce',
-      headlineKey: 'case_1_headline',
-      metricValue: '3x',
-      metricLabel: 'metric_1_label',
-      excerptKey: 'case_1_excerpt',
-      icon: <ShoppingCart className="w-5 h-5" />,
-      accentColor: '#4A7A5B', // var(--color-tool-green)
-    },
-    {
-      slug: 'healthcare-ai',
-      industry: 'industry_healthcare',
-      headlineKey: 'case_2_headline',
-      metricValue: '85%',
-      metricLabel: 'metric_2_label',
-      excerptKey: 'case_2_excerpt',
-      icon: <Activity className="w-5 h-5" />,
-      accentColor: '#5B7A9A', // var(--color-tool-blue)
-    },
-    {
-      slug: 'logistics-delivery',
-      industry: 'industry_logistics',
-      headlineKey: 'case_3_headline',
-      metricValue: '50%',
-      metricLabel: 'metric_3_label',
-      excerptKey: 'case_3_excerpt',
-      icon: <Truck className="w-5 h-5" />,
-      accentColor: '#9A6A3C', // var(--color-tool-orange)
-    },
-  ];
+  // Map real case studies to display format
+  const previewCaseStudies: CaseStudy[] = caseStudies.slice(0, 3).map((study) => {
+    const iconMap: { [key: string]: React.ReactNode } = {
+      logistics: <Truck className="w-5 h-5" />,
+      education: <GraduationCap className="w-5 h-5" />,
+      beauty: <Sparkles className="w-5 h-5" />,
+      medical: <Stethoscope className="w-5 h-5" />,
+      barbershop: <Scissors className="w-5 h-5" />,
+      business: <CalendarDays className="w-5 h-5" />,
+    };
+
+    const industryKeyMap: { [key: string]: string } = {
+      Logistics: 'industry_logistics',
+      Education: 'industry_education',
+      'Health & Beauty': 'industry_beauty',
+      Medical: 'industry_medical',
+      'Business Operations': 'industry_business',
+    };
+
+    return {
+      slug: study.slug,
+      industry: industryKeyMap[study.industry] || 'industry_logistics',
+      title: study.title,
+      metricValue: study.listingMetrics[0]?.value || '—',
+      metricLabel: study.listingMetrics[0]?.label || '',
+      excerpt: study.excerpt,
+      icon: iconMap[study.industryKey] || <Truck className="w-5 h-5" />,
+      accentColor: study.accentColor,
+    };
+  });
 
   return (
     <Section className="bg-navy-dark relative" aria-labelledby="case-studies-heading">
@@ -94,9 +92,9 @@ export function CaseStudiesPreview() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
         >
-          {caseStudies.map((study) => (
+          {previewCaseStudies.map((study) => (
             <motion.div key={study.slug} variants={fadeInUp}>
               <Card
                 hover
@@ -116,7 +114,7 @@ export function CaseStudiesPreview() {
                   </div>
 
                   {/* Headline */}
-                  <CardTitle className="text-xl">{t(study.headlineKey)}</CardTitle>
+                  <CardTitle className="text-xl">{study.title}</CardTitle>
 
                   {/* Key Metric */}
                   <div className="flex items-center gap-3 py-2">
@@ -130,13 +128,13 @@ export function CaseStudiesPreview() {
                       <span className="text-3xl font-bold" style={{ color: study.accentColor }}>
                         {study.metricValue}
                       </span>
-                      <span className="text-xs text-muted">{t(study.metricLabel)}</span>
+                      <span className="text-xs text-muted">{study.metricLabel}</span>
                     </div>
                   </div>
 
                   {/* Excerpt */}
                   <CardDescription className="leading-relaxed">
-                    {t(study.excerptKey)}
+                    {study.excerpt}
                   </CardDescription>
                 </CardHeader>
 

@@ -118,22 +118,17 @@ export interface SocialLink {
 export const socialLinks: SocialLink[] = [
   {
     platform: 'LinkedIn',
-    href: 'https://linkedin.com/company/aviniti',
+    href: 'https://www.linkedin.com/company/avinitiapp/',
     icon: 'Linkedin',
   },
   {
     platform: 'Facebook',
-    href: 'https://facebook.com/aviniti',
+    href: 'https://www.facebook.com/people/Aviniti/61558788565903/',
     icon: 'Facebook',
   },
   {
     platform: 'Instagram',
-    href: 'https://instagram.com/aviniti',
+    href: 'https://www.instagram.com/aviniti_1/',
     icon: 'Instagram',
-  },
-  {
-    platform: 'Twitter',
-    href: 'https://twitter.com/aviniti',
-    icon: 'Twitter',
   },
 ];

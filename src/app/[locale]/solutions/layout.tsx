@@ -10,12 +10,37 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'meta' });
+  const t = await getTranslations({ locale, namespace: 'solutions' });
+
+  const title = t('meta.title');
+  const description = t('meta.description');
+  const ogTitle = t('meta.og_title');
+  const ogDescription = t('meta.og_description');
+
   return {
-    title: t('solutions.title'),
-    description: t('solutions.description'),
+    title,
+    description,
     alternates: getAlternateLinks('/solutions'),
-    openGraph: { title: t('solutions.title'), description: t('solutions.description'), locale },
+    openGraph: {
+      title: ogTitle,
+      description: ogDescription,
+      type: 'website',
+      locale: locale === 'ar' ? 'ar_JO' : 'en_US',
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(ogTitle)}&description=${encodeURIComponent(ogDescription)}&type=page&locale=${locale}`,
+          width: 1200,
+          height: 630,
+          alt: ogTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: ogTitle,
+      description: ogDescription,
+      images: [`/api/og?title=${encodeURIComponent(ogTitle)}&description=${encodeURIComponent(ogDescription)}&type=page&locale=${locale}`],
+    },
   };
 }
 

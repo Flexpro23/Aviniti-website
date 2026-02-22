@@ -30,7 +30,8 @@ export const Section = React.forwardRef<HTMLElement, SectionProps>(
 
     return (
       <Component
-        ref={ref as any}
+        // @ts-expect-error - ref type differs between 'section', 'div', and 'article', but all are valid HTMLElement subclasses
+        ref={ref}
         className={cn('w-full', backgroundStyles[background], paddingStyles[padding], className)}
         {...props}
       />

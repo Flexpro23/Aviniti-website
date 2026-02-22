@@ -2,22 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, MessageCircle, Phone, ChevronDown } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { PhoneInput } from 'react-international-phone';
-import { isValidPhoneNumber } from 'libphonenumber-js';
-import 'react-international-phone/style.css';
 import { cn } from '@/lib/utils/cn';
-import { Link } from '@/lib/i18n/navigation';
 import { useExitIntent } from './ExitIntentProvider';
-
-function getGeoCountry(): string {
-  if (typeof document === 'undefined') return 'jo';
-  const match = document.cookie.match(/geo-country=([A-Z]{2})/);
-  return match ? match[1].toLowerCase() : 'jo';
-}
-
-type ExitIntentVariant = 'A' | 'B' | 'C' | 'D' | 'E';
 
 async function trackExitIntent(payload: Record<string, unknown>) {
   try {
@@ -31,355 +19,34 @@ async function trackExitIntent(payload: Record<string, unknown>) {
   }
 }
 
-// --- Variant A: Phone capture with free consultation ---
-function VariantA({ onConvert }: { onConvert: () => void }) {
-  const t = useTranslations('common');
-  const [phone, setPhone] = useState('');
-  const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [phoneTouched, setPhoneTouched] = useState(false);
-  const [defaultCountry, setDefaultCountry] = useState('jo');
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    setDefaultCountry(getGeoCountry());
-  }, []);
-
-  const validatePhone = (value: string) => {
-    if (!value || value.length <= 4) {
-      setPhoneError(t('exit_intent.phone_required'));
-      return false;
-    } else if (!isValidPhoneNumber(value)) {
-      setPhoneError(t('exit_intent.phone_invalid'));
-      return false;
-    }
-    setPhoneError(null);
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validatePhone(phone)) {
-      setPhoneTouched(true);
-      return;
-    }
-
-    await trackExitIntent({ variant: 'A', action: 'phone_capture', phone });
-    setSubmitted(true);
-    onConvert();
-  };
-
-  if (submitted) {
-    return (
-      <div className="text-center py-4">
-        <p className="text-lg font-semibold text-off-white">{t('exit_intent.thank_you')}</p>
-        <p className="text-sm text-muted mt-1">{t('exit_intent.will_be_in_touch')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.before_you_go')}</h2>
-      <p className="text-sm text-muted">
-        {t('exit_intent.free_consultation_description')}
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div dir="ltr" className="aviniti-phone-input">
-          <PhoneInput
-            defaultCountry={defaultCountry}
-            value={phone}
-            onChange={(value) => {
-              setPhone(value);
-              if (phoneTouched) validatePhone(value);
-            }}
-            onBlur={() => {
-              setPhoneTouched(true);
-              validatePhone(phone);
-            }}
-            placeholder={t('exit_intent.phone_placeholder')}
-            preferredCountries={[
-              'jo', 'ae', 'sa', 'eg', 'qa', 'kw', 'bh', 'om', 'iq', 'lb', 'ps',
-            ]}
-          />
-        </div>
-        {phoneTouched && phoneError && (
-          <p className="text-xs text-error" role="alert">
-            {phoneError}
-          </p>
-        )}
-        <button
-          type="submit"
-          className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-        >
-          {t('exit_intent.get_free_consultation')}
-          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-        </button>
-      </form>
-    </div>
-  );
-}
-
-// --- Variant B: Solutions navigation ---
-function VariantB({ onConvert }: { onConvert: () => void }) {
-  const t = useTranslations('common');
-  const handleClick = async (destination: string) => {
-    await trackExitIntent({ variant: 'B', action: 'navigate', destination });
-    onConvert();
-  };
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.see_our_solutions')}</h2>
-      <p className="text-sm text-muted">
-        {t('exit_intent.solutions_description')}
-      </p>
-      <div className="space-y-3">
-        <Link
-          href="/solutions"
-          onClick={() => handleClick('/solutions')}
-          className="flex items-center justify-between w-full h-11 px-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white hover:border-bronze hover:text-bronze transition-colors"
-        >
-          {t('exit_intent.browse_solutions')}
-          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-        </Link>
-        <Link
-          href="/get-estimate"
-          onClick={() => handleClick('/get-estimate')}
-          className="flex items-center justify-between w-full h-11 px-4 bg-gradient-to-r from-bronze to-bronze-hover rounded-lg text-sm text-white font-medium hover:opacity-90 transition-opacity"
-        >
-          {t('exit_intent.get_free_estimate')}
-          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// --- Variant C: Quick estimate form ---
-function VariantC({ onConvert }: { onConvert: () => void }) {
-  const t = useTranslations('common');
-  const [projectType, setProjectType] = useState('');
-  const [phone, setPhone] = useState('');
-  const [phoneError, setPhoneError] = useState<string | null>(null);
-  const [phoneTouched, setPhoneTouched] = useState(false);
-  const [defaultCountry, setDefaultCountry] = useState('jo');
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    setDefaultCountry(getGeoCountry());
-  }, []);
-
-  const validatePhone = (value: string) => {
-    if (!value || value.length <= 4) {
-      setPhoneError(t('exit_intent.phone_required'));
-      return false;
-    } else if (!isValidPhoneNumber(value)) {
-      setPhoneError(t('exit_intent.phone_invalid'));
-      return false;
-    }
-    setPhoneError(null);
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!projectType) return;
-    if (!validatePhone(phone)) {
-      setPhoneTouched(true);
-      return;
-    }
-
-    await trackExitIntent({
-      variant: 'C',
-      action: 'quick_estimate',
-      projectType,
-      phone,
-    });
-    setSubmitted(true);
-    onConvert();
-  };
-
-  if (submitted) {
-    return (
-      <div className="text-center py-4">
-        <p className="text-lg font-semibold text-off-white">{t('exit_intent.request_received')}</p>
-        <p className="text-sm text-muted mt-1">
-          {t('exit_intent.estimate_timeline')}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.get_quick_estimate')}</h2>
-      <p className="text-sm text-muted">
-        {t('exit_intent.quick_estimate_description')}
-      </p>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className="relative">
-          <select
-            value={projectType}
-            onChange={(e) => setProjectType(e.target.value)}
-            required
-            className="w-full h-11 ps-3 pe-10 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all appearance-none cursor-pointer"
-          >
-            <option value="" disabled>
-              {t('exit_intent.select_project_type')}
-            </option>
-            <option value="web-app">{t('exit_intent.web_application')}</option>
-            <option value="mobile-app">{t('exit_intent.mobile_application')}</option>
-            <option value="ai-integration">{t('exit_intent.ai_ml_solution')}</option>
-            <option value="cloud-infra">{t('exit_intent.saas_platform')}</option>
-            <option value="e-commerce">{t('exit_intent.e_commerce')}</option>
-            <option value="other">{t('exit_intent.other')}</option>
-          </select>
-          <ChevronDown className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
-        </div>
-        <div dir="ltr" className="aviniti-phone-input">
-          <PhoneInput
-            defaultCountry={defaultCountry}
-            value={phone}
-            onChange={(value) => {
-              setPhone(value);
-              if (phoneTouched) validatePhone(value);
-            }}
-            onBlur={() => {
-              setPhoneTouched(true);
-              validatePhone(phone);
-            }}
-            placeholder={t('exit_intent.phone_placeholder')}
-            preferredCountries={[
-              'jo', 'ae', 'sa', 'eg', 'qa', 'kw', 'bh', 'om', 'iq', 'lb', 'ps',
-            ]}
-          />
-        </div>
-        {phoneTouched && phoneError && (
-          <p className="text-xs text-error" role="alert">
-            {phoneError}
-          </p>
-        )}
-        <button
-          type="submit"
-          className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-        >
-          {t('exit_intent.get_my_estimate')}
-          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-        </button>
-      </form>
-    </div>
-  );
-}
-
-// --- Variant D: Blog post links ---
-function VariantD({ onConvert }: { onConvert: () => void }) {
-  const t = useTranslations('common');
-  const handleClick = async (post: string) => {
-    await trackExitIntent({ variant: 'D', action: 'blog_click', post });
-    onConvert();
-  };
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.read_our_latest')}</h2>
-      <p className="text-sm text-muted">
-        {t('exit_intent.blog_description')}
-      </p>
-      <div className="space-y-3">
-        <Link
-          href="/blog/ai-transforming-business-2025"
-          onClick={() => handleClick('ai-transforming-business-2025')}
-          className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
-        >
-          <p className="text-sm font-medium text-off-white group-hover:text-bronze transition-colors">
-            {t('exit_intent.blog_post_1_title')}
-          </p>
-          <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_1_read_time')}</p>
-        </Link>
-        <Link
-          href="/blog/choosing-right-tech-stack"
-          onClick={() => handleClick('choosing-right-tech-stack')}
-          className="block w-full p-4 bg-navy/60 border border-slate-blue-light rounded-lg hover:border-bronze transition-colors group"
-        >
-          <p className="text-sm font-medium text-off-white group-hover:text-bronze transition-colors">
-            {t('exit_intent.blog_post_2_title')}
-          </p>
-          <p className="text-xs text-muted mt-1">{t('exit_intent.blog_post_2_read_time')}</p>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// --- Variant E: Direct contact options ---
-function VariantE({ onConvert }: { onConvert: () => void }) {
-  const t = useTranslations('common');
-  const handleClick = async (action: string) => {
-    await trackExitIntent({ variant: 'E', action });
-    onConvert();
-  };
-
-  const whatsappMessage = encodeURIComponent(t('exit_intent.whatsapp_message'));
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-off-white">{t('exit_intent.still_deciding')}</h2>
-      <p className="text-sm text-muted">
-        {t('exit_intent.no_pressure_description')}
-      </p>
-      <div className="space-y-3">
-        <a
-          href={`https://wa.me/962790685302?text=${whatsappMessage}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => handleClick('whatsapp')}
-          className="flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-[#25D366] text-white font-medium text-sm hover:opacity-90 transition-opacity"
-        >
-          <MessageCircle className="h-4 w-4" />
-          {t('exit_intent.chat_on_whatsapp')}
-        </a>
-        <Link
-          href="/contact?booking=true"
-          onClick={() => handleClick('book_call')}
-          className="flex items-center justify-center gap-2 w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity"
-        >
-          <Phone className="h-4 w-4" />
-          {t('exit_intent.book_a_call')}
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// --- Variant renderer map ---
-const VARIANT_MAP: Record<ExitIntentVariant, React.FC<{ onConvert: () => void }>> = {
-  A: VariantA,
-  B: VariantB,
-  C: VariantC,
-  D: VariantD,
-  E: VariantE,
-};
-
-// --- Main Popup Component ---
 export default function ExitIntentPopup() {
-  const t = useTranslations('common');
-  const { isVisible, variant, dismiss, markConverted } = useExitIntent();
+  const t = useTranslations('common.exit_intent');
+  const { isVisible, dismiss, markConverted } = useExitIntent();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
 
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === 'Escape') dismiss();
+      if (e.key === 'Escape') {
+        handleDismiss();
+      }
     },
     [dismiss],
   );
+
+  const handleDismiss = useCallback(() => {
+    dismiss();
+    trackExitIntent({ action: 'exit_intent_dismissed' });
+  }, [dismiss]);
 
   useEffect(() => {
     if (isVisible) {
       previousFocusRef.current = document.activeElement as HTMLElement;
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
-      // Focus the close button after animation
+      trackExitIntent({ action: 'exit_intent_shown' });
       const timer = setTimeout(() => {
         const closeBtn = modalRef.current?.querySelector<HTMLElement>('button');
         closeBtn?.focus();
@@ -401,7 +68,7 @@ export default function ExitIntentPopup() {
     if (e.key !== 'Tab' || !modalRef.current) return;
 
     const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), textarea, input:not([disabled]), select, [tabindex]:not([tabindex="-1"])'
+      'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
     const first = focusableElements[0];
     const last = focusableElements[focusableElements.length - 1];
@@ -419,7 +86,59 @@ export default function ExitIntentPopup() {
     }
   }, []);
 
-  const VariantComponent = VARIANT_MAP[variant];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await trackExitIntent({ action: 'exit_intent_email_submitted', email: email || 'skipped' });
+    setSubmitted(true);
+    markConverted();
+    setTimeout(() => {
+      handleDismiss();
+      setEmail('');
+      setSubmitted(false);
+    }, 2000);
+  };
+
+  if (submitted) {
+    return (
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-navy/70 backdrop-blur-sm"
+              onClick={handleDismiss}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            <motion.div
+              className={cn(
+                'relative z-10 w-full max-w-md',
+                'bg-slate-blue border border-slate-blue-light',
+                'rounded-2xl shadow-2xl p-6',
+              )}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="text-center py-4">
+                <p className="text-lg font-semibold text-off-white">{t('thank_you')}</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -434,7 +153,7 @@ export default function ExitIntentPopup() {
           {/* Backdrop */}
           <motion.div
             className="absolute inset-0 bg-navy/70 backdrop-blur-sm"
-            onClick={dismiss}
+            onClick={handleDismiss}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -455,19 +174,41 @@ export default function ExitIntentPopup() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             role="dialog"
             aria-modal="true"
-            aria-label={t('exit_intent.special_offer_aria')}
+            aria-label={t('checklist_title')}
           >
             {/* Close button */}
             <button
-              onClick={dismiss}
+              onClick={handleDismiss}
               className="absolute top-3 end-3 h-10 w-10 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
-              aria-label={t('exit_intent.close_popup_aria')}
+              aria-label={t('close_aria')}
             >
               <X className="h-5 w-5" />
             </button>
 
-            {/* Variant content */}
-            <VariantComponent onConvert={markConverted} />
+            {/* Content */}
+            <div className="space-y-4 pt-2">
+              <div>
+                <h2 className="text-xl font-bold text-off-white">{t('checklist_title')}</h2>
+                <p className="text-sm text-muted mt-2">{t('checklist_subtitle')}</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t('email_placeholder')}
+                  className="w-full h-11 px-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
+                />
+
+                <button
+                  type="submit"
+                  className="w-full h-11 rounded-lg bg-gradient-to-r from-bronze to-bronze-hover text-white font-medium text-sm hover:opacity-90 transition-opacity"
+                >
+                  {t('checklist_cta')}
+                </button>
+              </form>
+            </div>
           </motion.div>
         </motion.div>
       )}

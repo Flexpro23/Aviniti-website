@@ -1,0 +1,59 @@
+# Aviniti — App Development & AI Solutions
+
+> Aviniti is a Jordan-based technology company specialising in custom mobile app development, web applications, and AI-powered business solutions. We serve businesses across Jordan, Saudi Arabia, and the UAE. Our tagline: "Your Ideas, Our Reality" (أفكارك، واقعنا).
+
+## Company
+
+- About: https://www.aviniti.app/en/about
+- Contact: https://www.aviniti.app/en/contact
+- Location: Amman, Jordan
+- Languages: English and Arabic (full bilingual site)
+- Founded: 2024
+
+## Services
+
+- Mobile App Development: Custom iOS and Android apps built with React Native, Flutter, and native SDKs
+- Web Application Development: Fast, scalable web apps with Next.js, React, and Node.js
+- AI Integration: Embedding Gemini, GPT, and custom ML models into business workflows
+- Business Process Automation: Replacing manual workflows with intelligent automation pipelines
+- Ready-Made Solution Systems: Pre-built, customisable software systems for common industry verticals
+
+## Ready-Made Solutions (Products)
+
+- Delivery App System: https://www.aviniti.app/en/solutions/delivery-app-system — $15,000 | 4–6 weeks | 3 apps (vendor dashboard, driver app, customer app)
+- Kindergarten Management: https://www.aviniti.app/en/solutions/kindergarten-management — $9,000 | 4–6 weeks | 3 apps (admin dashboard, staff app, parent app)
+- Hypermarket Management: https://www.aviniti.app/en/solutions/hypermarket-management — $20,000–$50,000 | 8 weeks | POS, loyalty app, inventory, multi-branch
+- Office Management & Booking: https://www.aviniti.app/en/solutions/office-management — $8,000 | 4–6 weeks | booking + CRM dashboard
+- Gym & Fitness Management: https://www.aviniti.app/en/solutions/gym-management — $25,000–$75,000 | 8 weeks | 6 apps including receptionist, trainer, and customer
+- Property Rental Platform: https://www.aviniti.app/en/solutions/airbnb-marketplace — $12,000 | 4–6 weeks | host, guest, and admin apps
+- Hair Transplant AI System: https://www.aviniti.app/en/solutions/hair-transplant-ai — $20,000 | 4 weeks | AI doctor tool + receptionist dashboard
+- Barbershop Management: https://www.aviniti.app/en/solutions/barbershop-management — $35,000 | 5 weeks | owner dashboard, receptionist, barber app with AI
+
+## AI Tools (Free, on-site)
+
+- Idea Lab: https://www.aviniti.app/en/idea-lab — Validate business ideas with AI-powered market analysis
+- AI Analyzer: https://www.aviniti.app/en/ai-analyzer — Analyse market potential and competitive landscape
+- Get Estimate: https://www.aviniti.app/en/get-estimate — Instant AI-generated cost estimates for app projects
+- ROI Calculator: https://www.aviniti.app/en/roi-calculator — Calculate expected return on investment before you build
+
+## Case Studies
+
+- Logistics & Delivery Optimisation: https://www.aviniti.app/en/case-studies/logistics-delivery-optimization
+- E-commerce & Retail Automation: https://www.aviniti.app/en/case-studies/ecommerce-retail-automation
+- Education & Kindergarten System: https://www.aviniti.app/en/case-studies/education-kindergarten-system
+
+## Blog
+
+- All posts: https://www.aviniti.app/en/blog
+- Topics: app development costs, AI in business, mobile technology, Jordan tech market, startup advice
+
+## Other Pages
+
+- Solutions overview: https://www.aviniti.app/en/solutions
+- FAQ: https://www.aviniti.app/en/faq
+- Privacy Policy: https://www.aviniti.app/en/privacy-policy
+- Terms of Service: https://www.aviniti.app/en/terms-of-service
+
+## Arabic Version
+
+All pages are available in Arabic at https://www.aviniti.app/ar/

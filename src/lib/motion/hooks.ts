@@ -54,9 +54,10 @@ export function useScrollReveal(options?: {
   } = options || {};
 
   const ref = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inView = useInView(ref, {
     once,
-    margin: margin as any, // Margin format varies by Framer Motion version
+    margin: margin as any, // Margin parameter accepts string format despite type definition
     amount,
   });
 

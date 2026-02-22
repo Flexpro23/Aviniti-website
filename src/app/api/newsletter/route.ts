@@ -8,14 +8,12 @@ import {
 } from '@/lib/utils/api-helpers';
 import { emailSchema } from '@/lib/utils/validators';
 import { logServerError } from '@/lib/firebase/error-logging';
+import { getAdminDb } from '@/lib/firebase/admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 // Rate limiting configuration: 3 subscription attempts per IP per hour
 const RATE_LIMIT = 3;
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
-
-// In-memory subscriber store
-// TODO: Replace with Firestore collection once Firebase integration is complete
-const subscriberStore = new Set<string>();
 
 const newsletterSchema = z.object({
   email: emailSchema,
@@ -50,8 +48,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Persist the subscription
-    subscriberStore.add(validatedData.email.toLowerCase());
+    // 3. Persist the subscription to Firestore
+    const db = getAdminDb();
+    const normalizedEmail = validatedData.email.toLowerCase();
+
+    // Check for duplicate subscription
+    const existingDoc = await db
+      .collection('newsletter_subscribers')
+      .where('email', '==', normalizedEmail)
+      .limit(1)
+      .get();
+
+    if (!existingDoc.empty) {
+      // Already subscribed, return 201 anyway to be user-friendly
+      const message =
+        locale === 'ar'
+          ? 'شكراً لاشتراكك! ستتلقى آخر المستجدات والأخبار قريباً.'
+          : "You're subscribed! You'll receive our latest updates and news soon.";
+
+      const response = NextResponse.json(
+        { success: true, data: { subscribed: true, message, alreadySubscribed: true } },
+        { status: 201, headers }
+      );
+      return response;
+    }
+
+    // Add new subscriber
+    await db.collection('newsletter_subscribers').add({
+      email: normalizedEmail,
+      locale,
+      subscribedAt: Timestamp.now(),
+      source: 'website',
+    });
 
     // 4. Return 201 Created on success
     const message =

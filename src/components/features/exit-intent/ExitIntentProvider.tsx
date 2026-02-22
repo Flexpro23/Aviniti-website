@@ -9,27 +9,19 @@ import {
   useRef,
 } from 'react';
 
-type ExitIntentVariant = 'A' | 'B' | 'C' | 'D' | 'E';
-
 interface ExitIntentContextValue {
   isVisible: boolean;
-  variant: ExitIntentVariant;
   dismiss: () => void;
   markConverted: () => void;
 }
 
 const ExitIntentContext = createContext<ExitIntentContextValue | null>(null);
 
-const VARIANTS: ExitIntentVariant[] = ['A', 'B', 'C', 'D', 'E'];
 const SESSION_KEY = 'avi_exit_intent_shown';
 const CONVERSION_KEY = 'avi_exit_intent_converted';
 const SUPPRESSION_DAYS = 7;
 const ENABLE_DELAY_MS = 5000;
 const SCROLL_THRESHOLD = -80; // rapid scroll-up pixel delta
-
-function pickRandomVariant(): ExitIntentVariant {
-  return VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
-}
 
 function isConversionSuppressed(): boolean {
   if (typeof window === 'undefined') return false;
@@ -47,7 +39,6 @@ function hasShownThisSession(): boolean {
 
 export function ExitIntentProvider({ children }: { children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
-  const [variant] = useState<ExitIntentVariant>(pickRandomVariant);
   const enabledRef = useRef(false);
   const triggeredRef = useRef(false);
   const lastScrollYRef = useRef(0);
@@ -116,7 +107,7 @@ export function ExitIntentProvider({ children }: { children: React.ReactNode }) 
   }, [trigger]);
 
   return (
-    <ExitIntentContext.Provider value={{ isVisible, variant, dismiss, markConverted }}>
+    <ExitIntentContext.Provider value={{ isVisible, dismiss, markConverted }}>
       {children}
     </ExitIntentContext.Provider>
   );

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { Metadata } from 'next';
 import { Inter, Plus_Jakarta_Sans, Cairo } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
@@ -9,10 +10,16 @@ import { SkipToContent } from '@/components/layout/SkipToContent';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { getHomepageSchema } from '@/components/seo/structured-data';
+import { getHomepageSchema, getLocalBusinessSchema } from '@/components/seo/structured-data';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
 import { PageViewTracker } from '@/components/analytics/PageViewTracker';
+import { SITE_URL } from '@/lib/config';
 import '../globals.css';
+
+/** Global metadataBase — all relative OG/Twitter image URLs resolve against this */
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+};
 
 const inter = Inter({
   subsets: ['latin'],
@@ -61,7 +68,12 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Organization + WebSite + Services graph (homepage-level) */}
         <JsonLd data={getHomepageSchema(locale)} />
+        {/* LocalBusiness — enhances local search & entity recognition */}
+        <JsonLd data={getLocalBusinessSchema(locale)} />
+        {/* Apple touch icon — used when user adds site to iOS home screen */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="bg-navy text-off-white antialiased">
         <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} ${locale === 'ar' ? 'font-arabic' : 'font-sans'}`}>

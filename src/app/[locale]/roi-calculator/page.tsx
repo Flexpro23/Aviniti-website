@@ -56,6 +56,7 @@ import type {
   Industry,
   ROICalculatorResponseV2,
 } from '@/types/api';
+import type { Solution } from '@/types/solutions';
 
 // ============================================================
 // Constants
@@ -81,7 +82,7 @@ interface EstimateData {
   features: string[];
   techStack: string[];
   strategicInsights: Array<{ type: string; title: string; description: string }>;
-  matchedSolution: any;
+  matchedSolution: Solution | null;
 }
 
 // ============================================================

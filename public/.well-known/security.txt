@@ -1,0 +1,25 @@
+# Security Policy for Aviniti (aviniti.app)
+# RFC 9116 compliant — https://securitytxt.org/
+
+Contact: mailto:aliodat@aviniti.app
+Contact: https://www.aviniti.app/en/contact
+
+Expires: 2027-02-01T00:00:00.000Z
+
+Preferred-Languages: en, ar
+
+Policy: https://www.aviniti.app/en/privacy-policy
+
+Canonical: https://www.aviniti.app/.well-known/security.txt
+
+# If you discover a security vulnerability in any Aviniti system,
+# website, or application, please report it responsibly by contacting
+# us at the address above. We commit to:
+#
+#   - Acknowledging your report within 72 hours
+#   - Working with you to understand and validate the issue
+#   - Keeping you informed of our progress toward a fix
+#   - Not pursuing legal action against good-faith security researchers
+#
+# We appreciate the security community's efforts in keeping our
+# users and systems safe.
