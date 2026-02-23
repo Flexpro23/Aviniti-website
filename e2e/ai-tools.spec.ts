@@ -16,32 +16,56 @@ import { test, expect } from '@playwright/test';
 // ---------------------------------------------------------------------------
 
 const ANALYZER_MOCK = {
-  overallScore: 78,
-  summary: 'Strong business idea with good market potential.',
-  complexity: 'medium',
-  categories: {
-    marketPotential: { score: 80, summary: 'Good market size' },
-    technicalFeasibility: { score: 75, summary: 'Feasible with standard tech' },
-    competition: { intensity: 'moderate', score: 70, summary: 'Moderate competition' },
-    revenueModel: { score: 80, summary: 'Clear revenue streams' },
-    timeToMarket: { score: 75, summary: 'Achievable in 6 months' },
+  success: true,
+  data: {
+    ideaName: 'Test Idea',
+    overallScore: 78,
+    summary: 'Strong business idea with good market potential.',
+    categories: {
+      market: {
+        score: 80,
+        analysis: 'Good market opportunity',
+        findings: ['Large addressable market'],
+      },
+      technical: {
+        score: 75,
+        analysis: 'Technically feasible',
+        findings: ['Standard tech stack'],
+        complexity: 'medium',
+        suggestedTechStack: ['React Native'],
+        challenges: ['Scaling'],
+      },
+      monetization: {
+        score: 80,
+        analysis: 'Clear revenue streams',
+        findings: ['Multiple revenue models'],
+        revenueModels: [{ name: 'Subscription', description: 'Monthly fee', pros: ['Recurring revenue'], cons: ['Churn risk'] }],
+      },
+      competition: {
+        score: 70,
+        analysis: 'Moderate competition',
+        findings: ['Several solutions exist'],
+        competitors: [{ name: 'Competitor A', description: 'Similar app', type: 'direct' }],
+        intensity: 'moderate',
+      },
+    },
+    recommendations: ['Focus on UX', 'Start with MVP'],
   },
-  recommendations: ['Focus on UX', 'Start with MVP'],
-  risks: ['Market saturation'],
-  nextSteps: ['Define target audience', 'Create MVP'],
 };
 
 const IDEA_LAB_DISCOVER_MOCK = {
-  ideaName: 'Test App',
-  summary: 'A test application for e-commerce',
-  questions: [
-    {
-      id: 'q1',
-      question: 'Who are your target users?',
-      type: 'single',
-      options: ['Consumers', 'Businesses'],
-    },
-  ],
+  success: true,
+  data: {
+    contextSummary: 'E-commerce platform for local market',
+    questions: [
+      {
+        id: 'q1',
+        text: 'Who are your target users?',
+        type: 'multiple-choice',
+        options: ['Consumers', 'Businesses'],
+      },
+    ],
+  },
 };
 
 const IDEA_LAB_GENERATE_MOCK = {
@@ -96,22 +120,13 @@ const ROI_MOCK = {
 // Helper: register all AI API routes as mocks for a given page instance
 // ---------------------------------------------------------------------------
 async function mockAllAiApis(page: import('@playwright/test').Page) {
-  // Idea Lab — discovery step
-  await page.route('**/api/ai/idea-lab', async (route) => {
-    const body = route.request().postDataJSON() as { action?: string } | null;
-    if (body?.action === 'generate') {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(IDEA_LAB_GENERATE_MOCK),
-      });
-    } else {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(IDEA_LAB_DISCOVER_MOCK),
-      });
-    }
+  // Idea Lab — discovery step (the actual endpoint is /api/ai/idea-lab/discover)
+  await page.route('**/api/ai/idea-lab/discover', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(IDEA_LAB_DISCOVER_MOCK),
+    });
   });
 
   // Idea Lab — generate step (separate endpoint)
@@ -146,6 +161,26 @@ async function mockAllAiApis(page: import('@playwright/test').Page) {
       body: JSON.stringify(ROI_MOCK),
     });
   });
+}
+
+// ---------------------------------------------------------------------------
+// Helper: fill and submit the ContactCapture form (name + phone)
+// The skip button is hidden by default (showSkip=false), so we must fill it.
+// react-international-phone needs pressSequentially — fill() bypasses onChange.
+// ---------------------------------------------------------------------------
+async function submitContactCapture(page: import('@playwright/test').Page) {
+  // Name field label is "Full Name" in common.json contact_capture.name_label
+  await page.getByRole('textbox', { name: /full name/i }).fill('Test User');
+
+  // Phone: the input starts with "+962" (Jordan); type the national number after it
+  const phoneInput = page.locator('input[type="tel"]').first();
+  await phoneInput.click();
+  await page.keyboard.press('End');
+  await phoneInput.pressSequentially('791234567');
+  await page.waitForTimeout(200);
+
+  // Submit button text is "Get My Results" (common.json contact_capture.submit)
+  await page.getByRole('button', { name: /get my results/i }).click();
 }
 
 // ===========================================================================
@@ -256,10 +291,9 @@ test.describe('AI Analyzer — Full Flow with mocked API', () => {
     // Click Continue to advance to step 2 (contact capture)
     await page.getByRole('button', { name: /continue/i }).first().click();
 
-    // Step 2: ContactCapture form — skip it to trigger the API call immediately
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: ContactCapture form — fill name + phone and submit to trigger analysis
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
     // The analysis loading animation and then results should appear.
     // The overall score (78) must be visible somewhere in the results.
@@ -280,19 +314,18 @@ test.describe('AI Analyzer — Full Flow with mocked API', () => {
     await page.goto('/en/ai-analyzer');
     await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('#analyzer-idea-input').fill('Test idea for loading state');
+    await page.locator('#analyzer-idea-input').fill('A subscription-based SaaS for restaurant inventory management and ordering.');
     await page.getByRole('button', { name: /continue/i }).first().click();
 
-    // Wait for step 2 / contact capture to appear then skip
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture to trigger analysis
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
-    // Loading state: a progress bar, spinner, skeleton, or "analyzing / building / complete"
-    // text should be visible briefly before results render.
-    const loadingIndicator = page.locator(
-      '[class*="animate-pulse"], [class*="spinner"], text=/analyzing|building|complete|assessing|evaluating|processing/i',
-    );
+    // Loading state: a progress bar, spinner, skeleton, or analyzing/building text
+    // text= and CSS cannot be mixed in one locator string — use .or()
+    const loadingIndicator = page.locator('[class*="animate-pulse"]')
+      .or(page.locator('[class*="spinner"]'))
+      .or(page.getByText(/analyzing|building|complete|assessing|evaluating|processing/i));
     await expect(loadingIndicator.first()).toBeVisible({ timeout: 5000 });
   });
 
@@ -308,12 +341,12 @@ test.describe('AI Analyzer — Full Flow with mocked API', () => {
     await page.goto('/en/ai-analyzer');
     await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('#analyzer-idea-input').fill('Test idea for error state');
+    await page.locator('#analyzer-idea-input').fill('A mobile app for tracking daily gym workouts and nutrition goals.');
     await page.getByRole('button', { name: /continue/i }).first().click();
 
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture and submit to trigger the (failing) API call
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
     // An error message should appear — the component renders t('errors.failed') or generic error
     const errorMsg = page.locator('text=/error|try again|failed/i').first();
@@ -328,8 +361,8 @@ test.describe('AI Analyzer — Full Flow with mocked API', () => {
     const continueBtn = page.getByRole('button', { name: /continue/i }).first();
     await expect(continueBtn).toBeDisabled();
 
-    // Type something and verify the button becomes enabled
-    await page.locator('#analyzer-idea-input').fill('My app idea');
+    // Type 30+ characters so the minimum-length requirement is met
+    await page.locator('#analyzer-idea-input').fill('An AI-powered delivery app for local restaurants in Amman, Jordan.');
     await expect(continueBtn).toBeEnabled();
   });
 
@@ -348,9 +381,9 @@ test.describe('AI Analyzer — Full Flow with mocked API', () => {
     await page.locator('#analyzer-idea-input').fill('An AI-powered food delivery app for Jordan.');
     await page.getByRole('button', { name: /continue/i }).first().click();
 
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture and submit
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
     // The results overview section should be present in the DOM
     await expect(page.locator('#analyzer-overview')).toBeVisible({ timeout: 20000 });
@@ -398,7 +431,7 @@ test.describe('Idea Lab — Wizard Structure & Navigation', () => {
   test('discovery API is called after selecting persona + industry', async ({ page }) => {
     let discoveryCalled = false;
 
-    await page.route('**/api/ai/idea-lab', async (route) => {
+    await page.route('**/api/ai/idea-lab/discover', async (route) => {
       discoveryCalled = true;
       await route.fulfill({
         status: 200,
@@ -581,19 +614,18 @@ test.describe('ROI Calculator — Form Structure & Mocked Submission', () => {
     );
 
     // Select the first market option
-    const firstMarket = page.locator('[role="radiogroup"]').first().locator('[role="radio"]').first();
+    const firstMarket = page.locator('[role="radiogroup"]').first().locator('button').first();
     await expect(firstMarket).toBeVisible({ timeout: 5000 });
     await firstMarket.click();
 
-    // Click Continue to move to the email capture step
+    // Click Continue to move to the contact capture step
     const continueBtn = page.getByRole('button', { name: /continue/i }).first();
     await expect(continueBtn).toBeEnabled({ timeout: 5000 });
     await continueBtn.click();
 
-    // The email capture / contact step appears — skip it
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture form and submit to trigger ROI calculation
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
     // ROI results should appear — look for summary section or the ROI percentage from the mock (180%)
     await expect(
@@ -613,9 +645,9 @@ test.describe('ROI Calculator — Form Structure & Mocked Submission', () => {
     await page.goto('/en/roi-calculator');
     await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('#roi-idea-input').fill('Test idea for error');
+    await page.locator('#roi-idea-input').fill('Test idea for ROI error scenario validation.');
 
-    const firstMarket = page.locator('[role="radiogroup"]').first().locator('[role="radio"]').first();
+    const firstMarket = page.locator('[role="radiogroup"]').first().locator('button').first();
     await expect(firstMarket).toBeVisible({ timeout: 5000 });
     await firstMarket.click();
 
@@ -623,12 +655,12 @@ test.describe('ROI Calculator — Form Structure & Mocked Submission', () => {
     await expect(continueBtn).toBeEnabled({ timeout: 5000 });
     await continueBtn.click();
 
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture and submit to trigger (failing) ROI API
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
     // An error message should appear (errors.calculation_failed: "Failed to calculate ROI…")
-    const errorMsg = page.locator('text=/error|failed|try again/i').first();
+    const errorMsg = page.getByText(/error|failed|try again/i).first();
     await expect(errorMsg).toBeVisible({ timeout: 15000 });
   });
 
@@ -648,7 +680,7 @@ test.describe('ROI Calculator — Form Structure & Mocked Submission', () => {
 
     await page.locator('#roi-idea-input').fill('An app for tracking gym progress.');
 
-    const firstMarket = page.locator('[role="radiogroup"]').first().locator('[role="radio"]').first();
+    const firstMarket = page.locator('[role="radiogroup"]').first().locator('button').first();
     await expect(firstMarket).toBeVisible({ timeout: 5000 });
     await firstMarket.click();
 
@@ -656,14 +688,15 @@ test.describe('ROI Calculator — Form Structure & Mocked Submission', () => {
     await expect(continueBtn).toBeEnabled({ timeout: 5000 });
     await continueBtn.click();
 
-    const skipButton = page.getByRole('button', { name: /skip/i });
-    await expect(skipButton).toBeVisible({ timeout: 8000 });
-    await skipButton.click();
+    // Step 2: fill ContactCapture and submit to trigger ROI calculation
+    await expect(page.getByRole('button', { name: /get my results/i })).toBeVisible({ timeout: 8000 });
+    await submitContactCapture(page);
 
-    // Loading animation: skeleton, spinner, or "building / crunching / loading" text
-    const loadingIndicator = page.locator(
-      '[class*="animate-pulse"], [class*="spinner"], text=/building|crunching|loading|analyzing|calculating/i',
-    );
+    // Loading animation: skeleton or spinner (CSS class-based)
+    // text= and CSS cannot be mixed in one locator string — use .or()
+    const loadingIndicator = page.locator('[class*="animate-pulse"]')
+      .or(page.locator('[class*="spinner"]'))
+      .or(page.getByText(/building|crunching|loading|analyzing|calculating/i));
     await expect(loadingIndicator.first()).toBeVisible({ timeout: 5000 });
   });
 });

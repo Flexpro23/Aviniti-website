@@ -11,10 +11,10 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if test.only is accidentally left in */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Single worker on CI to avoid port conflicts; parallel locally */
-  workers: process.env.CI ? 1 : undefined,
+  /* Retry on CI; also 1 retry locally for tests flaky under parallel load */
+  retries: process.env.CI ? 2 : 1,
+  /* Single worker on CI; cap at 4 locally to avoid overloading the dev server */
+  workers: process.env.CI ? 1 : 4,
   reporter: process.env.CI ? 'github' : 'html',
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',

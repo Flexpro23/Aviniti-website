@@ -33,7 +33,7 @@ test.describe('Contact Form', () => {
     // An error message should appear for the name field
     // The error text from en/contact.json is "Please enter your name"
     const nameError = page.locator('[role="alert"], p.text-error, p.text-red-400, span.text-error')
-      .filter({ hasText: /name|required|enter/i })
+      .filter({ hasText: /your name/i })
       .first();
     await expect(nameError).toBeVisible({ timeout: 5000 });
   });
@@ -62,7 +62,8 @@ test.describe('Contact Form', () => {
   // ─── 6. Topic select trigger is present ──────────────────────────────────
   test('topic select trigger is present', async ({ page }) => {
     // Radix UI SelectTrigger renders as role="combobox"
-    const selectTrigger = page.getByRole('combobox').first();
+    // Use nth(1) to skip the Country Selector combobox from react-international-phone
+    const selectTrigger = page.getByRole('combobox').nth(1);
     await expect(selectTrigger).toBeVisible();
   });
 
@@ -73,7 +74,7 @@ test.describe('Contact Form', () => {
 
     // Wait for the error to appear
     const nameError = page.locator('[role="alert"], p.text-error, span.text-error')
-      .filter({ hasText: /name|required|enter/i })
+      .filter({ hasText: /your name/i })
       .first();
     await expect(nameError).toBeVisible({ timeout: 5000 });
 
@@ -165,12 +166,20 @@ test.describe('Contact Form', () => {
     // 1. Fill Name
     await page.getByRole('textbox', { name: /your name/i }).fill('John Doe');
 
-    // 2. Fill Phone — react-international-phone renders <input type="tel">
-    const phoneInput = page.locator('input[type="tel"]').first();
-    await phoneInput.fill('+962791234567');
+    // 2. Fill Email
+    await page.locator('input[type="email"], input[name="email"]').first().fill('john@example.com');
 
-    // 3. Select Topic — Radix UI Select: click trigger, then click item
-    const selectTrigger = page.getByRole('combobox').first();
+    // 3. Fill Phone — react-international-phone needs pressSequentially (fill() doesn't trigger onChange)
+    // The input starts with "+962" (Jordan prefix); type the national number after it
+    const phoneInput = page.locator('input[type="tel"]').first();
+    await phoneInput.click();
+    await page.keyboard.press('End');
+    await phoneInput.pressSequentially('791234567');
+    await page.waitForTimeout(200);
+
+    // 4. Select Topic — Radix UI Select trigger.
+    // Use nth(1) to skip the Country Selector combobox from react-international-phone
+    const selectTrigger = page.getByRole('combobox').nth(1);
     await selectTrigger.click();
     // Wait for the dropdown listbox to appear
     const listbox = page.getByRole('listbox');
@@ -178,12 +187,12 @@ test.describe('Contact Form', () => {
     // Click the first option ("General Inquiry")
     await listbox.getByRole('option').first().click();
 
-    // 4. Fill Message (min 10 chars required)
+    // 5. Fill Message (min 10 chars required)
     await page.getByRole('textbox', { name: /your message/i }).fill(
       'I need help with my project and would like a free consultation.'
     );
 
-    // 5. Submit the form
+    // 6. Submit the form
     await page.getByRole('button', { name: /send message/i }).click();
 
     // 6. Assert success state — the success card shows "Message Sent!" or a thank-you
@@ -208,10 +217,17 @@ test.describe('Contact Form', () => {
     // Fill all required fields
     await page.getByRole('textbox', { name: /your name/i }).fill('Jane Doe');
 
-    const phoneInput = page.locator('input[type="tel"]').first();
-    await phoneInput.fill('+962791234567');
+    await page.locator('input[type="email"], input[name="email"]').first().fill('jane@example.com');
 
-    const selectTrigger = page.getByRole('combobox').first();
+    // react-international-phone needs pressSequentially; input already has "+962" prefix
+    const phoneInput = page.locator('input[type="tel"]').first();
+    await phoneInput.click();
+    await page.keyboard.press('End');
+    await phoneInput.pressSequentially('791234567');
+    await page.waitForTimeout(200);
+
+    // Use nth(1) to skip the Country Selector combobox from react-international-phone
+    const selectTrigger = page.getByRole('combobox').nth(1);
     await selectTrigger.click();
     const listbox = page.getByRole('listbox');
     await expect(listbox).toBeVisible({ timeout: 5000 });
@@ -245,7 +261,8 @@ test.describe('Contact Form', () => {
 
   // ─── 16. Calendly book-a-call button is present ─────────────────────────
   test('book a call button is present in sidebar', async ({ page }) => {
-    const bookCallBtn = page.getByRole('button', { name: /book a call/i }).first();
+    // aria-label is "Book a free 30-minute consultation" (not the visible text "Book a Call")
+    const bookCallBtn = page.locator('button[aria-label*="consultation"], button[aria-label*="30-minute"]').first();
     await expect(bookCallBtn).toBeVisible();
   });
 });
