@@ -51,7 +51,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     blogSlugs = await getAllBlogSlugs();
   } catch (err) {
-    console.warn('[sitemap] Could not fetch blog slugs from Firestore:', err);
+    // Silently fall back to empty slugs — sitemap still generates static pages
+    void err;
   }
 
   // Static pages

@@ -54,6 +54,8 @@ export default defineConfig({
         'src/lib/gemini/prompts/**',
         // Zod schema definitions — config-like, no executable branching
         'src/lib/gemini/schemas.ts',
+        // Pure constants — no executable branching to measure
+        'src/lib/utils/image.ts',
       ],
       thresholds: {
         lines: 70,

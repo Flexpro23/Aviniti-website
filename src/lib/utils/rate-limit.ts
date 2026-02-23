@@ -111,7 +111,8 @@ export async function checkRateLimit(
       limit,
     };
   } catch (err) {
-    console.warn('[RateLimit] Redis error, falling back to in-memory:', err);
+    // Redis unavailable — silently fall back to in-memory limiter
+    void err;
     return checkRateLimitInMemory(identifier, limit, windowMs);
   }
 }

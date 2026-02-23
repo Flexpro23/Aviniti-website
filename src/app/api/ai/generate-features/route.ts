@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       for (const [idx, sel] of selections.entries()) {
         const catalogFeature = getFeatureById(sel.catalogId);
         if (!catalogFeature) {
-          console.warn(`[Generate Features API] Unknown catalogId: ${sel.catalogId}`);
+          logServerWarning('api/ai/generate-features', `Unknown catalogId: ${sel.catalogId}`);
           results.push({
             id: `${category === 'must-have' ? 'mh' : 'en'}-${idx + 1}`,
             name: sel.catalogId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
