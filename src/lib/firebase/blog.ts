@@ -2,6 +2,7 @@
 // Each post has bilingual content: post.en.* and post.ar.*
 
 import { getAdminDb } from './admin';
+import { logServerError } from './error-logging';
 
 export interface BlogPostLocalized {
   title: string;
@@ -49,6 +50,7 @@ export async function getBlogPosts(locale: string, limit = 50): Promise<BlogPost
       .where('status', '==', 'published')
       .orderBy('publishedAt', 'desc')
       .limit(limit)
+      .select('slug', 'publishedAt', 'featuredImage', 'tags', 'category', 'readingTime', 'en', 'ar')
       .get();
 
     return snapshot.docs.map((doc) => {
@@ -67,7 +69,7 @@ export async function getBlogPosts(locale: string, limit = 50): Promise<BlogPost
       };
     });
   } catch (error) {
-    console.error('[Blog] Failed to fetch blog posts:', error);
+    logServerError('firebase/blog', 'Failed to fetch blog posts', error);
     return [];
   }
 }
@@ -91,7 +93,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
     const doc = snapshot.docs[0];
     return { id: doc.id, ...doc.data() } as BlogPost;
   } catch (error) {
-    console.error(`[Blog] Failed to fetch post "${slug}":`, error);
+    logServerError('firebase/blog', `Failed to fetch post "${slug}"`, error);
     return null;
   }
 }
@@ -110,7 +112,7 @@ export async function getAllBlogSlugs(): Promise<string[]> {
 
     return snapshot.docs.map((doc) => doc.data().slug as string);
   } catch (error) {
-    console.error('[Blog] Failed to fetch slugs:', error);
+    logServerError('firebase/blog', 'Failed to fetch slugs', error);
     return [];
   }
 }

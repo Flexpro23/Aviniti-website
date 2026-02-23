@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getFormatter } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ import { ShareButtons } from '@/components/shared/ShareButtons';
 import { getBlogPost, getAllBlogSlugs } from '@/lib/firebase/blog';
 import { getAlternateLinks } from '@/lib/i18n/config';
 import { getBlogPostingSchema } from '@/components/seo/structured-data';
+import { HERO_BLUR_URL } from '@/lib/utils/image';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -66,18 +67,25 @@ export default async function BlogPostPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const [t, post] = await Promise.all([
-    getTranslations({ locale, namespace: 'blog' }),
-    getBlogPost(slug),
-  ]);
+  const t = await getTranslations({ locale, namespace: 'blog' });
+
+  let post: Awaited<ReturnType<typeof getBlogPost>>;
+  try {
+    post = await getBlogPost(slug);
+  } catch (err) {
+    console.error(`[Blog] Failed to fetch post "${slug}":`, err);
+    notFound();
+  }
 
   if (!post) notFound();
 
   const localeData = locale === 'ar' ? post.ar : post.en;
-  const formattedDate = new Date(post.publishedAt).toLocaleDateString(
-    locale === 'ar' ? 'ar-JO' : 'en-US',
-    { month: 'long', day: 'numeric', year: 'numeric' }
-  );
+  const format = await getFormatter({ locale });
+  const formattedDate = format.dateTime(new Date(post.publishedAt), {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   const blogPostingSchema = getBlogPostingSchema({
     locale,
@@ -174,6 +182,8 @@ export default async function BlogPostPage({ params }: Props) {
                   priority
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 800px"
+                  placeholder="blur"
+                  blurDataURL={HERO_BLUR_URL}
                 />
               </div>
             )}

@@ -329,8 +329,8 @@ def generate_and_upload_image(image_prompt: str, slug: str) -> str | None:
 
 def trigger_revalidation(slug: str) -> None:
     """Notify Next.js to revalidate the blog pages."""
-    revalidate_url = os.environ.get("REVALIDATE_URL")
-    revalidate_secret = os.environ.get("REVALIDATE_SECRET")
+    revalidate_url = (os.environ.get("REVALIDATE_URL") or "").strip()
+    revalidate_secret = (os.environ.get("REVALIDATE_SECRET") or "").strip()
     
     if not revalidate_url or not revalidate_secret:
         logger.warning("REVALIDATE_URL or REVALIDATE_SECRET not set, skipping revalidation")
@@ -370,7 +370,8 @@ def generate_blog_post(event: scheduler_fn.ScheduledEvent) -> None:
         "startedAt": datetime.now(timezone.utc).isoformat(),
         "status": "running",
     })
-    
+
+    topic_ref = None
     try:
         # 1. Get existing slugs to avoid duplicates
         existing_docs = get_db().collection("blog_posts").select(["slug"]).get()
@@ -380,10 +381,14 @@ def generate_blog_post(event: scheduler_fn.ScheduledEvent) -> None:
         # 2. Get next topic from backlog
         topic = get_or_create_topic(existing_slugs)
         logger.info(f"Selected topic: {topic['topic']}")
-        
+
+        # Mark topic as processing immediately to prevent duplicate posts on concurrent runs
+        topic_ref = topic["ref"]
+        topic_ref.update({"status": "processing"})
+
         # Small pause before calling Gemini
         time.sleep(2)
-        
+
         # 3. Generate bilingual content
         post_data = generate_blog_content(topic)
         slug = post_data["slug"]
@@ -436,6 +441,12 @@ def generate_blog_post(event: scheduler_fn.ScheduledEvent) -> None:
         
     except Exception as e:
         logger.error(f"❌ Blog generation failed: {e}", exc_info=True)
+        # Mark topic as failed so it can be retried
+        if topic_ref is not None:
+            try:
+                topic_ref.update({"status": "failed", "failedAt": datetime.now(timezone.utc).isoformat()})
+            except Exception as mark_err:
+                logger.warning(f"Could not mark topic as failed: {mark_err}")
         log_ref.update({
             "status": "failed",
             "error": str(e),

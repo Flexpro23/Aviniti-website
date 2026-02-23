@@ -418,7 +418,7 @@ export function Navbar() {
                 onClick={() => setIsMobileMenuOpen(true)}
                 className={cn(
                   'lg:hidden',
-                  'h-9 w-9 rounded-lg',
+                  'h-11 w-11 rounded-lg',
                   'flex items-center justify-center',
                   'text-muted hover:text-white hover:bg-white/[0.06]',
                   'transition-all duration-200',

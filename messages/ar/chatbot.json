@@ -70,6 +70,8 @@
     "input_placeholder": "اكتب رسالتك...",
     "input_aria": "رسالة المحادثة",
     "send_aria": "إرسال الرسالة",
-    "chat_window_aria": "محادثة مع آفي، مساعد Aviniti الذكي"
+    "chat_window_aria": "محادثة مع آفي، مساعد Aviniti الذكي",
+    "messages_label": "رسائل المحادثة",
+    "typing_indicator": "آفي يكتب..."
   }
 }

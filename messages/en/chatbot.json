@@ -70,6 +70,8 @@
     "input_placeholder": "Type your message...",
     "input_aria": "Chat message",
     "send_aria": "Send message",
-    "chat_window_aria": "Chat with Avi, Aviniti's AI assistant"
+    "chat_window_aria": "Chat with Avi, Aviniti's AI assistant",
+    "messages_label": "Chat messages",
+    "typing_indicator": "Avi is typing..."
   }
 }

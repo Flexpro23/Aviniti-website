@@ -549,7 +549,7 @@ export default function GetEstimatePage() {
     setDirection('forward');
     setStep(6);
     trackAiToolSubmitted('get_estimate', locale);
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     try {
       const res = await fetch('/api/ai/estimate', {

@@ -12,6 +12,7 @@ import { Footer } from '@/components/layout/Footer';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { getHomepageSchema, getLocalBusinessSchema } from '@/components/seo/structured-data';
 import { AnalyticsProvider } from '@/components/analytics/AnalyticsProvider';
+import { GlobalErrorHandler } from '@/components/analytics/GlobalErrorHandler';
 import { PageViewTracker } from '@/components/analytics/PageViewTracker';
 import { SITE_URL } from '@/lib/config';
 import '../globals.css';
@@ -29,14 +30,14 @@ const inter = Inter({
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-jakarta',
   display: 'swap',
 });
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-arabic',
   display: 'swap',
 });
@@ -74,12 +75,14 @@ export default async function LocaleLayout({
         <JsonLd data={getLocalBusinessSchema(locale)} />
         {/* Apple touch icon — used when user adds site to iOS home screen */}
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
       </head>
       <body className="bg-navy text-off-white antialiased">
         <div className={`${inter.variable} ${plusJakartaSans.variable} ${cairo.variable} ${locale === 'ar' ? 'font-arabic' : 'font-sans'}`}>
           <NextIntlClientProvider messages={messages}>
             <LocaleUpdater />
             <AnalyticsProvider />
+            <GlobalErrorHandler />
             <PageViewTracker />
             <SkipToContent />
             <Navbar />

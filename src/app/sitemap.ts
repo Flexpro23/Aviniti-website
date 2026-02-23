@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { SITE_URL as BASE_URL } from '@/lib/config';
 import { getAllBlogSlugs } from '@/lib/firebase/blog';
 
-// Static pages
+// Static pages (AI tool pages excluded — noindex in robots.ts)
 const staticPages = [
   '',
   '/contact',
@@ -12,12 +12,16 @@ const staticPages = [
   '/faq',
   '/privacy-policy',
   '/terms-of-service',
-  '/ai-analyzer',
-  '/get-estimate',
-  '/idea-lab',
-  '/roi-calculator',
   '/about',
 ];
+
+function alternatesWithDefault(path: string) {
+  return {
+    en: `${BASE_URL}/en${path}`,
+    ar: `${BASE_URL}/ar${path}`,
+    'x-default': `${BASE_URL}/en${path}`,
+  };
+}
 
 // Solution slugs — update when new solutions are added
 const solutionSlugs = [
@@ -59,10 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: page === '' ? 'weekly' : 'monthly',
         priority: page === '' ? 1.0 : 0.8,
         alternates: {
-          languages: {
-            en: `${BASE_URL}/en${page}`,
-            ar: `${BASE_URL}/ar${page}`,
-          },
+          languages: alternatesWithDefault(page),
         },
       });
     }
@@ -77,10 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.7,
         alternates: {
-          languages: {
-            en: `${BASE_URL}/en/solutions/${slug}`,
-            ar: `${BASE_URL}/ar/solutions/${slug}`,
-          },
+          languages: alternatesWithDefault(`/solutions/${slug}`),
         },
       });
     }
@@ -95,10 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: {
-          languages: {
-            en: `${BASE_URL}/en/blog/${slug}`,
-            ar: `${BASE_URL}/ar/blog/${slug}`,
-          },
+          languages: alternatesWithDefault(`/blog/${slug}`),
         },
       });
     }
@@ -113,10 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: 0.7,
         alternates: {
-          languages: {
-            en: `${BASE_URL}/en/case-studies/${slug}`,
-            ar: `${BASE_URL}/ar/case-studies/${slug}`,
-          },
+          languages: alternatesWithDefault(`/case-studies/${slug}`),
         },
       });
     }

@@ -94,7 +94,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative w-9 h-9 rounded-full border border-white/[0.08] bg-white/[0.03] flex items-center justify-center text-muted hover:text-white hover:border-bronze/50 hover:bg-bronze/10 transition-all duration-300"
+                  className="group relative w-10 h-10 rounded-full border border-white/[0.08] bg-white/[0.03] flex items-center justify-center text-muted hover:text-white hover:border-bronze/50 hover:bg-bronze/10 transition-all duration-300"
                   aria-label={t('footer.visitSocial', { platform: social.platform })}
                 >
                   {/* Hover glow */}
@@ -238,8 +238,8 @@ export function Footer() {
             <LanguageSwitcher />
             <button
               onClick={scrollToTop}
-              className="group w-8 h-8 rounded-full border border-white/[0.08] bg-white/[0.03] flex items-center justify-center text-muted hover:text-white hover:border-bronze/50 hover:bg-bronze/10 transition-all duration-300"
-              aria-label="Back to top"
+              className="group w-10 h-10 rounded-full border border-white/[0.08] bg-white/[0.03] flex items-center justify-center text-muted hover:text-white hover:border-bronze/50 hover:bg-bronze/10 transition-all duration-300"
+              aria-label={t('footer.back_to_top')}
             >
               <ArrowUp className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
             </button>

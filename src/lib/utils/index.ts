@@ -48,27 +48,5 @@ export type {
   ChatMessageData,
 } from './validators';
 
-// Analytics
-export {
-  trackEvent,
-  trackToolEvent,
-  setUserProperty,
-  trackPageView,
-  trackScrollDepth,
-  trackCtaClick,
-  trackLeadCapture,
-  trackContactFormSubmit,
-  trackWhatsAppClick,
-  trackExitIntent,
-  trackChatbotEvent,
-  trackSolutionViewed,
-  trackLanguageSwitch,
-  trackFaqExpanded,
-  initializeAnalytics,
-  incrementSessionToolCount,
-  markUserAsConverted,
-  hasUserConverted,
-} from './analytics';
-
 // Re-export cn utility if it exists
 export { cn } from './cn';

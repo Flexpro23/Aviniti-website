@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getAlternateLinks } from '@/lib/i18n/config';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import type { LucideIcon } from 'lucide-react';
 import {
   Check,
   Clock,
@@ -37,9 +38,10 @@ import { Container, Section, Badge, Card, CardContent } from '@/components/ui';
 import { SectionHeading } from '@/components/shared/SectionHeading';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { HERO_BLUR_URL } from '@/lib/utils/image';
 
 // Icon mapping for solution icons (all icons used by all solutions)
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   Truck,
   GraduationCap,
   ShoppingCart,
@@ -84,6 +86,25 @@ const categoryColors: Record<string, { accent: string; bg: string; border: strin
   operations: { accent: '#C08460', bg: 'rgba(192, 132, 96, 0.08)', border: 'rgba(192, 132, 96, 0.25)' },
   'health-beauty': { accent: '#F472B6', bg: 'rgba(244, 114, 182, 0.08)', border: 'rgba(244, 114, 182, 0.25)' },
 };
+
+export const revalidate = 86400; // Revalidate daily
+
+export function generateStaticParams() {
+  const locales = ['en', 'ar'];
+  const slugs = [
+    'delivery-app-system',
+    'kindergarten-management',
+    'hypermarket-management',
+    'office-management',
+    'gym-management',
+    'airbnb-marketplace',
+    'hair-transplant-ai',
+    'barbershop-management',
+  ];
+  return locales.flatMap((locale) =>
+    slugs.map((slug) => ({ locale, slug }))
+  );
+}
 
 export async function generateMetadata({
   params,
@@ -274,6 +295,8 @@ export default async function SolutionDetailPage({
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 600px"
                     priority
+                    placeholder="blur"
+                    blurDataURL={HERO_BLUR_URL}
                   />
                 </div>
               </div>
@@ -621,6 +644,8 @@ export default async function SolutionDetailPage({
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 350px"
+                            placeholder="blur"
+                            blurDataURL={HERO_BLUR_URL}
                           />
                           {/* Category Badge Overlay */}
                           <div

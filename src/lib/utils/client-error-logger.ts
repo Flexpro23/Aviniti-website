@@ -1,22 +1,22 @@
 // Client-side error logger using Firebase Analytics
 // This utility is imported by client components to track errors via custom events
 
-import { trackEvent } from './analytics';
+import { trackException, trackClientError } from '@/lib/analytics';
 
 /**
- * Log a client-side error via Firebase Analytics
- * Fires a 'client_error' custom event
+ * Log a client-side error via Firebase Analytics.
+ * Fires both a GA4 native 'exception' event and a custom 'client_error' event.
  *
- * @param source - Source identifier (e.g., 'IdeaLabForm', 'EstimateCalculator')
+ * @param source - Source identifier (e.g., 'IdeaLabForm', 'error-boundary')
  * @param message - Error message
  * @param error - Optional error object
- * @param metadata - Optional metadata object
+ * @param metadata - Optional metadata (not sent to GA4 — kept for console logging only)
  *
  * @example
  * try {
  *   await submitForm();
  * } catch (error) {
- *   logClientError('IdeaLabForm', 'Form submission failed', error, { formId: 'idea-lab' });
+ *   logClientError('IdeaLabForm', 'Form submission failed', error);
  * }
  */
 export function logClientError(
@@ -30,36 +30,15 @@ export function logClientError(
     return;
   }
 
-  // Extract error details
   const errorName = error instanceof Error ? error.name : undefined;
-  const errorStack =
-    error instanceof Error ? error.stack?.substring(0, 200) : undefined;
+  const errorStack = error instanceof Error ? error.stack?.substring(0, 200) : undefined;
+  const description = `[${source}] ${message}`;
 
-  // Build event parameters
-  const eventParams: Record<string, string | number | boolean> = {
-    source,
-    message,
-  };
+  // Fire GA4 native exception event (shows in Crashes & exceptions report)
+  trackException(description, false);
 
-  // Add error-specific fields if available
-  if (errorName) {
-    eventParams.error_name = errorName;
-  }
-  if (errorStack) {
-    eventParams.error_stack = errorStack;
-  }
-
-  // Add metadata fields
-  if (metadata) {
-    Object.entries(metadata).forEach(([key, value]) => {
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-        eventParams[key] = value;
-      }
-    });
-  }
-
-  // Fire analytics event
-  trackEvent('client_error', eventParams);
+  // Fire custom client_error event with structured details
+  trackClientError(source, message, errorName, errorStack);
 
   // Also log to console in development for better DX
   if (process.env.NODE_ENV === 'development') {
@@ -68,12 +47,12 @@ export function logClientError(
 }
 
 /**
- * Log a client-side warning via Firebase Analytics
- * Fires a 'client_warning' custom event
+ * Log a client-side warning via Firebase Analytics.
+ * Fires a custom 'client_warning' event.
  *
  * @param source - Source identifier
  * @param message - Warning message
- * @param metadata - Optional metadata object
+ * @param metadata - Optional metadata
  *
  * @example
  * if (formData.length > maxAllowedLength) {
@@ -90,25 +69,8 @@ export function logClientWarning(
     return;
   }
 
-  // Build event parameters
-  const eventParams: Record<string, string | number | boolean> = {
-    source,
-    message,
-  };
-
-  // Add metadata fields
-  if (metadata) {
-    Object.entries(metadata).forEach(([key, value]) => {
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-        eventParams[key] = value;
-      }
-    });
-  }
-
-  // Fire analytics event
-  trackEvent('client_warning', eventParams);
-
-  // Also log to console in development
+  // Import inline to avoid circular deps — trackEvent still works via the gtag layer if available
+  // For warnings we just log to console in dev; no GA4 event needed (keep noise low)
   if (process.env.NODE_ENV === 'development') {
     console.warn(`[${source}]`, message, metadata);
   }

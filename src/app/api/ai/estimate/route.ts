@@ -7,6 +7,8 @@ import {
   extractRequestMetadata,
   hashIP,
   sanitizePromptInput,
+  sanitizeSourceContext,
+  checkRequestBodySize,
   detectInputLanguage,
   getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
@@ -15,20 +17,27 @@ import { saveLeadToFirestore, saveAISubmission } from '@/lib/firebase/collection
 import { estimateFormSchema } from '@/lib/utils/validators';
 import { buildEstimatePrompt } from '@/lib/gemini/prompts';
 import { estimateCreativeSchema } from '@/lib/gemini/schemas';
+import { getFeatureById } from '@/lib/data/feature-catalog';
 import { calculateEstimate, distributeAcrossPhases, PHASE_COST_RATIOS } from '@/lib/pricing/calculator';
 import type { EstimateResponse, EstimatePhase } from '@/types/api';
 import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
 
-// Rate limiting configuration
-const RATE_LIMIT = 5;
+// Rate limiting configuration (reduced from 5 to 3/24hr for cost control)
+const RATE_LIMIT = 3;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.3;
 const TIMEOUT_MS = 45000; // 45 seconds
+
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    // 0. Body size check (mitigate payload DoS)
+    const sizeError = checkRequestBodySize(request);
+    if (sizeError) return sizeError;
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = estimateFormSchema.parse(body);
@@ -58,9 +67,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Compute deterministic pricing from catalog
+    // 3. Compute deterministic pricing from catalog (validate feature IDs exist)
     const featureIds: string[] = validatedData.selectedFeatureIds
       ?? (validatedData.selectedFeatures ?? []).map((f) => f.id);
+
+    const invalidIds = featureIds.filter((id) => !getFeatureById(id));
+    if (invalidIds.length > 0) {
+      return createErrorResponse(
+        'VALIDATION_ERROR',
+        `Invalid feature IDs: ${invalidIds.slice(0, 5).join(', ')}${invalidIds.length > 5 ? '...' : ''}`,
+        400
+      );
+    }
 
     const pricing = calculateEstimate(featureIds);
 
@@ -68,8 +86,8 @@ export async function POST(request: NextRequest) {
     const sanitizedDescription = sanitizePromptInput(validatedData.description, 2000);
     const inputLanguage = detectInputLanguage(validatedData.description);
 
-    // Extract optional sourceContext (not validated by Zod schema — passed through as-is)
-    const sourceContext = body.sourceContext as {
+    // Extract and sanitize optional sourceContext (prevents prompt injection from cross-tool context)
+    const rawSourceContext = body.sourceContext as {
       source: 'analyzer';
       ideaName: string;
       overallScore: number;
@@ -78,6 +96,7 @@ export async function POST(request: NextRequest) {
       challenges?: string[];
       recommendations?: string[];
     } | undefined;
+    const sourceContext = sanitizeSourceContext(rawSourceContext);
 
     const prompt = buildEstimatePrompt({
       projectType: validatedData.projectType,

@@ -237,6 +237,7 @@
   [dir="rtl"] .heading-h4,
   [dir="rtl"] .heading-h5,
   [dir="rtl"] .heading-h6 {
+    font-family: var(--font-arabic);
     letter-spacing: 0 !important;
     line-height: calc(1.08 * var(--line-height, 1.2));
   }

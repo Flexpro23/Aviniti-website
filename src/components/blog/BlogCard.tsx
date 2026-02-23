@@ -5,6 +5,7 @@ import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 import { motion } from 'framer-motion';
+import { HERO_BLUR_URL } from '@/lib/utils/image';
 
 interface BlogCardProps {
   slug: string;
@@ -56,6 +57,8 @@ export function BlogCard({
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            placeholder="blur"
+            blurDataURL={HERO_BLUR_URL}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-blue to-slate-blue-light">

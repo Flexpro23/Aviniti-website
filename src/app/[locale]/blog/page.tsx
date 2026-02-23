@@ -20,10 +20,16 @@ export default async function BlogPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, posts] = await Promise.all([
-    getTranslations({ locale, namespace: 'blog' }),
-    getBlogPosts(locale, 50),
-  ]);
+  const t = await getTranslations({ locale, namespace: 'blog' });
+
+  let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
+  let fetchError = false;
+  try {
+    posts = await getBlogPosts(locale, 50);
+  } catch (err) {
+    console.error('[Blog] Failed to fetch posts:', err);
+    fetchError = true;
+  }
 
   // Extract unique categories from posts for filter pills
   const categories = [...new Set(posts.map((p) => p.category))].filter(Boolean);
@@ -52,7 +58,7 @@ export default async function BlogPage({ params }: Props) {
       <Section>
         <Container>
           <Suspense fallback={<p className="text-center text-muted py-12">{t('loading')}</p>}>
-            <BlogGrid posts={posts} categories={categories} />
+            <BlogGrid posts={posts} categories={categories} fetchError={fetchError} />
           </Suspense>
         </Container>
       </Section>

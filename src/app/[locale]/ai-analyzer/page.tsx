@@ -429,7 +429,7 @@ export default function AIAnalyzerPage() {
       setIsLoading(true);
       setError(null);
       trackAiToolSubmitted('ai_analyzer', locale);
-      let startTime = Date.now();
+      const startTime = Date.now();
 
       // Persist contact info to the shared store (single contact capture across tools)
       updateContact({
@@ -1224,7 +1224,7 @@ export default function AIAnalyzerPage() {
           >
             {t('hero_title_line1')}
             <br />
-            <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            <span className="text-blue-400">
               {t('hero_title_highlight')}
             </span>
           </motion.h1>

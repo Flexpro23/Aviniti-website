@@ -111,7 +111,9 @@ function parseWeeks(duration: string): number {
 
 function generateRefId(): string {
   const year = new Date().getFullYear();
-  const rand = Math.floor(1000 + Math.random() * 9000);
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  const rand = 1000 + (arr[0] % 9000);
   return `AVINITI-${year}-${rand}`;
 }
 

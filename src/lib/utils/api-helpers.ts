@@ -58,7 +58,7 @@ export function generateTicketId(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar-looking chars
   let id = 'AVN-';
   for (let i = 0; i < 6; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
+    id += chars.charAt(crypto.randomInt(0, chars.length));
   }
   return id;
 }
@@ -134,6 +134,50 @@ export function sanitizeInput(input: string, maxLength?: number): string {
     result = result.substring(0, maxLength);
   }
   return result;
+}
+
+/** Max request body size for AI routes (100KB) to mitigate payload DoS */
+export const MAX_AI_BODY_SIZE = 100 * 1024;
+
+/**
+ * Check request body size before parsing. Call before request.json().
+ * Returns null if OK, or NextResponse with 413 if too large.
+ */
+export function checkRequestBodySize(
+  request: Request,
+  maxBytes: number = MAX_AI_BODY_SIZE
+): Response | null {
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > maxBytes) {
+    return createErrorResponse('PAYLOAD_TOO_LARGE', 'Request body too large', 413);
+  }
+  return null;
+}
+
+/**
+ * Sanitize sourceContext fields before inserting into AI prompts.
+ * Prevents prompt injection via cross-tool context (idea-lab → analyzer → estimate).
+ */
+export function sanitizeSourceContext<T extends Record<string, unknown>>(
+  ctx: T | undefined,
+  maxLengthPerField: number = 500
+): T | undefined {
+  if (!ctx || typeof ctx !== 'object') return undefined;
+  const sanitized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(ctx)) {
+    if (typeof value === 'string') {
+      sanitized[key] = sanitizePromptInput(value, maxLengthPerField);
+    } else if (Array.isArray(value)) {
+      sanitized[key] = value
+        .filter((v): v is string => typeof v === 'string')
+        .map((v) => sanitizePromptInput(v, 200));
+    } else if (typeof value === 'number' && !Number.isNaN(value)) {
+      sanitized[key] = value;
+    } else if (typeof value === 'boolean') {
+      sanitized[key] = value;
+    }
+  }
+  return sanitized as T;
 }
 
 /**

@@ -6,6 +6,8 @@ import { SectionHeading } from '@/components/shared/SectionHeading';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Link } from '@/lib/i18n/navigation';
 
+export const revalidate = 86400; // Revalidate daily
+
 const valueIcons = [Sparkles, Shield, Users, Target];
 
 export default async function AboutPage({

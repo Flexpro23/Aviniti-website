@@ -1,31 +1,50 @@
 /**
- * Global Loading State
+ * Route-level loading skeleton
  *
- * Displays a full-page loading spinner with subtle animation.
- * Used as fallback while pages are loading.
+ * Shown by Next.js while a page segment is being streamed / fetched.
+ * Keeps the layout stable (navbar + footer are already rendered) and
+ * provides a visual heartbeat so the page never looks broken.
  */
 
-'use client';
-
-import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
 export default function Loading() {
-  const t = useTranslations('common');
-
   return (
     <div
-      className="min-h-[60vh] flex items-center justify-center"
-      role="status"
-      aria-live="polite"
-      aria-label={t('loading_aria')}
+      className="min-h-[70vh] w-full px-4 py-20 animate-pulse"
+      aria-hidden="true"
+      role="presentation"
     >
-      <div className="flex flex-col items-center gap-4">
-        <Loader2
-          className="h-10 w-10 text-bronze animate-spin"
-          aria-hidden="true"
-        />
-        <span className="text-sm text-muted">{t('loading')}</span>
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Hero block */}
+        <div className="space-y-4 text-center">
+          <div className="h-4 w-24 bg-slate-blue-light/30 rounded-full mx-auto" />
+          <div className="h-10 w-3/4 bg-slate-blue-light/20 rounded-lg mx-auto" />
+          <div className="h-10 w-1/2 bg-slate-blue-light/20 rounded-lg mx-auto" />
+          <div className="h-5 w-2/3 bg-slate-blue-light/15 rounded mx-auto mt-2" />
+          <div className="h-5 w-1/2 bg-slate-blue-light/15 rounded mx-auto" />
+        </div>
+
+        {/* CTA buttons */}
+        <div className="flex justify-center gap-4 pt-2">
+          <div className="h-12 w-40 bg-bronze/20 rounded-full" />
+          <div className="h-12 w-36 bg-slate-blue-light/20 rounded-full" />
+        </div>
+
+        {/* Card grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl bg-slate-blue-light/10 overflow-hidden"
+            >
+              <div className="aspect-video bg-slate-blue-light/20" />
+              <div className="p-5 space-y-3">
+                <div className="h-5 w-3/4 bg-slate-blue-light/20 rounded" />
+                <div className="h-4 w-full bg-slate-blue-light/15 rounded" />
+                <div className="h-4 w-5/6 bg-slate-blue-light/15 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

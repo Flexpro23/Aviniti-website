@@ -11,6 +11,7 @@ import { useState, FormEvent } from 'react';
 import { ArrowRight, Loader2, Check } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
+import { trackNewsletterSubscribed } from '@/lib/analytics';
 
 export function NewsletterForm() {
   const t = useTranslations('common');
@@ -42,6 +43,7 @@ export function NewsletterForm() {
 
       setIsSuccess(true);
       setEmail('');
+      trackNewsletterSubscribed(locale);
       setTimeout(() => setIsSuccess(false), 3000);
     } catch {
       setError(t('newsletter.subscribe_error'));

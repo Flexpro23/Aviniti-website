@@ -7,6 +7,7 @@ import {
   extractRequestMetadata,
   hashIP,
   sanitizePromptInput,
+  checkRequestBodySize,
   detectInputLanguage,
   getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
@@ -16,7 +17,7 @@ import { ideaLabGenerateSchema } from '@/lib/utils/validators';
 import { buildIdeaLabPrompt } from '@/lib/gemini/prompts/idea-lab';
 import { ideaLabResponseSchema } from '@/lib/gemini/schemas';
 import type { IdeaLabResponse } from '@/types/api';
-import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
+import { logServerError, logServerWarning, logServerInfo } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration — 6 per 24h to allow discover + generate + 2 refreshes + buffer
 const RATE_LIMIT = 6;
@@ -24,10 +25,16 @@ const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.7;
 const TIMEOUT_MS = 45000; // 45 seconds
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    // 0. Body size check (mitigate payload DoS)
+    const sizeError = checkRequestBodySize(request);
+    if (sizeError) return sizeError;
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = ideaLabGenerateSchema.parse(body);
@@ -80,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
       if (attempt > 0) {
-        console.log(`[Idea Lab Generate] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+        logServerInfo('api/ai/idea-lab', `Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`, { attempt });
       }
 
       const result = await generateJsonContent<IdeaLabResponse>(prompt, {
@@ -108,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      logServerError('idea-lab-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
+      logServerError('idea-lab-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`, undefined, { locale, inputLanguage });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',

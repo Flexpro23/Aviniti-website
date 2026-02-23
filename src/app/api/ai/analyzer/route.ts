@@ -7,6 +7,8 @@ import {
   extractRequestMetadata,
   hashIP,
   sanitizePromptInput,
+  sanitizeSourceContext,
+  checkRequestBodySize,
   detectInputLanguage,
   getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
@@ -16,7 +18,7 @@ import { analyzerFormSchema } from '@/lib/utils/validators';
 import { buildAnalyzerPrompt } from '@/lib/gemini/prompts';
 import { analyzerResponseSchema } from '@/lib/gemini/schemas';
 import type { AnalyzerResponse } from '@/types/api';
-import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
+import { logServerError, logServerWarning, logServerInfo } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration
 const RATE_LIMIT = 3;
@@ -25,10 +27,16 @@ const TEMPERATURE = 0.3;
 const TIMEOUT_MS = 60000; // 60 seconds
 const MAX_AI_ATTEMPTS = 2;
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    // 0. Body size check (mitigate payload DoS)
+    const sizeError = checkRequestBodySize(request);
+    if (sizeError) return sizeError;
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = analyzerFormSchema.parse(body);
@@ -62,14 +70,15 @@ export async function POST(request: NextRequest) {
     const sanitizedIdea = sanitizePromptInput(validatedData.idea, 2000);
     const inputLanguage = detectInputLanguage(validatedData.idea);
 
-    // Extract optional sourceContext (not validated by Zod schema — passed through as-is)
-    const sourceContext = body.sourceContext as {
+    // Extract and sanitize optional sourceContext (prevents prompt injection from cross-tool context)
+    const rawSourceContext = body.sourceContext as {
       source: 'idea-lab';
       ideaName: string;
       features?: string[];
       benefits?: string[];
       impactMetrics?: string[];
     } | undefined;
+    const sourceContext = sanitizeSourceContext(rawSourceContext);
 
     const prompt = buildAnalyzerPrompt({
       idea: sanitizedIdea,
@@ -87,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
       if (attempt > 0) {
-        console.log(`[Analyzer API] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+        logServerInfo('api/ai/analyzer', `Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`, { attempt });
       }
 
       const result = await generateJsonContent<AnalyzerResponse>(prompt, {
@@ -115,7 +124,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      logServerError('analyzer-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
+      logServerError('analyzer-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`, undefined, { locale, inputLanguage });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',

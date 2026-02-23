@@ -7,11 +7,28 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Contact submissions: write-only from client (server uses Admin SDK)
-    match /contacts/{contactId} {
-      allow create: if true;
-      allow read, update, delete: if false;
+    // Sensitive collections: Admin SDK only (server-side writes via Firebase Admin)
+    // Client must NOT write directly — all writes go through API routes
+    match /leads/{leadId} {
+      allow read, write: if false;
     }
+    match /newsletter_subscribers/{docId} {
+      allow read, write: if false;
+    }
+    match /contact_submissions/{docId} {
+      allow read, write: if false;
+    }
+    match /error_logs/{docId} {
+      allow read, write: if false;
+    }
+    match /chatbot_conversations/{docId} {
+      allow read, write: if false;
+    }
+    match /blog_topic_backlog/{docId} {
+      allow read, write: if false;
+    }
+
+    // Legacy contacts rule removed — contact submissions use contact_submissions via Admin SDK
 
     // Default deny
     match /{document=**} {

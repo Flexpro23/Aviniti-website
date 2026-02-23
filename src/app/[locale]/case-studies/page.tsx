@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -10,9 +10,11 @@ import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { caseStudies } from '@/lib/data/case-studies';
+import { HERO_BLUR_URL } from '@/lib/utils/image';
 
 export default function CaseStudiesPage() {
   const t = useTranslations('case_studies');
+  const locale = useLocale() as 'en' | 'ar';
 
   return (
     <div className="min-h-screen bg-navy">
@@ -85,11 +87,13 @@ export default function CaseStudiesPage() {
                       >
                         <Image
                           src={study.heroImage}
-                          alt={study.title}
+                          alt={study.title[locale]}
                           fill
                           className="object-cover"
                           sizes="(max-width: 1024px) 100vw, 40vw"
                           priority={false}
+                          placeholder="blur"
+                          blurDataURL={HERO_BLUR_URL}
                         />
                       </div>
                     </div>
@@ -107,11 +111,11 @@ export default function CaseStudiesPage() {
                           }}
                           className="border"
                         >
-                          {study.industry}
+                          {study.industry[locale]}
                         </Badge>
 
                         <h2 className="text-2xl sm:text-3xl font-bold text-white leading-snug">
-                          {study.title}
+                          {study.title[locale]}
                         </h2>
 
                         <p style={{ color: study.accentColor }} className="font-medium text-sm">
@@ -121,7 +125,7 @@ export default function CaseStudiesPage() {
 
                       {/* Excerpt - Truncated to 2 Lines */}
                       <p className="text-muted line-clamp-2">
-                        {study.excerpt}
+                        {study.excerpt[locale]}
                       </p>
 
                       {/* 3 Listing Metrics in a Row */}
@@ -135,7 +139,7 @@ export default function CaseStudiesPage() {
                               {metric.value}
                             </div>
                             <div className="text-xs text-muted mt-1">
-                              {metric.label}
+                              {metric.label[locale]}
                             </div>
                             {/* Subtle divider (not on last item) */}
                             {metricIndex < study.listingMetrics.length - 1 && (
@@ -152,14 +156,14 @@ export default function CaseStudiesPage() {
 
                       {/* Technology Tags */}
                       <div className="flex flex-wrap gap-2 pt-2">
-                        {study.tags.map((tag) => (
+                        {study.tags.map((tag, idx) => (
                           <Badge
-                            key={tag}
+                            key={idx}
                             variant="outline"
                             size="sm"
                             className="text-xs"
                           >
-                            {tag}
+                            {tag[locale]}
                           </Badge>
                         ))}
                       </div>

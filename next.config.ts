@@ -9,6 +9,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const withNextIntl = createNextIntlPlugin('./src/lib/i18n/request.ts');
 
 const nextConfig: NextConfig = {
+  compress: true,
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

@@ -61,6 +61,10 @@
     "description": "New articles are published regularly. Check back soon.",
     "cta": "View All Articles"
   },
+  "error": {
+    "load_failed": "Unable to load articles. Please try again.",
+    "retry": "Try Again"
+  },
   "loading": "Loading articles...",
   "author": "Aviniti Team"
 }

@@ -14,7 +14,6 @@ import { Link } from '@/lib/i18n/navigation';
 import { Container, Section, Badge } from '@/components/ui';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
-import { ContentLanguageNotice } from '@/components/shared/ContentLanguageNotice';
 import { getAlternateLinks } from '@/lib/i18n/config';
 import { caseStudies, getCaseStudyBySlug } from '@/lib/data/case-studies';
 
@@ -27,18 +26,22 @@ export async function generateMetadata({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'case_studies' });
   const study = getCaseStudyBySlug(slug);
+  const localeKey = locale as 'en' | 'ar';
 
   if (!study) {
     return { title: t('meta.not_found') };
   }
 
+  const title = study.title[localeKey];
+  const description = study.excerpt[localeKey];
+
   return {
-    title: `${study.title} - ${t('meta.case_study_suffix')}`,
-    description: study.excerpt,
+    title: `${title} - ${t('meta.case_study_suffix')}`,
+    description: description,
     alternates: getAlternateLinks(`/case-studies/${slug}`),
     openGraph: {
-      title: study.title,
-      description: study.excerpt,
+      title: title,
+      description: description,
       type: 'article',
     },
   };
@@ -57,6 +60,7 @@ export default async function CaseStudyDetailPage({
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'case_studies' });
   const study = getCaseStudyBySlug(slug);
+  const localeKey = locale as 'en' | 'ar';
 
   if (!study) {
     notFound();
@@ -93,14 +97,14 @@ export default async function CaseStudyDetailPage({
                     variant="default"
                     style={{ backgroundColor: `${study.accentColor}15`, color: study.accentColor }}
                   >
-                    {study.industry}
+                    {study.industry[localeKey]}
                   </Badge>
                   <Badge variant="outline">{study.duration}</Badge>
                 </div>
 
                 {/* Title */}
                 <h1 className="text-h2 md:text-[2.5rem] text-white leading-tight mb-4">
-                  {study.title}
+                  {study.title[localeKey]}
                 </h1>
 
                 {/* Client Name */}
@@ -113,7 +117,7 @@ export default async function CaseStudyDetailPage({
 
                 {/* Description */}
                 <p className="text-lg text-muted leading-relaxed">
-                  {study.heroDescription}
+                  {study.heroDescription[localeKey]}
                 </p>
               </div>
 
@@ -126,7 +130,7 @@ export default async function CaseStudyDetailPage({
               >
                 <Image
                   src={study.heroImage}
-                  alt={study.title}
+                  alt={study.title[localeKey]}
                   fill
                   priority
                   className="object-cover"
@@ -134,15 +138,6 @@ export default async function CaseStudyDetailPage({
                 />
               </div>
             </div>
-          </div>
-        </Container>
-      </Section>
-
-      {/* Content Language Notice */}
-      <Section padding="compact">
-        <Container>
-          <div className="max-w-5xl mx-auto">
-            <ContentLanguageNotice namespace="case_studies" />
           </div>
         </Container>
       </Section>
@@ -170,10 +165,10 @@ export default async function CaseStudyDetailPage({
                       {metric.value}
                     </div>
                     <div className="text-sm font-semibold text-white mb-2">
-                      {metric.label}
+                      {metric.label[localeKey]}
                     </div>
                     <div className="text-xs text-muted leading-relaxed">
-                      {metric.description}
+                      {metric.description[localeKey]}
                     </div>
                   </div>
                 ))}
@@ -199,7 +194,7 @@ export default async function CaseStudyDetailPage({
             </div>
 
             <p className="text-lg text-muted mb-8 leading-relaxed">
-              {study.challenge.description}
+              {study.challenge.description[localeKey]}
             </p>
 
             {/* Challenge Points */}
@@ -225,7 +220,7 @@ export default async function CaseStudyDetailPage({
                     {index + 1}
                   </div>
                   <span className="text-off-white text-base leading-relaxed">
-                    {point}
+                    {point[localeKey]}
                   </span>
                 </div>
               ))}
@@ -250,7 +245,7 @@ export default async function CaseStudyDetailPage({
             </div>
 
             <p className="text-lg text-muted mb-8 leading-relaxed">
-              {study.solution.description}
+              {study.solution.description[localeKey]}
             </p>
 
             {/* Solution Points */}
@@ -270,7 +265,7 @@ export default async function CaseStudyDetailPage({
                     style={{ color: study.accentColor }}
                   />
                   <span className="text-off-white text-base leading-relaxed">
-                    {point}
+                    {point[localeKey]}
                   </span>
                 </div>
               ))}
@@ -295,7 +290,7 @@ export default async function CaseStudyDetailPage({
             </div>
 
             <p className="text-lg text-muted mb-12 leading-relaxed">
-              {study.results.description}
+              {study.results.description[localeKey]}
             </p>
 
             {/* Metric Cards Grid */}
@@ -317,10 +312,10 @@ export default async function CaseStudyDetailPage({
                     {metric.value}
                   </div>
                   <div className="text-base font-semibold text-white mb-3">
-                    {metric.label}
+                    {metric.label[localeKey]}
                   </div>
                   <div className="text-sm text-muted leading-relaxed">
-                    {metric.description}
+                    {metric.description[localeKey]}
                   </div>
                 </div>
               ))}
@@ -377,7 +372,7 @@ export default async function CaseStudyDetailPage({
                 </div>
 
                 <blockquote className="text-xl md:text-2xl text-white italic leading-relaxed mb-8">
-                  {study.testimonial.quote}
+                  {study.testimonial.quote[localeKey]}
                 </blockquote>
 
                 <div>
@@ -387,7 +382,9 @@ export default async function CaseStudyDetailPage({
                   >
                     {study.testimonial.author}
                   </p>
-                  <p className="text-sm text-muted">{study.testimonial.role}</p>
+                  <p className="text-sm text-muted">
+                    {study.testimonial.role[localeKey]}
+                  </p>
                 </div>
               </div>
             </div>

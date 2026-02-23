@@ -428,7 +428,7 @@ jest.mock('@/lib/gemini', () => ({
 }));
 
 // Mock Analytics
-jest.mock('@/lib/utils/analytics', () => ({
+jest.mock('@/lib/analytics', () => ({
   trackEvent: jest.fn(),
   trackToolEvent: jest.fn(),
 }));

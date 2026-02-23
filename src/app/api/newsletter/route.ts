@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // 2. Rate limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `newsletter:${hashIP(clientIP)}`;
-    const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
+    const rateLimitResult = await checkRateLimit(rateLimitKey, RATE_LIMIT, RATE_LIMIT_WINDOW);
 
     // Set rate limit headers
     const headers = new Headers();
@@ -74,12 +74,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Add new subscriber
-    await db.collection('newsletter_subscribers').add({
-      email: normalizedEmail,
-      locale,
-      subscribedAt: Timestamp.now(),
-      source: 'website',
-    });
+    try {
+      await db.collection('newsletter_subscribers').add({
+        email: normalizedEmail,
+        locale,
+        subscribedAt: Timestamp.now(),
+        source: 'website',
+      });
+    } catch (writeError) {
+      logServerError('newsletter-api', 'Firestore write failed', writeError);
+      return createErrorResponse(
+        'INTERNAL_ERROR',
+        'Subscription service temporarily unavailable. Please try again later.',
+        503
+      );
+    }
 
     // 4. Return 201 Created on success
     const message =

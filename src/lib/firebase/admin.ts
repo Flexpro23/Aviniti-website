@@ -44,9 +44,8 @@ function initializeFirebaseAdmin() {
     );
   }
 
-  // Parse private key (handle escaped newlines from environment variables)
-  // Environment variables often have \\n instead of actual newline characters
-  const parsedPrivateKey = privateKey.replace(/\\n/g, '\n');
+  // Parse private key (handle escaped newlines and trim whitespace from env)
+  const parsedPrivateKey = privateKey.replace(/\\n/g, '\n').trim();
 
   // Initialize admin app with service account credentials
   adminApp = initializeApp({

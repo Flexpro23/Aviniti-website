@@ -23,6 +23,13 @@ export const EVT_CTA_CLICKED = 'cta_clicked' as const;
 export const EVT_CONTACT_CAPTURE_STARTED = 'contact_capture_started' as const;
 export const EVT_CONTACT_CAPTURE_SUBMITTED = 'contact_capture_submitted' as const;
 
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+export const EVT_NEWSLETTER_SUBSCRIBED = 'newsletter_subscribed' as const;
+
+// ─── Exit Intent ──────────────────────────────────────────────────────────────
+export const EVT_EXIT_INTENT_SHOWN = 'exit_intent_shown' as const;
+export const EVT_EXIT_INTENT_DISMISSED = 'exit_intent_dismissed' as const;
+
 // ─── Language ─────────────────────────────────────────────────────────────────
 export const EVT_LANGUAGE_CHANGED = 'language_changed' as const;
 
@@ -42,3 +49,14 @@ export type CtaLocation =
   | 'final_cta'
   | 'ai_tool_top'
   | 'ai_tool_bottom';
+
+// ─── Errors / Exceptions ──────────────────────────────────────────────────────
+export const EVT_EXCEPTION = 'exception' as const;
+export const EVT_CLIENT_ERROR = 'client_error' as const;
+
+// ─── Engagement ───────────────────────────────────────────────────────────────
+export const EVT_SCROLL_DEPTH = 'scroll_depth' as const;
+export const EVT_FAQ_EXPANDED = 'faq_question_expanded' as const;
+export const EVT_WHATSAPP_CLICKED = 'whatsapp_clicked' as const;
+export const EVT_LEAD_CAPTURED = 'lead_captured' as const;
+export const EVT_USER_CONVERTED = 'user_converted' as const;

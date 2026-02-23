@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getAlternateLinks } from '@/lib/i18n/config';
 
+export const revalidate = 86400; // Revalidate daily
+
 export async function generateMetadata({
   params,
 }: {
@@ -10,7 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'case-studies' });
+  const t = await getTranslations({ locale, namespace: 'case_studies' });
 
   const title = t('meta.title');
   const description = t('meta.description');

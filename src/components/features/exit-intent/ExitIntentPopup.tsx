@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 import { useExitIntent } from './ExitIntentProvider';
+import { trackExitIntentShown, trackExitIntentDismissed } from '@/lib/analytics';
 
 async function trackExitIntent(payload: Record<string, unknown>) {
   try {
@@ -21,6 +22,7 @@ async function trackExitIntent(payload: Record<string, unknown>) {
 
 export default function ExitIntentPopup() {
   const t = useTranslations('common.exit_intent');
+  const locale = useLocale();
   const { isVisible, dismiss, markConverted } = useExitIntent();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -39,7 +41,8 @@ export default function ExitIntentPopup() {
   const handleDismiss = useCallback(() => {
     dismiss();
     trackExitIntent({ action: 'exit_intent_dismissed' });
-  }, [dismiss]);
+    trackExitIntentDismissed('checklist', locale);
+  }, [dismiss, locale]);
 
   useEffect(() => {
     if (isVisible) {
@@ -47,6 +50,7 @@ export default function ExitIntentPopup() {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
       trackExitIntent({ action: 'exit_intent_shown' });
+      trackExitIntentShown('checklist', locale);
       const timer = setTimeout(() => {
         const closeBtn = modalRef.current?.querySelector<HTMLElement>('button');
         closeBtn?.focus();
@@ -179,7 +183,7 @@ export default function ExitIntentPopup() {
             {/* Close button */}
             <button
               onClick={handleDismiss}
-              className="absolute top-3 end-3 h-10 w-10 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
+              className="absolute top-3 end-3 h-11 w-11 rounded-lg flex items-center justify-center text-muted hover:text-off-white hover:bg-slate-blue-light transition-colors"
               aria-label={t('close_aria')}
             >
               <X className="h-5 w-5" />
@@ -198,6 +202,7 @@ export default function ExitIntentPopup() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('email_placeholder')}
+                  aria-label={t('email_placeholder')}
                   className="w-full h-11 px-4 bg-navy/60 border border-slate-blue-light rounded-lg text-sm text-off-white placeholder:text-muted focus-visible:border-bronze focus-visible:ring-1 focus-visible:ring-bronze outline-none transition-all"
                 />
 

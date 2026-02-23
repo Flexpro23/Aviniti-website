@@ -199,7 +199,7 @@ const ChatBubble = forwardRef<HTMLButtonElement, ChatBubbleProps>(
         <Sparkles className="h-7 w-7 text-white" />
 
         {/* Online indicator */}
-        <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full bg-success border-2 border-navy" />
+        <span className="absolute bottom-0 end-0 h-3.5 w-3.5 rounded-full bg-success border-2 border-navy" aria-hidden="true" />
 
         {/* Unread badge */}
         {unreadCount > 0 && (
@@ -327,7 +327,12 @@ function ChatWindow({ messages, onClose, onSendMessage, isTyping, returnFocusRef
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        role="log"
+        aria-live="polite"
+        aria-label={t('widget.messages_label')}
+      >
         {messages.length === 0 && (
           <div className="text-sm text-muted text-center mt-8">
             {t('widget.greeting')}
@@ -371,6 +376,9 @@ function ChatWindow({ messages, onClose, onSendMessage, isTyping, returnFocusRef
                 <span className="h-2 w-2 rounded-full bg-muted animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
+            <span className="sr-only" aria-live="polite">
+              {isTyping ? t('widget.typing_indicator') : ''}
+            </span>
           </div>
         )}
         <div ref={messagesEndRef} />

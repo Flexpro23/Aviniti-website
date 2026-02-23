@@ -7,7 +7,7 @@
  * Features prominent results and "Read More" CTAs.
  */
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ArrowRight, Truck, GraduationCap, Sparkles, Stethoscope, Scissors, CalendarDays } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Section } from '@/components/ui/Section';
@@ -34,6 +34,7 @@ interface CaseStudy {
 
 export function CaseStudiesPreview() {
   const t = useTranslations('home.case_studies');
+  const locale = useLocale() as 'en' | 'ar';
 
   // Map real case studies to display format
   const previewCaseStudies: CaseStudy[] = caseStudies.slice(0, 3).map((study) => {
@@ -54,13 +55,18 @@ export function CaseStudiesPreview() {
       'Business Operations': 'industry_business',
     };
 
+    const industryValue = study.industry[locale];
+    const titleValue = study.title[locale];
+    const excerptValue = study.excerpt[locale];
+    const metricLabelValue = study.listingMetrics[0]?.label[locale] ?? '';
+
     return {
       slug: study.slug,
-      industry: industryKeyMap[study.industry] || 'industry_logistics',
-      title: study.title,
+      industry: industryKeyMap[industryValue] || 'industry_logistics',
+      title: titleValue,
       metricValue: study.listingMetrics[0]?.value || '—',
-      metricLabel: study.listingMetrics[0]?.label || '',
-      excerpt: study.excerpt,
+      metricLabel: metricLabelValue,
+      excerpt: excerptValue,
       icon: iconMap[study.industryKey] || <Truck className="w-5 h-5" />,
       accentColor: study.accentColor,
     };

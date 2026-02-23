@@ -9,9 +9,10 @@ import type { BlogPostSummary } from '@/lib/firebase/blog';
 interface BlogGridProps {
   posts: BlogPostSummary[];
   categories: string[];
+  fetchError?: boolean;
 }
 
-export function BlogGrid({ posts, categories }: BlogGridProps) {
+export function BlogGrid({ posts, categories, fetchError = false }: BlogGridProps) {
   const t = useTranslations('blog');
   const locale = useLocale();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -121,6 +122,17 @@ export function BlogGrid({ posts, categories }: BlogGridProps) {
               index={i}
             />
           ))}
+        </div>
+      ) : fetchError ? (
+        <div className="text-center py-20 space-y-4">
+          <p className="text-muted text-lg">{t('error.load_failed')}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 rounded-xl text-sm font-medium text-bronze border border-bronze/30 hover:bg-bronze/10 transition-colors"
+          >
+            {t('error.retry')}
+          </button>
         </div>
       ) : (
         <div className="text-center py-20">

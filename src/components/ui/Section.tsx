@@ -16,13 +16,13 @@ export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
 
 export const Section = React.forwardRef<HTMLElement, SectionProps>(
   ({ className, background = 'navy', padding = 'default', as: Component = 'section', ...props }, ref) => {
-    const backgroundStyles = {
+    const backgroundStyles: Record<string, string> = {
       navy: 'bg-navy',
       'navy-dark': 'bg-navy-dark',
       'slate-blue': 'bg-slate-blue',
     };
 
-    const paddingStyles = {
+    const paddingStyles: Record<string, string> = {
       default: 'py-12 md:py-20',
       compact: 'py-8 md:py-12',
       hero: 'py-16 md:py-24 lg:py-32',
@@ -30,8 +30,7 @@ export const Section = React.forwardRef<HTMLElement, SectionProps>(
 
     return (
       <Component
-        // @ts-expect-error - ref type differs between 'section', 'div', and 'article', but all are valid HTMLElement subclasses
-        ref={ref}
+        ref={ref as React.Ref<HTMLDivElement>}
         className={cn('w-full', backgroundStyles[background], paddingStyles[padding], className)}
         {...props}
       />

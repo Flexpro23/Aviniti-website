@@ -8,6 +8,8 @@ import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { FAQAccordionSection } from './FAQAccordionSection';
 
+export const revalidate = 86400; // Revalidate daily
+
 export async function generateMetadata({
   params,
 }: {

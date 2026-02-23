@@ -5,6 +5,8 @@ import {
   createErrorResponse,
   createSuccessResponse,
   hashIP,
+  checkRequestBodySize,
+  sanitizePromptInput,
 } from '@/lib/utils/api-helpers';
 import { generateContent } from '@/lib/gemini/client';
 import { saveChatMessage } from '@/lib/firebase/collections';
@@ -20,9 +22,16 @@ const TIMEOUT_MS = 15000; // 15 seconds
 
 export async function POST(request: NextRequest) {
   try {
+    // 0. Check request body size before parsing
+    const sizeCheck = checkRequestBodySize(request);
+    if (sizeCheck) return sizeCheck;
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = chatMessageSchema.parse(body);
+
+    // Sanitize the user message for prompt injection prevention
+    const sanitizedMessage = sanitizePromptInput(validatedData.message);
 
     // 2. Rate limiting (per session)
     const clientIP = getClientIP(request);
@@ -57,12 +66,12 @@ export async function POST(request: NextRequest) {
     // Build conversation context from last 10 message pairs (20 messages)
     const recentHistory = validatedData.conversationHistory.slice(-20);
     const conversationContext = recentHistory
-      .map((msg) => `${msg.role === 'user' ? 'User' : 'Avi'}: ${msg.content}`)
+      .map((msg) => `${msg.role === 'user' ? 'User' : 'Avi'}: ${sanitizePromptInput(msg.content, 500)}`)
       .join('\n');
 
     const fullPrompt = `${systemPrompt}
 
-${conversationContext ? `CONVERSATION HISTORY:\n${conversationContext}\n\n` : ''}User: ${validatedData.message}
+${conversationContext ? `CONVERSATION HISTORY:\n${conversationContext}\n\n` : ''}User: ${sanitizedMessage}
 
 Avi:`;
 
@@ -84,7 +93,7 @@ Avi:`;
     // Save user message
     await saveChatMessage(
       validatedData.sessionId,
-      { role: 'user', content: validatedData.message },
+      { role: 'user', content: sanitizedMessage },
       validatedData.currentPage,
       locale
     );

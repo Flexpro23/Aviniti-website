@@ -110,6 +110,7 @@ export type ExitIntentVariant = 'A' | 'B' | 'C' | 'D' | 'E';
 export type ErrorCode =
   | 'VALIDATION_ERROR'
   | 'RATE_LIMITED'
+  | 'PAYLOAD_TOO_LARGE'
   | 'AI_TIMEOUT'
   | 'AI_UNAVAILABLE'
   | 'INTERNAL_ERROR'

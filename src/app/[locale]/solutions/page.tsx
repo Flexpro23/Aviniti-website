@@ -21,6 +21,7 @@ import { SectionHeading } from '@/components/shared/SectionHeading';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { CTABanner } from '@/components/shared/CTABanner';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { HERO_BLUR_URL } from '@/lib/utils/image';
 
 type FilterCategory = 'all' | SolutionCategory;
 
@@ -153,6 +154,8 @@ export default function SolutionsPage() {
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                               className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              placeholder="blur"
+                              blurDataURL={HERO_BLUR_URL}
                             />
                           )}
 

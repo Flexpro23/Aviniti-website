@@ -260,7 +260,7 @@ export default function IdeaLabPage() {
     setPhase('generate-loading');
     setError(null);
     trackAiToolSubmitted('idea_lab', locale);
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     // Persist contact info to the shared store (single contact capture across tools)
     updateContact({

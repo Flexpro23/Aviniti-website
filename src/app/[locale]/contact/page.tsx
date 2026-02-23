@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect, useRef, useCallback, FormEvent } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
+import { trackContactCaptureStarted, trackContactCaptureSubmitted } from '@/lib/analytics';
 import { Mail, MapPin, Clock, MessageCircle, Send, Calendar, CheckCircle, ArrowRight } from 'lucide-react';
 import { Container, Section, Input, Textarea, Checkbox, Button } from '@/components/ui';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui';
@@ -99,6 +100,7 @@ const contactItems = [
 
 export default function ContactPage() {
   const t = useTranslations('contact');
+  const locale = useLocale();
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
@@ -106,6 +108,14 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [ticketId, setTicketId] = useState('');
+
+  const hasTrackedStart = useRef(false);
+  const handleFormInteraction = useCallback(() => {
+    if (!hasTrackedStart.current) {
+      hasTrackedStart.current = true;
+      trackContactCaptureStarted('contact_page', locale);
+    }
+  }, [locale]);
 
   // Auto-detect country from Vercel geo cookie
   const [defaultCountry, setDefaultCountry] = useState('jo');
@@ -174,6 +184,7 @@ export default function ContactPage() {
         const data = await response.json();
         setTicketId(data.ticketId || `AV-${Date.now().toString(36).toUpperCase()}`);
         setIsSuccess(true);
+        trackContactCaptureSubmitted('contact_page', locale);
       } else {
         setErrors({ message: t('errors.send_failed') });
       }
@@ -347,7 +358,7 @@ export default function ContactPage() {
                       />
 
                       {/* ─── Form ─── */}
-                      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                      <form onSubmit={handleSubmit} onFocus={handleFormInteraction} className="space-y-5" noValidate>
                         {/* Name + Phone row on desktop */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <Input

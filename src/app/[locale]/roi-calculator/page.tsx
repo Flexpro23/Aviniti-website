@@ -488,7 +488,7 @@ export default function ROICalculatorPage() {
     setStep('loading');
     setError(null);
     trackAiToolSubmitted('roi_calculator', locale);
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     // Persist contact info to the shared store (single contact capture across tools)
     if (finalPhone) {

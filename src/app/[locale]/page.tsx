@@ -31,6 +31,8 @@ import { SectionDivider } from '@/components/shared/SectionDivider';
  * - LiveAppsShowcase → merged into testimonials
  */
 
+export const revalidate = 3600; // Revalidate hourly
+
 export async function generateMetadata({
   params,
 }: {

@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getAlternateLinks } from '@/lib/i18n/config';
 
+export const revalidate = 86400; // Revalidate daily
+
 export async function generateMetadata({
   params,
 }: {

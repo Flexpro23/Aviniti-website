@@ -12,7 +12,7 @@ import { ideaLabDiscoverSchema } from '@/lib/utils/validators';
 import { buildIdeaLabDiscoverPrompt } from '@/lib/gemini/prompts/idea-lab-discover';
 import { ideaLabDiscoverResponseSchema } from '@/lib/gemini/schemas';
 import type { IdeaLabDiscoverResponse } from '@/types/api';
-import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
+import { logServerError, logServerWarning, logServerInfo } from '@/lib/firebase/error-logging';
 
 // Rate limiting configuration — shared with generate endpoint (6 per 24h for refreshes)
 const RATE_LIMIT = 6;
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
       if (attempt > 0) {
-        console.log(`[Idea Lab Discover] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+        logServerInfo('api/ai/idea-lab/discover', `Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`, { attempt });
       }
 
       const result = await generateJsonContent<IdeaLabDiscoverResponse>(prompt, {

@@ -7,6 +7,7 @@ import {
   extractRequestMetadata,
   hashIP,
   sanitizePromptInput,
+  checkRequestBodySize,
   detectInputLanguage,
   getLocalizedRateLimitMessage,
 } from '@/lib/utils/api-helpers';
@@ -16,20 +17,26 @@ import { roiFormSchemaV2 } from '@/lib/utils/validators';
 import { buildROIPromptV2 } from '@/lib/gemini/prompts';
 import { roiResponseSchemaV2 } from '@/lib/gemini/schemas';
 import type { ROICalculatorResponseV2 } from '@/types/api';
-import { logServerError, logServerWarning } from '@/lib/firebase/error-logging';
+import { logServerError, logServerWarning, logServerInfo } from '@/lib/firebase/error-logging';
 
-// Rate limiting configuration
-const RATE_LIMIT = 5;
+// Rate limiting configuration (reduced from 5 to 3/24hr for cost control)
+const RATE_LIMIT = 3;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
 const TEMPERATURE = 0.3;
 const MAX_OUTPUT_TOKENS = 8192;
 const TIMEOUT_MS = 60000; // 60 seconds
 const MAX_AI_ATTEMPTS = 2;
 
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    // 0. Body size check (mitigate payload DoS)
+    const sizeError = checkRequestBodySize(request);
+    if (sizeError) return sizeError;
+
     // 1. Parse and validate request body
     const body = await request.json();
     const validatedData = roiFormSchemaV2.parse(body);
@@ -65,10 +72,15 @@ export async function POST(request: NextRequest) {
       : validatedData.projectSummary || '';
     const inputLanguage = detectInputLanguage(inputText);
 
-    // Sanitize free-text input for standalone mode
+    // Sanitize free-text input for standalone mode; always sanitize projectName (from-estimate mode)
     const sanitizedData = validatedData.mode === 'standalone'
       ? { ...validatedData, ideaDescription: sanitizePromptInput(validatedData.ideaDescription, 2000) }
-      : validatedData;
+      : {
+          ...validatedData,
+          projectName: validatedData.projectName
+            ? sanitizePromptInput(validatedData.projectName, 200)
+            : validatedData.projectName,
+        };
 
     const prompt = buildROIPromptV2(sanitizedData, inputLanguage);
 
@@ -78,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     for (let attempt = 0; attempt < MAX_AI_ATTEMPTS; attempt++) {
       if (attempt > 0) {
-        console.log(`[ROI Calculator API] Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`);
+        logServerInfo('api/ai/roi-calculator', `Retry attempt ${attempt + 1}/${MAX_AI_ATTEMPTS}`, { attempt });
       }
 
       const result = await generateJsonContent<ROICalculatorResponseV2>(prompt, {
@@ -106,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validated) {
-      logServerError('roi-calculator-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`);
+      logServerError('roi-calculator-api', `All ${MAX_AI_ATTEMPTS} attempts failed. Last error: ${lastError}`, undefined, { locale, inputLanguage });
       return createErrorResponse(
         'AI_UNAVAILABLE',
         'Our AI service is temporarily unavailable. Please try again in a few minutes.',
