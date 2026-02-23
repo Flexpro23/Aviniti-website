@@ -613,19 +613,19 @@
 
   @keyframes marquee-ltr {
     0% {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
     100% {
-      transform: translateX(-33.33%);
+      transform: translate3d(-33.33%, 0, 0);
     }
   }
 
   @keyframes marquee-rtl {
     0% {
-      transform: translateX(-33.33%);
+      transform: translate3d(-33.33%, 0, 0);
     }
     100% {
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
   }
 

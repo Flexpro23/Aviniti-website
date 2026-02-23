@@ -205,6 +205,9 @@ function MarqueeRow({
             ? 'none'
             : `${direction === 'ltr' ? 'marquee-ltr' : 'marquee-rtl'} ${speed}s linear infinite`,
           animationPlayState: rowHovered && !prefersReducedMotion ? 'paused' : 'running',
+          willChange: 'transform',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
         }}
         onMouseEnter={() => setRowHovered(true)}
         onMouseLeave={() => setRowHovered(false)}
