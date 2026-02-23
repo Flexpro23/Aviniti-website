@@ -43,11 +43,11 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googletagmanager.com https://*.google-analytics.com https://*.firebaseio.com https://*.googleapis.com https://generativelanguage.googleapis.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googletagmanager.com https://*.google-analytics.com https://*.firebaseio.com https://*.googleapis.com https://generativelanguage.googleapis.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: https: blob:",
-              "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://www.google-analytics.com https://*.googletagmanager.com https://generativelanguage.googleapis.com wss://*.firebaseio.com wss://*.firebaseapp.com",
+              "connect-src 'self' data: blob: https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://www.google-analytics.com https://*.googletagmanager.com https://generativelanguage.googleapis.com wss://*.firebaseio.com wss://*.firebaseapp.com",
               "frame-src https://*.firebaseapp.com",
               "object-src 'none'",
               "base-uri 'self'",
