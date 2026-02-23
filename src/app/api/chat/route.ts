@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { NextRequest } from 'next/server';
 import { ZodError } from 'zod';
 import { checkRateLimit, getClientIP, setRateLimitHeaders } from '@/lib/utils/rate-limit';
